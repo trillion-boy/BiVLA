@@ -1,0 +1,872 @@
+"""
+latent_saccade_spatialvla.py
+
+SpatialVLA용 Latent Saccade (Post-RMSNorm variant).
+
+공식 SpatialVLAInference (DelinQu/SimplerEnv-OpenVLA fork) 를 상속하여
+latent saccade foveation hook 만 추가합니다.
+ActionEnsembler, image history, do_normalize=False, cv2 resize, raw prompt 등
+공식 파이프라인은 모두 super().step() 이 그대로 처리합니다.
+단 하나의 차이: predict_action() 호출 중 input_layernorm hook 이 visual
+patch 위치의 hidden state 를 공간적으로 가중합니다.
+
+아키텍처
+--------
+SpatialVLA = PaliGemma2 (SigLiP + Gemma2 18층)
+  시퀀스:   [image_token × num_patches][BOS][text...]
+  visual:  첫 num_patches 위치 (PaliGemma 고정 레이아웃 — positional assumption)
+  레이어:  model.language_model.model.layers  (Gemma2ForCausalLM)
+
+Hook 위치 (post-RMSNorm variant)
+--------------------------------
+  token_emb → RMSNorm → *weight* → Q, K, V
+  weight 가 Q, K 양쪽에 곱해지므로 attention score 는 weight² 로 증폭.
+  UniVLA / OpenVLA postnorm 버전과 동일한 효과.
+"""
+
+from __future__ import annotations
+
+import os
+import re
+import sys
+from typing import List, Optional, Tuple
+
+import numpy as np
+import torch
+from transformers.image_utils import is_valid_image
+
+_BIVLA_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if _BIVLA_ROOT not in sys.path:
+    sys.path.insert(0, _BIVLA_ROOT)
+
+from shared_unified_policy import (
+    CompactFocusGateConfig,
+    CompactFocusGateState,
+    compact_focus_gate,
+    extract_source_dest_nouns,
+    phase_compact_focus_gate,
+    shared_task_policy_profile,
+    SharedTaskPolicyProfile,
+)
+
+import transformers.models.paligemma.processing_paligemma as _paligemma_processing
+
+if not hasattr(_paligemma_processing, "make_batched_images"):
+    def _make_batched_images(images):
+        if images is None:
+            return None
+        if is_valid_image(images):
+            return [[images]]
+        if isinstance(images, (list, tuple)) and images:
+            if is_valid_image(images[0]):
+                return [[image] for image in images]
+            if (
+                isinstance(images[0], (list, tuple))
+                and images[0]
+                and is_valid_image(images[0][0])
+            ):
+                return [list(batch) for batch in images]
+        raise ValueError("images must be an image, list of images or list of list of images")
+
+    _paligemma_processing.make_batched_images = _make_batched_images
+
+try:
+    from simpler_env.policies.spatialvla.spatialvla_model import SpatialVLAInference
+except ImportError as exc:
+    raise ImportError(
+        "simpler_env 를 찾을 수 없습니다. DelinQu/SimplerEnv-OpenVLA fork 를 설치하세요:\n"
+        "  git clone https://github.com/DelinQu/SimplerEnv-OpenVLA --recurse-submodules\n"
+        "  pip install -e SimplerEnv-OpenVLA"
+    ) from exc
+
+
+# ---------------------------------------------------------------------------
+# Saccade State Machine  (OpenVLA 버전과 동일)
+# ---------------------------------------------------------------------------
+
+class SaccadeStateMachine:
+    """
+    Grasp / Place 2-phase state machine.
+
+    state='grasp'  → fovea on source object
+    state='place'  → fovea on destination object
+    Transition: gripper close count >= consecutive_close_required
+                AND grasp_steps >= min_grasp_steps
+    """
+
+    def __init__(
+        self,
+        min_grasp_steps: int = 10,
+        consecutive_close_required: int = 3,
+        min_place_steps: int = 8,
+        max_grasp_steps: int = 60,
+        close_thresh: float = 0.5,
+    ):
+        self.min_grasp_steps = min_grasp_steps
+        self.consecutive_close_required = consecutive_close_required
+        self.min_place_steps = min_place_steps
+        self.max_grasp_steps = max_grasp_steps
+        self.close_thresh = close_thresh
+
+        self.source_noun: str = ""
+        self.dest_noun: str = ""
+        self.state: str = "grasp"
+        self._close_count: int = 0
+        self._grasp_steps: int = 0
+        # place 전환 후 경과 스텝. place foveation 지연(lift 확보)용.
+        self._place_steps: int = 0
+
+    @property
+    def current_target(self) -> str:
+        return self.source_noun if self.state == "grasp" else self.dest_noun
+
+    def update(self, gripper_norm: float) -> bool:
+        """
+        Update state from gripper action value.
+        SpatialVLA: g=1.0=open, g=0.0=close → close when g <= close_thresh (0.5).
+        Returns True if state just transitioned grasp→place.
+        """
+        if self.state == "grasp":
+            self._grasp_steps += 1
+            if gripper_norm <= self.close_thresh:
+                self._close_count += 1
+            else:
+                self._close_count = 0
+
+            if (
+                self._grasp_steps >= self.min_grasp_steps
+                and self._close_count >= self.consecutive_close_required
+            ):
+                steps = self._grasp_steps
+                self.state = "place"
+                self._grasp_steps = 0
+                self._close_count = 0
+                print(f"[LatentSaccade] grasp→place  (gripper_close trigger, steps={steps})", flush=True)
+                return True
+
+            if self.max_grasp_steps > 0 and self._grasp_steps >= self.max_grasp_steps:
+                steps = self._grasp_steps
+                self.state = "place"
+                self._grasp_steps = 0
+                self._close_count = 0
+                print(f"[LatentSaccade] grasp→place  (timeout at {steps} steps)", flush=True)
+                return True
+        else:
+            # place 단계: 경과 스텝 누적 (foveation 지연 판정용)
+            self._place_steps += 1
+        return False
+
+    def reset(self):
+        self.state = "grasp"
+        self._close_count = 0
+        self._grasp_steps = 0
+        self._place_steps = 0
+
+
+# ---------------------------------------------------------------------------
+# GroundingDINO Detector  (OpenVLA 버전과 동일)
+# ---------------------------------------------------------------------------
+
+class GroundingDINODetector:
+    """GroundingDINO wrapper using HuggingFace transformers."""
+
+    def __init__(
+        self,
+        model_id: str = "IDEA-Research/grounding-dino-tiny",
+        box_threshold: float = 0.15,
+        text_threshold: float = 0.15,
+        device: str = "cuda",
+    ):
+        from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
+        from PIL import Image as PIL_Image
+
+        self._PIL_Image = PIL_Image
+        self.processor = AutoProcessor.from_pretrained(model_id)
+        self.model = AutoModelForZeroShotObjectDetection.from_pretrained(model_id).to(device)
+        self.model.eval()
+        self.box_threshold = box_threshold
+        self.text_threshold = text_threshold
+        self.device = device
+
+    def detect(
+        self, image_np: np.ndarray, text: str
+    ) -> List[Tuple[np.ndarray, float]]:
+        """Returns [(bbox_xyxy_pixels, score), ...] sorted by score descending."""
+        if not text:
+            return []
+        if not text.endswith("."):
+            text = text + "."
+        pil_image = self._PIL_Image.fromarray(image_np)
+        inputs = self.processor(
+            images=pil_image, text=text, return_tensors="pt"
+        ).to(self.device)
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+        results = self.processor.post_process_grounded_object_detection(
+            outputs,
+            inputs.input_ids,
+            box_threshold=self.box_threshold,
+            text_threshold=self.text_threshold,
+            target_sizes=[pil_image.size[::-1]],
+        )[0]
+        boxes = results["boxes"].cpu().numpy()
+        scores = results["scores"].cpu().numpy()
+        detections = sorted(zip(boxes, scores), key=lambda x: -x[1])
+        if detections:
+            best_box, best_score = detections[0]
+            print(f"[DINO] '{text.rstrip('.')}' score={best_score:.3f} → {best_box.astype(int).tolist()}")
+        return detections
+
+    _NOUN_REMAP: dict = {}
+
+    @staticmethod
+    def extract_source_dest_nouns(instruction: str) -> Tuple[str, str]:
+        """
+        Regex-based extraction for standard manipulation instructions.
+        e.g. 'put the eggplant in the basket' → ('eggplant', 'basket')
+        """
+        remap = GroundingDINODetector._NOUN_REMAP
+        nouns = extract_source_dest_nouns(instruction)
+        src = nouns["source"]
+        dst = nouns["target"]
+        if src or dst:
+            return remap.get(src, src), remap.get(dst, dst)
+        return "", ""
+
+
+# ---------------------------------------------------------------------------
+# Main inference class  — inherits from official SpatialVLAInference
+# ---------------------------------------------------------------------------
+
+class LatentSaccadeSpatialVLAInference(SpatialVLAInference):
+    """
+    SpatialVLA + Latent Saccade foveation.
+
+    상속 전략
+    ---------
+    SpatialVLAInference (공식 파이프라인) 를 그대로 상속하고, step() 에서
+    super().step() 을 호출하기 전에 _current_weight_1d 를 세팅합니다.
+    super().step() 내부에서 predict_action() 이 호출될 때 prefill forward
+    pass 에 걸린 hook 이 해당 weight 를 hidden state 에 곱합니다.
+    공식 파이프라인 (ActionEnsembler, image history, do_normalize=False,
+    cv2 resize, raw task_description prompt) 은 전혀 변경되지 않습니다.
+
+    Hook 동작
+    ---------
+    _current_weight_1d:  (num_patches,) float32 텐서
+    hook: seq_len > 1 인 prefill 단계에서만 동작.
+          첫 num_patches 위치 = visual patch → weight 적용
+          나머지 위치 (BOS + text) → 1.0 (변경 없음)
+          PaliGemma2 시퀀스는 항상 [image_tokens × N][BOS][text...] 이므로
+          positional assumption 이 항상 성립함.
+    """
+
+    def __init__(
+        self,
+        # ── Official SpatialVLAInference params ────────────────────────────
+        saved_model_path: str = "IPEC-COMMUNITY/spatialvla-4b-224-pt",
+        unnorm_key: Optional[str] = None,
+        policy_setup: str = "widowx_bridge",
+        exec_horizon: int = 1,
+        image_size: list = None,
+        action_scale: float = 1.0,
+        action_ensemble_temp: float = -0.8,
+        # ── Latent Saccade params ──────────────────────────────────────────
+        dino_model: str = "IDEA-Research/grounding-dino-tiny",
+        dino_cache_steps: int = 5,
+        box_threshold: float = 0.15,
+        text_threshold: float = 0.15,
+        bbox_margin: int = 2,
+        # ── fovea-only boost recipe ─────────────────────────────────────────
+        #   bg_weight=1.0          배경 절대 억제 안 함 (억제 시 공간 계획 파괴)
+        #   place_src_weight       place 단계 source(eggplant) 영역 약한 boost
+        #   grasp_fovea_weight     grasp 단계 target boost — 약하게(1.15).
+        #                          SpatialVLA 는 256패치라 fovea 가 25% 차지 →
+        #                          강하게 걸면 그리퍼 미세제어 신호가 묻혀 파지 망가짐.
+        #   place_fovea_weight     place 단계 target boost — 강하게(1.3).
+        bg_weight: float = 1.0,
+        place_src_weight: float = 1.1,
+        grasp_fovea_weight: float = 1.15,
+        place_fovea_weight: float = 1.3,
+        # 하위호환: fovea_weight 를 주면 grasp/place 둘 다 그 값으로 덮어씀.
+        fovea_weight: Optional[float] = None,
+        min_grasp_steps: int = 15,
+        consecutive_close_required: int = 3,
+        min_place_steps: int = 8,
+        max_grasp_steps: int = 60,
+        enable_latent_mask: bool = True,
+        # 사용자 가설: grasp(잡을 물체)·place(놓을 곳) 양쪽 모두 target 에
+        # foveation 집중. grasp 는 weight 를 약하게(1.15) 걸어 파지 방해 최소화.
+        foveate_grasp: bool = True,
+        # place 전환 직후 foveation 지연 스텝. SpatialVLA 는 do_sample=False
+        # (결정론적) 라, grasp phase 가 OFF 와 비트 동일하지만 place 전환이
+        # '잡기 마무리(lift)' 순간과 겹쳐 그 직후 basket foveation 이 물체를
+        # 놓치게 만든다. 전환 후 N 스텝은 foveation 을 미뤄 lift 를 먼저 확보.
+        place_foveation_delay: int = 2,
+        # area 필터: SpatialVLA sink 카메라에서 'yellow basket' DINO 탐지가
+        # 가끔 전체화면([1,70,638,478]≈85%)으로 잡힘 → fovea=256(전부) 가 되어
+        # foveation 무의미. 정상 basket 은 화면의 ~20% 이므로 상한 0.6 으로
+        # 전체화면 오탐만 차단.
+        # bridge_table_1_v1 태스크(stack/carrot/spoon)에서는 물체가 화면의
+        # 80~85% 를 차지하므로 0.5/0.6 으로 두면 모든 탐지가 거부됨.
+        # 해당 태스크는 --grasp-max-area-ratio 0.95 --place-max-area-ratio 0.95 로 실행.
+        enable_area_filter: bool = True,
+        grasp_max_area_ratio: float = 0.5,
+        place_max_area_ratio: float = 0.6,
+        dino_debug_dir: Optional[str] = None,
+    ):
+        if image_size is None:
+            image_size = [224, 224]
+
+        # Initialise the official SpatialVLAInference (loads model, processor,
+        # ActionEnsembler, image history deque, gripper state, etc.)
+        super().__init__(
+            saved_model_path=saved_model_path,
+            unnorm_key=unnorm_key,
+            policy_setup=policy_setup,
+            exec_horizon=exec_horizon,
+            image_size=image_size,
+            action_scale=action_scale,
+            action_ensemble_temp=action_ensemble_temp,
+        )
+
+        # ── Saccade weights ────────────────────────────────────────────────
+        self._bg_weight = bg_weight
+        self._place_src_weight = place_src_weight
+        self._manual_bg_weight = bg_weight
+        self._manual_place_src_weight = place_src_weight
+        self._manual_fovea_weight = fovea_weight
+        self._manual_grasp_fovea_weight = grasp_fovea_weight
+        self._manual_place_fovea_weight = place_fovea_weight
+        # grasp/place 단계별 fovea weight 분리. fovea_weight 가 명시되면 둘 다 덮어씀.
+        if fovea_weight is not None:
+            self._grasp_fovea_weight = fovea_weight
+            self._place_fovea_weight = fovea_weight
+        else:
+            self._grasp_fovea_weight = grasp_fovea_weight
+            self._place_fovea_weight = place_fovea_weight
+        self._enable_latent_mask = enable_latent_mask
+        # foveate_grasp=True → UniVLA 처럼 grasp/place 양쪽 모두 foveation.
+        self._foveate_grasp = foveate_grasp
+        # place 전환 후 foveation 지연 (lift 확보)
+        self._place_foveation_delay = place_foveation_delay
+        # area 필터: 전체화면 오탐 차단 (기본 활성)
+        self._enable_area_filter = enable_area_filter
+        self._grasp_max_area_ratio = grasp_max_area_ratio
+        self._place_max_area_ratio = place_max_area_ratio
+        self._compact_focus_gate = CompactFocusGateConfig(
+            min_confidence=0.30,
+            max_focus_confidence=1.05,
+            min_context_confidence=0.30,
+            min_area_ratio=0.0,
+            grasp_max_area_ratio=grasp_max_area_ratio,
+            place_max_area_ratio=place_max_area_ratio,
+            min_horizontal_separation=0.18,
+            max_vertical_misalignment=0.10,
+        )
+        self._compact_focus_state = CompactFocusGateState()
+        self._dino_cache_steps = dino_cache_steps
+        self._bbox_margin = bbox_margin
+        self._dino_debug_dir = dino_debug_dir
+        self._shared_task_profile: SharedTaskPolicyProfile = shared_task_policy_profile(
+            None,
+            model_family="spatialvla",
+        )
+
+        # ── Visual patch config (after super().__init__ so self.vla / processor exist) ──
+        # processor.image_seq_length == num visual tokens injected into sequence
+        self.num_patches: int = self.processor.image_seq_length
+        self._grid_size: int = int(round(self.num_patches ** 0.5))
+        assert self._grid_size ** 2 == self.num_patches, (
+            f"num_patches={self.num_patches} is not a perfect square."
+        )
+
+        # ── Saccade state machine ──────────────────────────────────────────
+        self.saccade = SaccadeStateMachine(
+            min_grasp_steps=min_grasp_steps,
+            consecutive_close_required=consecutive_close_required,
+            min_place_steps=min_place_steps,
+            max_grasp_steps=max_grasp_steps,
+        )
+
+        # ── GroundingDINO detector ─────────────────────────────────────────
+        self.detector = GroundingDINODetector(
+            model_id=dino_model,
+            box_threshold=box_threshold,
+            text_threshold=text_threshold,
+            device="cuda",
+        )
+
+        # ── Internal state ─────────────────────────────────────────────────
+        # _saccade_instruction: tracks last instruction for saccade noun extraction
+        self._saccade_instruction: Optional[str] = None
+        # (num_patches,) weight set before super().step(); read by hook during predict_action()
+        self._current_weight_1d: Optional[torch.Tensor] = None
+        self._ln_hook_handles: List = []
+        self._bbox_confidence_threshold: float = 0.3
+        self._fovea_bbox_cache = None
+        self._secondary_bbox_cache = None
+        self._fovea_score_cache = 0.0
+        self._secondary_score_cache = 0.0
+        self._last_good_fovea = None
+        self._last_good_secondary = None
+        self._last_good_fovea_score = 0.0
+        self._last_good_secondary_score = 0.0
+        self._cache_step: int = 0
+
+        # ── Register post-RMSNorm hooks ────────────────────────────────────
+        self._register_postnorm_hooks()
+
+    def _apply_task_policy_profile(self, instruction: Optional[str]) -> None:
+        profile = shared_task_policy_profile(instruction, model_family="spatialvla")
+        self._shared_task_profile = profile
+        self._bg_weight = float(profile.bg_weight)
+        self._place_src_weight = float(profile.place_src_weight)
+        self._grasp_fovea_weight = float(profile.grasp_fovea_weight)
+        self._place_fovea_weight = float(profile.place_fovea_weight)
+        self._foveate_grasp = bool(profile.use_grasp_focus)
+        self._place_foveation_delay = int(profile.place_foveation_delay)
+        self._grasp_max_area_ratio = float(profile.grasp_max_area_ratio)
+        self._place_max_area_ratio = float(profile.place_max_area_ratio)
+        self._compact_focus_gate = CompactFocusGateConfig(
+            min_confidence=float(profile.place_min_confidence),
+            max_focus_confidence=float(profile.place_max_confidence),
+            min_context_confidence=float(profile.place_min_context_confidence),
+            min_area_ratio=float(profile.min_area_ratio),
+            grasp_max_area_ratio=float(profile.grasp_max_area_ratio),
+            place_max_area_ratio=float(profile.place_max_area_ratio),
+            min_horizontal_separation=float(profile.min_horizontal_separation),
+            max_vertical_misalignment=float(profile.max_vertical_misalignment),
+            activation_patience=int(profile.activation_patience),
+            release_patience=int(profile.release_patience),
+            min_active_steps=int(profile.min_active_steps),
+            cooldown_steps=int(profile.cooldown_steps),
+        )
+        self.saccade.min_grasp_steps = int(profile.min_grasp_steps)
+        print(
+            "[LatentSaccade] shared profile "
+            f"archetype={profile.archetype} "
+            f"focus={profile.spatial_phase_gate} "
+            f"grasp_w={self._grasp_fovea_weight:.2f} "
+            f"place_w={self._place_fovea_weight:.2f} "
+            f"delay={self._place_foveation_delay} "
+            f"min_grasp={self.saccade.min_grasp_steps} "
+            f"area=({self._grasp_max_area_ratio:.2f},{self._place_max_area_ratio:.2f})",
+            flush=True,
+        )
+
+    # ── Layer / norm discovery ─────────────────────────────────────────────
+
+    def _find_decoder_layers(self):
+        """
+        Return the decoder layer ModuleList from self.vla.
+        SpatialVLA (PaliGemma2 / Gemma2): model.language_model.model.layers
+        """
+        candidates = [
+            lambda m: m.language_model.model.layers,   # SpatialVLA (Gemma2)
+            lambda m: m.llm_backbone.llm.model.layers,  # OpenVLA (LLaMA)
+            lambda m: m.llm_backbone.model.layers,
+            lambda m: m.model.layers,
+        ]
+        for fn in candidates:
+            try:
+                layers = fn(self.vla)
+                if layers is not None and len(layers) > 0:
+                    return layers
+            except AttributeError:
+                continue
+        raise RuntimeError(
+            "[LatentSaccade] Cannot find decoder layers. "
+            "Tried: language_model.model.layers, llm_backbone.llm.model.layers, "
+            "llm_backbone.model.layers, model.layers"
+        )
+
+    def _find_layernorm(self, layer):
+        """Return the pre-attention RMSNorm of a decoder layer."""
+        for attr in ("input_layernorm", "ln_1", "layer_norm_1", "norm1"):
+            if hasattr(layer, attr):
+                return getattr(layer, attr)
+        raise RuntimeError(
+            f"[LatentSaccade] Cannot find input_layernorm in {type(layer).__name__}. "
+            f"Norm-like attrs: {[a for a in dir(layer) if 'norm' in a.lower() or 'ln' in a.lower()]}"
+        )
+
+    # ── Hook registration ──────────────────────────────────────────────────
+
+    def _register_postnorm_hooks(self):
+        """
+        Register persistent forward hooks on input_layernorm of every Gemma2
+        decoder layer.
+
+        Hook behaviour (post-RMSNorm variant, identical to UniVLA):
+          Prefill (seq_len > 1): multiply hidden_states by (seq_len,) weight.
+            - First num_patches positions → spatial weight from DINO bbox
+            - Remaining positions (BOS + text) → 1.0
+          AR steps (seq_len == 1): skip (KV cache active, position is fixed).
+
+        Positional assumption:
+          PaliGemma2 sequence layout is ALWAYS [img_tokens × N][BOS][text...].
+          Image tokens occupy positions 0 .. num_patches-1 in every forward pass.
+          This allows building the weight vector without scanning input_ids.
+        """
+        layers = self._find_decoder_layers()
+
+        for layer in layers:
+            ln = self._find_layernorm(layer)
+
+            def _make_hook(self_ref):
+                def _hook(module, inp, output):
+                    if not self_ref._enable_latent_mask:
+                        return output
+                    if self_ref._current_weight_1d is None:
+                        return output
+                    if output.shape[1] <= 1:   # skip AR generation steps
+                        return output
+
+                    seq_len = output.shape[1]
+                    n_vis = self_ref.num_patches
+
+                    # Build (seq_len,) weight: visual = weight_1d, rest = 1.0
+                    w_1d = self_ref._current_weight_1d.to(
+                        dtype=output.dtype, device=output.device
+                    )
+                    w = torch.ones(seq_len, dtype=output.dtype, device=output.device)
+                    n = min(n_vis, seq_len)
+                    w[:n] = w_1d[:n]
+
+                    return output * w.view(1, seq_len, 1)
+                return _hook
+
+            handle = ln.register_forward_hook(_make_hook(self))
+            self._ln_hook_handles.append(handle)
+
+        print(
+            f"[LatentSaccade] Registered post-RMSNorm hooks on "
+            f"{len(self._ln_hook_handles)} Gemma2 decoder layers  "
+            f"(num_patches={self.num_patches}, grid={self._grid_size}×{self._grid_size})"
+        )
+
+    # ── DINO detection ─────────────────────────────────────────────────────
+
+    def _get_bboxes(
+        self, image: np.ndarray
+    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray], float, float]:
+        """Returns (fovea_bbox, secondary_bbox, fovea_score, secondary_score)."""
+        if self._cache_step % self._dino_cache_steps == 0:
+            target = self.saccade.current_target
+            secondary = self.saccade.source_noun if self.saccade.state == "place" else None
+            thr = self._bbox_confidence_threshold
+
+            H, W = image.shape[:2]
+
+            max_area_ratio = (self._place_max_area_ratio if self.saccade.state == "place"
+                              else self._grasp_max_area_ratio)
+
+            def _area_ok(bbox):
+                # 전체화면 오탐 차단. 정상 basket 은 화면의 ~20% 이므로 통과,
+                # 전체화면 오탐(~85%) 은 거부.
+                if not self._enable_area_filter:
+                    return True
+                x1, y1, x2, y2 = bbox
+                ratio = ((x2 - x1) * (y2 - y1)) / (W * H)
+                if ratio > max_area_ratio:
+                    print(f"[DINO] bbox area {ratio:.1%} > {max_area_ratio:.0%} → rejected as false positive")
+                    return False
+                return True
+
+            if target:
+                dets = self.detector.detect(image, target)
+                dets = [(b, s) for b, s in dets if _area_ok(b)]
+                if dets and dets[0][1] >= thr:
+                    self._fovea_bbox_cache = dets[0][0]
+                    self._fovea_score_cache = float(dets[0][1])
+                    self._last_good_fovea = dets[0][0]
+                    self._last_good_fovea_score = float(dets[0][1])
+                elif dets:
+                    print(f"[DINO] low-conf ({dets[0][1]:.3f} < {thr}) → using cached bbox")
+                    self._fovea_bbox_cache = self._last_good_fovea
+                    self._fovea_score_cache = self._last_good_fovea_score
+                else:
+                    self._fovea_bbox_cache = self._last_good_fovea
+                    self._fovea_score_cache = self._last_good_fovea_score
+
+            if secondary and secondary != target:
+                dets = self.detector.detect(image, secondary)
+                dets = [(b, s) for b, s in dets if _area_ok(b)]
+                if dets and dets[0][1] >= thr:
+                    self._secondary_bbox_cache = dets[0][0]
+                    self._secondary_score_cache = float(dets[0][1])
+                    self._last_good_secondary = dets[0][0]
+                    self._last_good_secondary_score = float(dets[0][1])
+                else:
+                    self._secondary_bbox_cache = self._last_good_secondary
+                    self._secondary_score_cache = self._last_good_secondary_score
+            elif not secondary:
+                self._secondary_bbox_cache = None
+                self._secondary_score_cache = 0.0
+
+        self._cache_step += 1
+        return (
+            self._fovea_bbox_cache,
+            self._secondary_bbox_cache,
+            float(self._fovea_score_cache),
+            float(self._secondary_score_cache),
+        )
+
+    # ── Spatial weight map ─────────────────────────────────────────────────
+
+    def _build_weight_map(
+        self,
+        image: np.ndarray,
+        fovea_bbox: Optional[np.ndarray],
+        secondary_bbox: Optional[np.ndarray],
+    ) -> Optional[torch.Tensor]:
+        """
+        Build (num_patches,) spatial weight vector from detected bboxes.
+        image is the original (unresized) observation — used for H/W only.
+        Returns None if no bbox detected (disables masking for this step).
+        """
+        if fovea_bbox is None and secondary_bbox is None:
+            return None
+
+        H, W = image.shape[:2]
+        g = self._grid_size
+
+        grid = torch.full((g, g), self._bg_weight, dtype=torch.float32)
+
+        def _bbox_to_grid(bbox):
+            if bbox is None:
+                return None
+            x1, y1, x2, y2 = bbox
+            c1 = max(0, int(x1 / W * g) - self._bbox_margin)
+            r1 = max(0, int(y1 / H * g) - self._bbox_margin)
+            c2 = min(g, int(np.ceil(x2 / W * g)) + self._bbox_margin)
+            r2 = min(g, int(np.ceil(y2 / H * g)) + self._bbox_margin)
+            if r2 <= r1 or c2 <= c1:
+                return None
+            return r1, c1, r2, c2
+
+        sec_region = _bbox_to_grid(secondary_bbox)
+        if sec_region:
+            r1, c1, r2, c2 = sec_region
+            grid[r1:r2, c1:c2] = self._place_src_weight
+
+        # phase 별 fovea weight: grasp(약하게) / place(강하게)
+        fovea_w = (self._grasp_fovea_weight if self.saccade.state == "grasp"
+                   else self._place_fovea_weight)
+        fov_region = _bbox_to_grid(fovea_bbox)
+        if fov_region:
+            r1, c1, r2, c2 = fov_region
+            grid[r1:r2, c1:c2] = fovea_w
+
+        if self._dino_debug_dir is not None:
+            self._save_debug_image(image, fovea_bbox, secondary_bbox, grid)
+
+        return grid.view(-1)   # (num_patches,)
+
+    def _bbox_area_ratio(self, bbox: Optional[np.ndarray], image: np.ndarray) -> float:
+        if bbox is None:
+            return 0.0
+        h, w = image.shape[:2]
+        x1, y1, x2, y2 = bbox
+        return float(max(0.0, (x2 - x1) * (y2 - y1)) / float(max(h * w, 1)))
+
+    def _bbox_geometry(
+        self,
+        focus_bbox: Optional[np.ndarray],
+        context_bbox: Optional[np.ndarray],
+        image: np.ndarray,
+    ) -> Tuple[float, float, float]:
+        if focus_bbox is None or context_bbox is None:
+            return 0.0, 1.0, 0.0
+        h, w = image.shape[:2]
+        fx1, fy1, fx2, fy2 = focus_bbox
+        cx1, cy1, cx2, cy2 = context_bbox
+        fcx = 0.5 * (fx1 + fx2)
+        fcy = 0.5 * (fy1 + fy2)
+        ccx = 0.5 * (cx1 + cx2)
+        ccy = 0.5 * (cy1 + cy2)
+        dx = float((fcx - ccx) / float(max(w, 1)))
+        dy = float((fcy - ccy) / float(max(h, 1)))
+        ix1 = max(fx1, cx1)
+        iy1 = max(fy1, cy1)
+        ix2 = min(fx2, cx2)
+        iy2 = min(fy2, cy2)
+        inter = max(0.0, ix2 - ix1) * max(0.0, iy2 - iy1)
+        f_area = max(1.0, float((fx2 - fx1) * (fy2 - fy1)))
+        c_area = max(1.0, float((cx2 - cx1) * (cy2 - cy1)))
+        overlap = float(inter / max(f_area + c_area - inter, 1.0))
+        return max(0.0, dx), abs(dy), overlap
+
+    # ── Overridden step ────────────────────────────────────────────────────
+
+    def step(
+        self, image: np.ndarray, task_description: Optional[str] = None, *args, **kwargs
+    ) -> tuple[dict, dict]:
+        """
+        Latent Saccade step — identical to official SpatialVLAInference.step()
+        except that visual patch hidden states are spatially weighted during
+        the prefill forward pass inside predict_action().
+
+        Foveation is added via hooks registered in __init__; everything else
+        (image resize, image history, processor call with do_normalize=False,
+        predict_action + decode_actions, ActionEnsembler, gripper conversion)
+        is handled by super().step() without modification.
+
+        Returns:
+            raw_action: dict with 'world_vector', 'rotation_delta', 'open_gripper'
+            action:     dict with 'world_vector', 'rot_axangle', 'gripper',
+                        'terminate_episode'  — pass directly to env.step()
+        """
+        # ── 1. Sync saccade nouns when instruction changes ─────────────────
+        if task_description is not None and task_description != self._saccade_instruction:
+            self._saccade_instruction = task_description
+            src, dst = GroundingDINODetector.extract_source_dest_nouns(task_description)
+            self.saccade.source_noun = src
+            self.saccade.dest_noun = dst
+            self._apply_task_policy_profile(task_description)
+            print(f"[LatentSaccade] Instruction → src='{src}'  dst='{dst}'")
+
+        # ── 2. DINO detection on original image (before resize) ────────────
+        # 사용자 가설: grasp(잡을 물체)·place(놓을 곳) 양쪽 모두 target foveation.
+        # grasp 는 grasp_fovea_weight(1.15) 로 약하게 걸어 파지 방해 최소화.
+        # foveate_grasp=False 로 두면 grasp 를 끄고 place 단계만 적용(실험용).
+        # place 전환 직후 place_foveation_delay 스텝은 foveation 보류 →
+        # 물체를 완전히 들어올린(lift) 뒤에 basket 으로 attention 이동.
+        place_ready = (
+            self.saccade.state == "place"
+            and self.saccade._place_steps >= self._place_foveation_delay
+        )
+        phase_ready = self._enable_latent_mask and self._shared_task_profile.spatial_focus_enabled and (
+            (self._foveate_grasp and self.saccade.state == "grasp") or place_ready
+        )
+        if phase_ready:
+            fovea_bbox, secondary_bbox, fovea_score, secondary_score = self._get_bboxes(image)
+            source_area = self._bbox_area_ratio(
+                fovea_bbox if self.saccade.state == "grasp" else secondary_bbox,
+                image,
+            )
+            target_area = self._bbox_area_ratio(fovea_bbox, image)
+            focus_bbox = fovea_bbox
+            context_bbox = secondary_bbox
+            horiz_sep, vert_misalign, overlap = self._bbox_geometry(
+                focus_bbox,
+                context_bbox,
+                image,
+            )
+            if self._shared_task_profile.spatial_phase_gate == "always":
+                gate = {
+                    "enabled": bool(fovea_bbox is not None),
+                }
+                foveate_now = bool(fovea_bbox is not None)
+            else:
+                gate = phase_compact_focus_gate(
+                    phase=self.saccade.state,
+                    source_confidence=fovea_score if self.saccade.state == "grasp" else secondary_score,
+                    target_confidence=0.0 if self.saccade.state == "grasp" else fovea_score,
+                    source_area_ratio=source_area,
+                    target_area_ratio=target_area,
+                    horizontal_separation=horiz_sep,
+                    vertical_misalignment=vert_misalign,
+                    overlap_ratio=overlap,
+                    profile=self._shared_task_profile,
+                    state=self._compact_focus_state,
+                )
+                foveate_now = bool(gate["enabled"])
+            weight_1d = self._build_weight_map(image, fovea_bbox, secondary_bbox) if foveate_now else None
+        else:
+            fovea_bbox = secondary_bbox = None
+            fovea_score = secondary_score = 0.0
+            foveate_now = False
+            weight_1d = None
+
+        _fw = (self._grasp_fovea_weight if self.saccade.state == "grasp"
+               else self._place_fovea_weight)
+        n_fovea = int((weight_1d >= _fw).sum()) if weight_1d is not None else 0
+        n_src = (
+            int(((weight_1d >= self._place_src_weight) & (weight_1d < _fw)).sum())
+            if weight_1d is not None else 0
+        )
+        n_bg = int((weight_1d < self._place_src_weight).sum()) if weight_1d is not None else 0
+        print(
+            f"[LatentSaccade] phase={self.saccade.state}  "
+            f"target='{self.saccade.current_target}'  "
+            f"fovea={n_fovea}  src={n_src}  bg={n_bg}  "
+            f"fovea_bbox={fovea_bbox} "
+            f"focus={fovea_score:.3f} ctx={secondary_score:.3f} "
+            f"enabled={foveate_now}"
+        )
+
+        # ── 3. Activate hook weight, run official pipeline ─────────────────
+        # Note: super().step() may call self.reset(task_description) internally
+        # if the instruction changed (first call of each episode).  Our reset()
+        # does NOT clear _current_weight_1d so the hook remains active.
+        self._current_weight_1d = weight_1d
+        try:
+            raw_action, action = super().step(image, task_description, *args, **kwargs)
+        finally:
+            self._current_weight_1d = None   # always clear after generate()
+
+        # ── 4. Update saccade state from raw gripper output ────────────────
+        # raw_action["open_gripper"]: 0.0 = close, 1.0 = open (from tokenizer)
+        g = float(raw_action["open_gripper"])
+        print(
+            f"[LatentSaccade-dbg] g={g:.2f}  "
+            f"close_count={self.saccade._close_count}  "
+            f"grasp_steps={self.saccade._grasp_steps}",
+            flush=True,
+        )
+        transitioned = self.saccade.update(g)
+        if transitioned:
+            self._fovea_bbox_cache = None
+            self._secondary_bbox_cache = None
+            self._cache_step = 0
+            print("[LatentSaccade] State transition: grasp → place", flush=True)
+
+        return raw_action, action
+
+    # ── Overridden reset ───────────────────────────────────────────────────
+
+    def reset(self, task_description: str) -> None:
+        """Reset per-episode state. Delegates to official SpatialVLAInference.reset()."""
+        super().reset(task_description)
+        self.saccade.reset()
+        self._compact_focus_state.reset()
+        # _saccade_instruction reset to None so saccade nouns are re-extracted next step
+        self._saccade_instruction = None
+        # Do NOT clear _current_weight_1d here — managed by step()'s finally block.
+        # (super().step() may call this reset() mid-step; the weight must remain active.)
+        self._fovea_bbox_cache = None
+        self._secondary_bbox_cache = None
+        self._fovea_score_cache = 0.0
+        self._secondary_score_cache = 0.0
+        self._last_good_fovea = None
+        self._last_good_secondary = None
+        self._last_good_fovea_score = 0.0
+        self._last_good_secondary_score = 0.0
+        self._cache_step = 0
+
+    def __del__(self):
+        for handle in getattr(self, "_ln_hook_handles", []):
+            handle.remove()
+
+    # ── Debug helpers ──────────────────────────────────────────────────────
+
+    def _save_debug_image(self, image, fovea_bbox, secondary_bbox, grid):
+        """Save annotated debug image showing detected bboxes and weight grid."""
+        import os
+        from PIL import Image as PIL_Image, ImageDraw
+        os.makedirs(self._dino_debug_dir, exist_ok=True)
+        pil = PIL_Image.fromarray(image).copy()
+        draw = ImageDraw.Draw(pil)
+        if fovea_bbox is not None:
+            x1, y1, x2, y2 = fovea_bbox
+            draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+            draw.text((x1, y1 - 12), f"fovea (g{self._grasp_fovea_weight}/p{self._place_fovea_weight})", fill="red")
+        if secondary_bbox is not None:
+            x1, y1, x2, y2 = secondary_bbox
+            draw.rectangle([x1, y1, x2, y2], outline="blue", width=2)
+            draw.text((x1, y1 - 12), f"secondary ({self._place_src_weight})", fill="blue")
+        step_idx = self._cache_step
+        save_path = os.path.join(self._dino_debug_dir, f"step_{step_idx:05d}.png")
+        pil.save(save_path)

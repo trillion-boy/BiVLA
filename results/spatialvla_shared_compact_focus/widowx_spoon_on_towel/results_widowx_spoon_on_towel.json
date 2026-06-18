@@ -1,0 +1,219 @@
+{
+  "model": "SpatialVLA+LatentSaccade[OFF (baseline)]",
+  "task": "widowx_spoon_on_towel",
+  "enable_latent_mask": false,
+  "ood_no_overlay": false,
+  "ood_overlay_path": null,
+  "ood_brightness": 1.0,
+  "grasp_rate": 0.3333333333333333,
+  "success_rate": 0.16666666666666666,
+  "avg_steps": 55.875,
+  "config": {
+    "grasp_fovea_weight": 1.15,
+    "place_fovea_weight": 1.3,
+    "fovea_weight_override": null,
+    "bg_weight": 1.0,
+    "place_src_weight": 1.1,
+    "foveate_grasp": false,
+    "place_foveation_delay": 2,
+    "min_grasp_steps": 10,
+    "consec_close": 3,
+    "dino_cache_steps": 5,
+    "unnorm_key": "bridge_orig/1.0.0",
+    "policy_setup": "widowx_bridge"
+  },
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 25.32441544532776
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.36685609817505
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.316612005233765
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.353636264801025
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.250134706497192
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.342331647872925
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.18889546394348
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.32065439224243
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.307036638259888
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "grasped": true,
+      "success": true,
+      "steps": 32,
+      "elapsed": 13.053586483001709
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "grasped": true,
+      "success": true,
+      "steps": 44,
+      "elapsed": 17.867217779159546
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.315125703811646
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.305206060409546
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.351035356521606
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.35892653465271
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.46689200401306
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.384035110473633
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.244272708892822
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "grasped": true,
+      "success": true,
+      "steps": 38,
+      "elapsed": 15.451037883758545
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.22691535949707
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.272303104400635
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.314672708511353
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "grasped": true,
+      "success": true,
+      "steps": 27,
+      "elapsed": 10.994988918304443
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.47037363052368
+    }
+  ]
+}

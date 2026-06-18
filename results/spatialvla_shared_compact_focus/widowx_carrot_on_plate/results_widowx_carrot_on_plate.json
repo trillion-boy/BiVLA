@@ -1,0 +1,219 @@
+{
+  "model": "SpatialVLA+LatentSaccade[OFF (baseline)]",
+  "task": "widowx_carrot_on_plate",
+  "enable_latent_mask": false,
+  "ood_no_overlay": false,
+  "ood_overlay_path": null,
+  "ood_brightness": 1.0,
+  "grasp_rate": 0.4583333333333333,
+  "success_rate": 0.2916666666666667,
+  "avg_steps": 54.25,
+  "config": {
+    "grasp_fovea_weight": 1.15,
+    "place_fovea_weight": 1.3,
+    "fovea_weight_override": null,
+    "bg_weight": 1.0,
+    "place_src_weight": 1.1,
+    "foveate_grasp": false,
+    "place_foveation_delay": 2,
+    "min_grasp_steps": 10,
+    "consec_close": 3,
+    "dino_cache_steps": 5,
+    "unnorm_key": "bridge_orig/1.0.0",
+    "policy_setup": "widowx_bridge"
+  },
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "grasped": true,
+      "success": true,
+      "steps": 46,
+      "elapsed": 19.784843683242798
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.40040349960327
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "grasped": true,
+      "success": true,
+      "steps": 44,
+      "elapsed": 17.95689368247986
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.373608350753784
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "grasped": true,
+      "success": true,
+      "steps": 41,
+      "elapsed": 16.60346794128418
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.362910270690918
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.46342945098877
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.40157985687256
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.40540337562561
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "grasped": true,
+      "success": true,
+      "steps": 60,
+      "elapsed": 24.507460832595825
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.344510555267334
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.441728115081787
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.50443720817566
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "grasped": true,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.325005292892456
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "grasped": true,
+      "success": true,
+      "steps": 35,
+      "elapsed": 14.264154434204102
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.534270524978638
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.283769845962524
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.267088174819946
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.4102201461792
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.28499436378479
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "grasped": true,
+      "success": true,
+      "steps": 35,
+      "elapsed": 14.284589529037476
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.32982063293457
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "grasped": true,
+      "success": true,
+      "steps": 21,
+      "elapsed": 8.551486253738403
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "grasped": false,
+      "success": false,
+      "steps": 60,
+      "elapsed": 24.414908170700073
+    }
+  ]
+}
