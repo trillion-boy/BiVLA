@@ -37,6 +37,53 @@ The key design principle is not to force both backbones to use identical low-lev
 3. activate only the intervention that is appropriate for that archetype and phase
 4. preserve baseline behavior when intervention is not justified
 
+### Architecture
+
+The controller is a single independent module (`shared_unified_policy.py`). It reads the
+instruction, classifies the task, and decides *whether / when / how strongly* to intervene.
+The **same** profile is then applied to both frozen backbones, but each backbone realizes it
+through a different mechanism — UniVLA blurs the background and routes the episode, while
+SpatialVLA reweights visual tokens. The two backbones stay frozen and run independently.
+
+![BiVLA shared task-phase controller](docs/architecture.png)
+
+<details>
+<summary>Mermaid source (editable)</summary>
+
+```mermaid
+flowchart TD
+    I["Instruction<br/>(put carrot on plate)"] --> C
+
+    subgraph C["SHARED CONTROLLER — shared_unified_policy.py"]
+        direction TB
+        C1["(1) extract_source_dest_nouns()"] --> C2["(2) infer_task_archetype()<br/>stack / thin_tool / container_drop / planar_placement"]
+        C2 --> C3["(3) shared_task_policy_profile()<br/>focus on/off · weights · delay · gate thresholds"]
+        C3 --> C4["(4) phase_compact_focus_gate()<br/>per-step on/off (hysteresis)"]
+    end
+
+    C -->|same profile| U
+    C -->|same profile| S
+
+    subgraph U["UniVLA path (adaptive_sparse_vla)"]
+        direction TB
+        U1["univla_gate_* + compact_focus_gate"] --> U2["episode routing<br/>_layout_patch_gate"]
+        U2 --> U3["AutoGaze sparse frontend<br/>(background blur) + layer pruning"]
+        U3 --> U4["frozen UniVLA (Emu3)"]
+    end
+
+    subgraph S["SpatialVLA path (latent_saccade)"]
+        direction TB
+        S1["_apply_task_policy_profile<br/>(overwrite weights)"] --> S2["spatial_focus_enabled gate"]
+        S2 --> S3["latent foveation hook<br/>(reweight visual tokens)"]
+        S3 --> S4["frozen SpatialVLA (PaliGemma2)"]
+    end
+
+    U4 --> UA["action"]
+    S4 --> SA["action"]
+```
+
+</details>
+
 ## 2. Method
 
 ### 2.1 Shared Task-Phase Controller
