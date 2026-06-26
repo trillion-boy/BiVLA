@@ -547,7 +547,10 @@ class AutoGazeSelectorController:
             temporal_prior = _dilate_grid(self._prev_grid_mask, radius=1).astype(np.float32)
 
         phase = _goal_phase_hint(goal, phase_info)
-        if phase == "grasp":
+        # A-3b ablation: set env AUTOGAZE_PURE=1 to use pure AutoGaze saliency for
+        # ALL phases (drop the hand-crafted color/gripper/temporal/bridge priors).
+        # Default (unset) keeps the original hybrid behavior; grasp phase is always pure.
+        if os.environ.get("AUTOGAZE_PURE", "0") == "1" or phase == "grasp":
             return self._budget_grid_mask(autogaze_score, visible_ratio), autogaze_score
         if phase == "place":
             weights = {
