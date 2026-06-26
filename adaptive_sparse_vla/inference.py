@@ -462,6 +462,7 @@ class AutoGazeSelectorController:
         self._prev_score_map = None
         self._prev_source_score = None
         self._prev_target_score = None
+        self._last_gaze_ratio = None
 
     def _prepare_video(self, image: np.ndarray) -> torch.Tensor:
         batch = self.processor.preprocess([image], return_tensors="pt")
@@ -469,8 +470,12 @@ class AutoGazeSelectorController:
 
     def _score_gazing_mask(self, gaze_outputs: dict) -> np.ndarray:
         score_map = np.zeros((self.config.grid_size, self.config.grid_size), dtype=np.float32)
+        gazed = 0.0
+        tokens = 0.0
         for flat_mask in gaze_outputs["gazing_mask"]:
             mask_1d = flat_mask[0, -1].detach().float().cpu().numpy()
+            gazed += float((mask_1d > 0.5).sum())
+            tokens += float(mask_1d.size)
             side = int(round(math.sqrt(mask_1d.size)))
             if side * side != mask_1d.size:
                 continue
@@ -478,6 +483,8 @@ class AutoGazeSelectorController:
             score_map += _resize_score_map(
                 mask_2d, (self.config.grid_size, self.config.grid_size)
             )
+        # A-2 option A: AutoGaze's actual gazed fraction (used for adaptive budget).
+        self._last_gaze_ratio = (gazed / tokens) if tokens > 0 else None
         return score_map
 
     def _grid_score_from_pixel_score(self, pixel_score: np.ndarray) -> np.ndarray:
@@ -655,6 +662,15 @@ class AutoGazeSelectorController:
 
         score_map = self._score_gazing_mask(gaze_outputs)
         dynamic_ratio = self._visible_ratio_for_phase(goal, phase_info, visible_ratio)
+        # A-2 option A: let AutoGaze's adaptive gaze count flow through instead of the
+        # fixed budget (env AUTOGAZE_ADAPTIVE_BUDGET=1). Combined with adaptive stopping
+        # (SELECTOR_TASK_LOSS), this realizes the latency benefit that the fixed
+        # downstream budget would otherwise neutralize.
+        if os.environ.get("AUTOGAZE_ADAPTIVE_BUDGET", "0") == "1":
+            ar = getattr(self, "_last_gaze_ratio", None)
+            if ar is not None:
+                min_ratio = 1.0 / float(self.config.grid_size * self.config.grid_size)
+                dynamic_ratio = float(np.clip(ar, min_ratio, dynamic_ratio))
         grid_mask, blended_score = self._hybrid_grid_mask(
             score_map,
             image=image,
