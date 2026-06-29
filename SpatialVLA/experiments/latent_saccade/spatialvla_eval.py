@@ -162,6 +162,19 @@ def parse_args():
                    help="OOD: 다른 overlay 이미지 경로")
     p.add_argument("--brightness",   type=float, default=1.0,
                    help="OOD: 이미지 밝기 스케일 (1.0=정상)")
+
+    # ── ToMe (training-free SigLIP token merging) ──────────────────────────
+    p.add_argument("--tome", action="store_true", default=False,
+                   help="frozen SigLIP ViT 내부에서 ToMe 토큰 병합 (학습 없음, 끝에서 원래 토큰수로 복원)")
+    p.add_argument("--tome-r", type=int, default=8,
+                   help="레이어당 병합 토큰 수 (클수록 빠르고 근사 ↑)")
+    p.add_argument("--tome-layers", type=int, default=6,
+                   help="앞쪽 몇 개 encoder 레이어에서 병합할지")
+    p.add_argument("--tome-protect", default="none",
+                   choices=["none", "center"],
+                   help="중요 영역 보호 prior (center=중앙 정사각형 고해상도 유지)")
+    p.add_argument("--tome-protect-ratio", type=float, default=0.25,
+                   help="center 보호 시 고해상도 유지 패치 비율")
     return p.parse_args()
 
 
@@ -265,6 +278,27 @@ def main():
         flush=True,
     )
 
+    # ── Optional: ToMe token merging on the frozen SigLIP ViT ──────────────
+    if args.tome:
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../tome"))
+        from tome_siglip import apply_tome_to_siglip, center_protect_provider
+        base_model = getattr(policy, "vla", None) or getattr(policy, "model", None)
+        vision_tower = getattr(base_model, "vision_tower", None)
+        if vision_tower is None:
+            raise AttributeError(
+                "Could not locate SpatialVLA vision_tower (tried policy.vla / policy.model). "
+                "ToMe needs the SigLIP tower."
+            )
+        protect = None
+        if args.tome_protect == "center":
+            protect = center_protect_provider(args.tome_protect_ratio)
+        apply_tome_to_siglip(
+            vision_tower,
+            r=args.tome_r,
+            num_merge_layers=args.tome_layers,
+            protect_provider=protect,
+        )
+
     # ── Episode loop ───────────────────────────────────────────────────────
     base_ids = list(range(*task_cfg["obj_episode_range"]))
     ep_ids   = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
@@ -340,12 +374,18 @@ def main():
     gr      = n_grasp / len(results)
     sr      = n_ok    / len(results)
     tag     = "ON" if args.enable_latent_mask else "OFF (baseline)"
+    tome_tag = (f"ToMe r={args.tome_r}x{args.tome_layers} protect={args.tome_protect}"
+                if args.tome else "ToMe OFF")
+    total_steps = sum(r["steps"] for r in results)
+    total_time  = sum(r["elapsed"] for r in results)
+    ms_per_step = (total_time / total_steps * 1000.0) if total_steps else 0.0
     print(f"\n{'='*50}", flush=True)
-    print(f"  model:     SpatialVLA + LatentSaccade [{tag}]", flush=True)
+    print(f"  model:     SpatialVLA + LatentSaccade [{tag}] | {tome_tag}", flush=True)
     print(f"  task:      {args.task}", flush=True)
     print(f"  파지율:    {n_grasp}/{len(results)} = {gr:.1%}", flush=True)
     print(f"  성공률:    {n_ok}/{len(results)} = {sr:.1%}", flush=True)
     print(f"  평균 스텝: {np.mean([r['steps'] for r in results]):.0f}", flush=True)
+    print(f"  ms/step:   {ms_per_step:.1f}  (latency; lower=faster)", flush=True)
     print(f"{'='*50}", flush=True)
     for r in results:
         g_mark = "G+" if r["grasped"] else "G-"
@@ -362,6 +402,14 @@ def main():
         "grasp_rate": gr,
         "success_rate": sr,
         "avg_steps": float(np.mean([r["steps"] for r in results])),
+        "ms_per_step": float(ms_per_step),
+        "tome": {
+            "enabled": args.tome,
+            "r": args.tome_r,
+            "layers": args.tome_layers,
+            "protect": args.tome_protect,
+            "protect_ratio": args.tome_protect_ratio,
+        },
         "config": {
             "grasp_fovea_weight": args.grasp_fovea_weight,
             "place_fovea_weight": args.place_fovea_weight,
