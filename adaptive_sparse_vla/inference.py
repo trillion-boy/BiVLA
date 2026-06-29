@@ -904,6 +904,22 @@ class EmuVLAInference:
         self._fastv_enabled = False
         self._maybe_apply_fastv()
 
+        # Phase-adaptive depth controller (non-uniform depth over time).
+        self._depth_ctrl_enabled = os.environ.get("DEPTH_CTRL_ENABLE", "0") == "1"
+        self._depth_deep_count = int(os.environ.get("DEPTH_CTRL_DEEP", "2"))
+        self._depth_shallow_count = int(os.environ.get("DEPTH_CTRL_SHALLOW", "8"))
+        self._depth_close_steps = int(os.environ.get("DEPTH_CTRL_CLOSE_STEPS", "2"))
+        self._depth_state = "deep"
+        self._depth_ranking: List[int] = []
+        self._depth_ranking_ready = False
+        if self._depth_ctrl_enabled:
+            print(
+                f"[DepthCtrl] phase-adaptive depth: deep(prune {self._depth_deep_count}) "
+                f"until grasp, then shallow(prune {self._depth_shallow_count}); "
+                f"switch after {self._depth_close_steps} consecutive close steps.",
+                flush=True,
+            )
+
     def _maybe_apply_fastv(self) -> None:
         """Enable FastV visual-token pruning on the Emu3 LLM via env flags.
 
@@ -958,6 +974,13 @@ class EmuVLAInference:
         self.previous_gripper_action = None
         self._last_prepared_image = None
         self._last_action_plan = None
+        # Phase-adaptive depth: new episode starts deep and re-calibrates the
+        # redundancy ranking; restore any bypassed layers first.
+        if getattr(self, "_depth_ctrl_enabled", False):
+            self._depth_state = "deep"
+            self._depth_ranking_ready = False
+            self._depth_ranking = []
+            self._restore_llm_layers()
         while not self.vision_queue.empty():
             self.vision_queue.get()
         while not self.vision_gripper_queue.empty():
@@ -1134,12 +1157,13 @@ class EmuVLAInference:
                     break
         return tuple(sorted(selected))
 
-    def _maybe_calibrate_llm_pruning(self, final_inputs: BatchFeature) -> None:
-        if self._llm_pruning_ready or self.llm_prune_count <= 0:
-            return
+    def _compute_layer_importance(self, final_inputs: BatchFeature) -> Optional[List[float]]:
+        """One forward pass; per-layer importance = 1 - cos(layer input, layer
+        output). Low importance = the layer barely changes the representation =
+        redundant = safe to bypass."""
         layers = self._llm_decoder_layers()
         if layers is None or len(layers) == 0:
-            return
+            return None
         with torch.inference_mode():
             outputs = self.model.model(
                 input_ids=final_inputs.input_ids.to(self.device),
@@ -1150,17 +1174,60 @@ class EmuVLAInference:
             )
         hidden_states = outputs.hidden_states
         if hidden_states is None or len(hidden_states) < 2:
-            return
-        layer_inputs = hidden_states[:-1]
-        layer_outputs = hidden_states[1:]
+            return None
         importance_scores = []
-        for lhs, rhs in zip(layer_inputs, layer_outputs):
-            lhs_f = lhs.float()
-            rhs_f = rhs.float()
-            cos = torch.nn.functional.cosine_similarity(lhs_f, rhs_f, dim=-1)
+        for lhs, rhs in zip(hidden_states[:-1], hidden_states[1:]):
+            cos = torch.nn.functional.cosine_similarity(lhs.float(), rhs.float(), dim=-1)
             importance_scores.append(float(1.0 - cos.mean().item()))
-        selected = self._select_prune_layers(importance_scores)
-        self._apply_llm_pruning(selected)
+        return importance_scores
+
+    def _rank_prune_layers(self, importance_scores: Sequence[float]) -> List[int]:
+        """Full eligible layer list ordered by ascending importance (most
+        redundant first), gap-respecting first then filling the rest. Prefixes are
+        nested, so deep ⊂ shallow when the controller slices top-N."""
+        scores = np.asarray(importance_scores, dtype=np.float32)
+        num_layers = int(scores.shape[0])
+        start_idx = int(math.floor(np.clip(self.llm_prune_min_layer, 0.0, 1.0) * num_layers))
+        candidates = list(range(start_idx, num_layers)) or list(range(num_layers))
+        ranked = sorted(candidates, key=lambda idx: (float(scores[idx]), idx))
+        ordered: List[int] = []
+        for idx in ranked:  # gap-respecting greedy
+            if any(abs(idx - prev) <= self.llm_prune_min_gap for prev in ordered):
+                continue
+            ordered.append(idx)
+        for idx in ranked:  # fill the rest (allows adjacency) for high prune counts
+            if idx not in ordered:
+                ordered.append(idx)
+        return ordered
+
+    def _depth_apply_state(self) -> None:
+        if not self._depth_ranking:
+            return
+        count = (self._depth_deep_count if self._depth_state == "deep"
+                 else self._depth_shallow_count)
+        self._apply_llm_pruning(self._depth_ranking[:max(0, count)])
+
+    def _maybe_calibrate_llm_pruning(self, final_inputs: BatchFeature) -> None:
+        # Phase-adaptive depth controller: calibrate the redundancy ranking ONCE,
+        # then bypass top-N per phase (deep until grasp, shallow after).
+        if getattr(self, "_depth_ctrl_enabled", False):
+            if self._depth_ranking_ready:
+                return
+            importance = self._compute_layer_importance(final_inputs)
+            if importance is None:
+                return
+            self._depth_ranking = self._rank_prune_layers(importance)
+            self._depth_ranking_ready = True
+            self._depth_state = "deep"
+            self._depth_apply_state()
+            return
+
+        if self._llm_pruning_ready or self.llm_prune_count <= 0:
+            return
+        importance = self._compute_layer_importance(final_inputs)
+        if importance is None:
+            return
+        self._apply_llm_pruning(self._select_prune_layers(importance))
 
     def _generate_sequences(
         self,
@@ -1263,13 +1330,30 @@ class EmuVLAInference:
         self._last_action_plan = action.copy()
 
         res = [self.transform_action(action[[i], :]) for i in range(action.shape[0])]
+
+        # Phase-adaptive depth: one-way deep -> shallow once the gripper has been
+        # commanded closed for K consecutive steps (grasp confirmed). One-way means
+        # no oscillation; the precise approach+grasp keeps full depth, transport runs
+        # shallow. transform_action() above just updated self.close_gripper_num.
+        if (
+            getattr(self, "_depth_ctrl_enabled", False)
+            and self._depth_state == "deep"
+            and self._depth_ranking_ready
+            and self.close_gripper_num >= self._depth_close_steps
+        ):
+            self._depth_state = "shallow"
+            self._depth_apply_state()
+
         return [r[0] for r in res], [r[1] for r in res]
 
     def pruning_summary(self) -> dict:
-        return {
+        out = {
             "llm_prune_count": int(len(self._active_llm_prune_layers)),
             "llm_pruned_layers": list(self._active_llm_prune_layers),
         }
+        if getattr(self, "_depth_ctrl_enabled", False):
+            out["depth_state"] = self._depth_state
+        return out
 
     def unormalize_action(self, action: np.ndarray) -> np.ndarray:
         if self.policy_setup == "google_robot":

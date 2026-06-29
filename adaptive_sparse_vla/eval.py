@@ -511,6 +511,12 @@ def main():
             "k": int(os.environ.get("FASTV_K", "3")),
             "keep_ratio": float(os.environ.get("FASTV_KEEP_RATIO", "0.4")),
         },
+        "depth_ctrl": {
+            "enabled": os.environ.get("DEPTH_CTRL_ENABLE", "0") == "1",
+            "deep": int(os.environ.get("DEPTH_CTRL_DEEP", "2")),
+            "shallow": int(os.environ.get("DEPTH_CTRL_SHALLOW", "8")),
+            "close_steps": int(os.environ.get("DEPTH_CTRL_CLOSE_STEPS", "2")),
+        },
         "episodes": results,
     }
     if args.model_type in {"adaptive_sparse", "task_aware_hybrid", "shared_compact_focus", "uniform_refine", "uniform_geometry_sparse", "uniform_control_sparse"}:
@@ -654,6 +660,10 @@ def main():
           f"(pure inference latency; step-count independent)", flush=True)
     if summary["fastv"]["enabled"]:
         print(f"  fastv: K={summary['fastv']['k']} keep={summary['fastv']['keep_ratio']}", flush=True)
+    if summary["depth_ctrl"]["enabled"]:
+        dc = summary["depth_ctrl"]
+        print(f"  depth_ctrl: deep(prune {dc['deep']}) -> shallow(prune {dc['shallow']}) "
+              f"after {dc['close_steps']} close steps", flush=True)
     if args.model_type in {"adaptive_sparse", "task_aware_hybrid", "shared_compact_focus", "uniform_refine", "uniform_geometry_sparse", "uniform_control_sparse"}:
         print(
             f"  avg_selected_patches: {summary['patch_selector']['avg_selected_patch_count']:.1f}",
