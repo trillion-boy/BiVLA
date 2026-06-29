@@ -389,9 +389,12 @@ def main():
         phase_info = {}
         step = 0
         t0 = time.time()
+        model_time = 0.0
+        model_calls = 0
 
         while not (done or truncated) and step < task_cfg["max_episode_steps"]:
             raw_frame = image.copy()
+            _t_model = time.time()
             _, env_actions = model.step(
                 image,
                 instruction,
@@ -402,6 +405,8 @@ def main():
                     "task": args.task,
                 },
             )
+            model_time += time.time() - _t_model
+            model_calls += 1
             if args.save_video and step % 4 == 0:
                 frames.append(raw_frame)
                 prepared_frame = model.last_prepared_image()
@@ -428,8 +433,10 @@ def main():
                     break
         final_success = bool(final_info.get("success", False))
         elapsed = time.time() - t0
+        model_ms = (model_time / model_calls * 1000.0) if model_calls else 0.0
         status = "SUCCESS" if final_success else "FAIL"
-        print(f"   → {status}  ({step} steps, {elapsed:.1f}s)", flush=True)
+        print(f"   → {status}  ({step} steps, {elapsed:.1f}s, "
+              f"{model_ms:.0f} ms/infer)", flush=True)
 
         episode_result = {
             "ep": ep_count,
@@ -439,6 +446,7 @@ def main():
             "truncated": bool(truncated),
             "steps": step,
             "elapsed": elapsed,
+            "model_ms_per_infer": model_ms,
             "final_info": final_info,
         }
         if args.model_type != "baseline":
@@ -483,6 +491,14 @@ def main():
         "success_rate": sr,
         "avg_steps": float(np.mean([r["steps"] for r in results])),
         "avg_elapsed": float(np.mean([r["elapsed"] for r in results])),
+        "avg_model_ms_per_infer": float(
+            np.mean([r["model_ms_per_infer"] for r in results])
+        ),
+        "fastv": {
+            "enabled": os.environ.get("FASTV_ENABLE", "0") == "1",
+            "k": int(os.environ.get("FASTV_K", "3")),
+            "keep_ratio": float(os.environ.get("FASTV_KEEP_RATIO", "0.4")),
+        },
         "episodes": results,
     }
     if args.model_type in {"adaptive_sparse", "task_aware_hybrid", "shared_compact_focus", "uniform_refine", "uniform_geometry_sparse", "uniform_control_sparse"}:
@@ -622,6 +638,10 @@ def main():
     print(f"  success_rate: {n_ok}/{len(results)} = {sr:.1%}", flush=True)
     print(f"  avg_steps: {summary['avg_steps']:.0f}", flush=True)
     print(f"  avg_elapsed: {summary['avg_elapsed']:.1f}s", flush=True)
+    print(f"  avg_model_ms_per_infer: {summary['avg_model_ms_per_infer']:.0f} ms  "
+          f"(pure inference latency; step-count independent)", flush=True)
+    if summary["fastv"]["enabled"]:
+        print(f"  fastv: K={summary['fastv']['k']} keep={summary['fastv']['keep_ratio']}", flush=True)
     if args.model_type in {"adaptive_sparse", "task_aware_hybrid", "shared_compact_focus", "uniform_refine", "uniform_geometry_sparse", "uniform_control_sparse"}:
         print(
             f"  avg_selected_patches: {summary['patch_selector']['avg_selected_patch_count']:.1f}",
