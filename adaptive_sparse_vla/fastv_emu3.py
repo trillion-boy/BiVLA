@@ -124,6 +124,29 @@ def _causal_mask(q_len, kv_len, dtype, device):
 # --------------------------------------------------------------------------- #
 # The FastV-aware Emu3Model.forward                                            #
 # --------------------------------------------------------------------------- #
+def _patch_rope_full_table(base):
+    """Make every layer's rotary embedding return its full cached cos/sin table
+    (extending the cache if a longer seq is ever requested) rather than slicing to
+    seq_len, so apply_rotary_pos_emb can index by original (non-contiguous)
+    positions after pruning. Stored for restore in remove_fastv."""
+    base._fastv_patched_ropes = []
+    for layer in getattr(base, "layers", []):
+        attn = getattr(layer, "self_attn", None)
+        rot = getattr(attn, "rotary_emb", None) if attn is not None else None
+        if rot is None or getattr(rot, "_fastv_rope_patched", False):
+            continue
+        rot._fastv_orig_rope_forward = rot.forward
+
+        def _full_rope(x, seq_len=None, _rot=rot):
+            if seq_len is not None and seq_len > _rot.max_seq_len_cached:
+                _rot._set_cos_sin_cache(seq_len=seq_len, device=x.device, dtype=x.dtype)
+            return (_rot.cos_cached.to(dtype=x.dtype), _rot.sin_cached.to(dtype=x.dtype))
+
+        rot.forward = _full_rope
+        rot._fastv_rope_patched = True
+        base._fastv_patched_ropes.append(rot)
+
+
 def apply_fastv(model, k_layer: int = 3, keep_ratio: float = 0.4, verbose: bool = True):
     """Patch an Emu3 causal LM so its decoder stack prunes visual tokens after
     layer `k_layer`, keeping `keep_ratio` of them.
@@ -147,6 +170,11 @@ def apply_fastv(model, k_layer: int = 3, keep_ratio: float = 0.4, verbose: bool 
     base._fastv_keep_ratio = float(keep_ratio)
     model._fastv_visual_mask = None
     base._fastv_last_kept = None
+
+    # Patch RoPE so it returns its FULL precomputed table instead of slicing to the
+    # (now shorter) key length. This lets pruned tokens index by their ORIGINAL
+    # positions — transparent for unpruned layers (same position-absolute values).
+    _patch_rope_full_table(base)
 
     from transformers.modeling_outputs import BaseModelOutputWithPast
     try:
@@ -190,16 +218,17 @@ def apply_fastv(model, k_layer: int = 3, keep_ratio: float = 0.4, verbose: bool 
         hidden = self.dropout(inputs_embeds)
 
         # ============================ DECODE (q_len == 1) ====================
-        # Every layer attends to all of its OWN cached keys (lengths differ between
-        # the unpruned early layers and the pruned deep layers), so we pass mask=None
-        # and a per-layer position equal to that layer's current cache length.
+        # Kept tokens keep their ORIGINAL positions (see prefill), so the new token's
+        # absolute position is the same for every layer = the full sequence length so
+        # far (layer 0 is never pruned, so its cache length is that full length). Each
+        # layer attends to all of its own cached keys, so mask=None.
         if S == 1:
-            for li, layer in enumerate(self.layers):
-                try:
-                    cur = past_key_values.get_seq_length(li)
-                except Exception:
-                    cur = 0
-                pos = torch.tensor([[cur]], device=device, dtype=torch.long)
+            try:
+                abs_pos = past_key_values.get_seq_length(0)
+            except Exception:
+                abs_pos = 0
+            pos = torch.tensor([[abs_pos]], device=device, dtype=torch.long)
+            for layer in self.layers:
                 hidden = layer(
                     hidden, attention_mask=None, position_ids=pos,
                     past_key_value=past_key_values, output_attentions=False,
@@ -217,22 +246,23 @@ def apply_fastv(model, k_layer: int = 3, keep_ratio: float = 0.4, verbose: bool 
         full_pos = torch.arange(S, device=device)[None]
         kept_idx = None
 
+        cur_pos = full_pos
         for li, layer in enumerate(self.layers):
             if prune and li == K:
-                # FastV: score visual tokens by this layer's attention, drop the
-                # weak ones, and RE-INDEX the survivors to contiguous positions
-                # (Emu3's rotary is computed for exactly seq_len rows, so kept
-                # tokens must use 0..M-1 to stay in range).
+                # FastV: score visual tokens by this layer's attention and drop the
+                # weak ones. Survivors KEEP THEIR ORIGINAL positions (no re-indexing)
+                # so the model's learned spatial grounding is preserved — possible
+                # because we patch RoPE to expose its full precomputed table.
                 imp = _visual_importance(layer, hidden, full_pos, vmask)
                 kept_idx = _build_keep_index(imp, vmask, base._fastv_keep_ratio)
                 hidden = hidden.index_select(1, kept_idx)
+                cur_pos = full_pos.index_select(1, kept_idx)
                 base._fastv_last_kept = kept_idx
 
             m = hidden.shape[1]
             mask = _causal_mask(m, m, dtype, device)
-            pos = full_pos if kept_idx is None else torch.arange(m, device=device)[None]
             hidden = layer(
-                hidden, attention_mask=mask, position_ids=pos,
+                hidden, attention_mask=mask, position_ids=cur_pos,
                 past_key_value=past_key_values, output_attentions=False,
                 use_cache=True,
             )[0]
@@ -258,6 +288,12 @@ def remove_fastv(model):
         base.forward = base._fastv_orig_forward
         del base._fastv_orig_forward
         base._fastv_patched = False
+    for rot in getattr(base, "_fastv_patched_ropes", []):
+        if getattr(rot, "_fastv_rope_patched", False):
+            rot.forward = rot._fastv_orig_rope_forward
+            del rot._fastv_orig_rope_forward
+            rot._fastv_rope_patched = False
+    base._fastv_patched_ropes = []
     if hasattr(model, "_fastv_visual_mask"):
         model._fastv_visual_mask = None
     return model

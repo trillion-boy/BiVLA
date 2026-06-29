@@ -30,14 +30,20 @@ through every visual token at every layer and every decode step. FastV cuts that
    wall-clock savings.
 
 ### Correctness details (the parts that are easy to get wrong)
-- Emu3's rotary embedding is computed for exactly `seq_len` rows, so after
-  pruning the survivors are **re-indexed to contiguous positions `0..M-1`** to
-  stay in range (a standard FastV approximation).
+- **Survivors keep their ORIGINAL positions** (no re-indexing). Re-indexing kept
+  tokens to `0..M-1` destroys the model's learned spatial grounding — the action
+  tokens attend to specific grid offsets via RoPE, so renumbering makes them look
+  at the wrong place and the policy stops grasping (observed: 0% success). To keep
+  original positions we patch Emu3's rotary embedding to return its **full
+  precomputed cos/sin table** instead of slicing to the (shorter) key length, so
+  `cos[position_ids]` is valid for the original, non-contiguous positions. This is
+  transparent for unpruned layers (same position-absolute values).
 - After a pruned prefill the KV cache is **heterogeneous**: early layers hold `N`
-  entries, deep layers hold `M`. The patched forward therefore drives the decode
-  itself, giving every layer `attention_mask=None` and a per-layer position equal
-  to that layer's own cache length. (Delegating to the stock forward would build
-  one shared mask of the wrong width and crash.)
+  entries, deep layers hold `M`. The patched forward drives the decode itself,
+  giving every layer `attention_mask=None`. Because positions are kept original,
+  the new token's absolute position is the same for all layers (= layer 0's cache
+  length), so decode needs just one position id. (Delegating to the stock forward
+  would build one shared mask of the wrong width and crash.)
 - Pruning fires **only on the generation prefill** (`q_len > 1` with
   `use_cache`); decode and the no-cache layer-pruning calibration pass through.
 
