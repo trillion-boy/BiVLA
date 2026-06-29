@@ -352,6 +352,18 @@ def build_model(args):
 
 def main():
     args = parse_args()
+
+    # Env overrides for quick latency sweeps without editing the run script.
+    # LLM_PRUNE_COUNT bypasses N redundant decoder layers (cuts attention AND FFN,
+    # the real latency lever on UniVLA's FFN-bound decode). LLM_PRUNE_MIN_LAYER /
+    # LLM_PRUNE_MIN_GAP tune which layers are eligible.
+    if os.environ.get("LLM_PRUNE_COUNT"):
+        args.llm_prune_count = int(os.environ["LLM_PRUNE_COUNT"])
+    if os.environ.get("LLM_PRUNE_MIN_LAYER"):
+        args.llm_prune_min_layer = float(os.environ["LLM_PRUNE_MIN_LAYER"])
+    if os.environ.get("LLM_PRUNE_MIN_GAP"):
+        args.llm_prune_min_gap = int(os.environ["LLM_PRUNE_MIN_GAP"])
+
     os.makedirs(args.output_dir, exist_ok=True)
 
     task_cfg = TASK_CONFIGS[args.task]
