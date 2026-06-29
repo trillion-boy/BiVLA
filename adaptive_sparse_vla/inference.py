@@ -61,6 +61,10 @@ from shared_unified_policy import (
     compact_focus_gate,
     shared_task_policy_profile,
 )
+try:
+    from adaptive_sparse_vla.fastv_emu3 import apply_fastv, visual_mask_from_input_ids
+except Exception:  # when imported as a top-level package on sys.path
+    from fastv_emu3 import apply_fastv, visual_mask_from_input_ids
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
@@ -874,6 +878,27 @@ class EmuVLAInference:
         self.vision_gripper_queue = Queue(maxsize=self.window_size)
         self.action_queue = Queue(maxsize=self.window_size - 1)
 
+        self._fastv_enabled = False
+        self._maybe_apply_fastv()
+
+    def _maybe_apply_fastv(self) -> None:
+        """Enable FastV visual-token pruning on the Emu3 LLM via env flags.
+
+        FASTV_ENABLE=1            turn it on
+        FASTV_K (default 3)       prune after this many full layers
+        FASTV_KEEP_RATIO (0.4)    fraction of visual tokens kept past layer K
+        """
+        if os.environ.get("FASTV_ENABLE", "0") != "1":
+            return
+        try:
+            k = int(os.environ.get("FASTV_K", "3"))
+            keep = float(os.environ.get("FASTV_KEEP_RATIO", "0.4"))
+            apply_fastv(self.model, k_layer=k, keep_ratio=keep)
+            self._fastv_enabled = True
+        except Exception as exc:  # never break inference if patching fails
+            print(f"[FastV] disabled (patch failed: {exc})", flush=True)
+            self._fastv_enabled = False
+
     def add_image(self, image):
         if self.vision_queue.full():
             self.vision_queue.get()
@@ -1117,6 +1142,17 @@ class EmuVLAInference:
     ) -> Tuple[torch.Tensor, Optional[np.ndarray]]:
         num_return_sequences = max(1, int(num_return_sequences))
         num_beams = max(1, int(num_beams), num_return_sequences)
+
+        # FastV: mark the visual-token span so the patched Emu3 forward prunes it
+        # on this prefill. Set every step (the grid can change per frame).
+        if getattr(self, "_fastv_enabled", False):
+            try:
+                self.model._fastv_visual_mask = visual_mask_from_input_ids(
+                    final_inputs.input_ids, self.tokenizer
+                ).to(self.device)
+            except Exception:
+                self.model._fastv_visual_mask = None
+
         logits_processors = (
             [] if self._action_id_processor is None else [self._action_id_processor]
         )
