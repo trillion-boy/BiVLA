@@ -16,9 +16,9 @@ class UniversalActionProcessor(ProcessorMixin):
     def __init__(
         self,
         bpe_tokenizer: PreTrainedTokenizerFast,
-        scale: float = 10,
+        scale: float = 50,
         vocab_size: int = 1024,
-        min_token: int = 0,
+        min_token: int = -112,
         *,
         action_dim: int or None = None,
         time_horizon: int or None = None,
@@ -116,7 +116,7 @@ class UniversalActionProcessor(ProcessorMixin):
     def fit(
         cls,
         action_data,
-        scale: float = 10,
+        scale: float = 50,
         vocab_size: int = 1024,
         *,
         time_horizon: int or None = None,
