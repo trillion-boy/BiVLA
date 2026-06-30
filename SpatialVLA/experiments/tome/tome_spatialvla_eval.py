@@ -44,6 +44,8 @@ def parse_args():
     p.add_argument("--tome-layers", type=int, default=6)
     p.add_argument("--tome-protect", default="none", choices=["none", "center"])
     p.add_argument("--tome-protect-ratio", type=float, default=0.25)
+    p.add_argument("--temporal-stride", type=int, default=1,
+                   help="reuse SigLIP features for stride-1 steps (1 = off)")
     return p.parse_args()
 
 
@@ -70,6 +72,11 @@ def main():
         apply_tome_to_siglip(vision_tower, r=args.tome_r,
                              num_merge_layers=args.tome_layers, protect_provider=protect)
 
+    if args.temporal_stride > 1:
+        from temporal_cache import apply_temporal_cache, reset_temporal_cache
+        base_model = getattr(policy, "vla", None) or getattr(policy, "model", None)
+        apply_temporal_cache(base_model, stride=args.temporal_stride)
+
     base_ids = list(range(*cfg["obj_episode_range"]))
     ep_ids = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
     results = []
@@ -80,6 +87,9 @@ def main():
         instruction = env.get_language_instruction()
         image = get_image(env, obs, cam)
         policy.reset(instruction)
+        if args.temporal_stride > 1:
+            from temporal_cache import reset_temporal_cache
+            reset_temporal_cache(getattr(policy, "vla", None) or getattr(policy, "model", None))
         print(f"   instruction: {instruction}", flush=True)
 
         done = truncated = False
@@ -124,8 +134,12 @@ def main():
     gr = n_grasp / len(results)
     avg_ms = float(np.mean([r["model_ms_per_infer"] for r in results]))
     avg_steps = float(np.mean([r["steps"] for r in results]))
-    tag = (f"ToMe r={args.tome_r}x{args.tome_layers} protect={args.tome_protect}"
-           if args.tome else "baseline (no ToMe)")
+    parts = []
+    if args.tome:
+        parts.append(f"ToMe r={args.tome_r}x{args.tome_layers} protect={args.tome_protect}")
+    if args.temporal_stride > 1:
+        parts.append(f"temporal-stride={args.temporal_stride}")
+    tag = " + ".join(parts) if parts else "baseline (no ToMe)"
     print(f"\n{'='*50}")
     print(f"  SpatialVLA (official) | {tag}")
     print(f"  task:    {args.task}")
@@ -146,6 +160,7 @@ def main():
         "avg_model_ms_per_infer": avg_ms, "avg_steps": avg_steps,
         "tome": {"enabled": args.tome, "r": args.tome_r, "layers": args.tome_layers,
                  "protect": args.tome_protect},
+        "temporal_stride": args.temporal_stride,
         "episodes": results,
     }
     with open(os.path.join(args.output_dir, f"results_{args.task}.json"), "w") as f:

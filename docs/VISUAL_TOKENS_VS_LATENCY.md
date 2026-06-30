@@ -20,6 +20,24 @@ token-reduction mechanisms.
   **no** latency gain (836 → 844 ms).
 - UniVLA FastV barely moved latency while destroying success.
 
+## Measured per-step breakdown (SpatialVLA, profiler)
+
+Splitting one control step (CUDA-synced timing, avg over 25 steps):
+
+| stage | ms | share |
+|---|---|---|
+| encoding (SigLIP ViT) | 125 | 13.9% |
+| LLM prefill (read prompt once) | 60 | 6.6% |
+| **LLM decode (12 action tokens × 56 ms)** | **677** | **75.0%** |
+| env / python | 41 | 4.5% |
+| **total** | **903** | 100% |
+
+→ **Prefill-side ceiling (encoding + prefill) = 20.5%.** Any token-reduction or
+temporal-caching method can save *at most* ~20%, and realistically less. The
+decode is **75%** and only **LLM-depth reduction** shrinks it (it makes every one
+of the 12 sequential token-forwards cheaper). This is the quantitative reason
+ToMe netted 0.99×: it targeted the 14% ViT and the merge overhead cancelled it.
+
 ## Why — the cost is decode-bound, not vision-bound
 
 A manipulation step = encode one image (≈256 visual tokens) → **prefill** the
@@ -82,7 +100,7 @@ wall-clock (ms/infer), which exposes this gap.
 | ToMe (merge+restore) | spatial (ViT tokens) | SpatialVLA | maintained | none | OOD-safe, no latency |
 | layer pruning | **depth (LLM)** | UniVLA | maintained/↑ | **modest ↓** | works; selective per archetype |
 | Gemma2 depth pruning | depth (LLM) | SpatialVLA | (next) | (expected ↓) | planned |
-| temporal KV caching | temporal | both | — | (expected small) | saves prefill, not decode |
+| temporal caching | temporal | both | — | ≤20% ceiling (~7-14%) | saves encoding+prefill, not the 75% decode |
 
 *Artifacts: `docs/DEPTH_PRUNING_RESULTS.md`, `experiments/FastV_univla.md`,
 `experiments/DepthController_univla.md`, `SpatialVLA/experiments/tome/`,
