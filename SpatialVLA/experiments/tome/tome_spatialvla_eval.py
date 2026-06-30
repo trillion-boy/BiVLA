@@ -86,6 +86,7 @@ def main():
         step = 0
         model_time = 0.0
         model_calls = 0
+        grasped = False
         final_info = {}
         while not (done or truncated) and step < cfg["max_episode_steps"]:
             t0 = time.time()
@@ -98,6 +99,8 @@ def main():
             ])
             obs, _, done, truncated, info = env.step(env_action)
             final_info = info
+            if not grasped and isinstance(info, dict) and info.get("is_src_obj_grasped", False):
+                grasped = True
             image = get_image(env, obs, cam)
             new_instr = env.get_language_instruction()
             if new_instr != instruction:
@@ -106,27 +109,41 @@ def main():
             step += 1
 
         success = bool(final_info.get("success", done))
+        grasped = grasped or bool(final_info.get("ever_grasped_src", False))
         model_ms = (model_time / model_calls * 1000.0) if model_calls else 0.0
-        print(f"   → {'SUCCESS' if success else 'FAIL'}  ({step} steps, {model_ms:.0f} ms/infer)", flush=True)
+        g_mark = "G+" if grasped else "G-"
+        print(f"   → {g_mark} {'SUCCESS' if success else 'FAIL'}  "
+              f"({step} steps, {model_ms:.0f} ms/infer)", flush=True)
         results.append({"ep": ep_count, "ep_id": ep_id, "success": success,
-                        "steps": step, "model_ms_per_infer": model_ms})
+                        "grasped": grasped, "steps": step, "model_ms_per_infer": model_ms})
         env.close()
 
     n_ok = sum(r["success"] for r in results)
+    n_grasp = sum(r["grasped"] for r in results)
     sr = n_ok / len(results)
+    gr = n_grasp / len(results)
     avg_ms = float(np.mean([r["model_ms_per_infer"] for r in results]))
+    avg_steps = float(np.mean([r["steps"] for r in results]))
     tag = (f"ToMe r={args.tome_r}x{args.tome_layers} protect={args.tome_protect}"
            if args.tome else "baseline (no ToMe)")
     print(f"\n{'='*50}")
     print(f"  SpatialVLA (official) | {tag}")
-    print(f"  task: {args.task}")
-    print(f"  success_rate: {n_ok}/{len(results)} = {sr:.1%}")
-    print(f"  avg_model_ms_per_infer: {avg_ms:.0f} ms")
-    print(f"{'='*50}", flush=True)
+    print(f"  task:    {args.task}")
+    print(f"  파지율:  {n_grasp}/{len(results)} = {gr:.1%}")
+    print(f"  성공률:  {n_ok}/{len(results)} = {sr:.1%}")
+    print(f"  평균스텝: {avg_steps:.0f}")
+    print(f"  ms/infer: {avg_ms:.0f}  (latency; lower=faster)")
+    print(f"{'='*50}")
+    for r in results:
+        gm = "G+" if r["grasped"] else "G-"
+        sm = "OK" if r["success"] else "--"
+        print(f"  {sm}{gm} ep{r['ep']:02d} (id={r['ep_id']}): {r['steps']} steps")
+    print("", flush=True)
 
     summary = {
         "model": "SpatialVLA-official", "task": args.task,
-        "success_rate": sr, "avg_model_ms_per_infer": avg_ms,
+        "success_rate": sr, "grasp_rate": gr,
+        "avg_model_ms_per_infer": avg_ms, "avg_steps": avg_steps,
         "tome": {"enabled": args.tome, "r": args.tome_r, "layers": args.tome_layers,
                  "protect": args.tome_protect},
         "episodes": results,
