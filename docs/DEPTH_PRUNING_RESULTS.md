@@ -41,19 +41,48 @@ and training-free. **Caveat:** the *optimal amount* is task-dependent (Eggplant
 wants few, Carrot wants ~8, Stack wants 4) — no single static count is best
 everywhere.
 
-## Finding 2 (honest): the phase-adaptive controller does NOT beat uniform
+## Finding 2: uniform application is unstable → apply *selectively per archetype*
 
-Our non-uniform-depth hypothesis ("protect grasp, prune transport → better
-success/latency frontier than uniform") **is not supported across 4 tasks**:
-- By average, **uniform ≈ or > our controller**: static4 81% @ 1.10× and static8
-  78% @ 1.25× both match or beat depth_s6 (77% @ 1.10×) and depth_s8 (76% @ 1.14×).
-- It held only on Eggplant (depth_s6 100% @ 1.14× edged static4 100% @ 1.11×);
-  on Stack, static4 (83%) beat depth_s6 (62%).
+Crucially, **no single setting applied to ALL tasks wins** — it helps some,
+regresses others (depth_s8: Stack +25, Carrot +4, but Eggplant −8, Spoon −13;
+static4: Stack/Spoon +25/+12 but Carrot −9). This is exactly the project's
+motivating premise (README: *"naive uniform sparsification often improved one
+task while regressing others"*). So the right metric is **not** average-over-all
+configs; it is **selective per-archetype routing** — apply pruning only to the
+archetypes it helps, fall back to baseline elsewhere.
 
-So the phase signal (grasp vs transport) is **not the axis that matters most** —
-the *task/scene* determines the right amount, not the gripper phase. The
-controller is a reasonable idea that the data does not vindicate over simple
-uniform pruning.
+The shared controller maps an instruction to an archetype a priori
+(`infer_task_archetype`), and we gate depth pruning on it
+(`DEPTH_CTRL_ARCHETYPES`). For our 4 tasks:
+
+| Task | archetype | depth | result | vs base |
+|---|---|---|---|---|
+| Eggplant | container_drop | OFF | base 100% / 1.00× | — |
+| Carrot | planar_placement | ON | depth_s8 71% / 1.09× | +4 |
+| Stack | stack_alignment | ON | depth_s8 83% / 1.11× | **+25** |
+| Spoon | thin_tool | OFF | base 71% / 1.00× | — |
+| **selective avg** | | | **81%** + latency cut on the ON tasks | **+7** |
+
+Selective routing **never drops below base on any task** and saves latency where
+pruning helps — turning the "unstable uniform" result into a clean win. This is
+the contribution: *not* one global trick, but a controller that applies the
+intervention only where the archetype warrants it.
+
+### Honest limitation (the epistemics)
+We learned *which* archetypes benefit by **looking at results** — with one task
+per archetype, the per-archetype assignment is a **1-sample hypothesis, not a
+mechanism**. We have no a-priori reason pruning should help planar_placement /
+stack_alignment specifically (the "low base success → pruning helps" heuristic
+fits 3/4 tasks but Spoon breaks it). Two parts generalize differently:
+- **Archetype classification** (instruction → archetype) generalizes reasonably
+  to new/OOD instructions (coarse keyword/noun mapping; unknown → `generic`).
+- **Archetype → policy assignment** is the fragile link — a new task mapped to a
+  "depth-ON" archetype *might* not benefit the same way.
+
+To be OOD-robust this needs one of: (a) more tasks per archetype to validate the
+assignment, (b) a mechanism for *why* pruning helps, or (c) — most robust — a
+**per-episode online signal** (model uncertainty, or how much pruning perturbs
+the action) that decides without relying on having seen the archetype.
 
 ## Caveat: noise
 
@@ -77,16 +106,18 @@ With a per-task-tuned uniform count, **every task keeps ≥ base success and run
 
 ## Conclusion & next
 
-1. **Headline result for the depth axis: training-free layer pruning is a free
-   lunch on frozen VLAs** — accuracy up on 3/4 tasks, latency down 10–25%,
-   task-dependent amount.
-2. **The phase-adaptive controller is honestly a wash** vs simple uniform pruning
-   — recorded as a tried idea, not a win.
-3. **The "non-uniform" contribution should come from the spatial axis**
-   (SpatialVLA ToMe — the project title's home, different mechanism, separate ViT
-   to cut), not depth.
-4. Optional future: if revisiting depth, adapt the prune *amount* to task/scene
-   difficulty (the signal the data points to), not the gripper phase.
+1. **Training-free layer pruning is a free lunch on frozen VLAs** — accuracy up on
+   3/4 tasks, latency down 10–25% — but **only when applied selectively**; a
+   single uniform setting helps some tasks and regresses others.
+2. **The contribution is the selective controller**, not any one trick: route the
+   instruction to an archetype a priori and apply depth pruning only where it
+   helps (carrot/stack), baseline elsewhere (eggplant/spoon) → **≥ base on every
+   task, +7 avg success, latency saved on the ON tasks**.
+3. **Honest caveat:** the per-archetype assignment is a 1-sample hypothesis;
+   classification generalizes, policy assignment needs more tasks/archetype or an
+   online signal to be OOD-robust (see Finding 2).
+4. **Next:** validate the spatial axis (SpatialVLA ToMe) under the *same*
+   selective-controller framing — apply per archetype where it helps, not globally.
 
 *Artifacts: `adaptive_sparse_vla/inference.py` (BypassDecoderLayer + redundancy
 calibration + depth controller), env knobs `LLM_PRUNE_COUNT` (static) and

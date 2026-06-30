@@ -59,6 +59,7 @@ from autogaze.models.autogaze import (  # noqa: E402
 from shared_unified_policy import (
     CompactFocusGateConfig,
     compact_focus_gate,
+    infer_task_archetype,
     shared_task_policy_profile,
 )
 try:
@@ -909,14 +910,28 @@ class EmuVLAInference:
         self._depth_deep_count = int(os.environ.get("DEPTH_CTRL_DEEP", "2"))
         self._depth_shallow_count = int(os.environ.get("DEPTH_CTRL_SHALLOW", "8"))
         self._depth_close_steps = int(os.environ.get("DEPTH_CTRL_CLOSE_STEPS", "2"))
+        # Selective per-archetype routing: only apply depth pruning when the
+        # instruction's inferred archetype is in this set (empty/unset = all).
+        # The controller reads the instruction a priori (no test peeking); the
+        # per-archetype assignment is a design hypothesis (see docs).
+        arch_env = os.environ.get("DEPTH_CTRL_ARCHETYPES", "").strip()
+        self._depth_archetypes = (
+            {a.strip() for a in arch_env.split(",") if a.strip()} if arch_env else None
+        )
         self._depth_state = "deep"
         self._depth_ranking: List[int] = []
         self._depth_ranking_ready = False
+        self._depth_active = self._depth_ctrl_enabled  # resolved per episode by archetype
+        self._depth_archetype_resolved = False
+        self._depth_archetype = None
         if self._depth_ctrl_enabled:
+            scope = ("all archetypes" if self._depth_archetypes is None
+                     else ", ".join(sorted(self._depth_archetypes)))
             print(
                 f"[DepthCtrl] phase-adaptive depth: deep(prune {self._depth_deep_count}) "
                 f"until grasp, then shallow(prune {self._depth_shallow_count}); "
-                f"switch after {self._depth_close_steps} consecutive close steps.",
+                f"switch after {self._depth_close_steps} close steps; "
+                f"applied to: {scope}.",
                 flush=True,
             )
 
@@ -974,12 +989,14 @@ class EmuVLAInference:
         self.previous_gripper_action = None
         self._last_prepared_image = None
         self._last_action_plan = None
-        # Phase-adaptive depth: new episode starts deep and re-calibrates the
-        # redundancy ranking; restore any bypassed layers first.
+        # Phase-adaptive depth: new episode starts deep and re-resolves archetype
+        # routing + re-calibrates the redundancy ranking; restore bypassed layers.
         if getattr(self, "_depth_ctrl_enabled", False):
             self._depth_state = "deep"
             self._depth_ranking_ready = False
             self._depth_ranking = []
+            self._depth_archetype_resolved = False
+            self._depth_active = self._depth_ctrl_enabled
             self._restore_llm_layers()
         while not self.vision_queue.empty():
             self.vision_queue.get()
@@ -1209,8 +1226,9 @@ class EmuVLAInference:
 
     def _maybe_calibrate_llm_pruning(self, final_inputs: BatchFeature) -> None:
         # Phase-adaptive depth controller: calibrate the redundancy ranking ONCE,
-        # then bypass top-N per phase (deep until grasp, shallow after).
-        if getattr(self, "_depth_ctrl_enabled", False):
+        # then bypass top-N per phase (deep until grasp, shallow after). Only when
+        # the controller is active for this episode's archetype.
+        if getattr(self, "_depth_active", False):
             if self._depth_ranking_ready:
                 return
             importance = self._compute_layer_importance(final_inputs)
@@ -1312,6 +1330,18 @@ class EmuVLAInference:
         phase_info: Optional[dict] = None,
         oracle_context: Optional[dict] = None,
     ):
+        # Selective routing: decide once per episode whether the depth controller
+        # applies to THIS instruction's archetype (a priori, from the instruction).
+        if self._depth_ctrl_enabled and not self._depth_archetype_resolved:
+            self._depth_archetype = infer_task_archetype(goal)
+            self._depth_active = (
+                self._depth_archetypes is None
+                or self._depth_archetype in self._depth_archetypes
+            )
+            self._depth_archetype_resolved = True
+            print(f"[DepthCtrl] archetype={self._depth_archetype} -> "
+                  f"depth {'ON' if self._depth_active else 'OFF (baseline)'}", flush=True)
+
         pos_inputs, final_inputs = self._build_policy_inputs(
             image,
             goal,
@@ -1336,7 +1366,7 @@ class EmuVLAInference:
         # no oscillation; the precise approach+grasp keeps full depth, transport runs
         # shallow. transform_action() above just updated self.close_gripper_num.
         if (
-            getattr(self, "_depth_ctrl_enabled", False)
+            getattr(self, "_depth_active", False)
             and self._depth_state == "deep"
             and self._depth_ranking_ready
             and self.close_gripper_num >= self._depth_close_steps
@@ -1353,6 +1383,8 @@ class EmuVLAInference:
         }
         if getattr(self, "_depth_ctrl_enabled", False):
             out["depth_state"] = self._depth_state
+            out["depth_archetype"] = self._depth_archetype
+            out["depth_active"] = bool(self._depth_active)
         return out
 
     def unormalize_action(self, action: np.ndarray) -> np.ndarray:

@@ -516,6 +516,7 @@ def main():
             "deep": int(os.environ.get("DEPTH_CTRL_DEEP", "2")),
             "shallow": int(os.environ.get("DEPTH_CTRL_SHALLOW", "8")),
             "close_steps": int(os.environ.get("DEPTH_CTRL_CLOSE_STEPS", "2")),
+            "archetypes": os.environ.get("DEPTH_CTRL_ARCHETYPES", "") or "all",
         },
         "episodes": results,
     }
