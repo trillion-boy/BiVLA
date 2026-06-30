@@ -788,14 +788,15 @@ class LatentSaccadeSpatialVLAInference(SpatialVLAInference):
             if weight_1d is not None else 0
         )
         n_bg = int((weight_1d < self._place_src_weight).sum()) if weight_1d is not None else 0
-        print(
-            f"[LatentSaccade] phase={self.saccade.state}  "
-            f"target='{self.saccade.current_target}'  "
-            f"fovea={n_fovea}  src={n_src}  bg={n_bg}  "
-            f"fovea_bbox={fovea_bbox} "
-            f"focus={fovea_score:.3f} ctx={secondary_score:.3f} "
-            f"enabled={foveate_now}"
-        )
+        if os.environ.get("LS_VERBOSE", "0") == "1":
+            print(
+                f"[LatentSaccade] phase={self.saccade.state}  "
+                f"target='{self.saccade.current_target}'  "
+                f"fovea={n_fovea}  src={n_src}  bg={n_bg}  "
+                f"fovea_bbox={fovea_bbox} "
+                f"focus={fovea_score:.3f} ctx={secondary_score:.3f} "
+                f"enabled={foveate_now}"
+            )
 
         # ── 3. Activate hook weight, run official pipeline ─────────────────
         # Note: super().step() may call self.reset(task_description) internally
@@ -810,12 +811,13 @@ class LatentSaccadeSpatialVLAInference(SpatialVLAInference):
         # ── 4. Update saccade state from raw gripper output ────────────────
         # raw_action["open_gripper"]: 0.0 = close, 1.0 = open (from tokenizer)
         g = float(raw_action["open_gripper"])
-        print(
-            f"[LatentSaccade-dbg] g={g:.2f}  "
-            f"close_count={self.saccade._close_count}  "
-            f"grasp_steps={self.saccade._grasp_steps}",
-            flush=True,
-        )
+        if os.environ.get("LS_VERBOSE", "0") == "1":
+            print(
+                f"[LatentSaccade-dbg] g={g:.2f}  "
+                f"close_count={self.saccade._close_count}  "
+                f"grasp_steps={self.saccade._grasp_steps}",
+                flush=True,
+            )
         transitioned = self.saccade.update(g)
         if transitioned:
             self._fovea_bbox_cache = None
