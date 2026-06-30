@@ -10,10 +10,18 @@ token-reduction mechanisms.
 
 ## Evidence (measured, N=24, pure model-inference ms)
 
-| Method | Backbone | Where it cuts visual tokens | Success | Latency |
+| Method | Backbone | What it does to the visual path | Success | Latency |
 |---|---|---|---|---|
-| **FastV** | UniVLA/Emu3 | inside the LLM (drop low-attention) | **collapses** (100→75→38%) | ~1.0× (flat) |
-| **ToMe** | SpatialVLA/SigLIP | inside the ViT, merge + restore | **maintained** (67% = baseline; grasp 88→92%) | **0.99×** (none) |
+| **FastV** | UniVLA/Emu3 | drop low-attention visual tokens in the LLM | **collapses** (100→75→38%) | ~1.0× (flat) |
+| **ToMe** | SpatialVLA/SigLIP | merge ViT tokens + restore count | **maintained** (67% = baseline; grasp 88→92%) | **0.99×** (none) |
+| **Temporal cache (stride 2)** | SpatialVLA | reuse SigLIP features every other step | **maintained** (71% ≈ 67%; grasp 83%) | **1.04×** (~4%) |
+| **Temporal cache (stride 3)** | SpatialVLA | reuse SigLIP features 2 of 3 steps | **collapses** (54%; grasp 67%) | 1.05× |
+
+Temporal caching (stride 2) is the **only** visual-side method that moved latency
+at all — and only ~4%, realizing a small slice of the 20.5% prefill-side ceiling
+(stride 3's extra latency gain is negligible while success collapses from stale
+features). This confirms the ceiling empirically: visual-side methods top out at a
+few percent; the decode is untouched.
 
 - SpatialVLA baseline reproduced the prior report exactly (eggplant 87.5% grasp /
   66.7% success), confirming a correct setup; ToMe held success at 66.7% with
@@ -100,7 +108,7 @@ wall-clock (ms/infer), which exposes this gap.
 | ToMe (merge+restore) | spatial (ViT tokens) | SpatialVLA | maintained | none | OOD-safe, no latency |
 | layer pruning | **depth (LLM)** | UniVLA | maintained/↑ | **modest ↓** | works; selective per archetype |
 | Gemma2 depth pruning | depth (LLM) | SpatialVLA | (next) | (expected ↓) | planned |
-| temporal caching | temporal | both | — | ≤20% ceiling (~7-14%) | saves encoding+prefill, not the 75% decode |
+| temporal caching (stride 2) | temporal | SpatialVLA | maintained (71%) | **~4% ↓** (1.04×) | best visual-side latency, still modest |
 
 *Artifacts: `docs/DEPTH_PRUNING_RESULTS.md`, `experiments/FastV_univla.md`,
 `experiments/DepthController_univla.md`, `SpatialVLA/experiments/tome/`,
