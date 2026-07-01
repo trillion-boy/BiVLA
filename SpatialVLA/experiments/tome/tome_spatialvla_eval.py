@@ -46,6 +46,10 @@ def parse_args():
     p.add_argument("--tome-protect-ratio", type=float, default=0.25)
     p.add_argument("--temporal-stride", type=int, default=1,
                    help="reuse SigLIP features for stride-1 steps (1 = off)")
+    p.add_argument("--depth-prune", type=int, default=0,
+                   help="bypass N most-redundant Gemma2 decoder layers (0 = off)")
+    p.add_argument("--depth-prune-min-layer", type=int, default=2,
+                   help="protect the first M layers from pruning")
     return p.parse_args()
 
 
@@ -77,9 +81,21 @@ def main():
         base_model = getattr(policy, "vla", None) or getattr(policy, "model", None)
         apply_temporal_cache(base_model, stride=args.temporal_stride)
 
+    pruner = None
+    if args.depth_prune > 0:
+        from depth_prune_gemma2 import DepthPruner
+        base_model = getattr(policy, "vla", None) or getattr(policy, "model", None)
+        pruner = DepthPruner(base_model.language_model)
+        print(f"[DepthPrune] Gemma2 has {pruner.n} decoder layers; "
+              f"will bypass {args.depth_prune} most-redundant (calibrate on step 0).",
+              flush=True)
+
     base_ids = list(range(*cfg["obj_episode_range"]))
     ep_ids = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
     results = []
+    calibrated = False
+    if pruner is not None:
+        pruner.install_calibration_hooks()
 
     for ep_count, ep_id in enumerate(ep_ids):
         print(f"\n── ep {ep_count:02d} (env_id={ep_id}) ──", flush=True)
@@ -103,6 +119,12 @@ def main():
             raw_action, action = policy.step(image, instruction)
             model_time += time.time() - t0
             model_calls += 1
+            if pruner is not None and not calibrated:
+                pruner.finalize_calibration()
+                bypassed = pruner.apply(args.depth_prune, args.depth_prune_min_layer)
+                print(f"[DepthPrune] calibrated; bypassing layers {bypassed} "
+                      f"(ranking top: {pruner.ranking[:6]})", flush=True)
+                calibrated = True
             env_action = np.concatenate([
                 action["world_vector"], action["rot_axangle"],
                 np.atleast_1d(action["gripper"]),
@@ -139,6 +161,8 @@ def main():
         parts.append(f"ToMe r={args.tome_r}x{args.tome_layers} protect={args.tome_protect}")
     if args.temporal_stride > 1:
         parts.append(f"temporal-stride={args.temporal_stride}")
+    if args.depth_prune > 0 and pruner is not None:
+        parts.append(f"depth-prune={args.depth_prune} (layers {pruner.pruned})")
     tag = " + ".join(parts) if parts else "baseline (no ToMe)"
     print(f"\n{'='*50}")
     print(f"  SpatialVLA (official) | {tag}")
@@ -161,6 +185,9 @@ def main():
         "tome": {"enabled": args.tome, "r": args.tome_r, "layers": args.tome_layers,
                  "protect": args.tome_protect},
         "temporal_stride": args.temporal_stride,
+        "depth_prune": ({"count": args.depth_prune, "min_layer": args.depth_prune_min_layer,
+                         "pruned": pruner.pruned, "ranking": pruner.ranking}
+                        if pruner is not None else {"count": 0}),
         "episodes": results,
     }
     with open(os.path.join(args.output_dir, f"results_{args.task}.json"), "w") as f:
