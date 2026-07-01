@@ -146,6 +146,8 @@ def parse_args():
     p.add_argument("--fast-path", required=True)
     p.add_argument("--task", default="widowx_put_eggplant_in_basket")
     p.add_argument("--n-episodes", type=int, default=10)
+    p.add_argument("--profile-steps", type=int, default=0,
+                   help="if >0, profile encoding/prefill/decode for N steps and exit")
     p.add_argument(
         "--episode-ids",
         default="",
@@ -218,6 +220,76 @@ def parse_args():
     p.add_argument("--rerank-temporal-weight", type=float, default=0.35)
     p.add_argument("--rerank-smoothness-weight", type=float, default=0.15)
     return p.parse_args()
+
+
+def profile_latency(model, cfg, cam_name, n_steps):
+    """Split one UniVLA control step into VQ-encoding / LLM-prefill / LLM-decode,
+    to test whether the decode dominates (as it does on SpatialVLA). Wraps
+    image_tokenizer.encode (encoding) and the Emu3 decoder forward (prefill when
+    q_len>1, decode when q_len==1)."""
+    import time
+    cuda = torch.cuda.is_available()
+    def sync():
+        if cuda:
+            torch.cuda.synchronize()
+    enc, prefill, decode = [], [], []
+
+    tok = model.image_tokenizer
+    orig_enc = tok.encode
+    def timed_enc(*a, **k):
+        sync(); t = time.time(); out = orig_enc(*a, **k); sync(); enc.append(time.time() - t)
+        return out
+    tok.encode = timed_enc
+
+    emu = model.model.model  # Emu3Model (decoder stack)
+    orig_fwd = emu.forward
+    def timed_fwd(*a, **k):
+        ii = k.get("input_ids", None); ie = k.get("inputs_embeds", None)
+        q = (ie.shape[1] if ie is not None else (ii.shape[1] if ii is not None
+             else (a[0].shape[1] if a and hasattr(a[0], "shape") else 1)))
+        sync(); t = time.time(); out = orig_fwd(*a, **k); sync(); dt = time.time() - t
+        (prefill if q > 1 else decode).append(dt)
+        return out
+    emu.forward = timed_fwd
+
+    env, obs = build_env(cfg, 0)
+    instruction = env.get_language_instruction()
+    image = get_image(env, obs, cam_name)
+    model.reset()
+    print(f"profiling '{instruction}' for up to {n_steps} steps ...", flush=True)
+    done = truncated = False
+    step = 0
+    step_times = []
+    while not (done or truncated) and step < n_steps:
+        sync(); ts = time.time()
+        _, env_actions = model.step(image, instruction)
+        sync(); step_times.append(time.time() - ts)
+        for env_a in env_actions:
+            obs, _, done, truncated, info = env.step(
+                np.concatenate([env_a["world_vector"], env_a["rot_axangle"], env_a["gripper"]]))
+            image = get_image(env, obs, cam_name)
+            step += 1
+            if done or truncated:
+                break
+    env.close()
+
+    n = len(step_times)
+    enc_ms = sum(enc) / n * 1000; pre_ms = sum(prefill) / n * 1000
+    dec_ms = sum(decode) / n * 1000; step_ms = sum(step_times) / n * 1000
+    other = step_ms - enc_ms - pre_ms - dec_ms
+    dtoks = len(decode) / n
+    print(f"\n{'='*58}")
+    print(f"  UniVLA per-step latency breakdown (avg over {n} steps)")
+    print(f"{'='*58}")
+    print(f"  total step        : {step_ms:7.1f} ms  (100%)")
+    print(f"  ├─ encoding (VQ)  : {enc_ms:7.1f} ms  ({enc_ms/step_ms:5.1%})")
+    print(f"  ├─ LLM prefill    : {pre_ms:7.1f} ms  ({pre_ms/step_ms:5.1%})")
+    print(f"  ├─ LLM decode     : {dec_ms:7.1f} ms  ({dec_ms/step_ms:5.1%})  [{dtoks:.0f} tok]")
+    print(f"  └─ other          : {other:7.1f} ms  ({other/step_ms:5.1%})")
+    print(f"{'='*58}")
+    print(f"  PREFILL-SIDE ceiling (enc+prefill) = {(enc_ms+pre_ms)/step_ms:.1%}")
+    print(f"  decode = {dec_ms/step_ms:.0%} (only LLM-depth shrinks this)")
+    print(f"{'='*58}", flush=True)
 
 
 def build_env(cfg, ep_id):
@@ -375,6 +447,10 @@ def main():
         f"[OK] model loaded  image_size={args.image_size}  min_pixels={args.min_pixels}",
         flush=True,
     )
+
+    if getattr(args, "profile_steps", 0) and args.profile_steps > 0:
+        profile_latency(model, task_cfg, cam_name, args.profile_steps)
+        return
 
     if args.episode_ids.strip():
         ep_ids = [int(x.strip()) for x in args.episode_ids.split(",") if x.strip()]
