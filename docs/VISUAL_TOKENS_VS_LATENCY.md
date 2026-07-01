@@ -46,6 +46,28 @@ decode is **75%** and only **LLM-depth reduction** shrinks it (it makes every on
 of the 12 sequential token-forwards cheaper). This is the quantitative reason
 ToMe netted 0.99×: it targeted the 14% ViT and the merge overhead cancelled it.
 
+## Measured per-step breakdown (UniVLA/Emu3, profiler)
+
+Same profiler on the *other* backbone (VQ tokenizer + Emu3 decoder, avg over 6
+steps, eggplant):
+
+| stage | ms | share |
+|---|---|---|
+| encoding (VQ tokenizer) | 83 | 6.1% |
+| LLM prefill (read prompt once) | 172 | 12.6% |
+| **LLM decode (26 action tokens)** | **951** | **69.8%** |
+| env / python | 157 | 11.5% |
+| **total** | **1362** | 100% |
+
+→ **Prefill-side ceiling = 18.7%**, decode = **69.8%**. Two architecturally
+distinct backbones — Emu3 (VQ-token LLM) and PaliGemma2 (SigLIP ViT + Gemma2) —
+**converge** on the same structure: decode ≈ 70–75%, prefill-side ceiling ≈
+19–20%. The decode-bound property is therefore not a quirk of one model but a
+**structural property of single-image autoregressive manipulation VLAs**: every
+control step decodes a short action sequence one token at a time through the full
+LLM, and that sequential decode dominates wall-clock regardless of how the visual
+front-end is built.
+
 ## Why — the cost is decode-bound, not vision-bound
 
 A manipulation step = encode one image (≈256 visual tokens) → **prefill** the
