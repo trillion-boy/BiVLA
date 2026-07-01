@@ -48,6 +48,11 @@ def parse_args():
                    help="reuse SigLIP features for stride-1 steps (1 = off)")
     p.add_argument("--depth-prune", type=int, default=0,
                    help="bypass N most-redundant Gemma2 decoder layers (0 = off)")
+    p.add_argument("--depth-prune-mode", default="redundant",
+                   choices=["redundant", "least", "random"],
+                   help="which N layers to bypass -- 'redundant' is the real method;"
+                        " 'least'/'random' are controls to sanity-check the ranking")
+    p.add_argument("--depth-prune-seed", type=int, default=0)
     p.add_argument("--depth-prune-min-layer", type=int, default=2,
                    help="protect the first M layers from pruning")
     return p.parse_args()
@@ -121,9 +126,12 @@ def main():
             model_calls += 1
             if pruner is not None and not calibrated:
                 pruner.finalize_calibration()
-                bypassed = pruner.apply(args.depth_prune, args.depth_prune_min_layer)
-                print(f"[DepthPrune] calibrated; bypassing layers {bypassed} "
-                      f"(ranking top: {pruner.ranking[:6]})", flush=True)
+                bypassed = pruner.apply(args.depth_prune, args.depth_prune_min_layer,
+                                        mode=args.depth_prune_mode, seed=args.depth_prune_seed)
+                red_str = ", ".join(f"L{i}={pruner._redundancy[i]:.4f}" for i in range(pruner.n))
+                print(f"[DepthPrune] mode={args.depth_prune_mode} calibrated; "
+                      f"bypassing layers {bypassed} (ranking top: {pruner.ranking[:6]})", flush=True)
+                print(f"[DepthPrune] per-layer redundancy (cos in/out): {red_str}", flush=True)
                 calibrated = True
             env_action = np.concatenate([
                 action["world_vector"], action["rot_axangle"],
@@ -162,7 +170,8 @@ def main():
     if args.temporal_stride > 1:
         parts.append(f"temporal-stride={args.temporal_stride}")
     if args.depth_prune > 0 and pruner is not None:
-        parts.append(f"depth-prune={args.depth_prune} (layers {pruner.pruned})")
+        parts.append(f"depth-prune={args.depth_prune} mode={args.depth_prune_mode} "
+                     f"(layers {pruner.pruned})")
     tag = " + ".join(parts) if parts else "baseline (no ToMe)"
     print(f"\n{'='*50}")
     print(f"  SpatialVLA (official) | {tag}")
@@ -186,7 +195,9 @@ def main():
                  "protect": args.tome_protect},
         "temporal_stride": args.temporal_stride,
         "depth_prune": ({"count": args.depth_prune, "min_layer": args.depth_prune_min_layer,
-                         "pruned": pruner.pruned, "ranking": pruner.ranking}
+                         "mode": args.depth_prune_mode, "seed": args.depth_prune_seed,
+                         "pruned": pruner.pruned, "ranking": pruner.ranking,
+                         "redundancy": [round(x, 4) for x in pruner._redundancy]}
                         if pruner is not None else {"count": 0}),
         "episodes": results,
     }

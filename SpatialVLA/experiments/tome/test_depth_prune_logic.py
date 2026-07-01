@@ -86,9 +86,43 @@ def test_protection():
     print(f"ok: protection held; pruned={pruned} (0 and last excluded)")
 
 
+def test_mode_least_is_complement_of_redundant():
+    deltas = [1.0, 0.5, 0.01, 0.02, 0.8, 0.9]
+    lm = FakeLM(deltas)
+    p = DepthPruner(lm)
+    p.install_calibration_hooks()
+    lm.model(torch.randn(1, 5, 8))
+    p.finalize_calibration()
+
+    redundant = p.apply(count=2, min_layer=1, mode="redundant")
+    assert set(redundant) == {2, 3}
+    least = p.apply(count=2, min_layer=1, mode="least")
+    # eligible (excluding layer0, last=5) = [1,2,3,4]; least redundant of those = [4,1]
+    assert set(least) == {4, 1}, f"expected {{4,1}}, got {least}"
+    print(f"ok: mode='least' picks the opposite end ({least}) from mode='redundant' ({redundant})")
+
+
+def test_mode_random_is_seeded_and_eligible():
+    deltas = [1.0, 0.5, 0.01, 0.02, 0.8, 0.9, 0.3]
+    lm = FakeLM(deltas)
+    p = DepthPruner(lm)
+    p.install_calibration_hooks()
+    lm.model(torch.randn(1, 5, 8))
+    p.finalize_calibration()
+
+    a = p.apply(count=3, min_layer=1, mode="random", seed=42)
+    b = p.apply(count=3, min_layer=1, mode="random", seed=42)
+    assert a == b, "same seed must give same random selection"
+    protected = {0, len(deltas) - 1}
+    assert not (set(a) & protected), f"random mode leaked into protected layers: {a}"
+    print(f"ok: mode='random' seed=42 reproducible ({a}), respects protection")
+
+
 if __name__ == "__main__":
     test_bypass_is_identity()
     test_ranking_orders_by_redundancy()
     test_apply_and_restore()
     test_protection()
+    test_mode_least_is_complement_of_redundant()
+    test_mode_random_is_seeded_and_eligible()
     print("\nALL PASS")

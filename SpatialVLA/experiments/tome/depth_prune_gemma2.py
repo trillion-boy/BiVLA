@@ -101,17 +101,40 @@ class DepthPruner:
         return self.ranking
 
     # ---- apply / restore --------------------------------------------------
-    def apply(self, count: int, min_layer: int = 2):
-        """Bypass the `count` most-redundant layers, never touching the first
-        `min_layer` layers or the final layer (they carry the most signal)."""
+    def apply(self, count: int, min_layer: int = 2, mode: str = "redundant", seed: int = 0):
+        """Bypass `count` layers, never touching the first `min_layer` layers or
+        the final layer (they carry the most signal).
+
+        mode:
+          "redundant" (default) - bypass the `count` MOST redundant layers
+                                   (highest cos(in,out)) per the calibrated ranking.
+          "least"                - bypass the `count` LEAST redundant layers
+                                   (control: should be much worse if the ranking
+                                   carries real signal).
+          "random"               - bypass `count` random eligible layers, seeded
+                                   for reproducibility (control: distinguishes
+                                   "our ranking picks bad layers" from "this model
+                                   is brittle to ANY layer drop").
+        """
         self.restore()
         if count <= 0 or self.ranking is None:
             return []
         protected = set(range(min_layer)) | {self.n - 1}
-        chosen = [i for i in self.ranking if i not in protected][:count]
+        eligible = [i for i in self.ranking if i not in protected]
+        if mode == "redundant":
+            chosen = eligible[:count]
+        elif mode == "least":
+            chosen = eligible[::-1][:count]
+        elif mode == "random":
+            import random
+            rng = random.Random(seed)
+            chosen = rng.sample(eligible, min(count, len(eligible)))
+        else:
+            raise ValueError(f"unknown mode: {mode}")
         for i in chosen:
             self.layers[i] = _BypassLayer(self.orig[i])
         self.pruned = sorted(chosen)
+        self.mode = mode
         return self.pruned
 
     def restore(self):
