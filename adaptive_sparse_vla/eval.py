@@ -228,6 +228,7 @@ def profile_latency(model, cfg, cam_name, n_steps):
     image_tokenizer.encode (encoding) and the Emu3 decoder forward (prefill when
     q_len>1, decode when q_len==1)."""
     import time
+    import torch
     cuda = torch.cuda.is_available()
     def sync():
         if cuda:
