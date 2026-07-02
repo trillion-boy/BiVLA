@@ -145,6 +145,22 @@ def main():
             raw_action, action = policy.step(image, instruction)
             model_time += time.time() - t0
             model_calls += 1
+            if ep_count == 0 and step == 0:
+                # One-time probe: does SpatialVLA already predict an action
+                # CHUNK per generate call (raw_action holding >1 timestep)?
+                # If yes, executing the whole chunk instead of re-generating
+                # every env step is the remaining decode-latency lever
+                # (decode is 75% of a step and cannot be made cheaper on this
+                # backbone -- only called less often).
+                for name, d in (("raw_action", raw_action), ("action", action)):
+                    if isinstance(d, dict):
+                        for k, v in d.items():
+                            shape = getattr(v, "shape", None)
+                            print(f"[ChunkProbe] {name}['{k}']: shape={shape} "
+                                  f"type={type(v).__name__}", flush=True)
+                    else:
+                        print(f"[ChunkProbe] {name}: type={type(d).__name__} "
+                              f"shape={getattr(d, 'shape', None)}", flush=True)
             if pruner is not None and not calibrated:
                 pruner.finalize_calibration()
                 bypassed = pruner.apply(args.depth_prune, args.depth_prune_min_layer,

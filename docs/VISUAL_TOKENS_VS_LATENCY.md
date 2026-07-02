@@ -188,6 +188,41 @@ carrot-like (planar-placement) tasks — reinforcing, on a second backbone, that
 static/uniform application of any single technique is unsafe and the right
 frame is *which axis, on which backbone, for which archetype*.
 
+## Self-speculative decoding on SpatialVLA (measured, N=2 lossless check)
+
+Since static depth pruning permanently trades accuracy (fatal on Gemma2, above),
+we tried the lossless variant: **self-speculative decoding** — draft `gamma`
+tokens with a few redundant layers bypassed, verify with the full model in one
+parallel forward, accept the longest matching prefix. Output is byte-identical
+to plain greedy decoding by construction (proven on CPU against the real
+HybridCache; `SpatialVLA/experiments/tome/gemma2_self_spec_decode.py`).
+
+**Result: 1277 ms vs 923 ms baseline (1.38× SLOWER), acceptance 50%.** The
+implementation works as designed; the *arithmetic* cannot close on this
+backbone:
+
+- The draft bypasses 4/26 layers → costs **85% of the full model**. Classic
+  speculative decoding needs a draft at ≲30–40% cost.
+- At the measured 50% acceptance, cost-per-token = **1.15×** baseline (plus
+  clone/loop overhead → 1.38× observed). Even at a *perfect* 100% acceptance
+  the ceiling is only 0.71× (1.4× speedup).
+- A ≥1.5× win at 70% acceptance would need a draft at **<40% cost** — i.e.
+  bypassing ~15+ of 26 layers. But the depth-pruning study above showed Gemma2's
+  output diverges badly after removing even 1–2 layers, so a cheaper draft
+  proposes garbage and acceptance collapses. **No cheap-yet-faithful draft
+  exists inside this model.**
+
+**Unifying negative result:** on Gemma2, every "make each decode forward
+cheaper" lever — layer pruning (accuracy collapse), visual-token pruning (wrong
+stage), and self-speculation (no cheap draft) — fails **for the same root
+cause**: the decode path has little exploitable redundancy; every layer
+contributes. The remaining decode-latency axis is therefore **calling the
+decode less often** (temporal): execute the model's predicted action *chunk*
+(SpatialVLA's processor config carries an unused `action_chunk_size`; one
+generate emits ~12 tokens ≈ possibly 4 actions) instead of re-generating every
+control step, ideally adaptively (replan densely near grasp, sparsely during
+transport) — the non-uniform-over-time thesis applied to replanning frequency.
+
 ## Status of methods tried
 
 | Method | Axis | Backbone | Success | Latency | Verdict |
@@ -197,7 +232,9 @@ frame is *which axis, on which backbone, for which archetype*.
 | ToMe (merge+restore) | spatial (ViT tokens) | SpatialVLA | maintained | none | OOD-safe, no latency |
 | layer pruning | **depth (LLM)** | UniVLA | maintained/↑ | **modest ↓** | works; selective per archetype |
 | Gemma2 depth pruning | depth (LLM) | SpatialVLA | maintained on 1/4 tasks only | modest ↓ (~3-4%) when it works | narrow/task-specific; not a broad lever on this backbone |
+| self-speculative decoding | decode algorithm | SpatialVLA | identical (lossless by construction) | **1.38× SLOWER** | no cheap draft exists in Gemma2 (draft=85% cost, acceptance 50%) |
 | temporal caching (stride 2) | temporal | SpatialVLA | maintained (71%) | **~4% ↓** (1.04×) | best broad SpatialVLA latency lever |
+| action-chunk execution | **temporal (replan freq)** | SpatialVLA | (next) | (potentially large: decode called 1/k as often) | probing whether the model already predicts chunks |
 
 *Artifacts: `docs/DEPTH_PRUNING_RESULTS.md`, `experiments/FastV_univla.md`,
 `experiments/DepthController_univla.md`, `SpatialVLA/experiments/tome/`,
