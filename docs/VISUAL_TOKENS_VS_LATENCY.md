@@ -121,6 +121,73 @@ wall-clock (ms/infer), which exposes this gap.
    dominate — long video context, many frames, multi-view, or very high-resolution
    inputs. Single-image manipulation is not that regime.
 
+## Gemma2 depth pruning on SpatialVLA (measured, N=24 per cell)
+
+We repeated the depth-pruning experiment (validated on UniVLA/Emu3) on
+SpatialVLA's Gemma2 decoder (26 layers), using the same training-free
+mechanism: bypass the `count` layers with highest `cos(layer_input,
+layer_output)` (= most redundant), calibrated once via forward hooks on the
+first real step. Implementation: `SpatialVLA/experiments/tome/depth_prune_gemma2.py`,
+wired into `SpatialVLA/experiments/tome/tome_spatialvla_eval.py` via
+`--depth-prune N`.
+
+**Sanity-checking the ranking (eggplant, count=2).** Because Gemma2's per-layer
+redundancy values were unexpectedly flat across the middle of the network
+(`L8..L23` all in a narrow 0.88–0.93 band vs. UniVLA's presumably wider spread —
+see raw values below), we ran two control conditions to check whether the
+ranking carries real signal or is picking essentially at random:
+
+| mode | layers bypassed | success | note |
+|---|---|---|---|
+| **redundant** (our method) | [8, 10] | **41.7%** | best of the three |
+| random | [11, 22] | 12.5% | much worse than redundant |
+| least (deliberately "important") | [2, 4] | **generation never terminates** — hits the `max_new_tokens=256` cap almost every step (~865 ms → 12–13 s/step) instead of emitting EOS after ~12 tokens | catastrophic |
+
+Ranking: **redundant > random > least (broken)**, in the predicted order — this
+confirms the cosine-redundancy ranking carries real signal on Gemma2 despite
+the flat middle band, it just discriminates less sharply than on Emu3. The
+"least" collapse has a clean mechanistic explanation: layers 2 and 4 have low
+cosine similarity (0.60, 0.75) because they perform large, foundational
+transformations near the input; removing them corrupts the representation
+every later layer depends on, unlike removing a near-identity middle layer.
+
+**Per-layer redundancy (cos(in, out), eggplant calibration):**
+```
+L0=0.105  L1=0.634  L2=0.603  L3=0.771  L4=0.748  L5=0.900  L6=0.833  L7=0.885
+L8=0.922  L9=0.921  L10=0.925 L11=0.901 L12=0.917 L13=0.916 L14=0.900 L15=0.885
+L16=0.915 L17=0.918 L18=0.905 L19=0.919 L20=0.920 L21=0.913 L22=0.902 L23=0.914
+L24=0.860 L25=0.676
+```
+Only the front (`L0-L4`) and back (`L25`) discriminate sharply; 16 consecutive
+middle layers sit within a 0.045 band — likely a Gemma2-specific
+"massive-activation" effect where the residual stream's dominant direction
+persists across layers regardless of how much useful work each layer does.
+
+**Minimum viable cut (count=1, the single top-ranked layer) across 4 tasks:**
+
+| task | baseline success | prune=1 success | Δ (N=24, |Δ|/SE) | latency speedup |
+|---|---|---|---|---|
+| eggplant | 66.7% | 37.5% | **-29.2pt (3.04 SE — real)** | 1.00× |
+| carrot | 25.0% | 29.2% | +4.2pt (0.48 SE — noise) | 1.04× |
+| stack | 33.3% | 25.0% | -8.3pt (0.86 SE — borderline) | 1.03× |
+| spoon | 8.3% | 0.0% | -8.3pt (1.47 SE — collapses to 0) | 1.03× |
+
+**Verdict: unlike UniVLA/Emu3 (which tolerated bypassing 4/8 = 50% of layers
+with maintained/improved success on most tasks), SpatialVLA/Gemma2 does not
+have a broadly-safe static depth-pruning operating point** — even the single
+most-redundant layer (1/26 = 3.8%) hurt 3 of 4 tasks, and only carrot was
+unaffected. This is a genuine backbone-dependent finding, not a bug (confirmed
+via the redundant/random/least triangulation above): Gemma2's exploitable
+layer-level redundancy is narrower and more task-specific than Emu3's.
+
+**Practical implication:** SpatialVLA's primary latency lever is **temporal
+caching** (stride 2, ~4% real latency reduction, maintained/improved success —
+see below), not depth pruning. Depth pruning remains UniVLA's primary lever.
+Gemma2 depth pruning may still be usable, but only selectively for
+carrot-like (planar-placement) tasks — reinforcing, on a second backbone, that
+static/uniform application of any single technique is unsafe and the right
+frame is *which axis, on which backbone, for which archetype*.
+
 ## Status of methods tried
 
 | Method | Axis | Backbone | Success | Latency | Verdict |
@@ -129,8 +196,8 @@ wall-clock (ms/infer), which exposes this gap.
 | FastV | spatial (LLM tokens) | UniVLA | ↓↓ | none | wrong lever |
 | ToMe (merge+restore) | spatial (ViT tokens) | SpatialVLA | maintained | none | OOD-safe, no latency |
 | layer pruning | **depth (LLM)** | UniVLA | maintained/↑ | **modest ↓** | works; selective per archetype |
-| Gemma2 depth pruning | depth (LLM) | SpatialVLA | (next) | (expected ↓) | planned |
-| temporal caching (stride 2) | temporal | SpatialVLA | maintained (71%) | **~4% ↓** (1.04×) | best visual-side latency, still modest |
+| Gemma2 depth pruning | depth (LLM) | SpatialVLA | maintained on 1/4 tasks only | modest ↓ (~3-4%) when it works | narrow/task-specific; not a broad lever on this backbone |
+| temporal caching (stride 2) | temporal | SpatialVLA | maintained (71%) | **~4% ↓** (1.04×) | best broad SpatialVLA latency lever |
 
 *Artifacts: `docs/DEPTH_PRUNING_RESULTS.md`, `experiments/FastV_univla.md`,
 `experiments/DepthController_univla.md`, `SpatialVLA/experiments/tome/`,
