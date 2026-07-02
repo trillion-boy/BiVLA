@@ -64,6 +64,10 @@ def parse_args():
     p.add_argument("--spec-decode-cache-budget", type=int, default=64,
                    help="HybridCache is sized prompt_len+this (not +max_new_tokens=256) "
                         "to cut clone cost; raise if a WARNING about hitting the budget appears")
+    p.add_argument("--exec-chunk", type=int, default=0,
+                   help="execute k of the model's predicted action chunk per generate "
+                        "(0 = off = re-generate every step; k>chunk_size clamps to chunk_size). "
+                        "Decode is called every k env steps -> latency amortized ~k x.")
     return p.parse_args()
 
 
@@ -114,6 +118,11 @@ def main():
               f"(gamma={args.spec_decode_gamma}, calibrate on step 0, lossless).",
               flush=True)
 
+    chunk_state = None
+    if args.exec_chunk > 0:
+        from chunk_exec import apply_chunk_execution, reset_chunk_execution
+        chunk_state = apply_chunk_execution(policy, k=args.exec_chunk)
+
     base_ids = list(range(*cfg["obj_episode_range"]))
     ep_ids = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
     results = []
@@ -132,6 +141,9 @@ def main():
         if args.temporal_stride > 1:
             from temporal_cache import reset_temporal_cache
             reset_temporal_cache(getattr(policy, "vla", None) or getattr(policy, "model", None))
+        if chunk_state is not None:
+            from chunk_exec import reset_chunk_execution
+            reset_chunk_execution(policy)
         print(f"   instruction: {instruction}", flush=True)
 
         done = truncated = False
@@ -199,6 +211,9 @@ def main():
             if new_instr != instruction:
                 instruction = new_instr
                 policy.reset(instruction)
+                if chunk_state is not None:
+                    from chunk_exec import reset_chunk_execution
+                    reset_chunk_execution(policy)  # task changed -> stale plan, replan now
             step += 1
 
         success = bool(final_info.get("success", done))
@@ -235,6 +250,11 @@ def main():
         if acc_rate is not None:
             tag_str += f" (acceptance={acc_rate:.1%})"
         parts.append(tag_str)
+    if chunk_state is not None:
+        ratio = (chunk_state["gen_calls"] / chunk_state["steps"]
+                 if chunk_state["steps"] else 1.0)
+        parts.append(f"exec-chunk k={chunk_state['k']}/{chunk_state['chunk_size']} "
+                     f"(generate on {ratio:.0%} of steps)")
     tag = " + ".join(parts) if parts else "baseline (no ToMe)"
     print(f"\n{'='*50}")
     print(f"  SpatialVLA (official) | {tag}")
@@ -267,6 +287,10 @@ def main():
                          "draft_layers": spec_pruner.ranking[:args.spec_decode_layer_count],
                          "ranking": spec_pruner.ranking, "stats": spec_stats}
                         if args.spec_decode and spec_pruner is not None else {"enabled": False}),
+        "exec_chunk": ({"enabled": True, "k": chunk_state["k"],
+                        "chunk_size": chunk_state["chunk_size"],
+                        "gen_calls": chunk_state["gen_calls"], "steps": chunk_state["steps"]}
+                       if chunk_state is not None else {"enabled": False}),
         "episodes": results,
     }
     with open(os.path.join(args.output_dir, f"results_{args.task}.json"), "w") as f:
