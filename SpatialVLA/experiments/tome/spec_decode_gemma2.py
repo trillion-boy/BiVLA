@@ -34,6 +34,7 @@ def apply_gemma2_self_spec_decode(
     draft_layer_indices: Sequence[int],
     eos_token_id: Optional[int] = None,
     logits_processor: Optional[Sequence] = None,
+    cache_len_budget: int = 64,
     verbose: bool = True,
 ):
     if getattr(vla_model, "_specdec_patched", False):
@@ -74,7 +75,7 @@ def apply_gemma2_self_spec_decode(
             pruner, vla_model, input_ids, attention_mask, pixel_values, intrinsic,
             max_new_tokens=max_new_tokens, gamma=gamma, draft_layer_indices=draft_layer_indices,
             eos_token_id=eos_token_id, logits_processor=logits_processor,
-            stats=vla_model._specdec_stats,
+            stats=vla_model._specdec_stats, cache_len_budget=cache_len_budget,
         )
 
     vla_model.generate = patched_generate

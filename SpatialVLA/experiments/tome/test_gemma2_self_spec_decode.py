@@ -186,7 +186,7 @@ def plain_greedy_generate(vla, input_ids, attention_mask, max_new_tokens, eos_to
     return full_ids
 
 
-def _run_case(seed, gamma, max_new_tokens, draft_layers, prompt_len=3):
+def _run_case(seed, gamma, max_new_tokens, draft_layers, prompt_len=3, cache_len_budget=64):
     vla = TinyVLAModel(seed=seed)
     pruner = make_pruner(vla)
     pruner.install_calibration_hooks()
@@ -206,7 +206,7 @@ def _run_case(seed, gamma, max_new_tokens, draft_layers, prompt_len=3):
     spec = gemma2_self_speculative_generate(
         pruner2, vla, prompt, am, pixel_values=None, intrinsic=None,
         max_new_tokens=max_new_tokens, gamma=gamma, draft_layer_indices=draft_layers,
-        eos_token_id=EOS,
+        eos_token_id=EOS, cache_len_budget=cache_len_budget,
     )
     return baseline, spec
 
@@ -247,6 +247,30 @@ def test_eos_matches():
     print("ok: EOS-terminated sequences (when they occur) match exactly")
 
 
+def test_cache_budget_truncates_gracefully_when_too_small():
+    # a tiny budget forces an early cutoff -- must not crash and must respect
+    # the cap (a WARNING prints; that's checked visually, not asserted here).
+    # effective budget is max(cache_len_budget, gamma+1) -- a floor so a round
+    # always has room for at least one free token (see gemma2_self_spec_decode.py).
+    gamma, cache_len_budget = 3, 3
+    effective_budget = max(cache_len_budget, gamma + 1)
+    baseline, spec = _run_case(seed=9, gamma=gamma, max_new_tokens=20, draft_layers=[1, 2],
+                               cache_len_budget=cache_len_budget)
+    prompt_len = 3
+    new_len = spec.shape[1] - prompt_len
+    assert new_len <= effective_budget, f"exceeded effective budget {effective_budget}: generated {new_len}"
+    print(f"ok: cache_len_budget={cache_len_budget} (gamma={gamma}) truncates gracefully "
+          f"at effective budget {effective_budget} ({new_len} new tokens, no crash)")
+
+
+def test_generous_budget_matches_uncapped():
+    # cache_len_budget >= max_new_tokens must be a no-op vs the uncapped path
+    baseline, spec = _run_case(seed=4, gamma=3, max_new_tokens=10, draft_layers=[1, 2],
+                               cache_len_budget=200)
+    assert torch.equal(baseline, spec)
+    print("ok: generous cache_len_budget (>> max_new_tokens) behaves identically to uncapped")
+
+
 def test_stats_reported():
     vla = TinyVLAModel(seed=2)
     pruner = make_pruner(vla)
@@ -267,5 +291,7 @@ if __name__ == "__main__":
     test_losslessness_various_draft_layer_subsets()
     test_layer_0_never_bypassed_even_if_requested()
     test_eos_matches()
+    test_cache_budget_truncates_gracefully_when_too_small()
+    test_generous_budget_matches_uncapped()
     test_stats_reported()
     print("\nALL PASS")

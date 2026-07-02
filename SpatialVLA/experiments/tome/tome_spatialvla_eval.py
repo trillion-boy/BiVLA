@@ -61,6 +61,9 @@ def parse_args():
     p.add_argument("--spec-decode-gamma", type=int, default=4)
     p.add_argument("--spec-decode-layer-count", type=int, default=4,
                    help="how many top-redundant layers the draft pass bypasses")
+    p.add_argument("--spec-decode-cache-budget", type=int, default=64,
+                   help="HybridCache is sized prompt_len+this (not +max_new_tokens=256) "
+                        "to cut clone cost; raise if a WARNING about hitting the budget appears")
     return p.parse_args()
 
 
@@ -161,9 +164,11 @@ def main():
                 eos_id = getattr(gen_cfg, "eos_token_id", None) if gen_cfg is not None else None
                 apply_gemma2_self_spec_decode(
                     base_model, spec_pruner, args.spec_decode_gamma, draft_layers, eos_token_id=eos_id,
+                    cache_len_budget=args.spec_decode_cache_budget,
                 )
                 print(f"[SpecDecode] calibrated; draft bypasses layers {draft_layers} "
-                      f"(ranking top: {spec_pruner.ranking[:6]}, eos_token_id={eos_id})", flush=True)
+                      f"(ranking top: {spec_pruner.ranking[:6]}, eos_token_id={eos_id}, "
+                      f"cache_budget={args.spec_decode_cache_budget})", flush=True)
                 calibrated = True
             env_action = np.concatenate([
                 action["world_vector"], action["rot_axangle"],

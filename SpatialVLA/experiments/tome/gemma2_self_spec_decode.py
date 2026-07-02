@@ -95,6 +95,7 @@ def gemma2_self_speculative_generate(
     eos_token_id: Optional[int] = None,
     logits_processor: Optional[Sequence] = None,
     stats: Optional[dict] = None,
+    cache_len_budget: int = 64,
 ) -> torch.Tensor:
     """Returns the full sequence (prompt + new tokens) as a (1, L) LongTensor.
 
@@ -106,12 +107,24 @@ def gemma2_self_speculative_generate(
     `logits_processor`: same as `emu3_self_spec_decode.py` -- applied at
     every argmax decision so the lossless guarantee holds under the real
     generation constraints, not just in the abstract.
+
+    `cache_len_budget`: the HybridCache is cloned up to twice per round (draft
+    + verify) -- unlike DynamicCache's `.crop()`, this is a real memory-copy
+    cost proportional to the cache's ALLOCATED size, not how much of it is
+    actually used. `predict_action` calls `.generate(max_new_tokens=256, ...)`
+    as a generous safety cap, but real action generations are ~12-30 tokens
+    (see docs/VISUAL_TOKENS_VS_LATENCY.md's profiler measurements) -- sizing
+    the cache for the ACTUAL realistic length instead of the full 256-token
+    cap cuts every clone's cost by ~4-8x. If generation genuinely needs more
+    than `cache_len_budget` new tokens, this raises (loud failure, not silent
+    truncation) -- raise the budget if that happens on real data.
     """
     if gamma < 1:
         raise ValueError("gamma must be >= 1")
     device = input_ids.device
     dtype_ids = input_ids.dtype
     prompt_len = input_ids.shape[1]
+    cache_new_tokens = min(max_new_tokens, max(cache_len_budget, gamma + 1))
 
     if stats is not None:
         stats.update(rounds=0, draft_calls=0, verify_calls=0, commit_calls=0,
@@ -122,7 +135,7 @@ def gemma2_self_speculative_generate(
 
     gemma_config = pruner.lm.config
     cache = HybridCache(
-        gemma_config, max_batch_size=1, max_cache_len=prompt_len + max_new_tokens,
+        gemma_config, max_batch_size=1, max_cache_len=prompt_len + cache_new_tokens,
         device=device, dtype=vla_model.dtype,
     )
 
@@ -146,7 +159,7 @@ def gemma2_self_speculative_generate(
         full_ids = torch.cat([full_ids, add], dim=1)
         running_am = torch.cat([running_am, ones_mask(len(id_list))], dim=1)
 
-    while n_new < max_new_tokens:
+    while n_new < cache_new_tokens:
         if stats is not None:
             stats["rounds"] += 1
 
@@ -154,7 +167,7 @@ def gemma2_self_speculative_generate(
         round_tokens = [free_token]
 
         # --- DRAFT: on a CLONE, redundant layers bypassed ---
-        n_draft = min(gamma - 1, max_new_tokens - n_new - 1)
+        n_draft = min(gamma - 1, cache_new_tokens - n_new - 1)
         eos_hit = eos_token_id is not None and free_token == eos_token_id
         if n_draft > 0 and not eos_hit:
             pruner.apply_indices(draft_layer_indices)
@@ -233,5 +246,10 @@ def gemma2_self_speculative_generate(
         n_new += len(chosen)
         if eos_token_id is not None and eos_token_id in chosen:
             break
+    else:
+        if n_new >= cache_new_tokens and cache_new_tokens < max_new_tokens:
+            print(f"[SpecDecode] WARNING: hit cache_len_budget ({cache_new_tokens}) without EOS -- "
+                  f"sequence was cut shorter than plain generation would have produced. "
+                  f"Raise --spec-decode-cache-budget.", flush=True)
 
     return full_ids
