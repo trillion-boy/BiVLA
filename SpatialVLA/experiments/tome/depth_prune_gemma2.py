@@ -137,6 +137,22 @@ class DepthPruner:
         self.mode = mode
         return self.pruned
 
+    def apply_indices(self, indices, protect_layer_0=True):
+        """Bypass EXACTLY the given layer indices (no ranking/mode logic) --
+        used by self-speculative decoding's draft mode, which already knows
+        which layers it wants from a precomputed ranking. Layer 0 is always
+        protected regardless of `indices`: `get_seq_length()` on HybridCache
+        is only well-defined for layer_idx=0 (see cache_utils.py), so a
+        bypassed layer 0 would silently corrupt cache-position tracking for
+        every subsequent forward call, not just crash loudly."""
+        self.restore()
+        protected = {0} if protect_layer_0 else set()
+        chosen = sorted({int(i) for i in indices if int(i) not in protected and 0 <= int(i) < self.n})
+        for i in chosen:
+            self.layers[i] = _BypassLayer(self.orig[i])
+        self.pruned = chosen
+        return self.pruned
+
     def restore(self):
         for i in range(self.n):
             self.layers[i] = self.orig[i]

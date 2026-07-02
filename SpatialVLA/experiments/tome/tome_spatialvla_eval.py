@@ -55,6 +55,12 @@ def parse_args():
     p.add_argument("--depth-prune-seed", type=int, default=0)
     p.add_argument("--depth-prune-min-layer", type=int, default=2,
                    help="protect the first M layers from pruning")
+    p.add_argument("--spec-decode", action="store_true", default=False,
+                   help="self-speculative decoding (lossless -- see "
+                        "gemma2_self_spec_decode.py); mutually exclusive with --depth-prune")
+    p.add_argument("--spec-decode-gamma", type=int, default=4)
+    p.add_argument("--spec-decode-layer-count", type=int, default=4,
+                   help="how many top-redundant layers the draft pass bypasses")
     return p.parse_args()
 
 
@@ -95,12 +101,24 @@ def main():
               f"will bypass {args.depth_prune} most-redundant (calibrate on step 0).",
               flush=True)
 
+    spec_pruner = None
+    if args.spec_decode:
+        from depth_prune_gemma2 import DepthPruner
+        base_model = getattr(policy, "vla", None) or getattr(policy, "model", None)
+        spec_pruner = DepthPruner(base_model.language_model)
+        print(f"[SpecDecode] Gemma2 has {spec_pruner.n} decoder layers; "
+              f"draft will bypass top-{args.spec_decode_layer_count} redundant "
+              f"(gamma={args.spec_decode_gamma}, calibrate on step 0, lossless).",
+              flush=True)
+
     base_ids = list(range(*cfg["obj_episode_range"]))
     ep_ids = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
     results = []
     calibrated = False
     if pruner is not None:
         pruner.install_calibration_hooks()
+    if spec_pruner is not None:
+        spec_pruner.install_calibration_hooks()
 
     for ep_count, ep_id in enumerate(ep_ids):
         print(f"\n── ep {ep_count:02d} (env_id={ep_id}) ──", flush=True)
@@ -132,6 +150,20 @@ def main():
                 print(f"[DepthPrune] mode={args.depth_prune_mode} calibrated; "
                       f"bypassing layers {bypassed} (ranking top: {pruner.ranking[:6]})", flush=True)
                 print(f"[DepthPrune] per-layer redundancy (cos in/out): {red_str}", flush=True)
+                calibrated = True
+            if spec_pruner is not None and not calibrated:
+                from spec_decode_gemma2 import apply_gemma2_self_spec_decode
+                spec_pruner.finalize_calibration()
+                spec_pruner.restore()  # spec-decode toggles bypass/restore itself per round
+                draft_layers = spec_pruner.ranking[: args.spec_decode_layer_count]
+                base_model = getattr(policy, "vla", None) or getattr(policy, "model", None)
+                gen_cfg = getattr(base_model, "generation_config", None)
+                eos_id = getattr(gen_cfg, "eos_token_id", None) if gen_cfg is not None else None
+                apply_gemma2_self_spec_decode(
+                    base_model, spec_pruner, args.spec_decode_gamma, draft_layers, eos_token_id=eos_id,
+                )
+                print(f"[SpecDecode] calibrated; draft bypasses layers {draft_layers} "
+                      f"(ranking top: {spec_pruner.ranking[:6]}, eos_token_id={eos_id})", flush=True)
                 calibrated = True
             env_action = np.concatenate([
                 action["world_vector"], action["rot_axangle"],
@@ -172,6 +204,16 @@ def main():
     if args.depth_prune > 0 and pruner is not None:
         parts.append(f"depth-prune={args.depth_prune} mode={args.depth_prune_mode} "
                      f"(layers {pruner.pruned})")
+    spec_stats = None
+    if args.spec_decode and spec_pruner is not None:
+        base_model = getattr(policy, "vla", None) or getattr(policy, "model", None)
+        spec_stats = getattr(base_model, "_specdec_stats", None)
+        acc_rate = (spec_stats["accepted"] / spec_stats["proposed"]
+                   if spec_stats and spec_stats.get("proposed") else None)
+        tag_str = f"spec-decode gamma={args.spec_decode_gamma} layers={spec_pruner.ranking[:args.spec_decode_layer_count]}"
+        if acc_rate is not None:
+            tag_str += f" (acceptance={acc_rate:.1%})"
+        parts.append(tag_str)
     tag = " + ".join(parts) if parts else "baseline (no ToMe)"
     print(f"\n{'='*50}")
     print(f"  SpatialVLA (official) | {tag}")
@@ -199,6 +241,11 @@ def main():
                          "pruned": pruner.pruned, "ranking": pruner.ranking,
                          "redundancy": [round(x, 4) for x in pruner._redundancy]}
                         if pruner is not None else {"count": 0}),
+        "spec_decode": ({"enabled": True, "gamma": args.spec_decode_gamma,
+                         "layer_count": args.spec_decode_layer_count,
+                         "draft_layers": spec_pruner.ranking[:args.spec_decode_layer_count],
+                         "ranking": spec_pruner.ranking, "stats": spec_stats}
+                        if args.spec_decode and spec_pruner is not None else {"enabled": False}),
         "episodes": results,
     }
     with open(os.path.join(args.output_dir, f"results_{args.task}.json"), "w") as f:

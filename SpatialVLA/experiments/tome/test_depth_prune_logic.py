@@ -86,6 +86,24 @@ def test_protection():
     print(f"ok: protection held; pruned={pruned} (0 and last excluded)")
 
 
+def test_apply_indices_protects_layer_0():
+    deltas = [1.0, 0.5, 0.01, 0.02, 0.8, 0.9]
+    lm = FakeLM(deltas)
+    p = DepthPruner(lm)
+    p.install_calibration_hooks()
+    lm.model(torch.randn(1, 5, 8))
+    p.finalize_calibration()
+
+    pruned = p.apply_indices([0, 2, 3, 5])
+    assert 0 not in pruned, f"layer 0 must always be protected, got {pruned}"
+    assert set(pruned) == {2, 3, 5}, f"expected {{2,3,5}}, got {pruned}"
+    assert isinstance(lm.model.layers[2], _BypassLayer)
+    assert not isinstance(lm.model.layers[0], _BypassLayer)
+    p.restore()
+    assert not isinstance(lm.model.layers[2], _BypassLayer)
+    print(f"ok: apply_indices bypassed {pruned}, layer 0 protected, restore reverted")
+
+
 def test_mode_least_is_complement_of_redundant():
     deltas = [1.0, 0.5, 0.01, 0.02, 0.8, 0.9]
     lm = FakeLM(deltas)
@@ -123,6 +141,7 @@ if __name__ == "__main__":
     test_ranking_orders_by_redundancy()
     test_apply_and_restore()
     test_protection()
+    test_apply_indices_protects_layer_0()
     test_mode_least_is_complement_of_redundant()
     test_mode_random_is_seeded_and_eligible()
     print("\nALL PASS")
