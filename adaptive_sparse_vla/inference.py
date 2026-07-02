@@ -66,6 +66,14 @@ try:
     from adaptive_sparse_vla.fastv_emu3 import apply_fastv, visual_mask_from_input_ids
 except Exception:  # when imported as a top-level package on sys.path
     from fastv_emu3 import apply_fastv, visual_mask_from_input_ids
+try:
+    from adaptive_sparse_vla.bypass_layer import BypassDecoderLayer
+except Exception:  # when imported as a top-level package on sys.path
+    from bypass_layer import BypassDecoderLayer
+try:
+    from adaptive_sparse_vla.emu3_self_spec_decode import emu3_self_speculative_generate
+except Exception:  # when imported as a top-level package on sys.path
+    from emu3_self_spec_decode import emu3_self_speculative_generate
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
@@ -87,56 +95,6 @@ class ActionIDConstraintLogitsProcessor(LogitsProcessor):
             mask[:, self.allowed_token_ids] = True
         scores[~mask] = -float("inf")
         return scores
-
-
-class BypassDecoderLayer(torch.nn.Module):
-    """
-    Training-free decoder-layer bypass used for EfficientVLA-style inference pruning.
-
-    The layer's compute is skipped (hidden states pass through unchanged), but it
-    still writes a correctly-shaped placeholder KV into the cache. This keeps the
-    per-layer cache contiguous: transformers' DynamicCache (>=4.51) indexes by
-    layer_idx, so a layer that never calls `update` leaves a gap and a later layer's
-    `update` hits `IndexError: list index out of range`. The placeholder is never
-    read (this layer has no attention), so zeros are safe.
-    """
-
-    def __init__(self, layer_idx: int, num_kv_heads: Optional[int] = None,
-                 head_dim: Optional[int] = None):
-        super().__init__()
-        self.layer_idx = int(layer_idx)
-        self.num_kv_heads = num_kv_heads
-        self.head_dim = head_dim
-
-    def forward(
-        self,
-        hidden_states: torch.Tensor,
-        attention_mask: Optional[torch.Tensor] = None,
-        position_ids: Optional[torch.LongTensor] = None,
-        past_key_value: Optional[Any] = None,
-        output_attentions: Optional[bool] = False,
-        use_cache: Optional[bool] = False,
-        **kwargs,
-    ):
-        if (
-            use_cache
-            and past_key_value is not None
-            and hasattr(past_key_value, "update")
-            and self.num_kv_heads is not None
-            and self.head_dim is not None
-        ):
-            bsz, seq_len = hidden_states.shape[0], hidden_states.shape[1]
-            dummy = torch.zeros(
-                bsz, self.num_kv_heads, seq_len, self.head_dim,
-                dtype=hidden_states.dtype, device=hidden_states.device,
-            )
-            past_key_value.update(dummy, dummy, self.layer_idx, {})
-        outputs = (hidden_states,)
-        if output_attentions:
-            outputs += (None,)
-        if use_cache:
-            outputs += (past_key_value,)
-        return outputs
 
 
 @dataclass
@@ -935,6 +893,25 @@ class EmuVLAInference:
                 flush=True,
             )
 
+        # Self-speculative decoding (training-free, lossless -- see
+        # self_spec_decode.py / emu3_self_spec_decode.py). Unlike depth
+        # pruning, this NEVER trades away accuracy: the full model always has
+        # final say, so it is a pure latency experiment, not an accuracy risk.
+        self._spec_decode_enabled = os.environ.get("SPEC_DECODE_ENABLE", "0") == "1"
+        self._spec_decode_gamma = int(os.environ.get("SPEC_DECODE_GAMMA", "4"))
+        self._spec_decode_layer_count = int(os.environ.get("SPEC_DECODE_LAYER_COUNT", "4"))
+        self._spec_decode_ranking: List[int] = []
+        self._spec_decode_ranking_ready = False
+        self._spec_decode_stats = {"rounds": 0, "draft_calls": 0, "verify_calls": 0,
+                                    "accepted": 0, "proposed": 0}
+        if self._spec_decode_enabled:
+            print(
+                f"[SpecDecode] self-speculative decoding ON: gamma={self._spec_decode_gamma}, "
+                f"draft bypasses top-{self._spec_decode_layer_count} redundant layers "
+                f"(lossless -- output identical to plain greedy decoding by construction).",
+                flush=True,
+            )
+
     def _maybe_apply_fastv(self) -> None:
         """Enable FastV visual-token pruning on the Emu3 LLM via env flags.
 
@@ -997,6 +974,10 @@ class EmuVLAInference:
             self._depth_ranking = []
             self._depth_archetype_resolved = False
             self._depth_active = self._depth_ctrl_enabled
+            self._restore_llm_layers()
+        if getattr(self, "_spec_decode_enabled", False):
+            self._spec_decode_ranking_ready = False
+            self._spec_decode_ranking = []
             self._restore_llm_layers()
         while not self.vision_queue.empty():
             self.vision_queue.get()
@@ -1247,6 +1228,23 @@ class EmuVLAInference:
             return
         self._apply_llm_pruning(self._select_prune_layers(importance))
 
+    def _maybe_calibrate_spec_decode(self, final_inputs: BatchFeature) -> None:
+        # Self-speculative decoding needs its own redundancy ranking to pick
+        # which layers the "draft" pass bypasses. Reuse an already-computed
+        # ranking if the depth controller (or static pruning) already
+        # calibrated one this episode -- same metric, no need to redo it.
+        if not getattr(self, "_spec_decode_enabled", False) or self._spec_decode_ranking_ready:
+            return
+        if self._depth_ranking_ready and self._depth_ranking:
+            self._spec_decode_ranking = list(self._depth_ranking)
+            self._spec_decode_ranking_ready = True
+            return
+        importance = self._compute_layer_importance(final_inputs)
+        if importance is None:
+            return
+        self._spec_decode_ranking = self._rank_prune_layers(importance)
+        self._spec_decode_ranking_ready = True
+
     def _generate_sequences(
         self,
         final_inputs: BatchFeature,
@@ -1269,6 +1267,33 @@ class EmuVLAInference:
         logits_processors = (
             [] if self._action_id_processor is None else [self._action_id_processor]
         )
+
+        # Self-speculative decoding: only handles single-sequence greedy
+        # decoding (this project always uses do_sample=False); anything else
+        # (beam search / multiple return sequences) falls back to .generate().
+        if (
+            getattr(self, "_spec_decode_enabled", False)
+            and num_return_sequences == 1
+            and num_beams == 1
+            and self._spec_decode_ranking_ready
+            and self._spec_decode_ranking
+        ):
+            draft_layers = self._spec_decode_ranking[: self._spec_decode_layer_count]
+            with torch.inference_mode():
+                sequences = emu3_self_speculative_generate(
+                    self,
+                    final_inputs.input_ids.to(self.device),
+                    final_inputs.attention_mask.to(self.device),
+                    max_new_tokens=50,
+                    gamma=self._spec_decode_gamma,
+                    draft_layer_indices=draft_layers,
+                    eos_token_id=self.GENERATION_CONFIG.eos_token_id,
+                    logits_processor=logits_processors,
+                    stats=self._spec_decode_stats,
+                )
+            self._restore_llm_layers()  # leave layers intact for any other caller
+            return sequences, None
+
         generate_kwargs = dict(
             generation_config=self.GENERATION_CONFIG,
             max_new_tokens=50,
@@ -1349,6 +1374,7 @@ class EmuVLAInference:
             oracle_context=oracle_context,
         )
         self._maybe_calibrate_llm_pruning(final_inputs)
+        self._maybe_calibrate_spec_decode(final_inputs)
         sequences, _ = self._generate_sequences(final_inputs)
         plans, orig_outputs = self._decode_action_sequences(
             sequences,
@@ -1385,6 +1411,12 @@ class EmuVLAInference:
             out["depth_state"] = self._depth_state
             out["depth_archetype"] = self._depth_archetype
             out["depth_active"] = bool(self._depth_active)
+        if getattr(self, "_spec_decode_enabled", False):
+            s = self._spec_decode_stats
+            out["spec_decode"] = dict(s)
+            out["spec_decode"]["acceptance_rate"] = (
+                s["accepted"] / s["proposed"] if s.get("proposed") else None
+            )
         return out
 
     def unormalize_action(self, action: np.ndarray) -> np.ndarray:
