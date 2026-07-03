@@ -257,6 +257,28 @@ backbones ship at fixed extremes of that spectrum (SpatialVLA wrapper: k=1
 always; UniVLA: k=5 always, `predict_action_frames=5` with all 5 executed by
 its eval), so the adaptive middle is unclaimed by either default.
 
+### Generality: full 4-task suite at k=2 (N=24 per cell)
+
+| task | baseline success | k=2 success | Δ | latency |
+|---|---|---|---|---|
+| eggplant | 66.7% | **87.5%** | **+20.8pt (≈2.2 SE)** | 836→457 ms (1.8×) |
+| carrot | 25.0% | **41.7%** | **+16.7pt (≈1.9 SE)** | 856→452 ms (1.9×) |
+| spoon | 8.3% | **29.2%** | **+20.9pt (≈3.7 SE)** | 892→452 ms (2.0×) |
+| stack | 31.3%* | 25.0% | -6.3pt (within noise) | 860→455 ms (1.9×) |
+| **mean** | **32.8%** | **45.9%** | **+13.0pt** | **~1.9×** |
+
+*stack baseline run twice (33.3% and 29.2%, grasp 58.3% both times) — pooled
+15/48 = 31.3%.
+
+**3/4 tasks improve substantially (spoon's grasp rate more than doubles,
+16.7→37.5%), the 4th is maintained, all at ~1.9× lower latency.** The one
+non-improving task is stack — the suite's most precision-demanding *place*
+(block-on-block alignment): its grasp rate is identical to baseline (58.3%)
+and its failures concentrate in grasped-but-not-placed, the exact same
+place-phase signature as eggplant's k=4. Two independent experiments point at
+the same conclusion: chunk execution is free (or better) everywhere except
+precise placement, which needs dense feedback — the adaptive controller's job.
+
 ## Status of methods tried
 
 | Method | Axis | Backbone | Success | Latency | Verdict |
