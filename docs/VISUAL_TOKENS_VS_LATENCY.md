@@ -223,6 +223,40 @@ generate emits ~12 tokens ≈ possibly 4 actions) instead of re-generating every
 control step, ideally adaptively (replan densely near grasp, sparsely during
 transport) — the non-uniform-over-time thesis applied to replanning frequency.
 
+## Action-chunk execution (measured, eggplant N=24) — the breakthrough
+
+Probe + `processing_spatialvla.py` confirmed: one action = exactly 3 tokens,
+and the checkpoint predicts a **4-action chunk** per generate (the 12 decode
+tokens the profiler measured). The SimplerEnv wrapper executed only
+`actions[0]` and re-generated from scratch every control step — discarding ¾
+of what the decode had already paid for. `--exec-chunk k` executes k of the 4
+predicted actions per generate (queue mechanics in
+`SpatialVLA/experiments/tome/chunk_exec.py`; the model is simply *called less
+often* — its computation is untouched).
+
+| config | grasp | success | ms/infer | speedup | Δ success |
+|---|---|---|---|---|---|
+| baseline (replan every step) | 87.5% | 66.7% | 836 | 1.0× | — |
+| **exec-chunk k=2** | 91.7% | **87.5%** | **457** | **~1.8×** | **+20.8pt (≈2.2 SE)** |
+| **exec-chunk k=4** | 91.7% | 75.0% | **235** | **~3.6×** | +8.3pt (within noise) |
+
+**Both settings beat baseline on BOTH axes** — a Pareto improvement, not a
+trade-off. Success *improving* under chunk execution is consistent with the
+action-chunking literature (ACT): per-step replanning constantly overwrites
+the plan, causing trajectory jitter; executing a coherent predicted chunk is
+smoother — the wrapper's replan-every-step default was fighting the model's
+own training configuration.
+
+**k=4's failure pattern points at the next step:** its grasp rate equals k=2
+(91.7%) but 4 of its 6 failures are grasped-but-not-placed (`--G+`) — sparse
+feedback specifically hurts the precise *place* phase, not transport or grasp.
+That is direct evidence for **adaptive replanning** (k=1–2 near grasp/place,
+k=4 in transport): potentially k=4's speed at k=2's success rate. This is the
+non-uniform-over-time thesis applied to replanning frequency — and both
+backbones ship at fixed extremes of that spectrum (SpatialVLA wrapper: k=1
+always; UniVLA: k=5 always, `predict_action_frames=5` with all 5 executed by
+its eval), so the adaptive middle is unclaimed by either default.
+
 ## Status of methods tried
 
 | Method | Axis | Backbone | Success | Latency | Verdict |
@@ -233,8 +267,9 @@ transport) — the non-uniform-over-time thesis applied to replanning frequency.
 | layer pruning | **depth (LLM)** | UniVLA | maintained/↑ | **modest ↓** | works; selective per archetype |
 | Gemma2 depth pruning | depth (LLM) | SpatialVLA | maintained on 1/4 tasks only | modest ↓ (~3-4%) when it works | narrow/task-specific; not a broad lever on this backbone |
 | self-speculative decoding | decode algorithm | SpatialVLA | identical (lossless by construction) | **1.38× SLOWER** | no cheap draft exists in Gemma2 (draft=85% cost, acceptance 50%) |
-| temporal caching (stride 2) | temporal | SpatialVLA | maintained (71%) | **~4% ↓** (1.04×) | best broad SpatialVLA latency lever |
-| action-chunk execution | **temporal (replan freq)** | SpatialVLA | (next) | (potentially large: decode called 1/k as often) | probing whether the model already predicts chunks |
+| temporal caching (stride 2) | temporal | SpatialVLA | maintained (71%) | **~4% ↓** (1.04×) | superseded by chunk execution |
+| **action-chunk execution (k=2)** | **temporal (replan freq)** | SpatialVLA | **↑ (66.7→87.5%)** | **~1.8× faster** | **Pareto win; best result of the project** |
+| **action-chunk execution (k=4)** | **temporal (replan freq)** | SpatialVLA | maintained/↑ (75.0%) | **~3.6× faster** | place-phase failures → motivates adaptive k |
 
 *Artifacts: `docs/DEPTH_PRUNING_RESULTS.md`, `experiments/FastV_univla.md`,
 `experiments/DepthController_univla.md`, `SpatialVLA/experiments/tome/`,
