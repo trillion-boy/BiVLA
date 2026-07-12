@@ -466,6 +466,9 @@ def main():
     print(f"grasp_rate:   {grasp_count}/{len(results)} = {summary['grasp_rate']:.1%}", flush=True)
     print(f"avg_steps:    {summary['avg_steps']:.0f}", flush=True)
     print(f"avg_elapsed:  {summary['avg_elapsed']:.1f}s", flush=True)
+    model_ms = (summary.get("model_stats") or {}).get("model_ms_per_infer")
+    if model_ms is not None:
+        print(f"model_ms_per_infer: {model_ms:.1f}ms  (pure model forward pass, CUDA-synced)", flush=True)
     print("==================================================", flush=True)
 
     save_path = os.path.join(output_dir, f"results_{args.task}.json")

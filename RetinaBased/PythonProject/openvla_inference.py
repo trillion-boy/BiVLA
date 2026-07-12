@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import time
 from typing import Optional, Tuple
 
 import cv2
@@ -91,13 +92,15 @@ class OpenVLAInference:
         model_path: str,
         unnorm_key: str = "bridge_orig",
         device: str = "cuda",
-        attn_implementation: Optional[str] = None,
+        attn_implementation: Optional[str] = "eager",
     ):
         self.model_path = model_path
         self.unnorm_key = unnorm_key
         self.device = device
         self.dtype = torch.bfloat16 if str(device).startswith("cuda") else torch.float32
         self._last_prepared_image: Optional[np.ndarray] = None
+        self._episode_model_time = 0.0
+        self._episode_model_calls = 0
 
         self.processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
         load_kwargs = dict(
@@ -123,10 +126,18 @@ class OpenVLAInference:
         return self._last_prepared_image.copy()
 
     def start_episode(self) -> None:
-        return None
+        self._episode_model_time = 0.0
+        self._episode_model_calls = 0
 
     def episode_stats(self) -> Optional[dict[str, float]]:
-        return None
+        if self._episode_model_calls == 0:
+            return None
+        return {
+            "model_calls_timed": float(self._episode_model_calls),
+            "model_ms_per_infer": float(
+                self._episode_model_time / self._episode_model_calls * 1000.0
+            ),
+        }
 
     def prepare_image(
         self,
@@ -159,6 +170,7 @@ class OpenVLAInference:
         )
         model_inputs = self._move_inputs(model_inputs)
 
+        t0 = time.time()
         with torch.inference_mode():
             action = self.model.predict_action(
                 **model_inputs,
@@ -167,6 +179,11 @@ class OpenVLAInference:
             )
         if torch.is_tensor(action):
             action = action.detach().float().cpu().numpy()
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()  # guarantee GPU work is actually done before we stop the clock
+        dt = time.time() - t0
+        self._episode_model_time += dt
+        self._episode_model_calls += 1
         return np.asarray(action, dtype=np.float32)
 
     def step(
@@ -258,6 +275,7 @@ class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):
         self._episode_started = False
 
     def start_episode(self) -> None:
+        super().start_episode()  # resets the base class's model-timing counters too
         self._episode_started = True
         self._episode_stats = {
             "policy_steps": 0.0,
@@ -292,6 +310,9 @@ class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):
         stats["model_call_rate"] = stats["model_calls"] / steps
         stats["reuse_rate"] = stats["action_reuses"] / steps
         stats["speedup_vs_vanilla_est"] = steps / model_calls
+        timing = super().episode_stats()  # pure model-only ms/infer from the base class
+        if timing:
+            stats.update(timing)
         return stats
 
     def _ring_ranges(self, height: int) -> tuple[tuple[int, int], tuple[int, int], tuple[int, int]]:
