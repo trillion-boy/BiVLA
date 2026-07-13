@@ -30,6 +30,7 @@ from simpler_env.policies.spatialvla.spatialvla_model import SpatialVLAInference
 sys.path.insert(0, os.path.dirname(__file__))
 from tome_siglip import apply_tome_to_siglip, center_protect_provider  # noqa: E402
 from adaptive_chunk_exec import AdaptiveChunkExecutor  # noqa: E402
+from foveation import foveate_image_logpolar  # noqa: E402
 
 
 def parse_args():
@@ -80,6 +81,12 @@ def parse_args():
                    help="steps after gripper closes before switching to dense replanning")
     p.add_argument("--adaptive-open-delay", type=int, default=5,
                    help="steps after gripper opens before switching back to sparse replanning")
+    p.add_argument("--foveate", action="store_true", default=False,
+                   help="log-polar foveation of the observation before the policy sees it "
+                        "(mentor's RetinaBased transform ported 1:1); composes with any "
+                        "other flag -- the env always steps on the raw scene")
+    p.add_argument("--foveate-keep-percent", type=float, default=20.0,
+                   help="percent of visual sample density retained (RetinaBased default: 20)")
     return p.parse_args()
 
 
@@ -88,6 +95,12 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     cfg = TASK_CONFIGS[args.task]
     cam = cfg["obs_camera_name"]
+
+    fov_keep_ratio = args.foveate_keep_percent / 100.0
+
+    def observe(env, obs):
+        img = get_image(env, obs, cam)
+        return foveate_image_logpolar(img, fov_keep_ratio) if args.foveate else img
 
     policy = SpatialVLAInference(
         saved_model_path=args.model_path,
@@ -163,7 +176,7 @@ def main():
         print(f"\n── ep {ep_count:02d} (env_id={ep_id}) ──", flush=True)
         env, obs = build_env(cfg, ep_id)
         instruction = env.get_language_instruction()
-        image = get_image(env, obs, cam)
+        image = observe(env, obs)
         policy.reset(instruction)
         if args.temporal_stride > 1:
             from temporal_cache import reset_temporal_cache
@@ -239,7 +252,7 @@ def main():
             final_info = info
             if not grasped and isinstance(info, dict) and info.get("is_src_obj_grasped", False):
                 grasped = True
-            image = get_image(env, obs, cam)
+            image = observe(env, obs)
             new_instr = env.get_language_instruction()
             if new_instr != instruction:
                 instruction = new_instr
@@ -268,6 +281,8 @@ def main():
     avg_ms = float(np.mean([r["model_ms_per_infer"] for r in results]))
     avg_steps = float(np.mean([r["steps"] for r in results]))
     parts = []
+    if args.foveate:
+        parts.append(f"foveated keep={args.foveate_keep_percent:.0f}%")
     if args.tome:
         parts.append(f"ToMe r={args.tome_r}x{args.tome_layers} protect={args.tome_protect}")
     if args.temporal_stride > 1:
@@ -311,6 +326,8 @@ def main():
         "model": "SpatialVLA-official", "task": args.task,
         "success_rate": sr, "grasp_rate": gr,
         "avg_model_ms_per_infer": avg_ms, "avg_steps": avg_steps,
+        "foveate": {"enabled": args.foveate,
+                    "keep_percent": args.foveate_keep_percent},
         "tome": {"enabled": args.tome, "r": args.tome_r, "layers": args.tome_layers,
                  "protect": args.tome_protect},
         "temporal_stride": args.temporal_stride,
