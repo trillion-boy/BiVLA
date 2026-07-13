@@ -1,0 +1,758 @@
+{
+  "model": "openvla_foveated",
+  "task": "widowx_spoon_on_towel",
+  "success_rate": 0.2916666666666667,
+  "grasp_rate": 0.3333333333333333,
+  "avg_steps": 51.416666666666664,
+  "avg_elapsed": 30.76375084122022,
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 37.724570751190186,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 536.5525007247925
+      }
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.50912427902222,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 503.7645538647969
+      }
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.531707525253296,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 503.1132062276205
+      }
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.908751249313354,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 505.71313699086505
+      }
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 55,
+      "elapsed": 32.77501320838928,
+      "final_info": {
+        "elapsed_steps": 55,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "model_stats": {
+        "model_calls_timed": 55.0,
+        "model_ms_per_infer": 505.56541356173426
+      }
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.84599494934082,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 504.73751624425256
+      }
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 14,
+      "elapsed": 8.360948324203491,
+      "final_info": {
+        "elapsed_steps": 14,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "model_stats": {
+        "model_calls_timed": 14.0,
+        "model_ms_per_infer": 505.04887104034424
+      }
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 36.508878231048584,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 508.40140581130976
+      }
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 28,
+      "elapsed": 16.816812753677368,
+      "final_info": {
+        "elapsed_steps": 28,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "model_stats": {
+        "model_calls_timed": 28.0,
+        "model_ms_per_infer": 506.12621647971014
+      }
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 26,
+      "elapsed": 15.555908203125,
+      "final_info": {
+        "elapsed_steps": 26,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "model_stats": {
+        "model_calls_timed": 26.0,
+        "model_ms_per_infer": 504.68496175912713
+      }
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.90452313423157,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 505.07397254308063
+      }
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.899070024490356,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 505.2360812822978
+      }
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.93388628959656,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": true,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": true,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 504.6993573506673
+      }
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.7077157497406,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 504.8222303390503
+      }
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 23,
+      "elapsed": 13.678934574127197,
+      "final_info": {
+        "elapsed_steps": 23,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "model_stats": {
+        "model_calls_timed": 23.0,
+        "model_ms_per_infer": 503.7788619165835
+      }
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.61089324951172,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 504.19920682907104
+      }
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.70277547836304,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 504.4312198956807
+      }
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.55699586868286,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 504.0156841278076
+      }
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.55644631385803,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 503.6257227261861
+      }
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.94721341133118,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 503.96678845087683
+      }
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 31,
+      "elapsed": 18.40903377532959,
+      "final_info": {
+        "elapsed_steps": 31,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "model_stats": {
+        "model_calls_timed": 31.0,
+        "model_ms_per_infer": 503.499730940788
+      }
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "success": false,
+      "grasped": true,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.96144771575928,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "False",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 503.744121392568
+      }
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 37,
+      "elapsed": 22.029484272003174,
+      "final_info": {
+        "elapsed_steps": 37,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "model_stats": {
+        "model_calls_timed": 37.0,
+        "model_ms_per_infer": 503.32646112184267
+      }
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.89389085769653,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "model_stats": {
+        "model_calls_timed": 60.0,
+        "model_ms_per_infer": 503.99053494135535
+      }
+    }
+  ],
+  "model_stats": {
+    "model_calls_timed": 51.416666666666664,
+    "model_ms_per_infer": 505.9215731901004
+  }
+}
