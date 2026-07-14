@@ -2,29 +2,67 @@
 
 **Date of incident:** 2026-07-14
 **Status:** UNRESOLVED — no software-side fix exists; requires an environment with NVIDIA driver < 570
-**Impact:** All SimplerEnv / ManiSkill2 / SAPIEN 2.2 evaluation (OpenVLA RetinaBased *and* SpatialVLA experiments) is currently impossible on Google Colab.
+**Impact:** All SimplerEnv / ManiSkill2 / SAPIEN 2.2 evaluation (OpenVLA RetinaBased *and* SpatialVLA experiments) failed on every Colab GPU VM obtained on Jul 14 (3/3 VMs across L4 and T4 pools). If the driver-580 hosts now cover the fleet, this class of experiment is not runnable on Colab.
 
 ---
 
 ## TL;DR
 
-Between the night of July 13 and the morning of July 14, Google Colab rolled out
-new GPU VM images carrying **NVIDIA driver 580.82.07 (CUDA 13.0, Open Kernel
-Module, build date 2026-04-30)**. On this driver, **SAPIEN 2.2.2 segfaults in
-`svulkan2::core::Buffer::map()`** the moment a camera image is read back from
-GPU memory (`take_picture()`), killing every SimplerEnv episode before the
-first step. The exact same code, wheels, and setup completed full 24-episode
-evaluation runs the night before. Nothing in this repository changed; the
-platform underneath did.
+Every Colab GPU VM allocated on July 14 (two L4s, one T4) carried **NVIDIA
+driver 580.82.07 (CUDA 13.0, Open Kernel Module, build date 2026-04-30)**,
+observed directly via `nvidia-smi`. On this driver, **SAPIEN 2.2.2 segfaults
+in `svulkan2::core::Buffer::map()`** the moment a camera image is read back
+from GPU memory (`take_picture()`), killing every SimplerEnv episode before
+the first step. The exact same code, wheels, and setup completed full
+24-episode evaluation runs the night before (July 13). Since the crash is
+deterministic on first render, the July 13 VM cannot have been on this driver
+— i.e., nothing in this repository changed; the host VM underneath did.
+(Whether this was a fleet-wide rollout or a gradual host-pool refresh is
+unknown; see "Evidence status" below.)
 
 ---
+
+## Evidence status: observed vs. inferred vs. unknown
+
+**Directly observed (certain):**
+- `nvidia-smi` on all three VMs allocated Jul 14 (L4 ×2, T4 ×1): driver
+  580.82.07, CUDA 13.0, Open Kernel Module.
+- SAPIEN 2.2.2 segfault at first `take_picture()` on every one of those VMs,
+  with the gdb backtrace below. The crash is deterministic — it fires on the
+  very first render call, every time.
+- The identical workload (same repo state, same wheels, same setup cells)
+  completed 12 full 24-episode runs on a Colab L4 the evening of Jul 13.
+
+**Inferred (strong, but indirect):** the Jul 13 VM was on an older driver.
+We did **not** record `nvidia-smi` output on Jul 13, so this is a deduction,
+not an observation: a crash that reproduces 100% on the first render could
+not have coexisted with 12 completed runs, therefore the Jul 13 host did not
+exhibit it — consistent with a pre-570 driver.
+
+**Not found / unknown:**
+- **No official announcement exists** (checked Jul 14). Colab has historically
+  surfaced runtime-stack upgrades as issues on `googlecolab/colabtools`
+  (e.g. [#5061](https://github.com/googlecolab/colabtools/issues/5061) for
+  CUDA 12.5 / driver 550, [#6053](https://github.com/googlecolab/colabtools/issues/6053)
+  for the Jul 9, 2026 PyTorch 2.13 bump). No analogous issue exists for
+  driver 580 / CUDA 13 as of Jul 14, and the
+  [backend-info](https://github.com/googlecolab/backend-info) repo tracks
+  userland packages only — host driver versions have never been published
+  there. So the absence of a notice is not unusual: **Colab does not
+  announce host-driver changes**, and the claim that "the driver changed
+  between Jul 13 and Jul 14" rests on our inference above, not on any
+  Google statement.
+- Whether this is a synchronized fleet-wide rollout or a gradual host-pool
+  refresh (with Jul 14's allocations simply landing on refreshed hosts) is
+  unknown. Three-for-three VMs across two GPU types suggests broad coverage,
+  but n=3 cannot distinguish the two.
 
 ## Timeline
 
 | When (KST) | Event |
 |---|---|
-| Jul 13, evening | Full sdpa reproduction suite (12 runs × 24 episodes) completes on Colab L4. Results committed (`results_reproduction_sdpa/`, commit `567268d`). Rendering fully functional. |
-| Jul 14, ~11:00 | New Colab session for SpatialVLA experiments. Setup succeeds; smoke test **segfaults** immediately after model load, at env creation. |
+| Jul 13, evening | Full sdpa reproduction suite (12 runs × 24 episodes) completes on Colab L4. Results committed (`results_reproduction_sdpa/`, commit `567268d`). Rendering fully functional. Driver version not recorded. |
+| Jul 14, ~11:00 | New Colab session for SpatialVLA experiments. Setup succeeds; smoke test **segfaults** immediately after model load, at env creation. `nvidia-smi`: 580.82.07. |
 | Jul 14, afternoon | Systematic debugging across two L4 VMs and one T4 VM (see below). Every VM shows driver 580.82.07; every SAPIEN render attempt segfaults identically. |
 | Jul 14, evening | Root cause confirmed with gdb; all workaround avenues exhausted. Incident declared. |
 
