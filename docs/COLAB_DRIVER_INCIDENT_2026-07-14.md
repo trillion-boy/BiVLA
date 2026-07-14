@@ -1,8 +1,8 @@
 # Incident Report: Colab Driver Rollout Breaks All SAPIEN-Based Simulation
 
 **Date of incident:** 2026-07-14
-**Status:** UNRESOLVED — no software-side fix exists; requires an environment with NVIDIA driver < 570
-**Impact:** All SimplerEnv / ManiSkill2 / SAPIEN 2.2 evaluation (OpenVLA RetinaBased *and* SpatialVLA experiments) failed on every Colab GPU VM obtained on Jul 14 (3/3 VMs across L4 and T4 pools). If the driver-580 hosts now cover the fleet, this class of experiment is not runnable on Colab.
+**Status:** Unresolved as of Jul 14 — we have not found a software-side fix yet, and every workaround we tried failed. It may resolve on its own over time (a Colab image change, a Colab-side rollback, or landing on an older host), but for now the reliable path appears to be an environment with NVIDIA driver < 570.
+**Impact:** All SimplerEnv / ManiSkill2 / SAPIEN 2.2 evaluation (OpenVLA RetinaBased *and* SpatialVLA experiments) failed on every Colab GPU VM obtained on Jul 14 (3/3 VMs across L4 and T4 pools). If the driver-580 hosts now cover the fleet, running this class of experiment on Colab may be difficult until something changes on the platform side.
 
 ---
 
@@ -91,8 +91,9 @@ Thread 1 "python" received signal SIGSEGV, Segmentation fault.
 binary wheel (compiled ~2023) makes assumptions about the driver's Vulkan
 memory-type layout that no longer hold on the 580-series driver, dereferences
 an invalid mapping, and is killed by the OS. SAPIEN 2.x is end-of-life
-upstream; no fixed 2.x wheel exists, and SAPIEN 3.x is API-incompatible with
-`ManiSkill2_real2sim`.
+upstream, so a fixed 2.x wheel seems unlikely in the short term (though not
+impossible if enough users are affected by the 580 transition), and SAPIEN
+3.x is API-incompatible with `ManiSkill2_real2sim` as-is.
 
 Importantly, **Vulkan itself is healthy** on these VMs: with
 `LD_LIBRARY_PATH=/usr/lib64-nvidia`, `vulkaninfo` enumerates the L4 as a
@@ -137,8 +138,12 @@ Docker/self-managed machines whose owners upgraded drivers earlier):
 
 ## Current options
 
-1. **Wait** for a Colab image fix/rollback or a SAPIEN-side fix. No timeline;
-   SAPIEN 2.x is EOL so an upstream fix is unlikely.
+1. **Wait and re-check periodically.** This may resolve itself: Colab could
+   adjust or roll back the image, older hosts may still exist in some pools,
+   or the SAPIEN/ManiSkill community may ship a workaround now that 580-era
+   drivers are spreading. The preflight cells below make each re-check cost
+   only a few seconds, so it is cheap to keep trying while working on other
+   things. The uncertainty is the timeline — it could be days or much longer.
 2. **Rented GPU with a pinned driver image** (RunPod / Lambda / Vast):
    choose a CUDA 12.1 / driver 535–550 template and the problem does not
    exist. Estimated cost for the full remaining experiment plan: **$5–10**.
@@ -147,10 +152,11 @@ Docker/self-managed machines whose owners upgraded drivers earlier):
 
 ## Preflight procedure for any future Colab session
 
-Run **before** any setup; abandon the VM immediately on failure:
+Run **before** any setup — this doubles as the cheap "has it resolved yet?"
+re-check. If it fails, it is probably not worth spending time on that VM:
 
 ```bash
-# 1) Driver check (5 s) — 580.x means the VM is unusable for SAPIEN 2.2
+# 1) Driver check (5 s) — 580.x means SAPIEN 2.2 will very likely segfault
 !nvidia-smi | grep "Driver Version"
 ```
 
