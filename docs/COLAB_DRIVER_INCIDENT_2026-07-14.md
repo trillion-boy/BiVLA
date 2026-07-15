@@ -24,19 +24,33 @@ Open Kernel Module, same Apr 30 build. Facts from that session:
   **Jul 13 13:51 UTC** (`/usr/lib64-nvidia/libGLX_nvidia.so.580.82.07`),
   corroborating that a new image shipped in the Jul 13–14 window.
 
-**Revised interpretation:** the claim "SAPIEN 2.2 cannot render on driver
-580" is too strong — a VM with that exact driver works. The Jul 14 failures
-were real (deterministic segfaults, gdb-confirmed, across three VMs), but
-what actually separated those VMs from the Jul 15 working one is unknown.
-Candidates: host-side differences invisible to `nvidia-smi`, a transient
-issue during the image rollout itself, or an environment-variable gap in
-some of the Jul 14 test harnesses (the hypothesis table below records
-LD_LIBRARY_PATH as tested, but after the Jul 15 false-negative experience
-that record deserves some skepticism too). The external SAPIEN-on-570+
-issues remain real but may describe a different failure mode than ours.
+**Later the same day (Jul 15, ~05:30 UTC), a third VM confirmed genuine
+per-VM variance.** A fresh L4 allocated for the SpatialVLA notebook — same
+driver 580.82.07 — failed the full, correctly-configured preflight:
 
-**Practical takeaway:** don't write off a session on driver string alone.
-Run the full preflight below — with both exports — and trust its verdict.
+- Its runtime image was barer than the morning VM's: no `libvulkan1`
+  installed, `/etc/vulkan/icd.d/` present but **empty** (no NVIDIA ICD).
+- After installing the loader and writing ICD files manually: the **GLX ICD
+  failed instance creation** (`vk_icdGetInstanceProcAddr` not resolvable →
+  `ERROR_INCOMPATIBLE_DRIVER`) while the **EGL ICD worked** — `vulkaninfo`
+  enumerated `deviceName = NVIDIA L4` normally.
+- With that healthy EGL instance, SAPIEN still **segfaulted at
+  `take_picture()`**, with no "incompatible driver" warning — i.e., the
+  device was found and the crash matches the Jul 14 `Buffer::map()`
+  signature exactly.
+
+So within a single day: one 580.82.07 VM renders fine end-to-end (GLX ICD),
+another 580.82.07 VM segfaults despite a fully verified Vulkan stack (EGL
+ICD, L4 enumerated). **The failure is real, deterministic per-VM, and not
+explained by driver version, ICD choice, loader presence, or env vars.**
+The differentiating host-side factor remains unidentified. Which Vulkan
+userland pieces are present, and which ICD path works, also varies VM to
+VM — consistent with an uneven image rollout.
+
+**Practical takeaway:** treat Colab VMs as a lottery right now. Don't write
+off (or trust) a session on the driver string alone — run the full preflight
+below on every fresh VM and let the render test decide. If it fails, delete
+the runtime and re-roll; working VMs demonstrably exist in the same pool.
 
 ---
 
@@ -191,26 +205,46 @@ Jul 15 update shows, the driver string alone is NOT a reliable predictor
 (580.82.07 VMs both failed and worked), and a preflight without the
 `LD_LIBRARY_PATH` export can produce a false negative.
 
-```bash
-# 1) Driver check (5 s) — informational only; record it, don't decide on it
-!nvidia-smi | grep "Driver Version"
-```
+Single self-contained cell (~3–4 min on a fresh VM). Hard-learned details
+baked in: fresh VMs may lack `python3.10-venv` (and `ensurepip` may be
+broken — hence the get-pip bootstrap), may lack `libvulkan1` entirely, may
+have an **empty** `/etc/vulkan/icd.d/`, and which NVIDIA ICD works (GLX vs
+EGL) varies per VM — so both are written and tried in turn. On success it
+prints which ICD to export in all subsequent run cells.
 
 ```bash
-# 2) Definitive render check (~2 min) — BOTH exports are required
 %%bash
-apt-get install -y -qq python3.10 python3.10-venv > /dev/null 2>&1
-python3.10 -m venv /content/vtest
-/content/vtest/bin/pip install -q "numpy<2" sapien==2.2.2
-export VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json
+nvidia-smi | grep "Driver Version"
+apt-get update -qq
+apt-get install -y -qq python3.10-venv libvulkan1 vulkan-tools > /dev/null
+if [ ! -f /content/vtest/bin/python ]; then
+  python3.10 -m venv /content/vtest --without-pip
+  curl -sS https://bootstrap.pypa.io/get-pip.py -o /content/get-pip.py
+  /content/vtest/bin/python /content/get-pip.py -q
+  /content/vtest/bin/pip install -q "setuptools<81" "numpy<2" sapien==2.2.2
+fi
+mkdir -p /etc/vulkan/icd.d
+cat > /etc/vulkan/icd.d/nvidia_icd.json <<'JSON'
+{"file_format_version":"1.0.0","ICD":{"library_path":"libGLX_nvidia.so.0","api_version":"1.3.277"}}
+JSON
+cat > /etc/vulkan/icd.d/nvidia_egl.json <<'JSON'
+{"file_format_version":"1.0.0","ICD":{"library_path":"libEGL_nvidia.so.0","api_version":"1.3.277"}}
+JSON
 export LD_LIBRARY_PATH=/usr/lib64-nvidia
-/content/vtest/bin/python - << 'EOF'
+for icd in nvidia_icd nvidia_egl; do
+  export VK_ICD_FILENAMES=/etc/vulkan/icd.d/$icd.json
+  echo "== [$icd] render test =="
+  /content/vtest/bin/python - << 'EOF'
 import sapien.core as sapien
 e = sapien.Engine(); r = sapien.SapienRenderer(offscreen_only=True); e.set_renderer(r)
 s = e.create_scene(); cam = s.add_camera('c', 128, 128, 1.0, 0.01, 10)
 s.step(); s.update_render(); cam.take_picture()
-print('RENDER OK -- VM is usable')
+print('RENDER OK')
 EOF
+  if [ $? -eq 0 ]; then echo ">>> VM USABLE (use VK_ICD_FILENAMES=/etc/vulkan/icd.d/$icd.json in every run cell) <<<"; exit 0; fi
+done
+echo ">>> VM FAILED preflight -- delete runtime and re-roll <<<"
+exit 1
 ```
 
 ## What is NOT affected
