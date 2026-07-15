@@ -1,7 +1,7 @@
 # Incident Report: Colab Driver Rollout Breaks All SAPIEN-Based Simulation
 
 **Date of incident:** 2026-07-14
-**Status:** PARTIALLY RESOLVED / root cause revised (see "Update 2026-07-15" below) — on Jul 15 a Colab VM with the *identical* driver (580.82.07, Open Kernel Module) completed full SimplerEnv episodes, so the driver version alone does not determine failure. The Jul 14 failures were real and reproducible that day, but their exact cause is now an open question. Practical guidance: run the preflight check (with BOTH env exports) at the start of every session and proceed if it passes.
+**Status:** RESOLVED for practical purposes (2026-07-15, see Updates below) — the full SimplerEnv pipeline works on driver-580 Colab VMs (verified on L4 and A100 the day after the incident). What breaks on driver 580 is a narrower thing than first believed: minimal empty-scene SAPIEN renders (the exact shape of our diagnostic snippet) segfault in `Buffer::map()`, which caused a day of false "broken VM" verdicts. The Jul 14 failures of the real SpatialVLA eval remain not fully explained; guidance now is to validate every fresh VM with a real `simpler_env.make()` smoke, never a synthetic snippet.
 **Impact:** All SimplerEnv / ManiSkill2 / SAPIEN 2.2 evaluation (OpenVLA RetinaBased *and* SpatialVLA experiments) failed on every Colab GPU VM obtained on Jul 14 (3/3 VMs across L4 and T4 pools). If the driver-580 hosts now cover the fleet, running this class of experiment on Colab may be difficult until something changes on the platform side.
 
 ---
@@ -47,10 +47,44 @@ The differentiating host-side factor remains unidentified. Which Vulkan
 userland pieces are present, and which ICD path works, also varies VM to
 VM — consistent with an uneven image rollout.
 
-**Practical takeaway:** treat Colab VMs as a lottery right now. Don't write
-off (or trust) a session on the driver string alone — run the full preflight
-below on every fresh VM and let the render test decide. If it fails, delete
-the runtime and re-roll; working VMs demonstrably exist in the same pool.
+**Update 2026-07-15 (2) — RESOLUTION: the minimal render snippet was the
+broken element, not the VMs.** Controlled experiments on an A100 VM where
+the full OpenVLA evaluation ran flawlessly showed that the minimal
+empty-scene SAPIEN snippet used by every preflight/diagnostic this incident
+(engine → renderer → empty scene → one camera → `take_picture()`)
+**segfaults on that same healthy VM**, under every combination tried:
+GLX/EGL/auto ICD, kernel-inherited env, `offscreen_only` on or off, default
+or "ibl" shaders. Meanwhile the real pipeline — `simpler_env.make(...)` +
+`env.reset()`, i.e., a populated scene with objects and lights — exits 0 on
+the same VM every time. The suspected mechanism fits the Jul 14 gdb trace:
+an empty scene creates zero-sized GPU buffers, and `Buffer::map()` on the
+580-series driver no longer tolerates mapping them, where older drivers did.
+
+Consequences:
+- **Every "failed VM" verdict issued via the minimal snippet is invalid**
+  (Jul 15: the 04:13 L4, the 05:28 SpatialVLA L4, the 05:38 re-roll, and
+  the A100 — the latter provably healthy). The per-VM-lottery interpretation
+  above is therefore unsupported; the only two VMs tested with the real
+  pipeline on Jul 15 (morning L4, afternoon A100) **both work**.
+- Several rows of the Jul 14 hypothesis table were also tested with this
+  snippet and are equally suspect. The Jul 14 failures of the *real*
+  SpatialVLA eval remain unexplained (that notebook's env setup differed),
+  but they no longer support "driver 580 breaks SAPIEN rendering".
+- **Colab remains usable for these experiments on driver 580.**
+
+**Valid preflight from now on** — never the minimal snippet; always the real
+pipeline (after SimplerEnv is installed; ~30 s, no model load):
+
+```python
+import subprocess
+code = '''import simpler_env
+env = simpler_env.make("widowx_spoon_on_towel")
+obs, _ = env.reset()
+print("ENV+RENDER OK")'''
+p = subprocess.run([VENV_PYTHON, "-c", code], cwd=REPO_DIR,
+                   capture_output=True, text=True)
+print(p.returncode, p.stdout[-200:], p.stderr[-200:])
+```
 
 ---
 
@@ -198,19 +232,16 @@ Docker/self-managed machines whose owners upgraded drivers earlier):
 3. **Lab machine** with driver < 570 (the mentor's original local
    `run_experiment.sh` path works as-is).
 
-## Preflight procedure for any future Colab session
+## Preflight procedure (DEPRECATED — kept as a record)
 
-Run **before** any setup. Only the render check is authoritative: as the
-Jul 15 update shows, the driver string alone is NOT a reliable predictor
-(580.82.07 VMs both failed and worked), and a preflight without the
-`LD_LIBRARY_PATH` export can produce a false negative.
-
-Single self-contained cell (~3–4 min on a fresh VM). Hard-learned details
-baked in: fresh VMs may lack `python3.10-venv` (and `ensurepip` may be
-broken — hence the get-pip bootstrap), may lack `libvulkan1` entirely, may
-have an **empty** `/etc/vulkan/icd.d/`, and which NVIDIA ICD works (GLX vs
-EGL) varies per VM — so both are written and tried in turn. On success it
-prints which ICD to export in all subsequent run cells.
+> **DEPRECATED 2026-07-15:** the cell below tests rendering with the
+> minimal empty-scene snippet, which Update (2) proved to segfault even on
+> healthy VMs under driver 580. It produced multiple false "broken VM"
+> verdicts on Jul 15 and must not be used as a health check. The valid
+> preflight is the `simpler_env.make()` smoke in Update (2), run after
+> environment setup. The bootstrapping steps below (venv + get-pip,
+> `libvulkan1`, writing GLX/EGL ICD files) remain useful as setup
+> reference for bare VMs — only the verdict logic is wrong.
 
 ```bash
 %%bash
