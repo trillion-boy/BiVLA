@@ -1,12 +1,46 @@
 # Incident Report: Colab Driver Rollout Breaks All SAPIEN-Based Simulation
 
 **Date of incident:** 2026-07-14
-**Status:** Unresolved as of Jul 14 — we have not found a software-side fix yet, and every workaround we tried failed. It may resolve on its own over time (a Colab image change, a Colab-side rollback, or landing on an older host), but for now the reliable path appears to be an environment with NVIDIA driver < 570.
+**Status:** PARTIALLY RESOLVED / root cause revised (see "Update 2026-07-15" below) — on Jul 15 a Colab VM with the *identical* driver (580.82.07, Open Kernel Module) completed full SimplerEnv episodes, so the driver version alone does not determine failure. The Jul 14 failures were real and reproducible that day, but their exact cause is now an open question. Practical guidance: run the preflight check (with BOTH env exports) at the start of every session and proceed if it passes.
 **Impact:** All SimplerEnv / ManiSkill2 / SAPIEN 2.2 evaluation (OpenVLA RetinaBased *and* SpatialVLA experiments) failed on every Colab GPU VM obtained on Jul 14 (3/3 VMs across L4 and T4 pools). If the driver-580 hosts now cover the fleet, running this class of experiment on Colab may be difficult until something changes on the platform side.
 
 ---
 
-## TL;DR
+## Update 2026-07-15: rendering works again on an identical-driver VM
+
+The next morning, a fresh Colab L4 VM ran the full OpenVLA smoke test
+successfully — complete episodes, rendering included — with `nvidia-smi`
+reporting the **same driver as the broken Jul 14 VMs**: 580.82.07, CUDA 13.0,
+Open Kernel Module, same Apr 30 build. Facts from that session:
+
+- **Working VM (Jul 15, ~04:17 UTC boot):** driver 580.82.07 OKM; eval run
+  with `VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json` and
+  `LD_LIBRARY_PATH=/usr/lib64-nvidia` exported; episodes completed normally.
+- **Failing VM (Jul 15, ~04:13 UTC, a different VM minutes earlier):**
+  preflight segfaulted — but that preflight cell was missing the
+  `LD_LIBRARY_PATH` export, so it cannot distinguish "broken VM" from
+  "incomplete test". A false negative is plausible.
+- The userland driver libraries in the runtime image are timestamped
+  **Jul 13 13:51 UTC** (`/usr/lib64-nvidia/libGLX_nvidia.so.580.82.07`),
+  corroborating that a new image shipped in the Jul 13–14 window.
+
+**Revised interpretation:** the claim "SAPIEN 2.2 cannot render on driver
+580" is too strong — a VM with that exact driver works. The Jul 14 failures
+were real (deterministic segfaults, gdb-confirmed, across three VMs), but
+what actually separated those VMs from the Jul 15 working one is unknown.
+Candidates: host-side differences invisible to `nvidia-smi`, a transient
+issue during the image rollout itself, or an environment-variable gap in
+some of the Jul 14 test harnesses (the hypothesis table below records
+LD_LIBRARY_PATH as tested, but after the Jul 15 false-negative experience
+that record deserves some skepticism too). The external SAPIEN-on-570+
+issues remain real but may describe a different failure mode than ours.
+
+**Practical takeaway:** don't write off a session on driver string alone.
+Run the full preflight below — with both exports — and trust its verdict.
+
+---
+
+## TL;DR (as written 2026-07-14 — see update above)
 
 Every Colab GPU VM allocated on July 14 (two L4s, one T4) carried **NVIDIA
 driver 580.82.07 (CUDA 13.0, Open Kernel Module, build date 2026-04-30)**,
@@ -152,16 +186,18 @@ Docker/self-managed machines whose owners upgraded drivers earlier):
 
 ## Preflight procedure for any future Colab session
 
-Run **before** any setup — this doubles as the cheap "has it resolved yet?"
-re-check. If it fails, it is probably not worth spending time on that VM:
+Run **before** any setup. Only the render check is authoritative: as the
+Jul 15 update shows, the driver string alone is NOT a reliable predictor
+(580.82.07 VMs both failed and worked), and a preflight without the
+`LD_LIBRARY_PATH` export can produce a false negative.
 
 ```bash
-# 1) Driver check (5 s) — 580.x means SAPIEN 2.2 will very likely segfault
+# 1) Driver check (5 s) — informational only; record it, don't decide on it
 !nvidia-smi | grep "Driver Version"
 ```
 
 ```bash
-# 2) Definitive render check (~2 min) if the driver looks OK
+# 2) Definitive render check (~2 min) — BOTH exports are required
 %%bash
 apt-get install -y -qq python3.10 python3.10-venv > /dev/null 2>&1
 python3.10 -m venv /content/vtest
