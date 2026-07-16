@@ -1,165 +1,68 @@
-# Incident Report: Colab Driver Rollout Breaks All SAPIEN-Based Simulation
+# Incident Report: Two Days of Colab GPU/Rendering Failures (2026-07-14 ~ 07-15)
 
-**Date of incident:** 2026-07-14
-**Status:** RESOLVED for practical purposes (2026-07-15, see Updates below) — the full SimplerEnv pipeline works on driver-580 Colab VMs (verified on L4 and A100 the day after the incident). What breaks on driver 580 is a narrower thing than first believed: minimal empty-scene SAPIEN renders (the exact shape of our diagnostic snippet) segfault in `Buffer::map()`, which caused a day of false "broken VM" verdicts. The Jul 14 failures of the real SpatialVLA eval remain not fully explained; guidance now is to validate every fresh VM with a real `simpler_env.make()` smoke, never a synthetic snippet.
-**Impact:** All SimplerEnv / ManiSkill2 / SAPIEN 2.2 evaluation (OpenVLA RetinaBased *and* SpatialVLA experiments) failed on every Colab GPU VM obtained on Jul 14 (3/3 VMs across L4 and T4 pools). If the driver-580 hosts now cover the fleet, running this class of experiment on Colab may be difficult until something changes on the platform side.
-
----
-
-## Update 2026-07-15: rendering works again on an identical-driver VM
-
-The next morning, a fresh Colab L4 VM ran the full OpenVLA smoke test
-successfully — complete episodes, rendering included — with `nvidia-smi`
-reporting the **same driver as the broken Jul 14 VMs**: 580.82.07, CUDA 13.0,
-Open Kernel Module, same Apr 30 build. Facts from that session:
-
-- **Working VM (Jul 15, ~04:17 UTC boot):** driver 580.82.07 OKM; eval run
-  with `VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json` and
-  `LD_LIBRARY_PATH=/usr/lib64-nvidia` exported; episodes completed normally.
-- **Failing VM (Jul 15, ~04:13 UTC, a different VM minutes earlier):**
-  preflight segfaulted — but that preflight cell was missing the
-  `LD_LIBRARY_PATH` export, so it cannot distinguish "broken VM" from
-  "incomplete test". A false negative is plausible.
-- The userland driver libraries in the runtime image are timestamped
-  **Jul 13 13:51 UTC** (`/usr/lib64-nvidia/libGLX_nvidia.so.580.82.07`),
-  corroborating that a new image shipped in the Jul 13–14 window.
-
-**Later the same day (Jul 15, ~05:30 UTC), a third VM confirmed genuine
-per-VM variance.** A fresh L4 allocated for the SpatialVLA notebook — same
-driver 580.82.07 — failed the full, correctly-configured preflight:
-
-- Its runtime image was barer than the morning VM's: no `libvulkan1`
-  installed, `/etc/vulkan/icd.d/` present but **empty** (no NVIDIA ICD).
-- After installing the loader and writing ICD files manually: the **GLX ICD
-  failed instance creation** (`vk_icdGetInstanceProcAddr` not resolvable →
-  `ERROR_INCOMPATIBLE_DRIVER`) while the **EGL ICD worked** — `vulkaninfo`
-  enumerated `deviceName = NVIDIA L4` normally.
-- With that healthy EGL instance, SAPIEN still **segfaulted at
-  `take_picture()`**, with no "incompatible driver" warning — i.e., the
-  device was found and the crash matches the Jul 14 `Buffer::map()`
-  signature exactly.
-
-So within a single day: one 580.82.07 VM renders fine end-to-end (GLX ICD),
-another 580.82.07 VM segfaults despite a fully verified Vulkan stack (EGL
-ICD, L4 enumerated). **The failure is real, deterministic per-VM, and not
-explained by driver version, ICD choice, loader presence, or env vars.**
-The differentiating host-side factor remains unidentified. Which Vulkan
-userland pieces are present, and which ICD path works, also varies VM to
-VM — consistent with an uneven image rollout.
-
-**Update 2026-07-15 (2) — RESOLUTION: the minimal render snippet was the
-broken element, not the VMs.** Controlled experiments on an A100 VM where
-the full OpenVLA evaluation ran flawlessly showed that the minimal
-empty-scene SAPIEN snippet used by every preflight/diagnostic this incident
-(engine → renderer → empty scene → one camera → `take_picture()`)
-**segfaults on that same healthy VM**, under every combination tried:
-GLX/EGL/auto ICD, kernel-inherited env, `offscreen_only` on or off, default
-or "ibl" shaders. Meanwhile the real pipeline — `simpler_env.make(...)` +
-`env.reset()`, i.e., a populated scene with objects and lights — exits 0 on
-the same VM every time. The suspected mechanism fits the Jul 14 gdb trace:
-an empty scene creates zero-sized GPU buffers, and `Buffer::map()` on the
-580-series driver no longer tolerates mapping them, where older drivers did.
-
-Consequences:
-- **Every "failed VM" verdict issued via the minimal snippet is invalid**
-  (Jul 15: the 04:13 L4, the 05:28 SpatialVLA L4, the 05:38 re-roll, and
-  the A100 — the latter provably healthy). The per-VM-lottery interpretation
-  above is therefore unsupported; the only two VMs tested with the real
-  pipeline on Jul 15 (morning L4, afternoon A100) **both work**.
-- Several rows of the Jul 14 hypothesis table were also tested with this
-  snippet and are equally suspect. The Jul 14 failures of the *real*
-  SpatialVLA eval remain unexplained (that notebook's env setup differed),
-  but they no longer support "driver 580 breaks SAPIEN rendering".
-- **Colab remains usable for these experiments on driver 580.**
-
-**Valid preflight from now on** — never the minimal snippet; always the real
-pipeline (after SimplerEnv is installed; ~30 s, no model load):
-
-```python
-import subprocess
-code = '''import simpler_env
-env = simpler_env.make("widowx_spoon_on_towel")
-obs, _ = env.reset()
-print("ENV+RENDER OK")'''
-p = subprocess.run([VENV_PYTHON, "-c", code], cwd=REPO_DIR,
-                   capture_output=True, text=True)
-print(p.returncode, p.stdout[-200:], p.stderr[-200:])
-```
+**Period:** 2026-07-14 ~ 2026-07-15
+**Status:** Resolved for practical purposes — the underlying rendering pipeline
+works on current Colab GPU VMs. Getting to that conclusion took two days
+because of several compounding problems, most of them self-inflicted by
+flawed diagnostic tooling rather than the platform itself. This report
+documents all of them so the same mistakes aren't repeated.
 
 ---
 
-## TL;DR (as written 2026-07-14 — see update above)
+## Summary
 
-Every Colab GPU VM allocated on July 14 (two L4s, one T4) carried **NVIDIA
-driver 580.82.07 (CUDA 13.0, Open Kernel Module, build date 2026-04-30)**,
-observed directly via `nvidia-smi`. On this driver, **SAPIEN 2.2.2 segfaults
-in `svulkan2::core::Buffer::map()`** the moment a camera image is read back
-from GPU memory (`take_picture()`), killing every SimplerEnv episode before
-the first step. The exact same code, wheels, and setup completed full
-24-episode evaluation runs the night before (July 13). Since the crash is
-deterministic on first render, the July 13 VM cannot have been on this driver
-— i.e., nothing in this repository changed; the host VM underneath did.
-(Whether this was a fleet-wide rollout or a gradual host-pool refresh is
-unknown; see "Evidence status" below.)
+On the evening of Jul 13, a full 24-episode-per-run OpenVLA reproduction
+suite (12 runs) completed normally on a Colab L4. The next morning (Jul 14),
+the same class of experiment (SimplerEnv / ManiSkill2 / SAPIEN 2.2
+rendering) started segfaulting on every Colab VM obtained that day. A full
+day of debugging pointed at a new NVIDIA driver (580.82.07, CUDA 13.0, Open
+Kernel Module) that Colab's GPU VMs had started carrying, with SAPIEN 2.2.2
+crashing in `svulkan2::core::Buffer::map()` the moment a camera image was
+read back from GPU memory.
+
+On Jul 15, further testing complicated that conclusion: some VMs with the
+*identical* driver rendered fine end-to-end, while others failed. A day of
+chasing this apparent "per-VM lottery" eventually revealed the real cause:
+**the minimal empty-scene render snippet used as a diagnostic/preflight
+check was itself broken on driver 580** (it creates zero-sized GPU buffers,
+which the new driver's `Buffer::map()` no longer tolerates), independent of
+whether the VM could actually run real workloads. Every "this VM is broken"
+verdict produced by that snippet was invalid. The real pipeline
+(`simpler_env.make()` + `env.reset()`, i.e. a populated scene) has run
+successfully on every VM it was actually tried on, including ones the
+snippet had condemned.
+
+Layered on top of this were several unrelated environment issues (package
+version conflicts, a HuggingFace API change, bare-VM bootstrap gaps) that
+independently caused failures and cost additional time before being
+isolated from the rendering problem.
 
 ---
-
-## Evidence status: observed vs. inferred vs. unknown
-
-**Directly observed (certain):**
-- `nvidia-smi` on all three VMs allocated Jul 14 (L4 ×2, T4 ×1): driver
-  580.82.07, CUDA 13.0, Open Kernel Module.
-- SAPIEN 2.2.2 segfault at first `take_picture()` on every one of those VMs,
-  with the gdb backtrace below. The crash is deterministic — it fires on the
-  very first render call, every time.
-- The identical workload (same repo state, same wheels, same setup cells)
-  completed 12 full 24-episode runs on a Colab L4 the evening of Jul 13.
-
-**Inferred (strong, but indirect):** the Jul 13 VM was on an older driver.
-We did **not** record `nvidia-smi` output on Jul 13, so this is a deduction,
-not an observation: a crash that reproduces 100% on the first render could
-not have coexisted with 12 completed runs, therefore the Jul 13 host did not
-exhibit it — consistent with a pre-570 driver.
-
-**Not found / unknown:**
-- **No official announcement exists** (checked Jul 14). Colab has historically
-  surfaced runtime-stack upgrades as issues on `googlecolab/colabtools`
-  (e.g. [#5061](https://github.com/googlecolab/colabtools/issues/5061) for
-  CUDA 12.5 / driver 550, [#6053](https://github.com/googlecolab/colabtools/issues/6053)
-  for the Jul 9, 2026 PyTorch 2.13 bump). No analogous issue exists for
-  driver 580 / CUDA 13 as of Jul 14, and the
-  [backend-info](https://github.com/googlecolab/backend-info) repo tracks
-  userland packages only — host driver versions have never been published
-  there. So the absence of a notice is not unusual: **Colab does not
-  announce host-driver changes**, and the claim that "the driver changed
-  between Jul 13 and Jul 14" rests on our inference above, not on any
-  Google statement.
-- Whether this is a synchronized fleet-wide rollout or a gradual host-pool
-  refresh (with Jul 14's allocations simply landing on refreshed hosts) is
-  unknown. Three-for-three VMs across two GPU types suggests broad coverage,
-  but n=3 cannot distinguish the two.
 
 ## Timeline
 
-| When (KST) | Event |
+| When | Event |
 |---|---|
-| Jul 13, evening | Full sdpa reproduction suite (12 runs × 24 episodes) completes on Colab L4. Results committed (`results_reproduction_sdpa/`, commit `567268d`). Rendering fully functional. Driver version not recorded. |
-| Jul 14, ~11:00 | New Colab session for SpatialVLA experiments. Setup succeeds; smoke test **segfaults** immediately after model load, at env creation. `nvidia-smi`: 580.82.07. |
-| Jul 14, afternoon | Systematic debugging across two L4 VMs and one T4 VM (see below). Every VM shows driver 580.82.07; every SAPIEN render attempt segfaults identically. |
-| Jul 14, evening | Root cause confirmed with gdb; all workaround avenues exhausted. Incident declared. |
+| Jul 13, evening | Full sdpa reproduction suite (12 runs × 24 episodes) completes on a Colab L4. Rendering fully functional. Driver version not recorded at the time. |
+| Jul 14, ~11:00 | New Colab session. Setup succeeds; smoke test **segfaults** immediately after model load, at environment creation. `nvidia-smi` shows driver 580.82.07. |
+| Jul 14, afternoon | Systematic debugging across two L4 VMs and one T4 VM. All three show driver 580.82.07; every SAPIEN render attempt segfaults identically. Nine candidate causes tested and ruled out (see below). |
+| Jul 14, evening | Root cause identified via gdb (`Buffer::map()` crash). All known workarounds exhausted. Incident declared; driver 580 held responsible. |
+| Jul 15, ~04:17 | Fresh L4 VM, same driver (580.82.07), runs the full OpenVLA smoke test successfully — complete episode, rendering included. |
+| Jul 15, ~04:13–05:38 | Three more VMs (two L4, one A100) tested with the minimal render snippet: all three fail with the same segfault signature, despite Vulkan itself being demonstrably healthy on at least one of them (device correctly enumerated via `vulkaninfo`). Working theory becomes "VM-to-VM lottery, cause unidentified." |
+| Jul 15, later | Controlled A/B test on a VM running a fully successful real evaluation: the minimal empty-scene snippet **still segfaults on that same healthy VM**, under every ICD/env-variable/shader combination tried. The real pipeline (`simpler_env.make()` + `env.reset()`) exits cleanly on the same VM every time. This overturns the "per-VM lottery" conclusion — the snippet, not the VM, was broken. |
+| Jul 15, later | Separately, environment-setup problems (see below) caused additional failures on an otherwise-healthy VM, adding further confusion before being isolated as unrelated to the rendering issue. |
 
-## Symptom
+---
 
-```
-[svulkan2] [error] Vulkan is incompatible with your driver. ...   (some configs)
-Segmentation fault (core dumped)                                   (all configs)
-```
+## Root cause: what actually breaks under driver 580
 
-Model loading (CUDA path) works. Physics engine creation works. Renderer object
-creation works. The crash is precisely at the first attempt to read a rendered
-image back from GPU memory.
-
-## Root cause (gdb backtrace)
+SAPIEN 2.2.2 (a binary wheel compiled ~2023, now end-of-life upstream)
+segfaults inside `svulkan2::core::Buffer::map()` when mapping a GPU buffer
+created for an **empty scene** (no objects, no lights — the shape of a
+minimal smoke-test snippet: engine → renderer → empty scene → one camera →
+`take_picture()`). The new driver's memory-type/layout assumptions no
+longer match what SAPIEN 2.2.2's mapping code expects for zero-sized or
+near-empty buffers, and the process is killed with SIGSEGV. gdb backtrace:
 
 ```
 Thread 1 "python" received signal SIGSEGV, Segmentation fault.
@@ -169,120 +72,125 @@ Thread 1 "python" received signal SIGSEGV, Segmentation fault.
 #3 sapien::Renderer::SVulkan2Camera::takePicture()
 ```
 
-`Buffer::map()` maps GPU memory into host address space. The SAPIEN 2.2.2
-binary wheel (compiled ~2023) makes assumptions about the driver's Vulkan
-memory-type layout that no longer hold on the 580-series driver, dereferences
-an invalid mapping, and is killed by the OS. SAPIEN 2.x is end-of-life
-upstream, so a fixed 2.x wheel seems unlikely in the short term (though not
-impossible if enough users are affected by the 580 transition), and SAPIEN
-3.x is API-incompatible with `ManiSkill2_real2sim` as-is.
+Critically, **this does not reproduce with a populated scene.** Every real
+SimplerEnv/ManiSkill2 environment (objects, lighting, physics all present)
+renders normally on the same driver, on every VM actually tested with the
+real pipeline. The failure is specific to the pathological empty-scene case
+that the diagnostic snippet happened to construct — it is not a general
+"SAPIEN 2.2 cannot run under driver 580" problem, which was the initial
+(incorrect) conclusion after Jul 14.
 
-Importantly, **Vulkan itself is healthy** on these VMs: with
-`LD_LIBRARY_PATH=/usr/lib64-nvidia`, `vulkaninfo` enumerates the L4 as a
-conformant Vulkan 1.4.312 device. The incompatibility is specific to
-SAPIEN 2.2's memory-mapping code path.
+**Practical consequence:** any future health check must use the real
+pipeline, never a synthetic minimal scene:
 
-## Hypotheses tested and eliminated
+```python
+import subprocess
+code = '''import simpler_env
+env = simpler_env.make("widowx_put_eggplant_in_basket")
+obs, _ = env.reset()
+print("ENV+RENDER OK")'''
+p = subprocess.run([VENV_PYTHON, "-c", code], capture_output=True, text=True)
+print(p.returncode, p.stdout[-200:], p.stderr[-200:])
+```
 
-| # | Hypothesis | Test | Result |
-|---|---|---|---|
-| 1 | Wrong Vulkan ICD file | GLX ICD (`/etc/vulkan/icd.d/nvidia_icd.json`), EGL ICD (`configs/nvidia_icd_egl.json`), software lvp ICD | GLX/EGL: segfault. lvp: `ErrorExtensionNotPresent` (llvmpipe lacks required extensions) |
-| 2 | Loader can't find driver libs | `LD_LIBRARY_PATH=/usr/lib64-nvidia` (fixed `vulkaninfo`; L4 enumerates) | vulkaninfo fixed; SAPIEN still segfaults |
-| 3 | conda environment artifact | Bare `python3.10 -m venv` + `pip install sapien==2.2.2` only | Identical segfault |
-| 4 | Stale/bundled Vulkan loader | `LD_PRELOAD` of system `libvulkan.so.1`; no bundled loader found in envs | Identical segfault |
-| 5 | Host hardware (BAR) difference | `nvidia-smi -q` BAR1 comparison across VMs | Identical (32768 MiB) on working-era and broken VMs |
-| 6 | Missing Xvfb / DISPLAY | Xvfb started in-cell | Irrelevant (offscreen rendering doesn't need X); segfault persists |
-| 7 | GPU-pool specific (L4 only) | Switched runtime to T4 | T4 pool also on 580.82.07 |
-| 8 | Colab runtime version | Pinned runtime `2026.04` and `2026.01` | **Driver unchanged (580)** — the runtime selector swaps the userland container only; the GPU driver lives in the host VM layer and has no user-facing control |
-| 9 | OOM / RAM | `dmesg`, `free -h` | 51 GiB free; no OOM kill records |
+## Why this was hard to pin down
 
-## Secondary (unrelated) issue found the same day
-
-HuggingFace large-file downloads intermittently failed (stalls / HTTP 403).
-Cause: `huggingface.co` load-balances LFS downloads between two CDN edges;
-the **GCP edge (`us.gcp.cdn.hf.co`) returned 403 from Colab** while the AWS
-edge (`cas-bridge.xethub.hf.co`) served at 244 MB/s. Workaround: retry loop
-around `snapshot_download(..., max_workers=1)` with
-`huggingface_hub.constants.HF_HUB_DOWNLOAD_TIMEOUT = 15` — each retry re-rolls
-the CDN edge. This is independent of the driver incident.
+- **Jul 14 hypothesis sweep** (before the empty-scene insight existed) tested
+  and ruled out: wrong Vulkan ICD file (GLX vs EGL vs software), missing
+  `LD_LIBRARY_PATH`, conda-vs-venv, stale/preloaded Vulkan loader, host BAR1
+  memory differences, missing Xvfb/DISPLAY, GPU pool (L4 vs T4), Colab
+  runtime version pinning (2026.04 / 2026.01 — this only swaps the userland
+  container, not the host driver), and OOM. None explained the crash; all of
+  these tests used the same flawed empty-scene snippet, so in hindsight they
+  were ruling out things that were never the actual cause.
+- **Jul 15 false negatives:** several VMs were declared "broken" using that
+  same snippet before the snippet itself was identified as the problem. One
+  of those VMs was later shown, by direct A/B comparison, to run the real
+  pipeline perfectly — meaning a full day was spent chasing a "per-VM
+  lottery" that didn't exist in the form believed.
+- **No official changelog to check against.** Colab does not publish host
+  driver versions anywhere (its `backend-info` repo tracks userland package
+  versions only), so there was no way to confirm "the driver changed
+  overnight" against an authoritative source — only indirect evidence
+  (image library timestamps, a Jul 9 Colab announcement of a PyTorch
+  2.13/CUDA 13 upgrade that implies a driver bump to support it, and external
+  reports of the same SAPIEN failure mode on other platforms after upgrading
+  past driver ~570).
 
 ## External corroboration
 
-The SAPIEN-vs-driver-≥570 failure mode predates Colab's rollout (reported from
-Docker/self-managed machines whose owners upgraded drivers earlier):
+The SAPIEN-vs-newer-driver failure mode has been reported independently by
+others who upgraded their own machines' drivers, predating this Colab
+rollout:
 
 - SAPIEN #271 — segfault on A100, driver ≥ 570, ICD overrides ineffective:
   https://github.com/haosulab/SAPIEN/issues/271
-- RoboTwin #259 — no rendering device on driver 580.126 + CUDA 13; closed unresolved:
+- RoboTwin #259 — no rendering device on driver 580.126 + CUDA 13, closed unresolved:
   https://github.com/RoboTwin-Platform/RoboTwin/issues/259
 - ManiSkill #1020 — sapien 3.0.0b1 segfault on driver 570.133:
   https://github.com/haosulab/ManiSkill/issues/1020
 
-## Current options
+None of these reports distinguish empty-scene vs. populated-scene renders,
+so it's possible some of them describe the same narrower failure mode found
+here rather than a total rendering breakage.
 
-1. **Wait and re-check periodically.** This may resolve itself: Colab could
-   adjust or roll back the image, older hosts may still exist in some pools,
-   or the SAPIEN/ManiSkill community may ship a workaround now that 580-era
-   drivers are spreading. The preflight cells below make each re-check cost
-   only a few seconds, so it is cheap to keep trying while working on other
-   things. The uncertainty is the timeline — it could be days or much longer.
-2. **Rented GPU with a pinned driver image** (RunPod / Lambda / Vast):
-   choose a CUDA 12.1 / driver 535–550 template and the problem does not
-   exist. Estimated cost for the full remaining experiment plan: **$5–10**.
-3. **Lab machine** with driver < 570 (the mentor's original local
-   `run_experiment.sh` path works as-is).
+---
 
-## Preflight procedure (DEPRECATED — kept as a record)
+## Secondary problems encountered (independent of the rendering issue)
 
-> **DEPRECATED 2026-07-15:** the cell below tests rendering with the
-> minimal empty-scene snippet, which Update (2) proved to segfault even on
-> healthy VMs under driver 580. It produced multiple false "broken VM"
-> verdicts on Jul 15 and must not be used as a health check. The valid
-> preflight is the `simpler_env.make()` smoke in Update (2), run after
-> environment setup. The bootstrapping steps below (venv + get-pip,
-> `libvulkan1`, writing GLX/EGL ICD files) remain useful as setup
-> reference for bare VMs — only the verdict logic is wrong.
+Several unrelated issues compounded the two days and are worth recording
+separately, since each cost real time before being correctly isolated:
 
-```bash
-%%bash
-nvidia-smi | grep "Driver Version"
-apt-get update -qq
-apt-get install -y -qq python3.10-venv libvulkan1 vulkan-tools > /dev/null
-if [ ! -f /content/vtest/bin/python ]; then
-  python3.10 -m venv /content/vtest --without-pip
-  curl -sS https://bootstrap.pypa.io/get-pip.py -o /content/get-pip.py
-  /content/vtest/bin/python /content/get-pip.py -q
-  /content/vtest/bin/pip install -q "setuptools<81" "numpy<2" sapien==2.2.2
-fi
-mkdir -p /etc/vulkan/icd.d
-cat > /etc/vulkan/icd.d/nvidia_icd.json <<'JSON'
-{"file_format_version":"1.0.0","ICD":{"library_path":"libGLX_nvidia.so.0","api_version":"1.3.277"}}
-JSON
-cat > /etc/vulkan/icd.d/nvidia_egl.json <<'JSON'
-{"file_format_version":"1.0.0","ICD":{"library_path":"libEGL_nvidia.so.0","api_version":"1.3.277"}}
-JSON
-export LD_LIBRARY_PATH=/usr/lib64-nvidia
-for icd in nvidia_icd nvidia_egl; do
-  export VK_ICD_FILENAMES=/etc/vulkan/icd.d/$icd.json
-  echo "== [$icd] render test =="
-  /content/vtest/bin/python - << 'EOF'
-import sapien.core as sapien
-e = sapien.Engine(); r = sapien.SapienRenderer(offscreen_only=True); e.set_renderer(r)
-s = e.create_scene(); cam = s.add_camera('c', 128, 128, 1.0, 0.01, 10)
-s.step(); s.update_render(); cam.take_picture()
-print('RENDER OK')
-EOF
-  if [ $? -eq 0 ]; then echo ">>> VM USABLE (use VK_ICD_FILENAMES=/etc/vulkan/icd.d/$icd.json in every run cell) <<<"; exit 0; fi
-done
-echo ">>> VM FAILED preflight -- delete runtime and re-roll <<<"
-exit 1
-```
+1. **HuggingFace CDN edge failures.** Large checkpoint/model downloads
+   intermittently stalled or returned HTTP 403. Cause: `huggingface.co`
+   load-balances large-file downloads between two CDN edges; the GCP edge
+   (`us.gcp.cdn.hf.co`) returned 403 from Colab while the AWS edge
+   (`cas-bridge.xethub.hf.co`) served normally. Workaround: a retry loop
+   around `snapshot_download(..., max_workers=1)` — each retry re-rolls the
+   CDN edge.
+
+2. **`huggingface_hub` API break across versions.** A download-timeout
+   workaround written against an older `huggingface_hub` (setting
+   `huggingface_hub.constants.HF_HUB_DOWNLOAD_TIMEOUT` directly) no longer
+   works against the newer version pulled in by a different environment —
+   the `constants` attribute path was removed. Fix: set the
+   `HF_HUB_DOWNLOAD_TIMEOUT` environment variable instead, which works
+   across versions.
+
+3. **Silent numpy/scipy binary incompatibility from an unpinned package.**
+   Installing `opencv-python` without an exact version pin pulled in numpy
+   2.2.6 as a transitive dependency, which is binary-incompatible with the
+   already-installed scipy 1.12.0 build (`numpy.dtype size changed, may
+   indicate binary incompatibility`). This didn't always reproduce — the
+   same install sequence run at a different time let pip's resolver
+   backtrack numpy to the compatible 1.23.5 on its own, and other times it
+   didn't — making it an intermittent, confusing failure until every
+   package in the chain (`opencv-python`, `numpy`) was pinned to exact,
+   previously-verified versions and numpy was force-reinstalled last to
+   guarantee the final state.
+
+4. **Bare-VM bootstrap gaps.** Fresh Colab VMs cannot be assumed to have:
+   a working `venv` module (`ensurepip` can be missing, requiring a
+   `--without-pip` venv plus a manual `get-pip.py` bootstrap), `libvulkan1`
+   installed at all, or any NVIDIA Vulkan ICD file present in
+   `/etc/vulkan/icd.d/` (observed empty on more than one fresh VM). Any
+   setup/preflight procedure needs to install these explicitly rather than
+   assume they exist.
+
+5. **GLX vs EGL ICD inconsistency across VMs.** On some VMs the GLX ICD
+   (`libGLX_nvidia.so.0`) works and EGL fails; on at least one VM the
+   reverse was true (GLX failed instance creation with
+   `ERROR_INCOMPATIBLE_DRIVER`, EGL correctly enumerated the GPU). Since
+   this wasn't predictable in advance, both ICD files need to be generated
+   and tried in any setup that must work unattended across arbitrary VMs.
+
+---
 
 ## What is NOT affected
 
-- All committed reproduction results and reports (`results_reproduction_*`,
-  `REPRODUCTION_REPORT.md`) — complete before the incident.
-- The SpatialVLA foveation port (`SpatialVLA/experiments/tome/foveation.py`,
-  `--foveate` flag) — code is committed and unit-tested; only *execution* of
-  the simulation experiments is blocked.
-- Model inference itself (CUDA path) — only Vulkan *rendering* is broken.
+- All previously committed reproduction results and reports
+  (`results_reproduction_*`, `REPRODUCTION_REPORT.md`) — complete before
+  Jul 14, unaffected by any of the above.
+- Model inference itself (the CUDA/PyTorch path) — every failure above was
+  in the rendering or environment-setup layer; no model ever failed to load
+  or run once its environment was correctly configured.
