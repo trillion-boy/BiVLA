@@ -29,7 +29,7 @@ from simpler_env.policies.spatialvla.spatialvla_model import SpatialVLAInference
 
 sys.path.insert(0, os.path.dirname(__file__))
 from tome_siglip import apply_tome_to_siglip, center_protect_provider  # noqa: E402
-from foveation import foveate_image_logpolar  # noqa: E402
+from foveation import foveate_image_logpolar, foveate_image_blur, MotionGaze  # noqa: E402
 
 
 def parse_args():
@@ -70,11 +70,22 @@ def parse_args():
                         "(0 = off = re-generate every step; k>chunk_size clamps to chunk_size). "
                         "Decode is called every k env steps -> latency amortized ~k x.")
     p.add_argument("--foveate", action="store_true", default=False,
-                   help="log-polar foveation of the observation before the policy sees it "
-                        "(mentor's RetinaBased transform ported 1:1); composes with any "
-                        "other flag -- the env always steps on the raw scene")
+                   help="foveate the observation before the policy sees it; composes with "
+                        "any other flag -- the env always steps on the raw scene")
     p.add_argument("--foveate-keep-percent", type=float, default=20.0,
                    help="percent of visual sample density retained (RetinaBased default: 20)")
+    p.add_argument("--foveate-mode", default="logpolar", choices=["logpolar", "blur"],
+                   help="logpolar = mentor's warp (moves pixels; corrupts SpatialVLA's "
+                        "Ego3D pixel->3D correspondence). blur = geometry-preserving "
+                        "space-variant blur (no pixel moves; intrinsics/depth stay valid)")
+    p.add_argument("--foveate-center", default="image", choices=["image", "motion"],
+                   help="fovea placement: image = fixed frame center (original behavior); "
+                        "motion = frame-difference centroid with EMA (follows the moving "
+                        "gripper/object; model- and env-agnostic, no oracle)")
+    p.add_argument("--foveate-phase", default="always", choices=["always", "pregrasp"],
+                   help="always = foveate every frame; pregrasp = foveate only while the "
+                        "policy's own gripper command is OPEN -- full resolution from the "
+                        "moment it commands a grasp (transport/placement keeps full view)")
     return p.parse_args()
 
 
@@ -85,10 +96,22 @@ def main():
     cam = cfg["obs_camera_name"]
 
     fov_keep_ratio = args.foveate_keep_percent / 100.0
+    fov_fn = foveate_image_blur if args.foveate_mode == "blur" else foveate_image_logpolar
+    gaze = MotionGaze() if args.foveate_center == "motion" else None
+    # The policy's own most-recent gripper command (True = open). Updated after
+    # every policy.step below; --foveate-phase pregrasp reads it to drop back to
+    # full resolution the moment the policy commands a grasp. Universal signal:
+    # every VLA action space carries a gripper channel.
+    fov_state = {"gripper_open": True}
 
     def observe(env, obs):
         img = get_image(env, obs, cam)
-        return foveate_image_logpolar(img, fov_keep_ratio) if args.foveate else img
+        if not args.foveate:
+            return img
+        center = gaze.update(img) if gaze is not None else None
+        if args.foveate_phase == "pregrasp" and not fov_state["gripper_open"]:
+            return img  # precision phase: the model gets the intact frame
+        return fov_fn(img, fov_keep_ratio, center=center)
 
     policy = SpatialVLAInference(
         saved_model_path=args.model_path,
@@ -149,6 +172,9 @@ def main():
         print(f"\n── ep {ep_count:02d} (env_id={ep_id}) ──", flush=True)
         env, obs = build_env(cfg, ep_id)
         instruction = env.get_language_instruction()
+        if gaze is not None:
+            gaze.reset()
+        fov_state["gripper_open"] = True
         image = observe(env, obs)
         policy.reset(instruction)
         if args.temporal_stride > 1:
@@ -170,6 +196,16 @@ def main():
             raw_action, action = policy.step(image, instruction)
             model_time += time.time() - t0
             model_calls += 1
+            # Track the policy's own gripper command for --foveate-phase.
+            # raw_action["open_gripper"] is model-native (1=open); fall back to
+            # the converted action["gripper"] (>0 = open for widowx_bridge).
+            try:
+                if isinstance(raw_action, dict) and "open_gripper" in raw_action:
+                    fov_state["gripper_open"] = float(np.ravel(raw_action["open_gripper"])[0]) >= 0.5
+                elif isinstance(action, dict) and "gripper" in action:
+                    fov_state["gripper_open"] = float(np.ravel(action["gripper"])[0]) > 0.0
+            except (TypeError, ValueError, IndexError):
+                pass  # unknown gripper encoding: keep last known phase
             if ep_count == 0 and step == 0:
                 # One-time probe: does SpatialVLA already predict an action
                 # CHUNK per generate call (raw_action holding >1 timestep)?
@@ -247,7 +283,8 @@ def main():
     avg_steps = float(np.mean([r["steps"] for r in results]))
     parts = []
     if args.foveate:
-        parts.append(f"foveated keep={args.foveate_keep_percent:.0f}%")
+        parts.append(f"foveated[{args.foveate_mode}/{args.foveate_center}/"
+                     f"{args.foveate_phase}] keep={args.foveate_keep_percent:.0f}%")
     if args.tome:
         parts.append(f"ToMe r={args.tome_r}x{args.tome_layers} protect={args.tome_protect}")
     if args.temporal_stride > 1:
@@ -290,7 +327,10 @@ def main():
         "success_rate": sr, "grasp_rate": gr,
         "avg_model_ms_per_infer": avg_ms, "avg_steps": avg_steps,
         "foveate": {"enabled": args.foveate,
-                    "keep_percent": args.foveate_keep_percent},
+                    "keep_percent": args.foveate_keep_percent,
+                    "mode": args.foveate_mode,
+                    "center": args.foveate_center,
+                    "phase": args.foveate_phase},
         "tome": {"enabled": args.tome, "r": args.tome_r, "layers": args.tome_layers,
                  "protect": args.tome_protect},
         "temporal_stride": args.temporal_stride,
