@@ -212,6 +212,10 @@ def run_maniskill2_eval_single_episode(
     model.visualize_epoch(predicted_actions, images, save_path=action_path)
 
     avg_infer_ms = (total_infer_time / timestep * 1000) if timestep else 0.0
+    # "Grasp" metric in the official RoboVLMs/UniVLA tables: whether the
+    # source object was ever grasped during the episode, independent of
+    # whether the full task (e.g. placement) was ultimately successful.
+    grasped = bool(episode_stats.get("is_src_obj_grasped", False))
 
     episode_label = (
         f"obj_{obj_init_x}_{obj_init_y}"
@@ -220,15 +224,16 @@ def run_maniskill2_eval_single_episode(
     )
     print(
         f"[{env_name}] {episode_label}: {success.upper()} "
-        f"({timestep} steps, {avg_infer_ms:.1f} ms/infer)"
+        f"(grasp={'Y' if grasped else 'N'}, {timestep} steps, {avg_infer_ms:.1f} ms/infer)"
     )
 
-    return success == "success", avg_infer_ms
+    return success == "success", grasped, avg_infer_ms
 
 
 def maniskill2_evaluator(model, args):
     control_mode = get_robot_control_mode(args.robot, args.policy_model)
     success_arr = []
+    grasp_arr = []
     infer_ms_arr = []
     model_name = args.model_name
     # run inference
@@ -259,30 +264,34 @@ def maniskill2_evaluator(model, args):
                 if args.obj_variation_mode == "xy":
                     for obj_init_x in args.obj_init_xs:
                         for obj_init_y in args.obj_init_ys:
-                            success, infer_ms = run_maniskill2_eval_single_episode(
+                            success, grasped, infer_ms = run_maniskill2_eval_single_episode(
                                 obj_init_x=obj_init_x,
                                 obj_init_y=obj_init_y,
                                 **kwargs,
                             )
                             success_arr.append(success)
+                            grasp_arr.append(grasped)
                             infer_ms_arr.append(infer_ms)
                 elif args.obj_variation_mode == "episode":
                     for obj_episode_id in range(
                         args.obj_episode_range[0], args.obj_episode_range[1]
                     ):
-                        success, infer_ms = run_maniskill2_eval_single_episode(
+                        success, grasped, infer_ms = run_maniskill2_eval_single_episode(
                             obj_episode_id=obj_episode_id, **kwargs
                         )
                         success_arr.append(success)
+                        grasp_arr.append(grasped)
                         infer_ms_arr.append(infer_ms)
                 else:
                     raise NotImplementedError()
 
     success_rate = 100.0 * np.mean(success_arr) if success_arr else 0.0
+    grasp_rate = 100.0 * np.mean(grasp_arr) if grasp_arr else 0.0
     avg_infer_ms = np.mean(infer_ms_arr) if infer_ms_arr else 0.0
     print(
         f"=== [{args.env_name}] {len(success_arr)} episodes | "
-        f"success rate {success_rate:.1f}% | avg {avg_infer_ms:.1f} ms/infer ==="
+        f"grasp rate {grasp_rate:.1f}% | success rate {success_rate:.1f}% | "
+        f"avg {avg_infer_ms:.1f} ms/infer ==="
     )
 
     return success_arr
