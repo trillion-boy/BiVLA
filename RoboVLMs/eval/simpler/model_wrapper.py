@@ -71,6 +71,11 @@ class BaseModelInference(CustomModel):
 
         self.init_config(ckpt_path, configs, device, save_dir)
         self.raw_calvin=True
+        # exec_horizon = k in the "action-chunk execution" experiment: reuse
+        # k of the model's already-predicted future actions per forward call
+        # instead of re-running inference every env step. 1 = original
+        # per-step-inference behavior.
+        self.set_exec_chunk(exec_horizon)
 
     def reset(self):
         super().reset()

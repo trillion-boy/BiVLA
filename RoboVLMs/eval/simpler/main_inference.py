@@ -146,6 +146,39 @@ def get_args():
     )
     parser.add_argument("--no_cache", action="store_true")
     parser.add_argument("--double-step", action="store_true")
+    parser.add_argument(
+        "--exec-chunk",
+        type=int,
+        default=1,
+        help="execute k of the model's already-predicted future actions per "
+        "forward call (1 = off = re-run inference every env step; "
+        "k>chunk_size clamps to chunk_size). Model is called every k env "
+        "steps -> inference cost amortized ~k x.",
+    )
+    parser.add_argument(
+        "--foveate", action="store_true", default=False,
+        help="foveate the observation before the policy sees it; the env "
+        "still steps on the raw, unfoveated scene.",
+    )
+    parser.add_argument(
+        "--foveate-keep-percent", type=float, default=20.0,
+        help="percent of visual sample density retained (RetinaBased default: 20)",
+    )
+    parser.add_argument(
+        "--foveate-mode", default="logpolar", choices=["logpolar", "blur"],
+        help="logpolar = direct port of the mentor's log-polar warp; "
+        "blur = geometry-preserving space-variant blur (no pixel moves)",
+    )
+    parser.add_argument(
+        "--foveate-center", default="image", choices=["image", "motion"],
+        help="image = fixed frame center; motion = frame-difference "
+        "centroid with EMA (follows the moving gripper/object)",
+    )
+    parser.add_argument(
+        "--foveate-phase", default="always", choices=["always", "pregrasp"],
+        help="always = foveate every frame; pregrasp = foveate only while "
+        "the policy's own gripper command is OPEN",
+    )
     args = parser.parse_args()
 
     # env args: robot pose
@@ -174,6 +207,21 @@ def get_args():
                 args.additional_env_save_tags + f"_obs_camera_{args.obs_camera_name}"
             )
 
+    def _add_tag(tag):
+        args.additional_env_save_tags = (
+            tag
+            if args.additional_env_save_tags is None
+            else args.additional_env_save_tags + f"_{tag}"
+        )
+
+    if args.exec_chunk > 1:
+        _add_tag(f"chunk{args.exec_chunk}")
+    if args.foveate:
+        _add_tag(
+            f"foveate_{args.foveate_mode}_{args.foveate_center}_"
+            f"{args.foveate_phase}_{int(args.foveate_keep_percent)}"
+        )
+
     return args
 
 
@@ -185,7 +233,10 @@ if __name__ == "__main__":
     from robovlms.utils.config_utils import load_config
 
     args = get_args()
-    args.logging_dir = "results_v3"
+    if args.logging_dir == "./results":
+        # default results dir for this project's pilots; still overridable
+        # via --logging-dir (used to keep baseline/chunk2/foveate results separate)
+        args.logging_dir = "results_v3"
     config_path = args.config_path
     ckpt_dir = args.ckpt_dir
     ckpt_idx = 0
@@ -253,6 +304,7 @@ if __name__ == "__main__":
         device=torch.device("cuda"),
         save_dir=eval_log_dir,
         policy_setup=args.policy_setup,
+        exec_horizon=args.exec_chunk,
     )
 
     # run real-to-sim evaluation

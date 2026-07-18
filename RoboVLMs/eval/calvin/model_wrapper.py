@@ -147,9 +147,30 @@ class CustomModel:
         self.action_hist_list = []
         self.rollout_step_counter = 0
 
+        # Action-chunk execution: the policy already predicts `act_step`
+        # future actions per forward call (self.act_step above), but
+        # ensemble_action() historically only ever consumed index 0 and
+        # `step()` was called fresh every env timestep, discarding the rest.
+        # exec_chunk_k > 1 reuses those already-computed future actions
+        # instead of re-running inference every step. k=1 (default) is the
+        # original per-step-inference behavior, unchanged.
+        self.exec_chunk_k = 1
+        self._exec_chunk_queue = []
+        self.chunk_gen_calls = 0
+        self.chunk_env_steps = 0
+        self._chunk_warned = False
+
         self.vision_queue = Queue(maxsize=self.window_size)
         self.vision_gripper_queue = Queue(maxsize=self.window_size)
         self.action_queue = Queue(maxsize=self.window_size - 1)
+
+    def set_exec_chunk(self, k: int):
+        """Configure how many predicted actions to execute per forward call.
+        k=1 disables chunk execution (re-run inference every env step, the
+        original behavior). k>1 amortizes inference over k env steps by
+        executing the extra actions the model already predicted."""
+        self.exec_chunk_k = max(1, int(k))
+        self._exec_chunk_queue = []
 
     def ensemble_action(self, action):
         if action.ndim >= 3:
@@ -317,6 +338,11 @@ class CustomModel:
 
     def step(self, obs, goal):
         """Step function."""
+        self.chunk_env_steps += 1
+        if self.exec_chunk_k > 1 and self._exec_chunk_queue:
+            self.rollout_step_counter += 1
+            return self._exec_chunk_queue.pop(0)
+
         input_dict = dict()
         image_x, gripper_x, text_x, mask = self.preprocess(obs, goal, self.action_space)
 
@@ -368,7 +394,19 @@ class CustomModel:
             action = tcp_to_world_frame(action, robot_obs)
 
         action = self.ensemble_action(action)
+        action = self._finalize_action(action, obs)
 
+        if self.exec_chunk_k > 1:
+            self.chunk_gen_calls += 1
+            self._fill_chunk_queue(obs)
+
+        self.rollout_step_counter += 1
+        return action
+
+    def _finalize_action(self, action, obs):
+        """Unnormalize/convert a single already-ensembled (D,) action vector
+        into the env-ready action. Factored out of `step()` so it can also be
+        applied to the extra actions queued by exec_chunk_k>1."""
         if isinstance(action, torch.Tensor):
             action = action.squeeze()
             if action.ndim == 2:
@@ -425,9 +463,42 @@ class CustomModel:
                 action[-1] = (gripper_action - 0.5) * 2
                 action = torch.from_numpy(action)
 
-        self.rollout_step_counter += 1
         action[-1] = 1 if action[-1] > 0 else -1
         return action
+
+    def _fill_chunk_queue(self, obs):
+        """After a real forward call, extract the extra actions the model
+        already predicted (action_hist_list[-1] holds the full (chunk_len, D)
+        chunk that ensemble_action's index-0 selection came from) and queue
+        up to exec_chunk_k-1 of them, fully finalized, so `step()` can pop
+        them on the next calls without another forward pass."""
+        full_chunk = self.action_hist_list[-1] if self.action_hist_list else None
+        if (
+            not isinstance(full_chunk, torch.Tensor)
+            or full_chunk.ndim != 2
+            or full_chunk.shape[0] <= 1
+        ):
+            if not self._chunk_warned:
+                print(
+                    f"[ChunkExec] model's predicted action chunk has no extra "
+                    f"steps to reuse (shape={getattr(full_chunk, 'shape', None)}); "
+                    f"exec_chunk_k>1 has no effect."
+                )
+                self._chunk_warned = True
+            return
+
+        n_extra = min(self.exec_chunk_k, full_chunk.shape[0]) - 1
+        try:
+            for i in range(1, n_extra + 1):
+                self._exec_chunk_queue.append(
+                    self._finalize_action(full_chunk[i].clone(), obs)
+                )
+        except Exception as e:
+            if not self._chunk_warned:
+                print(f"[ChunkExec] disabling: failed to extract queued actions ({e})")
+                self._chunk_warned = True
+            self.exec_chunk_k = 1
+            self._exec_chunk_queue = []
 
     def reset(self):
         if hasattr(self.model.model, "lm_head"):
@@ -441,6 +512,7 @@ class CustomModel:
         self.hand_rgb_list = []
         self.rollout_step_counter = 0
         self.action_hist_list = []
+        self._exec_chunk_queue = []
 
         while not self.vision_queue.empty():
             self.vision_queue.get()

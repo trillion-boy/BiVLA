@@ -16,6 +16,8 @@ from simpler_env.utils.env.env_builder import (
 from simpler_env.utils.env.observation_utils import get_image_from_maniskill2_obs_dict
 from simpler_env.utils.visualization import write_video
 
+from eval.simpler.foveation import foveate_image_blur, foveate_image_logpolar, MotionGaze
+
 
 @contextlib.contextmanager
 def _suppress_native_stderr():
@@ -62,9 +64,29 @@ def run_maniskill2_eval_single_episode(
     enable_raytracing=True,
     additional_env_save_tags=None,
     logging_dir="./results_V2",
+    foveate=False,
+    foveate_keep_percent=20.0,
+    foveate_mode="logpolar",
+    foveate_center="image",
+    foveate_phase="always",
 ):
     if additional_env_build_kwargs is None:
         additional_env_build_kwargs = {}
+
+    # Foveation: applied only to the frame the policy sees. The env always
+    # steps on, and the saved video always shows, the raw/unfoveated scene.
+    fov_fn = foveate_image_blur if foveate_mode == "blur" else foveate_image_logpolar
+    fov_keep_ratio = foveate_keep_percent / 100.0
+    gaze = MotionGaze() if (foveate and foveate_center == "motion") else None
+    fov_state = {"gripper_open": True}
+
+    def _observe(raw_image):
+        if not foveate:
+            return raw_image
+        center = gaze.update(raw_image) if gaze is not None else None
+        if foveate_phase == "pregrasp" and not fov_state["gripper_open"]:
+            return raw_image
+        return fov_fn(raw_image, fov_keep_ratio, center=center)
 
     # Create environment
     kwargs = dict(
@@ -122,8 +144,9 @@ def run_maniskill2_eval_single_episode(
         task_description = env.get_language_instruction()
 
     # Initialize logging
-    image = get_image_from_maniskill2_obs_dict(env, obs, camera_name=obs_camera_name)
-    images = [image]
+    raw_image = get_image_from_maniskill2_obs_dict(env, obs, camera_name=obs_camera_name)
+    images = [raw_image]
+    image = _observe(raw_image)
     predicted_actions = []
     predicted_terminated, done, truncated = False, False, False
 
@@ -141,6 +164,13 @@ def run_maniskill2_eval_single_episode(
         infer_start = time.perf_counter()
         raw_action, action = model.step(image, task_description)
         total_infer_time += time.perf_counter() - infer_start
+        if foveate and foveate_phase == "pregrasp":
+            try:
+                fov_state["gripper_open"] = (
+                    float(np.ravel(raw_action["open_gripper"])[0]) >= 0.5
+                )
+            except (KeyError, TypeError, IndexError):
+                pass  # unknown gripper encoding: keep last known phase
         predicted_actions.append(raw_action)
         predicted_terminated = bool(action["terminate_episode"][0] > 0)
 
@@ -169,10 +199,11 @@ def run_maniskill2_eval_single_episode(
         if not is_final_subtask and info["episode_stats"].get("is_drawer_open", False):
             env.advance_to_next_subtask()
 
-        image = get_image_from_maniskill2_obs_dict(
+        raw_image = get_image_from_maniskill2_obs_dict(
             env, obs, camera_name=obs_camera_name
         )
-        images.append(image)
+        images.append(raw_image)
+        image = _observe(raw_image)
         timestep += 1
 
     episode_stats = info.get("episode_stats", {})
@@ -260,6 +291,11 @@ def maniskill2_evaluator(model, args):
                     additional_env_save_tags=args.additional_env_save_tags,
                     obs_camera_name=args.obs_camera_name,
                     logging_dir=args.logging_dir,
+                    foveate=args.foveate,
+                    foveate_keep_percent=args.foveate_keep_percent,
+                    foveate_mode=args.foveate_mode,
+                    foveate_center=args.foveate_center,
+                    foveate_phase=args.foveate_phase,
                 )
                 if args.obj_variation_mode == "xy":
                     for obj_init_x in args.obj_init_xs:
@@ -288,10 +324,25 @@ def maniskill2_evaluator(model, args):
     success_rate = 100.0 * np.mean(success_arr) if success_arr else 0.0
     grasp_rate = 100.0 * np.mean(grasp_arr) if grasp_arr else 0.0
     avg_infer_ms = np.mean(infer_ms_arr) if infer_ms_arr else 0.0
+
+    tags = []
+    exec_chunk_k = getattr(model, "exec_chunk_k", 1)
+    if exec_chunk_k > 1:
+        gen_calls = getattr(model, "chunk_gen_calls", 0)
+        env_steps = getattr(model, "chunk_env_steps", 0)
+        ratio = (gen_calls / env_steps) if env_steps else 1.0
+        tags.append(f"exec-chunk k={exec_chunk_k} (inference on {ratio:.0%} of steps)")
+    if args.foveate:
+        tags.append(
+            f"foveate[{args.foveate_mode}/{args.foveate_center}/{args.foveate_phase}] "
+            f"keep={args.foveate_keep_percent:.0f}%"
+        )
+    tag_str = f" | {' + '.join(tags)}" if tags else ""
+
     print(
         f"=== [{args.env_name}] {len(success_arr)} episodes | "
         f"grasp rate {grasp_rate:.1f}% | success rate {success_rate:.1f}% | "
-        f"avg {avg_infer_ms:.1f} ms/infer ==="
+        f"avg {avg_infer_ms:.1f} ms/infer{tag_str} ==="
     )
 
     return success_arr
