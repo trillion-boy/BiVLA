@@ -1112,6 +1112,25 @@ class BaseRoboVLM(nn.Module):
                     multimodal_attention_mask, "(b l) n -> b (l n)", l=seq_len
                 )
 
+        # HF Kosmos2Model.forward() unconditionally requires `pixel_values` or
+        # `image_embeds` even when `inputs_embeds` is supplied directly (the
+        # vision+text fusion RoboVLMs already did above via
+        # merge_multi_modal_input). Satisfy that check with a no-op: an
+        # empty image_embeds (0 rows) plus an all-False position mask means
+        # the injection `inputs_embeds[mask] = image_embeds...` writes to
+        # zero positions, leaving our pre-merged inputs_embeds untouched.
+        kosmos_vision_noop = {}
+        if getattr(self, "model_name", None) == "kosmos":
+            _B, _N, _D = multimodal_embeds.shape
+            kosmos_vision_noop = {
+                "image_embeds": torch.zeros(
+                    0, _D, device=multimodal_embeds.device, dtype=multimodal_embeds.dtype
+                ),
+                "image_embeds_position_mask": torch.zeros(
+                    _B, _N, device=multimodal_embeds.device, dtype=torch.long
+                ),
+            }
+
         output = self.model(
             input_ids=None,
             attention_mask=multimodal_attention_mask,
@@ -1120,6 +1139,7 @@ class BaseRoboVLM(nn.Module):
             inputs_embeds=multimodal_embeds,
             use_cache=use_cache,
             output_hidden_states=True,
+            **kosmos_vision_noop,
         )
 
         output_hs = output.hidden_states[-1].clone()
