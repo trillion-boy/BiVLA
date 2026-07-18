@@ -142,7 +142,6 @@ class BaseModelInference(CustomModel):
                 self.sticky_gripper_action = 0.0
 
             action["gripper"] = relative_gripper_action
-            print(f'action gripper: {action["gripper"]}')
 
         elif self.policy_setup == "widowx_bridge":
             relative_gripper_action = 2.0 * (raw_action["open_gripper"] > 0.5) - 1.0

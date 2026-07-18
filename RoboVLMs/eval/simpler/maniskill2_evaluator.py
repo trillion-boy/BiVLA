@@ -96,7 +96,6 @@ def run_maniskill2_eval_single_episode(
     else:
         # get default language instruction
         task_description = env.get_language_instruction()
-    print(task_description)
 
     # Initialize logging
     image = get_image_from_maniskill2_obs_dict(env, obs, camera_name=obs_camera_name)
@@ -135,15 +134,12 @@ def run_maniskill2_eval_single_episode(
         new_task_description = env.get_language_instruction()
         if new_task_description != task_description:
             task_description = new_task_description
-            print(task_description)
             model.reset()
 
         is_final_subtask = env.is_final_subtask()
 
         if not is_final_subtask and info["episode_stats"].get("is_drawer_open", False):
             env.advance_to_next_subtask()
-
-        print(timestep, done, truncated, info)
 
         image = get_image_from_maniskill2_obs_dict(
             env, obs, camera_name=obs_camera_name
@@ -186,6 +182,13 @@ def run_maniskill2_eval_single_episode(
     os.makedirs(action_root, exist_ok=True)
     action_path = action_root + os.path.basename(action_path)
     model.visualize_epoch(predicted_actions, images, save_path=action_path)
+
+    episode_label = (
+        f"obj_{obj_init_x}_{obj_init_y}"
+        if obj_variation_mode == "xy"
+        else f"episode_{obj_episode_id}"
+    )
+    print(f"[{env_name}] {episode_label}: {success.upper()} ({timestep} steps)")
 
     return success == "success"
 
