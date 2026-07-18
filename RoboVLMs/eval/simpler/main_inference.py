@@ -257,5 +257,3 @@ if __name__ == "__main__":
 
     # run real-to-sim evaluation
     success_arr = maniskill2_evaluator(model, args)
-    print(args)
-    print(" " * 10, "Average success", np.mean(success_arr))

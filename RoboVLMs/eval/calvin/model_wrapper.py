@@ -427,7 +427,6 @@ class CustomModel:
 
         self.rollout_step_counter += 1
         action[-1] = 1 if action[-1] > 0 else -1
-        print(f"step {self.rollout_step_counter} action {action}")
         return action
 
     def reset(self):

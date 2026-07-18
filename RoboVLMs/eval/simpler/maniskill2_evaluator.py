@@ -2,7 +2,9 @@
 Evaluate a model on ManiSkill2 environment.
 """
 
+import contextlib
 import os
+import time
 
 import numpy as np
 from transforms3d.euler import quat2euler
@@ -13,6 +15,27 @@ from simpler_env.utils.env.env_builder import (
 )
 from simpler_env.utils.env.observation_utils import get_image_from_maniskill2_obs_dict
 from simpler_env.utils.visualization import write_video
+
+
+@contextlib.contextmanager
+def _suppress_native_stderr():
+    """Silence C/C++-level stderr writes (SAPIEN/svulkan2 GLFW "Failed to
+    open display" spam on headless machines with no X server). These are
+    harmless -- SAPIEN falls back to offscreen (EGL) rendering regardless
+    -- but they bypass Python's logging/stdout, so a plain fd-level
+    redirect is the only way to hide them. Python-level exceptions still
+    propagate normally since stderr is restored in `finally` before any
+    traceback is printed."""
+    stderr_fd = 2
+    saved_fd = os.dup(stderr_fd)
+    devnull_fd = os.open(os.devnull, os.O_WRONLY)
+    try:
+        os.dup2(devnull_fd, stderr_fd)
+        yield
+    finally:
+        os.dup2(saved_fd, stderr_fd)
+        os.close(devnull_fd)
+        os.close(saved_fd)
 
 
 def run_maniskill2_eval_single_episode(
@@ -61,32 +84,33 @@ def run_maniskill2_eval_single_episode(
         # put raytracing dict keys before other keys for compatibility with existing result naming and metric calculation
         additional_env_build_kwargs = ray_tracing_dict
     # import pdb;pdb.set_trace()
-    env = build_maniskill2_env(
-        env_name,
-        **additional_env_build_kwargs,
-        **kwargs,
-    )
+    with _suppress_native_stderr():
+        env = build_maniskill2_env(
+            env_name,
+            **additional_env_build_kwargs,
+            **kwargs,
+        )
 
-    # initialize environment
-    env_reset_options = {
-        "robot_init_options": {
-            "init_xy": np.array([robot_init_x, robot_init_y]),
-            "init_rot_quat": robot_init_quat,
+        # initialize environment
+        env_reset_options = {
+            "robot_init_options": {
+                "init_xy": np.array([robot_init_x, robot_init_y]),
+                "init_rot_quat": robot_init_quat,
+            }
         }
-    }
-    if obj_init_x is not None:
-        assert obj_init_y is not None
-        obj_variation_mode = "xy"
-        env_reset_options["obj_init_options"] = {
-            "init_xy": np.array([obj_init_x, obj_init_y]),
-        }
-    else:
-        assert obj_episode_id is not None
-        obj_variation_mode = "episode"
-        env_reset_options["obj_init_options"] = {
-            "episode_id": obj_episode_id,
-        }
-    obs, _ = env.reset(options=env_reset_options)
+        if obj_init_x is not None:
+            assert obj_init_y is not None
+            obj_variation_mode = "xy"
+            env_reset_options["obj_init_options"] = {
+                "init_xy": np.array([obj_init_x, obj_init_y]),
+            }
+        else:
+            assert obj_episode_id is not None
+            obj_variation_mode = "episode"
+            env_reset_options["obj_init_options"] = {
+                "episode_id": obj_episode_id,
+            }
+        obs, _ = env.reset(options=env_reset_options)
     # for long-horizon environments, we check if the current subtask is the final subtask
     is_final_subtask = env.is_final_subtask()
 
@@ -108,12 +132,15 @@ def run_maniskill2_eval_single_episode(
 
     timestep = 0
     success = "failure"
+    total_infer_time = 0.0
 
     # Step the environment
     while not (predicted_terminated or truncated):
         # step the model; "raw_action" is raw model action output; "action" is the processed action to be sent into maniskill env
         # import pdb; pdb.set_trace()
+        infer_start = time.perf_counter()
         raw_action, action = model.step(image, task_description)
+        total_infer_time += time.perf_counter() - infer_start
         predicted_actions.append(raw_action)
         predicted_terminated = bool(action["terminate_episode"][0] > 0)
 
@@ -124,11 +151,12 @@ def run_maniskill2_eval_single_episode(
                 env.advance_to_next_subtask()
 
         # step the environment
-        obs, reward, done, truncated, info = env.step(
-            np.concatenate(
-                [action["world_vector"], action["rot_axangle"], action["gripper"]]
-            ),
-        )
+        with _suppress_native_stderr():
+            obs, reward, done, truncated, info = env.step(
+                np.concatenate(
+                    [action["world_vector"], action["rot_axangle"], action["gripper"]]
+                ),
+            )
 
         success = "success" if done else "failure"
         new_task_description = env.get_language_instruction()
@@ -183,19 +211,25 @@ def run_maniskill2_eval_single_episode(
     action_path = action_root + os.path.basename(action_path)
     model.visualize_epoch(predicted_actions, images, save_path=action_path)
 
+    avg_infer_ms = (total_infer_time / timestep * 1000) if timestep else 0.0
+
     episode_label = (
         f"obj_{obj_init_x}_{obj_init_y}"
         if obj_variation_mode == "xy"
         else f"episode_{obj_episode_id}"
     )
-    print(f"[{env_name}] {episode_label}: {success.upper()} ({timestep} steps)")
+    print(
+        f"[{env_name}] {episode_label}: {success.upper()} "
+        f"({timestep} steps, {avg_infer_ms:.1f} ms/infer)"
+    )
 
-    return success == "success"
+    return success == "success", avg_infer_ms
 
 
 def maniskill2_evaluator(model, args):
     control_mode = get_robot_control_mode(args.robot, args.policy_model)
     success_arr = []
+    infer_ms_arr = []
     model_name = args.model_name
     # run inference
     for robot_init_x in args.robot_init_xs:
@@ -225,23 +259,30 @@ def maniskill2_evaluator(model, args):
                 if args.obj_variation_mode == "xy":
                     for obj_init_x in args.obj_init_xs:
                         for obj_init_y in args.obj_init_ys:
-                            success_arr.append(
-                                run_maniskill2_eval_single_episode(
-                                    obj_init_x=obj_init_x,
-                                    obj_init_y=obj_init_y,
-                                    **kwargs,
-                                )
+                            success, infer_ms = run_maniskill2_eval_single_episode(
+                                obj_init_x=obj_init_x,
+                                obj_init_y=obj_init_y,
+                                **kwargs,
                             )
+                            success_arr.append(success)
+                            infer_ms_arr.append(infer_ms)
                 elif args.obj_variation_mode == "episode":
                     for obj_episode_id in range(
                         args.obj_episode_range[0], args.obj_episode_range[1]
                     ):
-                        success_arr.append(
-                            run_maniskill2_eval_single_episode(
-                                obj_episode_id=obj_episode_id, **kwargs
-                            )
+                        success, infer_ms = run_maniskill2_eval_single_episode(
+                            obj_episode_id=obj_episode_id, **kwargs
                         )
+                        success_arr.append(success)
+                        infer_ms_arr.append(infer_ms)
                 else:
                     raise NotImplementedError()
+
+    success_rate = 100.0 * np.mean(success_arr) if success_arr else 0.0
+    avg_infer_ms = np.mean(infer_ms_arr) if infer_ms_arr else 0.0
+    print(
+        f"=== [{args.env_name}] {len(success_arr)} episodes | "
+        f"success rate {success_rate:.1f}% | avg {avg_infer_ms:.1f} ms/infer ==="
+    )
 
     return success_arr
