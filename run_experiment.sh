@@ -37,12 +37,16 @@ while [[ $# -gt 0 ]]; do
             PASS_ARGS+=("--output-dir" "$2")
             shift 2
             ;;
-        --patch-grid-size|--max-highres-patches|--lowres-factor|--selector-hub|--selector-target-patch-size|--selector-task-loss-requirement|--selector-device|--selector-refresh-stride|--patch-grasp-steps|--sparse-gate-mode|--llm-prune-count|--llm-prune-min-layer|--llm-prune-min-gap|--llm-prune-layers|--uniform-gate-dx-ratio|--uniform-gate-dy-ratio|--uniform-gate-area-min|--uniform-gate-area-max|--focus-gate-min-confidence|--focus-gate-max-confidence|--focus-gate-min-context-confidence)
+        --patch-grid-size|--max-highres-patches|--lowres-factor|--selector-hub|--selector-target-patch-size|--selector-task-loss-requirement|--selector-device|--selector-refresh-stride|--patch-grasp-steps|--sparse-gate-mode|--llm-prune-count|--llm-prune-min-layer|--llm-prune-min-gap|--llm-prune-layers|--uniform-gate-dx-ratio|--uniform-gate-dy-ratio|--uniform-gate-area-min|--uniform-gate-area-max|--focus-gate-min-confidence|--focus-gate-max-confidence|--focus-gate-min-context-confidence|--exec-chunk|--foveate-keep-percent|--foveate-mode|--foveate-center|--foveate-phase)
             PASS_ARGS+=("$1" "$2")
             shift 2
             ;;
         --save-video)
             PASS_ARGS+=("--save-video")
+            shift
+            ;;
+        --foveate)
+            PASS_ARGS+=("--foveate")
             shift
             ;;
         --disable-video-history)

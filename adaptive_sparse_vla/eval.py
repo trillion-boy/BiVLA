@@ -68,6 +68,7 @@ from inference import (
     UniformGeometrySparseInference,
     UniformRefinementInference,
 )
+from foveation import MotionGaze, foveate_image_blur, foveate_image_logpolar
 
 
 TASK_CONFIGS = {
@@ -159,6 +160,33 @@ def parse_args():
         choices=["baseline", "adaptive_sparse", "task_aware_hybrid", "shared_compact_focus", "uniform_refine", "uniform_geometry_sparse", "uniform_control_sparse"],
         default="baseline",
     )
+    p.add_argument(
+        "--exec-chunk",
+        type=int,
+        default=0,
+        help="Execute only the first k actions of each predicted chunk before "
+        "re-running inference (0 = execute the full chunk = UniVLA default of "
+        "5). NOTE the direction is inverted vs the RoboVLMs/SpatialVLA ports: "
+        "UniVLA's baseline already amortizes one forward over 5 env steps, so "
+        "k<5 buys reactivity (more frequent re-planning) at ~5/k x the "
+        "inference cost per env step.",
+    )
+    p.add_argument(
+        "--foveate", action="store_true", default=False,
+        help="foveate the policy's visual input; the env still steps on the "
+        "raw, unfoveated scene.",
+    )
+    p.add_argument(
+        "--foveate-keep-percent", type=float, default=20.0,
+        help="percent of visual sample density retained (RetinaBased default: 20)",
+    )
+    p.add_argument("--foveate-mode", default="logpolar", choices=["logpolar", "blur"])
+    p.add_argument("--foveate-center", default="image", choices=["image", "motion"])
+    p.add_argument(
+        "--foveate-phase", default="always", choices=["always", "pregrasp"],
+        help="always = foveate every frame; pregrasp = only while the "
+        "policy's own gripper command is still OPEN",
+    )
     p.add_argument("--image-size", type=int, default=256)
     p.add_argument("--min-pixels", type=int, default=6400)
     p.add_argument("--vision-device", default="cuda")
@@ -220,6 +248,14 @@ def parse_args():
     p.add_argument("--rerank-temporal-weight", type=float, default=0.35)
     p.add_argument("--rerank-smoothness-weight", type=float, default=0.15)
     return p.parse_args()
+
+
+def apply_foveation(image, args, gaze):
+    """Foveate a policy observation. Pixel-identical to the RoboVLMs/SpatialVLA
+    ports (same foveation.py), so results are comparable across backbones."""
+    center = gaze.update(image) if gaze is not None else None
+    fov = foveate_image_logpolar if args.foveate_mode == "logpolar" else foveate_image_blur
+    return fov(image, keep_ratio=args.foveate_keep_percent / 100.0, center=center)
 
 
 def profile_latency(model, cfg, cam_name, n_steps):
@@ -470,6 +506,10 @@ def main():
         if hasattr(model, "route_episode"):
             model.route_episode(image, instruction)
         model.reset()
+        fov_gaze = (
+            MotionGaze() if args.foveate and args.foveate_center == "motion" else None
+        )
+        gripper_open = True  # pregrasp phase = no close command issued yet
         frames = []
         policy_frames = []
         comparison_frames = []
@@ -483,9 +523,12 @@ def main():
 
         while not (done or truncated) and step < task_cfg["max_episode_steps"]:
             raw_frame = image.copy()
+            policy_image = image
+            if args.foveate and (args.foveate_phase == "always" or gripper_open):
+                policy_image = apply_foveation(image, args, fov_gaze)
             _t_model = time.time()
-            _, env_actions = model.step(
-                image,
+            raw_actions, env_actions = model.step(
+                policy_image,
                 instruction,
                 phase_info=phase_info,
                 oracle_context={
@@ -496,13 +539,21 @@ def main():
             )
             model_time += time.time() - _t_model
             model_calls += 1
+            if args.exec_chunk > 0:
+                env_actions = env_actions[: args.exec_chunk]
+                raw_actions = raw_actions[: args.exec_chunk]
             if args.save_video and step % 4 == 0:
                 frames.append(raw_frame)
                 prepared_frame = model.last_prepared_image()
                 if prepared_frame is not None and args.model_type != "baseline":
                     policy_frames.append(prepared_frame)
                     comparison_frames.append(make_side_by_side(raw_frame, prepared_frame))
-            for env_a in env_actions:
+            for env_a, raw_a in zip(env_actions, raw_actions):
+                # widowx_bridge convention (transform_action): open_gripper > 0.5
+                # means the policy is commanding a CLOSE on this step.
+                gripper_open = (
+                    float(np.asarray(raw_a["open_gripper"]).reshape(-1)[0]) <= 0.5
+                )
                 obs, _, done, truncated, info = env.step(
                     np.concatenate(
                         [env_a["world_vector"], env_a["rot_axangle"], env_a["gripper"]]
@@ -523,9 +574,12 @@ def main():
         final_success = bool(final_info.get("success", False))
         elapsed = time.time() - t0
         model_ms = (model_time / model_calls * 1000.0) if model_calls else 0.0
+        # Amortized inference cost per ENV step: with exec-chunk k of 5, each
+        # forward covers k env steps, so this rises ~5/k x while ms/infer stays flat.
+        step_ms = (model_time / step * 1000.0) if step else 0.0
         status = "SUCCESS" if final_success else "FAIL"
         print(f"   → {status}  ({step} steps, {elapsed:.1f}s, "
-              f"{model_ms:.0f} ms/infer)", flush=True)
+              f"{model_ms:.0f} ms/infer, {step_ms:.0f} ms/env-step)", flush=True)
 
         episode_result = {
             "ep": ep_count,
@@ -536,6 +590,7 @@ def main():
             "steps": step,
             "elapsed": elapsed,
             "model_ms_per_infer": model_ms,
+            "model_ms_per_env_step": step_ms,
             "final_info": final_info,
         }
         if args.model_type != "baseline":
@@ -583,6 +638,18 @@ def main():
         "avg_model_ms_per_infer": float(
             np.mean([r["model_ms_per_infer"] for r in results])
         ),
+        "avg_model_ms_per_env_step": float(
+            np.mean([r["model_ms_per_env_step"] for r in results])
+        ),
+        "exec_chunk": int(args.exec_chunk),
+        "predict_action_frames": int(getattr(model, "predict_action_frames", 5)),
+        "foveate": {
+            "enabled": bool(args.foveate),
+            "mode": args.foveate_mode,
+            "center": args.foveate_center,
+            "phase": args.foveate_phase,
+            "keep_percent": float(args.foveate_keep_percent),
+        },
         "fastv": {
             "enabled": os.environ.get("FASTV_ENABLE", "0") == "1",
             "k": int(os.environ.get("FASTV_K", "3")),
@@ -736,6 +803,16 @@ def main():
     print(f"  avg_elapsed: {summary['avg_elapsed']:.1f}s", flush=True)
     print(f"  avg_model_ms_per_infer: {summary['avg_model_ms_per_infer']:.0f} ms  "
           f"(pure inference latency; step-count independent)", flush=True)
+    print(f"  avg_model_ms_per_env_step: {summary['avg_model_ms_per_env_step']:.0f} ms  "
+          f"(inference cost amortized over executed actions)", flush=True)
+    if args.exec_chunk > 0:
+        print(f"  exec-chunk: first {args.exec_chunk} of "
+              f"{summary['predict_action_frames']} predicted actions executed "
+              f"per forward (baseline executes all)", flush=True)
+    if args.foveate:
+        print(f"  foveate[{args.foveate_mode}/{args.foveate_center}/"
+              f"{args.foveate_phase}] keep={args.foveate_keep_percent:.0f}%",
+              flush=True)
     if summary["fastv"]["enabled"]:
         print(f"  fastv: K={summary['fastv']['k']} keep={summary['fastv']['keep_ratio']}", flush=True)
     if summary["depth_ctrl"]["enabled"]:
