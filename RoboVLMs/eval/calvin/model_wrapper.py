@@ -160,6 +160,16 @@ class CustomModel:
         self.chunk_env_steps = 0
         self._chunk_warned = False
 
+        # Diagnostic mode (no speedup): run inference every env step so the
+        # LSTM hidden state / history stays intact, but execute the PREVIOUS
+        # forward's chunk[1] prediction instead of the current chunk[0].
+        # Isolates the cause of the exec_chunk_k=2 collapse: if success
+        # survives, the chunk's t+1 actions are reliable and the collapse
+        # came from skipping LSTM state updates; if it collapses too, the
+        # chunk tail itself is untrustworthy at deployment.
+        self.chunk_lag_test = False
+        self._pending_lag_action = None
+
         self.vision_queue = Queue(maxsize=self.window_size)
         self.vision_gripper_queue = Queue(maxsize=self.window_size)
         self.action_queue = Queue(maxsize=self.window_size - 1)
@@ -400,6 +410,9 @@ class CustomModel:
             self.chunk_gen_calls += 1
             self._fill_chunk_queue(obs)
 
+        if self.chunk_lag_test:
+            action = self._apply_chunk_lag(action, obs)
+
         self.rollout_step_counter += 1
         return action
 
@@ -500,6 +513,27 @@ class CustomModel:
             self.exec_chunk_k = 1
             self._exec_chunk_queue = []
 
+    def _apply_chunk_lag(self, action, obs):
+        """See chunk_lag_test in init_config. Swaps the freshly-computed
+        chunk[0] action for the previous forward's chunk[1] prediction.
+        First step of an episode (no previous forward) executes chunk[0]."""
+        full_chunk = self.action_hist_list[-1] if self.action_hist_list else None
+        if (
+            not isinstance(full_chunk, torch.Tensor)
+            or full_chunk.ndim != 2
+            or full_chunk.shape[0] <= 1
+        ):
+            if not self._chunk_warned:
+                print(
+                    f"[ChunkLag] predicted chunk has no t+1 action "
+                    f"(shape={getattr(full_chunk, 'shape', None)}); test is a no-op."
+                )
+                self._chunk_warned = True
+            return action
+        pending = self._pending_lag_action
+        self._pending_lag_action = self._finalize_action(full_chunk[1].clone(), obs)
+        return pending if pending is not None else action
+
     def reset(self):
         if hasattr(self.model.model, "lm_head"):
             self.model.model.lm_head.hidden_state = None
@@ -513,6 +547,7 @@ class CustomModel:
         self.rollout_step_counter = 0
         self.action_hist_list = []
         self._exec_chunk_queue = []
+        self._pending_lag_action = None
 
         while not self.vision_queue.empty():
             self.vision_queue.get()

@@ -332,6 +332,8 @@ def maniskill2_evaluator(model, args):
         env_steps = getattr(model, "chunk_env_steps", 0)
         ratio = (gen_calls / env_steps) if env_steps else 1.0
         tags.append(f"exec-chunk k={exec_chunk_k} (inference on {ratio:.0%} of steps)")
+    if getattr(model, "chunk_lag_test", False):
+        tags.append("chunk-lag-test (stale chunk[1], forward every step)")
     if args.foveate:
         tags.append(
             f"foveate[{args.foveate_mode}/{args.foveate_center}/{args.foveate_phase}] "

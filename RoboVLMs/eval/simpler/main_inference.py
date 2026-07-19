@@ -179,6 +179,19 @@ def get_args():
         help="always = foveate every frame; pregrasp = foveate only while "
         "the policy's own gripper command is OPEN",
     )
+    parser.add_argument(
+        "--chunk-lag-test", action="store_true", default=False,
+        help="diagnostic (no speedup): run inference every env step (LSTM "
+        "history intact) but execute the previous forward's chunk[1] action. "
+        "Isolates whether the exec-chunk=2 collapse came from skipped LSTM "
+        "state updates or from unreliable chunk-tail actions. "
+        "Mutually exclusive with --exec-chunk > 1.",
+    )
+    parser.add_argument(
+        "--profile-latency", action="store_true", default=False,
+        help="time each model stage (vision encoder / projection / LLM / "
+        "LSTM head) with CUDA sync and print a per-step breakdown at the end.",
+    )
     args = parser.parse_args()
 
     # env args: robot pose
@@ -214,8 +227,13 @@ def get_args():
             else args.additional_env_save_tags + f"_{tag}"
         )
 
+    if args.exec_chunk > 1 and args.chunk_lag_test:
+        parser.error("--chunk-lag-test requires --exec-chunk 1 (they are "
+                     "mutually exclusive by design)")
     if args.exec_chunk > 1:
         _add_tag(f"chunk{args.exec_chunk}")
+    if args.chunk_lag_test:
+        _add_tag("chunklag")
     if args.foveate:
         _add_tag(
             f"foveate_{args.foveate_mode}_{args.foveate_center}_"
@@ -307,5 +325,21 @@ if __name__ == "__main__":
         exec_horizon=args.exec_chunk,
     )
 
+    if args.chunk_lag_test:
+        model.chunk_lag_test = True
+        print(
+            "[ChunkLag] diagnostic on: inference every step, executing the "
+            "previous forward's chunk[1] action (no speedup expected)."
+        )
+
+    profiler = None
+    if args.profile_latency:
+        from eval.simpler.latency_profiler import install_profiler
+
+        profiler = install_profiler(model)
+
     # run real-to-sim evaluation
     success_arr = maniskill2_evaluator(model, args)
+
+    if profiler is not None:
+        profiler.print_summary()
