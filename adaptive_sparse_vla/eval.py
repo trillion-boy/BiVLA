@@ -353,6 +353,25 @@ def build_env(cfg, ep_id):
             kw["rgb_overlay_path"] = cand
             kw["rgb_overlay_cameras"] = cfg["rgb_overlay_cameras"]
             break
+    if "rgb_overlay_path" not in kw:
+        # Refuse to run without the visual-matching overlay: silently falling
+        # back to raw sim rendering changes the observation distribution the
+        # policy was evaluated on (paper numbers use the real-inpainting
+        # overlay) and produced wildly skewed pilot results before this check.
+        if os.environ.get("ALLOW_MISSING_OVERLAY"):
+            print(
+                "[WARN] running WITHOUT rgb overlay (ALLOW_MISSING_OVERLAY=1): "
+                "results are NOT comparable to visual-matching numbers",
+                flush=True,
+            )
+        else:
+            raise FileNotFoundError(
+                f"rgb overlay image not found: {cfg['rgb_overlay_path']} "
+                f"(searched under {SIMPLER} and its ManiSkill2_real2sim subdir). "
+                "The real-inpainting PNGs must exist at "
+                "SimplerEnv/ManiSkill2_real2sim/data/real_inpainting/. "
+                "Set ALLOW_MISSING_OVERLAY=1 to bypass deliberately."
+            )
     env = build_maniskill2_env(cfg["env_name"], **kw)
     obs, _ = env.reset(options={"obj_init_options": {"episode_id": ep_id}})
     return env, obs

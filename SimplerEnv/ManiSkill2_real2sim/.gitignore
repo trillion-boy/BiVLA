@@ -33,6 +33,10 @@ imgui.ini
 # but can be excluded explicitly
 tmp/
 /data/*
+# real-inpainting overlays are REQUIRED for visual-matching eval: without
+# them the eval used to silently fall back to raw sim rendering and produce
+# skewed numbers (e.g. UniVLA eggplant 95.8% -> 8.3%). Keep them tracked.
+!/data/real_inpainting/
 demos/
 videos/
 
