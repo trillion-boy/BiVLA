@@ -572,19 +572,29 @@ def main():
                 if done or truncated:
                     break
         final_success = bool(final_info.get("success", False))
+        # "Grasp" metric matching the RoboVLMs/SpatialVLA tables: whether the
+        # source object was EVER grasped during the episode (env-maintained
+        # cumulative flag), independent of whether the task ultimately
+        # succeeded. Provided automatically by ManiSkill2_real2sim's
+        # grasp_single_in_scene.py / put_on_in_scene.py in every step's info.
+        grasped = bool(
+            final_info.get("episode_stats", {}).get("is_src_obj_grasped", False)
+        )
         elapsed = time.time() - t0
         model_ms = (model_time / model_calls * 1000.0) if model_calls else 0.0
         # Amortized inference cost per ENV step: with exec-chunk k of 5, each
         # forward covers k env steps, so this rises ~5/k x while ms/infer stays flat.
         step_ms = (model_time / step * 1000.0) if step else 0.0
         status = "SUCCESS" if final_success else "FAIL"
-        print(f"   → {status}  ({step} steps, {elapsed:.1f}s, "
-              f"{model_ms:.0f} ms/infer, {step_ms:.0f} ms/env-step)", flush=True)
+        print(f"   → {status}  (grasp={'Y' if grasped else 'N'}, {step} steps, "
+              f"{elapsed:.1f}s, {model_ms:.0f} ms/infer, {step_ms:.0f} ms/env-step)",
+              flush=True)
 
         episode_result = {
             "ep": ep_count,
             "ep_id": ep_id,
             "success": final_success,
+            "grasped": grasped,
             "terminated": bool(done),
             "truncated": bool(truncated),
             "steps": step,
@@ -620,6 +630,8 @@ def main():
 
     n_ok = sum(r["success"] for r in results)
     sr = n_ok / len(results)
+    n_grasp = sum(r["grasped"] for r in results)
+    grasp_rate = n_grasp / len(results)
     summary = {
         "model_type": args.model_type,
         "task": args.task,
@@ -633,6 +645,7 @@ def main():
             int(x.strip()) for x in args.llm_prune_layers.split(",") if x.strip()
         ],
         "success_rate": sr,
+        "grasp_rate": grasp_rate,
         "avg_steps": float(np.mean([r["steps"] for r in results])),
         "avg_elapsed": float(np.mean([r["elapsed"] for r in results])),
         "avg_model_ms_per_infer": float(
@@ -798,6 +811,7 @@ def main():
     print(f"\n{'=' * 50}", flush=True)
     print(f"  task: {args.task}", flush=True)
     print(f"  model: {args.model_type}", flush=True)
+    print(f"  grasp_rate: {n_grasp}/{len(results)} = {grasp_rate:.1%}", flush=True)
     print(f"  success_rate: {n_ok}/{len(results)} = {sr:.1%}", flush=True)
     print(f"  avg_steps: {summary['avg_steps']:.0f}", flush=True)
     print(f"  avg_elapsed: {summary['avg_elapsed']:.1f}s", flush=True)
