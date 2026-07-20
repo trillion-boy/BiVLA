@@ -494,7 +494,10 @@ def main():
     if stats_rows:
         aggregate_stats = {}
         for key in stats_rows[0]:
-            values = [float(row[key]) for row in stats_rows if key in row]
+            # Some diagnostic fields (e.g. postgrasp_reuse_rate) are None on
+            # episodes where that phase never occurred (never grasped) --
+            # skip those rather than crashing on float(None).
+            values = [float(row[key]) for row in stats_rows if row.get(key) is not None]
             if values:
                 aggregate_stats[key] = float(np.mean(values))
         summary["model_stats"] = aggregate_stats
@@ -514,6 +517,25 @@ def main():
         print(f"model_ms_per_env_step: {step_ms:.1f}ms  (amortized over executed actions)", flush=True)
     if args.model == "openvla_chunk":
         print(f"action-repeat: each prediction executed for {args.action_repeat} env steps", flush=True)
+    if args.model == "openvla_retina":
+        ms = summary.get("model_stats") or {}
+        pre_rr, post_rr = ms.get("pregrasp_reuse_rate"), ms.get("postgrasp_reuse_rate")
+        pre_fr, post_fr = ms.get("pregrasp_mean_refresh_ratio"), ms.get("postgrasp_mean_refresh_ratio")
+        print(
+            "reuse_rate  pre-grasp: "
+            + (f"{pre_rr:.1%}" if pre_rr is not None else "n/a")
+            + "  post-grasp: "
+            + (f"{post_rr:.1%}" if post_rr is not None else "n/a"),
+            flush=True,
+        )
+        print(
+            "mean_refresh_ratio  pre-grasp: "
+            + (f"{pre_fr:.1%}" if pre_fr is not None else "n/a")
+            + "  post-grasp: "
+            + (f"{post_fr:.1%}" if post_fr is not None else "n/a")
+            + "  (lower refresh_ratio = more stale/cached image at decision time)",
+            flush=True,
+        )
     print("==================================================", flush=True)
 
     save_path = os.path.join(output_dir, f"results_{args.task}.json")

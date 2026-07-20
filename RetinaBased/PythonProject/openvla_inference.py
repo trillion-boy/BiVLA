@@ -404,6 +404,17 @@ class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):
             "outer_refreshes": 0.0,
             "mean_refresh_ratio_sum": 0.0,
             "mean_global_motion_sum": 0.0,
+            # Diagnostic only (does NOT feed _should_run_model, which never
+            # reads phase_info): segments reuse/refresh behavior by whether
+            # the object was already grasped as of this step's decision, to
+            # test whether the cache/reuse logic behaves differently during
+            # the precision-critical placement phase than during approach.
+            "pregrasp_steps": 0.0,
+            "pregrasp_reuses": 0.0,
+            "pregrasp_refresh_ratio_sum": 0.0,
+            "postgrasp_steps": 0.0,
+            "postgrasp_reuses": 0.0,
+            "postgrasp_refresh_ratio_sum": 0.0,
         }
 
     def reset(self) -> None:
@@ -426,6 +437,23 @@ class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):
         stats["model_call_rate"] = stats["model_calls"] / steps
         stats["reuse_rate"] = stats["action_reuses"] / steps
         stats["speedup_vs_vanilla_est"] = steps / model_calls
+
+        # Phase-segmented diagnostic: pre- vs post-grasp reuse/refresh
+        # behavior. None (not 0.0) when a phase never occurred this
+        # episode, so aggregation across episodes can skip it correctly.
+        pre_n = int(stats.pop("pregrasp_steps"))
+        post_n = int(stats.pop("postgrasp_steps"))
+        pre_reuses = stats.pop("pregrasp_reuses")
+        post_reuses = stats.pop("postgrasp_reuses")
+        pre_refresh_sum = stats.pop("pregrasp_refresh_ratio_sum")
+        post_refresh_sum = stats.pop("postgrasp_refresh_ratio_sum")
+        stats["pregrasp_steps"] = float(pre_n)
+        stats["postgrasp_steps"] = float(post_n)
+        stats["pregrasp_reuse_rate"] = (pre_reuses / pre_n) if pre_n else None
+        stats["postgrasp_reuse_rate"] = (post_reuses / post_n) if post_n else None
+        stats["pregrasp_mean_refresh_ratio"] = (pre_refresh_sum / pre_n) if pre_n else None
+        stats["postgrasp_mean_refresh_ratio"] = (post_refresh_sum / post_n) if post_n else None
+
         timing = super().episode_stats()  # pure model-only ms/infer from the base class
         if timing:
             stats.update(timing)
@@ -584,6 +612,9 @@ class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):
         self._last_prepared_image = np.asarray(prepared, dtype=np.uint8)
 
         run_model, reason = self._should_run_model(phase_info=phase_info)
+        # Diagnostic only -- read for stats below, not used by any decision.
+        grasped_now = bool((phase_info or {}).get("grasped", False))
+        refresh_ratio = float(self._last_prepare_meta.get("refresh_ratio", 0.0))
         if run_model:
             raw_action = self._predict_raw_action(self._last_prepared_image, instruction)
             self._last_raw_action = np.asarray(raw_action, dtype=np.float32).reshape(-1)
@@ -595,9 +626,18 @@ class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):
             self._steps_since_model_call += 1
             if self._episode_started:
                 self._episode_stats["action_reuses"] += 1.0
+                self._episode_stats[
+                    "postgrasp_reuses" if grasped_now else "pregrasp_reuses"
+                ] += 1.0
 
         if self._episode_started:
             self._episode_stats["policy_steps"] += 1.0
+            if grasped_now:
+                self._episode_stats["postgrasp_steps"] += 1.0
+                self._episode_stats["postgrasp_refresh_ratio_sum"] += refresh_ratio
+            else:
+                self._episode_stats["pregrasp_steps"] += 1.0
+                self._episode_stats["pregrasp_refresh_ratio_sum"] += refresh_ratio
 
         self._last_prepare_meta["decision"] = reason
         self._step_index += 1
