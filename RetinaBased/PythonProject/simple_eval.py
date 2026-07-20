@@ -85,7 +85,13 @@ if not hasattr(_paligemma_processing, "make_batched_images"):
 
     _paligemma_processing.make_batched_images = _make_batched_images
 
-from openvla_inference import FoveatedOpenVLAInference, OpenVLAInference, RetinotopicCachedOpenVLAInference
+from openvla_inference import (
+    ActionRepeatOpenVLAInference,
+    BlurFoveatedOpenVLAInference,
+    FoveatedOpenVLAInference,
+    OpenVLAInference,
+    RetinotopicCachedOpenVLAInference,
+)
 from simpler_env.utils.env.env_builder import build_maniskill2_env, get_robot_control_mode
 from simpler_env.utils.env.observation_utils import get_image_from_maniskill2_obs_dict
 
@@ -157,9 +163,19 @@ def parse_args():
         choices=[
             "openvla",
             "openvla_foveated",
+            "openvla_foveated_blur",
+            "openvla_chunk",
             "openvla_retina",
         ],
         required=True,
+    )
+    parser.add_argument(
+        "--action-repeat",
+        type=int,
+        default=2,
+        help="openvla_chunk only: execute each predicted action this many "
+        "env steps (OpenVLA predicts one action per forward, so the "
+        "chunk-exec analog is action-repeat; k=2 halves the forwards).",
     )
     parser.add_argument("--task", choices=sorted(TASK_CONFIGS.keys()), required=True)
     parser.add_argument("--n-episodes", type=int, default=24)
@@ -307,6 +323,20 @@ def build_model(args):
             device=args.device,
             keep_percent=args.foveated_keep_percent,
         )
+    if args.model == "openvla_foveated_blur":
+        return BlurFoveatedOpenVLAInference(
+            model_path=args.openvla_model_path,
+            unnorm_key=args.openvla_unnorm_key,
+            device=args.device,
+            keep_percent=args.foveated_keep_percent,
+        )
+    if args.model == "openvla_chunk":
+        return ActionRepeatOpenVLAInference(
+            model_path=args.openvla_model_path,
+            unnorm_key=args.openvla_unnorm_key,
+            device=args.device,
+            repeat_k=args.action_repeat,
+        )
     if args.model == "openvla_retina":
         return RetinotopicCachedOpenVLAInference(
             model_path=args.openvla_model_path,
@@ -418,6 +448,20 @@ def main():
             save_gif(gif_path, frames)
             print(f"gif: {gif_path}", flush=True)
 
+        model_stats = (
+            model.episode_stats()
+            if callable(getattr(model, "episode_stats", None))
+            else None
+        )
+        # Amortized inference cost per ENV step: with action-repeat k, each
+        # forward covers k env steps, so this falls ~k x while ms/infer is flat.
+        if model_stats and step_count and "model_ms_per_infer" in model_stats:
+            model_stats["model_ms_per_env_step"] = (
+                model_stats.get("model_calls_timed", 0.0)
+                * model_stats["model_ms_per_infer"]
+                / step_count
+            )
+
         results.append(
             {
                 "ep": run_idx,
@@ -429,11 +473,7 @@ def main():
                 "steps": step_count,
                 "elapsed": elapsed,
                 "final_info": final_info,
-                "model_stats": (
-                    model.episode_stats()
-                    if callable(getattr(model, "episode_stats", None))
-                    else None
-                ),
+                "model_stats": model_stats,
             }
         )
         env.close()
@@ -469,6 +509,11 @@ def main():
     model_ms = (summary.get("model_stats") or {}).get("model_ms_per_infer")
     if model_ms is not None:
         print(f"model_ms_per_infer: {model_ms:.1f}ms  (pure model forward pass, CUDA-synced)", flush=True)
+    step_ms = (summary.get("model_stats") or {}).get("model_ms_per_env_step")
+    if step_ms is not None:
+        print(f"model_ms_per_env_step: {step_ms:.1f}ms  (amortized over executed actions)", flush=True)
+    if args.model == "openvla_chunk":
+        print(f"action-repeat: each prediction executed for {args.action_repeat} env steps", flush=True)
     print("==================================================", flush=True)
 
     save_path = os.path.join(output_dir, f"results_{args.task}.json")

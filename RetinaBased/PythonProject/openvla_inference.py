@@ -49,6 +49,66 @@ def foveate_image_logpolar(image: np.ndarray, keep_ratio: float) -> np.ndarray:
     return np.asarray(np.clip(restored, 0, 255), dtype=np.uint8)
 
 
+def foveate_image_blur(
+    image: np.ndarray,
+    keep_ratio: float,
+    center: Optional[Tuple[float, float]] = None,
+) -> np.ndarray:
+    """Geometry-preserving foveation: sharp fovea, blurred periphery, no warp.
+
+    Verbatim copy of the shared foveation module used for the SpatialVLA,
+    RoboVLMs and UniVLA ports (RoboVLMs/eval/simpler/foveation.py), so blur
+    results are pixel-comparable across all four backbones. A disc around
+    `center` whose area is ~`keep_ratio` of the image stays bit-identical to
+    the input; outside it, detail falls off by blending progressively
+    stronger Gaussian blurs with radial weights.
+    """
+    frame = np.asarray(image, dtype=np.uint8)
+    if frame.ndim != 3 or frame.shape[2] != 3:
+        raise ValueError(f"Expected HxWx3 image, got {frame.shape}")
+
+    keep_ratio = float(keep_ratio)
+    height, width = frame.shape[:2]
+    if keep_ratio >= 1.0:
+        return frame.copy()
+
+    if center is None:
+        center = (width / 2.0, height / 2.0)
+    else:
+        center = (float(np.clip(center[0], 0, width - 1)),
+                  float(np.clip(center[1], 0, height - 1)))
+
+    # Sharp-disc radius from the keep area; blur ramps from r0 to the corner.
+    r0 = math.sqrt(max(keep_ratio, 0.0) * height * width / math.pi)
+    max_radius = float(
+        np.hypot(max(center[0], width - center[0]), max(center[1], height - center[1]))
+    )
+    ramp = max(max_radius - r0, 1e-6)
+
+    ys, xs = np.mgrid[0:height, 0:width]
+    dist = np.hypot(xs - center[0], ys - center[1])
+    # 0 inside the fovea, ->1 at the farthest corner.
+    t = np.clip((dist - r0) / ramp, 0.0, 1.0).astype(np.float32)
+
+    # Three blur strengths; per-pixel blend picks an effective level ~ t.
+    blur_mid = cv2.GaussianBlur(frame, (0, 0), sigmaX=3.0)
+    blur_far = cv2.GaussianBlur(frame, (0, 0), sigmaX=9.0)
+
+    w_far = np.clip(2.0 * t - 1.0, 0.0, 1.0)[..., None]      # active t in [0.5, 1]
+    w_mid = (np.clip(2.0 * t, 0.0, 1.0)[..., None] - w_far)  # active t in [0, 0.5]
+    w_sharp = 1.0 - w_mid - w_far
+
+    out = (frame.astype(np.float32) * w_sharp
+           + blur_mid.astype(np.float32) * w_mid
+           + blur_far.astype(np.float32) * w_far)
+    out = np.clip(np.rint(out), 0, 255).astype(np.uint8)
+    # Keep the fovea bit-identical (blending is a no-op there, but rounding
+    # of float weights could flip a value; enforce exactly).
+    fovea = dist <= r0
+    out[fovea] = frame[fovea]
+    return out
+
+
 def _logpolar_transform(
     image: np.ndarray,
     keep_ratio: float,
@@ -232,6 +292,62 @@ class FoveatedOpenVLAInference(OpenVLAInference):
     ) -> np.ndarray:
         del goal, phase_info, oracle_context
         return foveate_image_logpolar(np.asarray(image, dtype=np.uint8), keep_ratio=self.keep_ratio)
+
+
+class BlurFoveatedOpenVLAInference(OpenVLAInference):
+    """Foveation ablation: same keep-percent semantics as the log-polar
+    variant, but geometry-preserving space-variant blur (no pixel moves).
+    Completes the log-polar-vs-blur comparison across all four backbones."""
+
+    def __init__(self, *args, keep_percent: float = 20.0, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.keep_ratio = float(np.clip(float(keep_percent) / 100.0, 0.0, 1.0))
+
+    def prepare_image(
+        self,
+        image: np.ndarray,
+        goal: Optional[str] = None,
+        phase_info: Optional[dict] = None,
+        oracle_context: Optional[dict] = None,
+    ) -> np.ndarray:
+        del goal, phase_info, oracle_context
+        return foveate_image_blur(np.asarray(image, dtype=np.uint8), keep_ratio=self.keep_ratio)
+
+
+class ActionRepeatOpenVLAInference(OpenVLAInference):
+    """Chunk-exec analog for OpenVLA.
+
+    OpenVLA predicts exactly ONE action per forward (no future-action chunk),
+    so executing "the model's predicted chunk" as on SpatialVLA/RoboVLMs/
+    UniVLA is impossible. The honest latency-equivalent is ACTION-REPEAT:
+    run inference once every k env steps and execute the same action k times,
+    cutting forwards by k like chunk-exec does -- but note the executed
+    actions are repeats of one prediction, not distinct future predictions.
+    """
+
+    def __init__(self, *args, repeat_k: int = 2, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.repeat_k = max(1, int(repeat_k))
+
+    def step(
+        self,
+        image: np.ndarray,
+        instruction: str,
+        phase_info: Optional[dict] = None,
+        oracle_context: Optional[dict] = None,
+    ):
+        prepared = self.prepare_image(
+            image,
+            goal=instruction,
+            phase_info=phase_info,
+            oracle_context=oracle_context,
+        )
+        self._last_prepared_image = np.asarray(prepared, dtype=np.uint8)
+        raw_action = self._predict_raw_action(self._last_prepared_image, instruction)
+        raw, env_action = self.transform_action(raw_action)
+        # simple_eval's normalize_env_actions executes every dict in the list
+        # before the next model call -> k env steps per forward.
+        return raw, [dict(env_action) for _ in range(self.repeat_k)]
 
 
 class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):
