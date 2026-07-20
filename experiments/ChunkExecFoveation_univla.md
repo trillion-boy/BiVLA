@@ -189,9 +189,14 @@ Laplacian 에너지 보존율(원본 대비 고주파 디테일이 얼마나 남
 | 개입 | OpenVLA | SpatialVLA | RoboVLMs | **UniVLA** |
 |---|---|---|---|---|
 | **chunk-exec** | 해당 없음(forward당 액션 1개, 예측 chunk 자체가 없어 기법 전제조건 미충족) | ✓ +13.6pp, 1.9× 가속 | ✗ −36.5pp (LSTM 상태 desync) | ✗ **−12.5pp** (궤적 응집성 손상, 방향 반대) |
-| **Foveation (log-polar)** | ✓ +19pp | ✗ −7.3pp (Ego3D 좌표 파괴) | ✗ −19.8pp (지각 손상) | ✓ **+8.3pp** (전 태스크 개선/유지) |
-| **Foveation (blur)** | (미실험) | ✓ log-polar 대비 +11.5pp 회복 | ✗ 회복 안 됨 | △ **−2.1pp (log-polar보다 나쁨)** |
+| **Foveation (log-polar)** | ✓ **+18.8pp** (same-GPU 실측) | ✗ −7.3pp (Ego3D 좌표 파괴) | ✗ −19.8pp (지각 손상) | ✓ **+8.3pp** (전 태스크 개선/유지) |
+| **Foveation (blur)** | ✓ **+17.7pp** (log-polar와 거의 동률) | ✓ log-polar 대비 +11.5pp 회복 | ✗ 회복 안 됨 | △ **−2.1pp (log-polar보다 나쁨)** |
 | latency 효과 (foveation) | 0 | 0 | 0 | **0 (재확인)** |
+
+OpenVLA는 log-polar/blur가 거의 동률(+18.8pp vs +17.7pp)인 반면
+SpatialVLA는 blur가 압도, UniVLA는 log-polar가 우세 — **log-polar vs
+blur의 우열조차 백본마다 다르다.** 상세 근거는
+`experiments/LabMeeting_4Backbone_Summary.md` §3.2 참조.
 
 - foveation은 OpenVLA·UniVLA(무해~긍정) vs SpatialVLA·RoboVLMs(손상)로
   정확히 2:2 — "명시적 좌표 인코딩·압축 병목·특화 인코더가 있는가"로
