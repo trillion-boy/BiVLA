@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="880" viewBox="0 0 1500 880" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arw" markerWidth="10" markerHeight="8" refX="7.5" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 z" fill="#555"/>
+    </marker>
+    <marker id="arwG" markerWidth="10" markerHeight="8" refX="7.5" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 z" fill="#8a8a8a"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1500" height="880" fill="#ffffff"/>
+
+  <!-- ================= Title & legend ================= -->
+  <text x="30" y="38" font-size="20" font-weight="bold" fill="#222">Training-Free Test-Time Interventions for VLA: Foveated Perception × Chunk Execution</text>
+
+  <rect x="1238" y="22" width="15" height="15" rx="3" fill="#FFF4DC" stroke="#E8B44C" stroke-width="1.5"/>
+  <text x="1260" y="34" font-size="11" fill="#444">Ours — perception (input side)</text>
+  <rect x="1238" y="44" width="15" height="15" rx="3" fill="#E6F4E6" stroke="#7CB342" stroke-width="1.5"/>
+  <text x="1260" y="56" font-size="11" fill="#444">Ours — execution (output side)</text>
+  <rect x="1238" y="66" width="15" height="15" rx="3" fill="#F0F1F3" stroke="#9AA0A6" stroke-width="1.5"/>
+  <text x="1260" y="78" font-size="11" fill="#444">Frozen backbone (untouched)</text>
+
+  <text x="30" y="72" font-size="14" font-weight="bold" font-style="italic" fill="#333">(a) Test-time wrapper pipeline</text>
+
+  <!-- ================= Input column ================= -->
+  <rect x="30" y="80" width="170" height="70" rx="8" fill="#FBEFEF" stroke="#C98B8B" stroke-width="1.5"/>
+  <text x="115" y="105" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Language instruction</text>
+  <text x="115" y="123" font-size="10.5" font-style="italic" fill="#666" text-anchor="middle">“Put the carrot on the plate”</text>
+
+  <rect x="42" y="192" width="170" height="120" rx="8" fill="#EDEDED" stroke="#BBB" stroke-width="1"/>
+  <text x="200" y="205" font-size="9" fill="#888" text-anchor="end">o_t−1</text>
+  <rect x="30" y="200" width="170" height="120" rx="8" fill="#E3ECF7" stroke="#6B9BD1" stroke-width="1.5"/>
+  <text x="115" y="252" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">RGB observation</text>
+  <text x="115" y="270" font-size="11" fill="#555" text-anchor="middle">o_t (640×480)</text>
+
+  <!-- instruction route: over foveation, down the gap, into LLM -->
+  <path d="M200,115 L635,115 L635,290 L662,290" fill="none" stroke="#555" stroke-width="1.8" marker-end="url(#arw)"/>
+  <!-- obs -> foveation -->
+  <path d="M200,260 L222,260" fill="none" stroke="#555" stroke-width="1.8" marker-end="url(#arw)"/>
+
+  <!-- ================= (1) Foveation module ================= -->
+  <rect x="230" y="150" width="370" height="370" rx="12" fill="#FFF9EC" stroke="#E8B44C" stroke-width="2" stroke-dasharray="7 4"/>
+  <text x="415" y="174" font-size="14" font-weight="bold" fill="#8A6D1B" text-anchor="middle">① Foveated Perception — Ours</text>
+  <text x="415" y="190" font-size="10" fill="#8A6D1B" text-anchor="middle">(training-free, applied to the image only)</text>
+
+  <rect x="250" y="200" width="330" height="56" rx="8" fill="#FFF4DC" stroke="#E8B44C" stroke-width="1.5"/>
+  <text x="415" y="222" font-size="11.5" font-weight="bold" fill="#5C4A12" text-anchor="middle">Motion Gaze:  |o_t − o_t−1| → centroid + EMA</text>
+  <text x="415" y="240" font-size="10.5" fill="#5C4A12" text-anchor="middle">→ gaze center g_t   (fallback: image center)</text>
+
+  <path d="M415,256 L415,266" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#arwG)"/>
+
+  <!-- branch A: log-polar -->
+  <rect x="250" y="270" width="155" height="120" rx="8" fill="#FFF4DC" stroke="#E8B44C" stroke-width="1.5"/>
+  <text x="327" y="290" font-size="11.5" font-weight="bold" fill="#5C4A12" text-anchor="middle">Log-Polar Warp</text>
+  <g stroke="#B58B2A" stroke-width="1.2" fill="none">
+    <circle cx="327" cy="330" r="7"/><circle cx="327" cy="330" r="14"/><circle cx="327" cy="330" r="21"/><circle cx="327" cy="330" r="28"/>
+    <line x1="327" y1="302" x2="327" y2="358"/><line x1="299" y1="330" x2="355" y2="330"/>
+    <line x1="307" y1="310" x2="347" y2="350"/><line x1="347" y1="310" x2="307" y2="350"/>
+  </g>
+  <text x="327" y="372" font-size="9.5" fill="#7A6420" text-anchor="middle">pixels move (polar remap)</text>
+  <text x="327" y="384" font-size="9.5" fill="#7A6420" text-anchor="middle">mentor's original transform</text>
+
+  <!-- branch B: blur -->
+  <rect x="425" y="270" width="155" height="120" rx="8" fill="#FFF4DC" stroke="#E8B44C" stroke-width="1.5"/>
+  <text x="502" y="290" font-size="11.5" font-weight="bold" fill="#5C4A12" text-anchor="middle">Space-Variant Blur</text>
+  <circle cx="502" cy="330" r="8" fill="#B58B2A"/>
+  <circle cx="502" cy="330" r="15" fill="none" stroke="#B58B2A" stroke-width="5" opacity="0.5"/>
+  <circle cx="502" cy="330" r="22" fill="none" stroke="#B58B2A" stroke-width="5" opacity="0.28"/>
+  <circle cx="502" cy="330" r="29" fill="none" stroke="#B58B2A" stroke-width="5" opacity="0.13"/>
+  <text x="502" y="372" font-size="9.5" fill="#7A6420" text-anchor="middle">pixels stay in place</text>
+  <text x="502" y="384" font-size="9.5" fill="#7A6420" text-anchor="middle">(geometry preserved)</text>
+
+  <text x="415" y="406" font-size="10" font-style="italic" fill="#8A6D1B" text-anchor="middle">keep ratio ≈ 20% of full resolution (identical information budget)</text>
+
+  <rect x="250" y="418" width="330" height="56" rx="8" fill="#FFF4DC" stroke="#E8B44C" stroke-width="1.5"/>
+  <text x="415" y="440" font-size="11.5" font-weight="bold" fill="#5C4A12" text-anchor="middle">Phase Gate (optional)</text>
+  <text x="415" y="458" font-size="10.5" fill="#5C4A12" text-anchor="middle">foveate while gripper OPEN → full-res after grasp</text>
+
+  <!-- foveated image -> vision encoder -->
+  <path d="M600,340 L615,340 L615,182 L662,182" fill="none" stroke="#555" stroke-width="1.8" marker-end="url(#arw)"/>
+  <text x="631" y="163" font-size="10" font-style="italic" fill="#555">ô_t</text>
+
+  <!-- ================= Frozen backbone ================= -->
+  <rect x="650" y="80" width="330" height="440" rx="12" fill="#F0F1F3" stroke="#9AA0A6" stroke-width="2"/>
+  <text x="815" y="104" font-size="14" font-weight="bold" fill="#4A4E54" text-anchor="middle">Frozen VLA Backbone ❄</text>
+  <text x="815" y="120" font-size="10" fill="#6A6E74" text-anchor="middle">weights untouched — zero training, zero extra modules</text>
+
+  <rect x="670" y="160" width="190" height="44" rx="7" fill="#DCE9F8" stroke="#6B9BD1" stroke-width="1.5"/>
+  <text x="765" y="178" font-size="11.5" font-weight="bold" fill="#2F4A66" text-anchor="middle">Vision Encoder</text>
+  <text x="765" y="194" font-size="9" fill="#4A6580" text-anchor="middle">SigLIP·DINOv2 / PaliGemma / Emu3</text>
+
+  <rect x="870" y="160" width="90" height="100" rx="7" fill="#EFE7F8" stroke="#9C6BD1" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="915" y="178" font-size="9" font-weight="bold" fill="#5B3E82" text-anchor="middle">SpatialVLA only</text>
+  <text x="915" y="193" font-size="9" fill="#5B3E82" text-anchor="middle">Ego3D pos-emb</text>
+  <text x="915" y="208" font-size="9" fill="#5B3E82" text-anchor="middle">depth · K⁻¹[u,v,1]</text>
+  <text x="915" y="223" font-size="9" fill="#5B3E82" text-anchor="middle">3D coord stamped</text>
+  <text x="915" y="238" font-size="9" fill="#5B3E82" text-anchor="middle">on every token</text>
+  <line x1="870" y1="182" x2="860" y2="182" stroke="#9C6BD1" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+  <path d="M765,204 L765,212" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#arwG)"/>
+  <rect x="670" y="214" width="190" height="34" rx="7" fill="#DCE9F8" stroke="#6B9BD1" stroke-width="1.5"/>
+  <text x="765" y="235" font-size="11" fill="#2F4A66" text-anchor="middle">Projector (visual tokens)</text>
+
+  <path d="M765,248 L765,256" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#arwG)"/>
+  <rect x="670" y="258" width="190" height="64" rx="7" fill="#FDE7CE" stroke="#E8A15C" stroke-width="1.5"/>
+  <text x="765" y="284" font-size="12" font-weight="bold" fill="#7A4A14" text-anchor="middle">LLM Backbone</text>
+  <text x="765" y="302" font-size="9.5" fill="#8A5E2A" text-anchor="middle">Llama-2 7B / Gemma / Emu3</text>
+
+  <path d="M765,322 L765,330" fill="none" stroke="#8a8a8a" stroke-width="1.5" marker-end="url(#arwG)"/>
+  <rect x="670" y="332" width="190" height="44" rx="7" fill="#EADCF8" stroke="#9C6BD1" stroke-width="1.5"/>
+  <text x="765" y="350" font-size="11.5" font-weight="bold" fill="#4A2E6E" text-anchor="middle">Action Decoder</text>
+  <text x="765" y="366" font-size="9" fill="#5B3E82" text-anchor="middle">→ chunk a_t … a_t+K−1 (K = native)</text>
+
+  <text x="670" y="410" font-size="10.5" font-weight="bold" fill="#4A4E54">Swappable frozen backbones:</text>
+  <rect x="670" y="420" width="290" height="28" rx="6" fill="#FAFAFA" stroke="#B8BCC2" stroke-width="1"/>
+  <text x="815" y="438" font-size="10" fill="#444" text-anchor="middle"><tspan font-weight="bold">OpenVLA</tspan> — coordinate-free, 1 action/step</text>
+  <rect x="670" y="452" width="290" height="28" rx="6" fill="#FAFAFA" stroke="#B8BCC2" stroke-width="1"/>
+  <text x="815" y="470" font-size="10" fill="#444" text-anchor="middle"><tspan font-weight="bold">SpatialVLA</tspan> — Ego3D coords, native chunk 4</text>
+  <rect x="670" y="484" width="290" height="28" rx="6" fill="#FAFAFA" stroke="#B8BCC2" stroke-width="1"/>
+  <text x="815" y="502" font-size="10" fill="#444" text-anchor="middle"><tspan font-weight="bold">UniVLA</tspan> — world model, history in context</text>
+
+  <!-- action chunk -> chunk exec -->
+  <path d="M860,354 L1022,354" fill="none" stroke="#555" stroke-width="1.8" marker-end="url(#arw)"/>
+  <text x="941" y="346" font-size="10" font-style="italic" fill="#555" text-anchor="middle">action chunk</text>
+
+  <!-- ================= (2) Chunk-exec module ================= -->
+  <rect x="1030" y="150" width="250" height="370" rx="12" fill="#F3FAF3" stroke="#7CB342" stroke-width="2" stroke-dasharray="7 4"/>
+  <text x="1155" y="174" font-size="14" font-weight="bold" fill="#3E6B2A" text-anchor="middle">② Chunk-Exec — Ours</text>
+  <text x="1155" y="190" font-size="10" fill="#3E6B2A" text-anchor="middle">(reuse the future actions already predicted)</text>
+
+  <text x="1155" y="210" font-size="10" fill="#3E6B2A" text-anchor="middle">one forward pass predicts:</text>
+  <rect x="1050" y="216" width="48" height="34" rx="5" fill="#CDEBC9" stroke="#4C8C3F" stroke-width="1.5"/>
+  <text x="1074" y="237" font-size="10.5" font-weight="bold" fill="#2E5A22" text-anchor="middle">a_t</text>
+  <rect x="1104" y="216" width="48" height="34" rx="5" fill="#CDEBC9" stroke="#4C8C3F" stroke-width="1.5"/>
+  <text x="1128" y="237" font-size="10.5" font-weight="bold" fill="#2E5A22" text-anchor="middle">a_t+1</text>
+  <rect x="1158" y="216" width="48" height="34" rx="5" fill="#F2F2F2" stroke="#AAA" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="1182" y="237" font-size="10.5" fill="#999" text-anchor="middle">a_t+2</text>
+  <rect x="1212" y="216" width="48" height="34" rx="5" fill="#F2F2F2" stroke="#AAA" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <text x="1236" y="237" font-size="10.5" fill="#999" text-anchor="middle">a_t+3</text>
+
+  <path d="M1050,258 L1152,258" stroke="#4C8C3F" stroke-width="1.5" fill="none"/>
+  <text x="1101" y="274" font-size="10" font-weight="bold" fill="#2E5A22" text-anchor="middle">execute (k = 2)</text>
+  <text x="1209" y="274" font-size="9" fill="#999" text-anchor="middle">discard → re-plan</text>
+
+  <rect x="1050" y="300" width="210" height="76" rx="8" fill="#E6F4E6" stroke="#7CB342" stroke-width="1.5"/>
+  <text x="1155" y="322" font-size="11.5" font-weight="bold" fill="#2E5A22" text-anchor="middle">Sequential Executor</text>
+  <text x="1155" y="340" font-size="10.5" fill="#2E5A22" text-anchor="middle">k actions per model call</text>
+  <text x="1155" y="358" font-size="10.5" fill="#2E5A22" text-anchor="middle">→ ½ forward calls, ≈2× lower latency</text>
+
+  <text x="1155" y="400" font-size="9.5" font-style="italic" fill="#4C8C3F" text-anchor="middle">t+1 uses a_t+1 predicted at t —</text>
+  <text x="1155" y="414" font-size="9.5" font-style="italic" fill="#4C8C3F" text-anchor="middle">no forward pass, no extra module</text>
+
+  <!-- executor -> env -->
+  <path d="M1260,338 L1322,338" fill="none" stroke="#555" stroke-width="1.8" marker-end="url(#arw)"/>
+
+  <!-- ================= Environment ================= -->
+  <rect x="1330" y="230" width="150" height="180" rx="12" fill="#FDF3F3" stroke="#C98B8B" stroke-width="2"/>
+  <text x="1405" y="256" font-size="12.5" font-weight="bold" fill="#7A3E3E" text-anchor="middle">WidowX Robot</text>
+  <text x="1405" y="272" font-size="10" fill="#7A3E3E" text-anchor="middle">SimplerEnv Bridge</text>
+  <g stroke="#A66" stroke-width="2.5" fill="none" stroke-linecap="round">
+    <line x1="1380" y1="355" x2="1430" y2="355"/>
+    <path d="M1405,355 L1395,322 L1420,302"/>
+    <path d="M1420,302 L1429,295"/>
+    <path d="M1420,302 L1429,309"/>
+  </g>
+  <circle cx="1405" cy="355" r="3.2" fill="#A66"/>
+  <circle cx="1395" cy="322" r="3.2" fill="#A66"/>
+  <circle cx="1420" cy="302" r="3.2" fill="#A66"/>
+  <text x="1405" y="392" font-size="9" fill="#7A3E3E" text-anchor="middle">carrot · spoon · stack · eggplant</text>
+
+  <!-- feedback: gripper state -> phase gate -->
+  <path d="M1370,410 L1370,533 L415,533 L415,481" fill="none" stroke="#8a8a8a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#arwG)"/>
+  <text x="880" y="527" font-size="10" font-style="italic" fill="#777" text-anchor="middle">gripper open/close command (policy's own signal — no oracle)</text>
+
+  <!-- feedback: next obs -->
+  <path d="M1405,410 L1405,560 L115,560 L115,327" fill="none" stroke="#8a8a8a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#arwG)"/>
+  <text x="760" y="554" font-size="10" font-style="italic" fill="#777" text-anchor="middle">next observation o_t+1</text>
+
+  <!-- ================= Panel (b): matrix ================= -->
+  <text x="30" y="618" font-size="14" font-weight="bold" font-style="italic" fill="#333">(b) Architecture-dependent effectiveness — WidowX-Bridge, 4 tasks × N=24, same GPU, vs own reproduced baseline</text>
+
+  <!-- header -->
+  <rect x="30" y="628" width="1440" height="34" fill="#F5F5F5" stroke="#CFCFCF"/>
+  <text x="140" y="650" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Backbone</text>
+  <text x="410" y="650" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Key architectural trait</text>
+  <text x="715" y="650" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Chunk-exec k=2</text>
+  <text x="1013" y="650" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Foveation — log-polar (warp)</text>
+  <text x="1318" y="650" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Foveation — blur (space-variant)</text>
+
+  <!-- row 1: OpenVLA -->
+  <rect x="30"   y="662" width="220" height="54" fill="#FAFAFA" stroke="#CFCFCF"/>
+  <rect x="250"  y="662" width="320" height="54" fill="#FFFFFF" stroke="#CFCFCF"/>
+  <rect x="570"  y="662" width="290" height="54" fill="#F1F1F1" stroke="#CFCFCF"/>
+  <rect x="860"  y="662" width="305" height="54" fill="#E9F6E9" stroke="#CFCFCF"/>
+  <rect x="1165" y="662" width="305" height="54" fill="#E9F6E9" stroke="#CFCFCF"/>
+  <text x="140" y="693" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">OpenVLA</text>
+  <text x="262" y="685" font-size="10.5" fill="#444">Coordinate-free SigLIP+DINOv2 features;</text>
+  <text x="262" y="701" font-size="10.5" fill="#444">predicts only 1 action per forward</text>
+  <text x="715" y="685" font-size="11.5" font-weight="bold" fill="#666" text-anchor="middle">N/A</text>
+  <text x="715" y="701" font-size="9.5" fill="#777" text-anchor="middle">no future predictions to reuse</text>
+  <text x="1013" y="685" font-size="12" font-weight="bold" fill="#256C2A" text-anchor="middle">✓ +18.8pp</text>
+  <text x="1013" y="701" font-size="9.5" fill="#3E7A44" text-anchor="middle">15.6% → 34.4%</text>
+  <text x="1318" y="685" font-size="12" font-weight="bold" fill="#256C2A" text-anchor="middle">✓ +17.7pp</text>
+  <text x="1318" y="701" font-size="9.5" fill="#3E7A44" text-anchor="middle">≈ tie with log-polar</text>
+
+  <!-- row 2: SpatialVLA -->
+  <rect x="30"   y="716" width="220" height="54" fill="#FAFAFA" stroke="#CFCFCF"/>
+  <rect x="250"  y="716" width="320" height="54" fill="#FFFFFF" stroke="#CFCFCF"/>
+  <rect x="570"  y="716" width="290" height="54" fill="#E9F6E9" stroke="#CFCFCF"/>
+  <rect x="860"  y="716" width="305" height="54" fill="#FBEAEA" stroke="#CFCFCF"/>
+  <rect x="1165" y="716" width="305" height="54" fill="#FFF6E0" stroke="#CFCFCF"/>
+  <text x="140" y="747" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">SpatialVLA</text>
+  <text x="262" y="739" font-size="10.5" fill="#444">Ego3D encoding: every visual token stamped</text>
+  <text x="262" y="755" font-size="10.5" fill="#444">with a 3D coordinate (depth · K⁻¹[u,v,1])</text>
+  <text x="715" y="739" font-size="12" font-weight="bold" fill="#256C2A" text-anchor="middle">✓ +13.6pp</text>
+  <text x="715" y="755" font-size="9.5" fill="#3E7A44" text-anchor="middle">and ≈1.9× faster (455 vs 870 ms/infer)</text>
+  <text x="1013" y="739" font-size="12" font-weight="bold" fill="#B3261E" text-anchor="middle">✗ −7.3pp</text>
+  <text x="1013" y="755" font-size="9.5" fill="#B3261E" text-anchor="middle">warp moves pixels → 3D coords invalid</text>
+  <text x="1318" y="739" font-size="12" font-weight="bold" fill="#8A6D1B" text-anchor="middle">△ +11.5pp vs warp (w/ chunk2)</text>
+  <text x="1318" y="755" font-size="9.5" fill="#8A6D1B" text-anchor="middle">geometry kept; wins on 1 task vs no-fovea</text>
+
+  <!-- row 3: UniVLA -->
+  <rect x="30"   y="770" width="220" height="54" fill="#FAFAFA" stroke="#CFCFCF"/>
+  <rect x="250"  y="770" width="320" height="54" fill="#FFFFFF" stroke="#CFCFCF"/>
+  <rect x="570"  y="770" width="290" height="54" fill="#FBEAEA" stroke="#CFCFCF"/>
+  <rect x="860"  y="770" width="305" height="54" fill="#E9F6E9" stroke="#CFCFCF"/>
+  <rect x="1165" y="770" width="305" height="54" fill="#FBEAEA" stroke="#CFCFCF"/>
+  <text x="140" y="801" font-size="13" font-weight="bold" fill="#333" text-anchor="middle">UniVLA</text>
+  <text x="262" y="793" font-size="10.5" fill="#444">Autoregressive world model (Emu3);</text>
+  <text x="262" y="809" font-size="10.5" fill="#444">history kept as prompt context</text>
+  <text x="715" y="793" font-size="12" font-weight="bold" fill="#B3261E" text-anchor="middle">✗ −12.5pp</text>
+  <text x="715" y="809" font-size="9.5" fill="#B3261E" text-anchor="middle">trajectory coherence breaks</text>
+  <text x="1013" y="793" font-size="12" font-weight="bold" fill="#256C2A" text-anchor="middle">✓ +8.3pp</text>
+  <text x="1013" y="809" font-size="9.5" fill="#3E7A44" text-anchor="middle">gentle, uniform detail loss</text>
+  <text x="1318" y="793" font-size="12" font-weight="bold" fill="#B3261E" text-anchor="middle">✗ −2.1pp</text>
+  <text x="1318" y="809" font-size="9.5" fill="#B3261E" text-anchor="middle">dead periphery → grasp drop (p≈0.025)</text>
+
+  <text x="30" y="848" font-size="10" font-style="italic" fill="#777">✓ helps   ✗ hurts   △ partial recovery   ·   pp = percentage points of mean success rate over 4 tasks (96 episodes per cell)</text>
+</svg>
