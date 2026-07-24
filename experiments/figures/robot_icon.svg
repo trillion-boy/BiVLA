@@ -1,24 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="240" height="260" viewBox="0 0 240 260" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
-  <!-- base plate -->
-  <rect x="55" y="226" width="130" height="16" rx="8" fill="#333"/>
+  <g fill="none" stroke="#2b2b2b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- pedestal: flat foot, stand, rotating disc -->
+    <line x1="85" y1="236" x2="155" y2="236"/>
+    <line x1="120" y1="236" x2="120" y2="207"/>
+    <ellipse cx="120" cy="197" rx="42" ry="10"/>
 
-  <!-- shoulder joint -->
-  <circle cx="120" cy="226" r="13" fill="#333"/>
-  <!-- upper arm (shoulder -> elbow) -->
-  <line x1="120" y1="226" x2="98" y2="148" stroke="#333" stroke-width="18" stroke-linecap="round"/>
+    <!-- arm: shoulder -> elbow -> wrist, zig-zag with ball joints -->
+    <line x1="120" y1="188" x2="93" y2="142"/>
+    <line x1="93" y1="142" x2="140" y2="110"/>
+    <line x1="140" y1="110" x2="165" y2="84"/>
 
-  <!-- elbow joint -->
-  <circle cx="98" cy="148" r="12" fill="#333"/>
-  <!-- forearm (elbow -> wrist) -->
-  <line x1="98" y1="148" x2="150" y2="98" stroke="#333" stroke-width="16" stroke-linecap="round"/>
+    <!-- gripper: two prongs opening from the wrist, each with a small perpendicular pad -->
+    <line x1="165" y1="84" x2="188" y2="66"/>
+    <line x1="165" y1="84" x2="184" y2="100"/>
+    <line x1="181" y1="59" x2="196" y2="73"/>
+    <line x1="177" y1="107" x2="192" y2="93"/>
+  </g>
 
-  <!-- wrist joint -->
-  <circle cx="150" cy="98" r="9" fill="#333"/>
-
-  <!-- two-finger gripper, open like a V -->
-  <line x1="150" y1="98" x2="188" y2="76" stroke="#333" stroke-width="9" stroke-linecap="round"/>
-  <line x1="150" y1="98" x2="170" y2="128" stroke="#333" stroke-width="9" stroke-linecap="round"/>
-  <!-- fingertip pads -->
-  <circle cx="188" cy="76" r="7" fill="#333"/>
-  <circle cx="170" cy="128" r="7" fill="#333"/>
+  <!-- joints drawn as hollow circles sitting on top of the strokes -->
+  <g fill="#ffffff" stroke="#2b2b2b" stroke-width="4.5">
+    <circle cx="120" cy="188" r="7"/>
+    <circle cx="93" cy="142" r="7"/>
+    <circle cx="140" cy="110" r="7"/>
+    <circle cx="165" cy="84" r="6"/>
+  </g>
 </svg>
