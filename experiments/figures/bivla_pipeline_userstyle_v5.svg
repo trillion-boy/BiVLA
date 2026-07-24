@@ -59,18 +59,32 @@
   <text x="1019" y="257" font-size="13" fill="#999" text-anchor="middle">a_t+3</text>
   <text x="969" y="298" font-size="12" fill="#999" text-anchor="middle">discard &#8594; re-plan</text>
 
-  <!-- ============ arrows connecting the 4 columns ============ -->
-  <path d="M203,110 L222,110" fill="none" stroke="#555" stroke-width="2"/>
-  <path d="M507,283 L525,283" fill="none" stroke="#555" stroke-width="2"/>
-  <path d="M807,283 L828,283" fill="none" stroke="#555" stroke-width="2"/>
+  <!-- ============ arrows connecting the columns ============ -->
   <defs>
     <marker id="arw2" markerWidth="10" markerHeight="8" refX="7.5" refY="4" orient="auto" markerUnits="userSpaceOnUse">
       <path d="M0,0 L8,4 L0,8 z" fill="#555"/>
     </marker>
   </defs>
-  <path d="M203,110 L220,110" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
-  <path d="M507,283 L523,283" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
-  <path d="M807,283 L823,283" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
+
+  <!-- RGB observation -> Motion Gaze -->
+  <path d="M203,157 L240,157 L240,125 L275,125" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
+
+  <!-- Foveated Perception output -> Vision Encoder (short lane, straight across the gap) -->
+  <path d="M507,198 L576,198" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
+
+  <!-- Instruction to LLM Backbone: bypasses the whole Foveated Perception box over the top,
+       then drops down inside the Frozen Backbone box's own left margin (x=550) so it never
+       shares a path with the line above; it only crosses it once, at a right angle, with a
+       small gap drawn in this line at the crossing point so the two read as separate wires. -->
+  <path d="M203,42 L203,10 L550,10 L550,192" fill="none" stroke="#555" stroke-width="2"/>
+  <path d="M550,204 L550,311 L576,311" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
+
+  <!-- internal backbone flow -->
+  <path d="M668,224 L668,283" fill="none" stroke="#8a8a8a" stroke-width="1.8" marker-end="url(#arw2)"/>
+  <path d="M668,337 L668,396" fill="none" stroke="#8a8a8a" stroke-width="1.8" marker-end="url(#arw2)"/>
+
+  <!-- Frozen Backbone -> Chunk-Exec (aligned with Action Decoder, the backbone's final output) -->
+  <path d="M807,424 L826,424" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
 
   <!-- ============ NEW Column 5: Robot / Environment ============ -->
   <path d="M1110,153 L1148,153" fill="none" stroke="#555" stroke-width="2" marker-end="url(#arw2)"/>
