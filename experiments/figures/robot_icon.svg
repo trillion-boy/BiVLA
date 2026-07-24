@@ -1,18 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="240" height="260" viewBox="0 0 240 260" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
-  <g stroke="#333" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <!-- base -->
-    <line x1="70" y1="230" x2="170" y2="230"/>
-    <!-- upper arm -->
-    <path d="M120,230 L105,150 L145,110"/>
-    <!-- forearm to gripper -->
-    <path d="M145,110 L160,90"/>
-    <!-- gripper jaws -->
-    <path d="M160,90 L180,72"/>
-    <path d="M160,90 L178,100"/>
-  </g>
-  <circle cx="120" cy="230" r="7" fill="#333"/>
-  <circle cx="105" cy="150" r="7" fill="#333"/>
-  <circle cx="145" cy="110" r="7" fill="#333"/>
-  <circle cx="160" cy="90" r="6" fill="#333"/>
-  <text x="120" y="256" font-size="16" font-weight="bold" fill="#333" text-anchor="middle">WidowX Robot</text>
+  <!-- base plate -->
+  <rect x="55" y="226" width="130" height="16" rx="8" fill="#333"/>
+
+  <!-- shoulder joint -->
+  <circle cx="120" cy="226" r="13" fill="#333"/>
+  <!-- upper arm (shoulder -> elbow) -->
+  <line x1="120" y1="226" x2="98" y2="148" stroke="#333" stroke-width="18" stroke-linecap="round"/>
+
+  <!-- elbow joint -->
+  <circle cx="98" cy="148" r="12" fill="#333"/>
+  <!-- forearm (elbow -> wrist) -->
+  <line x1="98" y1="148" x2="150" y2="98" stroke="#333" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- wrist joint -->
+  <circle cx="150" cy="98" r="9" fill="#333"/>
+
+  <!-- two-finger gripper, open like a V -->
+  <line x1="150" y1="98" x2="188" y2="76" stroke="#333" stroke-width="9" stroke-linecap="round"/>
+  <line x1="150" y1="98" x2="170" y2="128" stroke="#333" stroke-width="9" stroke-linecap="round"/>
+  <!-- fingertip pads -->
+  <circle cx="188" cy="76" r="7" fill="#333"/>
+  <circle cx="170" cy="128" r="7" fill="#333"/>
 </svg>
