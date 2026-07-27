@@ -35,8 +35,17 @@ with its matching `--task-suite`; crossing them measures nothing.
 
 ## 2. System packages (headless MuJoCo rendering)
 
+Install the OSMesa (CPU) renderer alongside the GL libraries. On current
+Colab images, EGL rendering **hangs or segfaults** once a policy is resident
+on the GPU — verified identically with UniVLA and OpenVLA, while the same
+env builds fine in a model-free process. GLX is not an escape either:
+robosuite 1.4.0 maps `glx` onto a GLFW context and otherwise forces EGL.
+OSMesa renders on the CPU, so it cannot contend with CUDA at all, and it is
+the configuration all the results here were produced with.
+
 ```bash
-!apt-get -qq update && apt-get -qq install -y libgl1-mesa-dri libegl1 libglvnd0 libgles2
+!apt-get -qq update && apt-get -qq install -y \
+    libgl1-mesa-dri libegl1 libglvnd0 libgles2 libosmesa6 libosmesa6-dev
 ```
 
 ## 3. Python packages
@@ -60,6 +69,7 @@ numpy 2.5.1).
 !pip install -q libero
 !pip install -q "mujoco==3.9.0"
 !pip install -q "transformers==4.40.1" "timm==0.9.10" "tokenizers==0.19.1" accelerate
+!pip install -q PyOpenGL PyOpenGL_accelerate
 ```
 
 ## 4. Restart the runtime — required
@@ -86,7 +96,8 @@ with open(os.path.expanduser("~/.libero/config.yaml"), "w") as f:
         "datasets": os.path.join(pkg_root, "..", "datasets"),
         "assets": os.path.join(pkg_root, "assets"),
     }, f)
-os.environ["MUJOCO_GL"] = "egl"
+os.environ["MUJOCO_GL"] = "osmesa"
+os.environ["PYOPENGL_PLATFORM"] = "osmesa"
 
 from libero.libero import benchmark, get_libero_path
 from libero.libero.envs import OffScreenRenderEnv
@@ -125,7 +136,7 @@ print("norm_stats keys:", list(cfg.get("norm_stats", {}).keys()))
 
 ```bash
 %cd /content/BiVLA/adaptive_sparse_vla
-!python eval_libero.py \
+!python eval_libero.py --mujoco-gl osmesa \
   --backbone openvla \
   --model-path /content/openvla-libero-spatial \
   --task-suite libero_spatial --task-ids 0 --n-trials-per-task 1 \
@@ -189,21 +200,21 @@ SUITE=libero_spatial
 OUT=/content/bivla_eval_libero
 
 # baseline
-!python eval_libero.py --backbone openvla --model-path $CKPT \
+!python eval_libero.py --backbone openvla --mujoco-gl osmesa --model-path $CKPT \
   --task-suite $SUITE --n-trials-per-task 10 --output-dir $OUT
 
 # efficiency: 2x fewer forward passes
-!python eval_libero.py --backbone openvla --model-path $CKPT \
+!python eval_libero.py --backbone openvla --mujoco-gl osmesa --model-path $CKPT \
   --task-suite $SUITE --n-trials-per-task 10 \
   --action-repeat 2 --output-dir $OUT
 
 # foveation, log-polar
-!python eval_libero.py --backbone openvla --model-path $CKPT \
+!python eval_libero.py --backbone openvla --mujoco-gl osmesa --model-path $CKPT \
   --task-suite $SUITE --n-trials-per-task 10 \
   --foveate --foveate-mode logpolar --foveate-keep-percent 20 --output-dir $OUT
 
 # foveation, blur
-!python eval_libero.py --backbone openvla --model-path $CKPT \
+!python eval_libero.py --backbone openvla --mujoco-gl osmesa --model-path $CKPT \
   --task-suite $SUITE --n-trials-per-task 10 \
   --foveate --foveate-mode blur --foveate-keep-percent 20 --output-dir $OUT
 ```
