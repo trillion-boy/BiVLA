@@ -44,9 +44,24 @@ If you already have `/content/BiVLA` cloned on a different branch:
 
 ## 2. LIBERO simulator
 
+`pip install libero` only requires `mujoco>=3.0.0`, which today resolves to
+the latest 3.10.0 -- but `robosuite==1.4.0` (pinned by `libero`) calls
+`mujoco.mj_fullM()` using the pre-3.10 argument order `(model, dst, M)`.
+Mujoco 3.10.0 changed that signature to `(model, data, dst)`, so anything
+that calls a controller (i.e. any real env step/reset) crashes with
+`TypeError: mj_fullM(): incompatible function arguments`. Confirmed by
+testing the signature across versions directly: unchanged through 3.9.0,
+broken starting at 3.10.0. Pin it down one patch line:
+
 ```bash
 !pip install -q libero
+!pip install -q "mujoco==3.9.0"
 ```
+
+If Python already had `mujoco` imported earlier in this session (it will
+have been, once you've run any cell that touches `libero.libero.envs`),
+restart the runtime after this before importing anything LIBERO-related
+again — the old 3.10.0 module stays loaded in memory otherwise.
 
 This pulls in `robosuite==1.4.0`, `mujoco`, `bddl`, `robomimic` — the real
 LIBERO benchmark package (published by the original LIBERO authors via
