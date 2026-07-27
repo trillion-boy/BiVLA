@@ -499,6 +499,7 @@ def main():
             gripper_open = True
             frames = []
             done = False
+            success = False
             step = 0
             t0 = time.time()
             last_beat = t0
@@ -506,9 +507,11 @@ def main():
             model_calls = 0
 
             try:
-                while step < ep_len + NUM_STEPS_WAIT:
+                while step < ep_len + NUM_STEPS_WAIT and not success:
                     if step < NUM_STEPS_WAIT:
-                        obs, _, done, _ = env.step(DUMMY_ACTION)
+                        # Settling steps: the task cannot be complete yet, so
+                        # do not let a spurious done leak into the result.
+                        obs, _, _, _ = env.step(DUMMY_ACTION)
                         step += 1
                         continue
 
@@ -553,14 +556,21 @@ def main():
                         gripper_open = float(action_row[-1]) <= 0.0
                         obs, _, done, _ = env.step(action_row.tolist())
                         step += 1
-                        if done or step >= ep_len + NUM_STEPS_WAIT:
+                        if done:
+                            # Latch it: LIBERO's done means the goal predicate
+                            # holds now, and the episode ends there. Without
+                            # the latch a later step could flip it back and
+                            # a solved episode would be scored as a failure.
+                            success = True
+                            break
+                        if step >= ep_len + NUM_STEPS_WAIT:
                             break
             except Exception as e:
                 print(f"   [exception during episode] {e}", flush=True)
 
             elapsed = time.time() - t0
             model_ms = (model_time / model_calls * 1000.0) if model_calls else 0.0
-            status = "SUCCESS" if done else "FAIL"
+            status = "SUCCESS" if success else "FAIL"
             print(f"   trial {trial}: {status}  ({step} steps, {elapsed:.1f}s, "
                   f"{model_ms:.0f} ms/infer)", flush=True)
 
@@ -568,7 +578,7 @@ def main():
                 "task_id": task_id,
                 "instruction": instruction,
                 "trial": trial,
-                "success": bool(done),
+                "success": bool(success),
                 "steps": step,
                 "elapsed": elapsed,
                 "model_ms_per_infer": model_ms,
