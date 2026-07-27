@@ -338,6 +338,10 @@ def main():
     args = parse_args()
     if args.mujoco_gl:
         os.environ["MUJOCO_GL"] = args.mujoco_gl
+    if os.environ.get("MUJOCO_GL", "").lower() == "osmesa":
+        # mujoco.osmesa needs PyOpenGL routed to the OSMesa platform; without
+        # this it grabs GLX/EGL and defeats the point of CPU rendering.
+        os.environ.setdefault("PYOPENGL_PLATFORM", "osmesa")
     print(f"[env] MUJOCO_GL={os.environ.get('MUJOCO_GL')}", flush=True)
     check_paths(args)
     ensure_libero_config()
