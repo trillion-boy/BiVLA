@@ -163,14 +163,40 @@ that isn't in this HF repo, and it's worth asking whoever has access to the
 original training cluster (`/share/project/yuqi.wang/...`) for the exact
 `fast_path` they used.
 
+## 5.5. The vision tokenizer is a SEPARATE checkpoint, not the LIBERO folder
+
+`--vq-hub` (also used as `vision_hub` internally) must point at the frozen
+Emu3 vision tokenizer -- the same `BAAI/Emu3-VisionTokenizer` already used
+for the Bridge/SimplerEnv baseline (see `README.md` section 4.4: it's
+downloaded once to `pretrain/Emu3-VisionTokenizer` and shared across every
+UniVLA checkpoint, since it's a general-purpose frozen image tokenizer, not
+embodiment-specific). It is **not** part of the
+`UNIVLA_LIBERO_IMG_BS192_8K` folder -- that folder only has the LLM
+(Emu3MoE) weights and its own text tokenizer. Passing the LIBERO checkpoint
+path as `--vq-hub` fails with
+`OSError: Can't load image processor for ... no preprocessor_config.json`,
+because the LLM checkpoint folder genuinely has no vision-tokenizer files.
+
+If you already downloaded `Emu3-VisionTokenizer` for the SimplerEnv/Bridge
+runs in this same Colab, just reuse that local path. Otherwise:
+
+```python
+from huggingface_hub import snapshot_download
+vision_dir = snapshot_download(
+    repo_id="BAAI/Emu3-VisionTokenizer",
+    local_dir="/content/BiVLA/pretrain/Emu3-VisionTokenizer",
+)
+print(vision_dir)
+```
+
 ## 6. Run the eval
 
 ```bash
 %cd /content/BiVLA/adaptive_sparse_vla
 
 !python eval_libero.py \
-  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
-  --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
   --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal \
   --n-trials-per-task 10 \
@@ -184,7 +210,8 @@ on top:
 # chunk-exec: execute the first 5 of the 10 predicted actions before
 # calling the model again (halves forward-pass count)
 !python eval_libero.py \
-  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
   --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal --n-trials-per-task 10 \
   --exec-chunk 5 --output-dir /content/bivla_eval_libero
@@ -192,7 +219,8 @@ on top:
 # foveation (log-polar, matching the log-polar variant already run on
 # Bridge/SimplerEnv for OpenVLA/SpatialVLA/UniVLA)
 !python eval_libero.py \
-  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
   --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal --n-trials-per-task 10 \
   --foveate --foveate-mode logpolar --foveate-keep-percent 20 \
@@ -200,7 +228,8 @@ on top:
 
 # foveation (blur variant)
 !python eval_libero.py \
-  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
   --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal --n-trials-per-task 10 \
   --foveate --foveate-mode blur --foveate-keep-percent 20 \
