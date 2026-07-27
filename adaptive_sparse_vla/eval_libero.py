@@ -258,6 +258,12 @@ def main():
                     if model_calls == 1 or model_calls % 5 == 0:
                         print(f"      [heartbeat] call {model_calls}  env-step {step}  "
                               f"last infer {time.time() - _t:.1f}s", flush=True)
+                    if model_calls == 1:
+                        print(f"      [debug] gen_len={model.last_generated_len} "
+                              f"eoa={model.last_ended_with_eoa} "
+                              f"chunk_shape={action_chunk.shape} "
+                              f"dim_absmax={np.round(np.abs(action_chunk).max(axis=0), 3).tolist()} "
+                              f"first_row={np.round(action_chunk[0], 3).tolist()}", flush=True)
 
                     if args.exec_chunk > 0:
                         action_chunk = action_chunk[: args.exec_chunk]

@@ -293,7 +293,13 @@ class EmuVLALiberoInference:
                 logits_processor=[self._action_id_processor],
                 attention_mask=pos_inputs.attention_mask.to(self.device),
             )
-        outputs = outputs[:, pos_inputs.input_ids.shape[-1]:-1]
+        raw = outputs[:, pos_inputs.input_ids.shape[-1]:]
+        # Diagnostics: if generation never emits EOA and just runs into the
+        # max_new_tokens ceiling, the action-token alignment below is garbage
+        # -- a strong signal of a FAST-vocab / eoa_token_id mismatch.
+        self.last_generated_len = int(raw.shape[1])
+        self.last_ended_with_eoa = bool(raw[0, -1].item() == self.eoa_token_id)
+        outputs = raw[:, :-1]
         last_token_id = self.tokenizer.pad_token_id - 1
         last_token_id_t = torch.tensor(last_token_id, dtype=outputs.dtype, device=outputs.device)
         processed = last_token_id_t - outputs
