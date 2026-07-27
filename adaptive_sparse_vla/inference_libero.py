@@ -210,11 +210,27 @@ class EmuVLALiberoInference:
         self.action_tokenizer = AutoProcessor.from_pretrained(
             self.fast_path, trust_remote_code=True
         )
-        last_token_id = self.tokenizer.pad_token_id - 1
+        # The action-token window is anchored at pad_token_id - 1 (fast id f
+        # maps to emu token id (pad-1) - f). The authors read pad_token_id
+        # off the tokenizer, but newer transformers' tokenizer loading can
+        # resolve a different pad id than the checkpoint was trained with
+        # ("Could not load tokenizer from subfolder bpe_tokenizer" fallback),
+        # which silently shifts the whole window. The checkpoint's own
+        # config.json is the ground truth, so anchor there.
+        tok_pad = self.tokenizer.pad_token_id
+        cfg_pad = self.model.config.pad_token_id
+        if cfg_pad is not None and tok_pad != cfg_pad:
+            print(f"[warn] tokenizer pad_token_id={tok_pad} != model config "
+                  f"pad_token_id={cfg_pad}; anchoring action-token window on "
+                  f"the config value", flush=True)
+        self.last_token_id = (cfg_pad if cfg_pad is not None else tok_pad) - 1
         allowed = list(
-            range(last_token_id - self.action_tokenizer.vocab_size, last_token_id + 1)
+            range(self.last_token_id - self.action_tokenizer.vocab_size, self.last_token_id + 1)
         ) + [self.eoa_token_id]
         self._action_id_processor = ActionIDConstraintLogitsProcessor(allowed)
+        print(f"[action-window] fast_vocab={self.action_tokenizer.vocab_size} "
+              f"ids=[{allowed[0]}..{self.last_token_id}] eoa={self.eoa_token_id} "
+              f"tok_pad={tok_pad} cfg_pad={cfg_pad}", flush=True)
 
         self.vision_queue = Queue(maxsize=self.window_size)
         self.vision_gripper_queue = Queue(maxsize=self.window_size)
@@ -299,9 +315,22 @@ class EmuVLALiberoInference:
         # -- a strong signal of a FAST-vocab / eoa_token_id mismatch.
         self.last_generated_len = int(raw.shape[1])
         self.last_ended_with_eoa = bool(raw[0, -1].item() == self.eoa_token_id)
+        self.last_raw_ids = raw[0, :8].tolist()
+
+        if os.environ.get("BIVLA_PROBE"):
+            # Where does the model actually want to go with no constraint?
+            with torch.no_grad():
+                free = self.model.generate(
+                    pos_inputs.input_ids.to(self.device),
+                    self.GENERATION_CONFIG,
+                    max_new_tokens=12,
+                    attention_mask=pos_inputs.attention_mask.to(self.device),
+                )
+            print(f"      [probe] unconstrained ids: "
+                  f"{free[0, pos_inputs.input_ids.shape[-1]:].tolist()}", flush=True)
+
         outputs = raw[:, :-1]
-        last_token_id = self.tokenizer.pad_token_id - 1
-        last_token_id_t = torch.tensor(last_token_id, dtype=outputs.dtype, device=outputs.device)
+        last_token_id_t = torch.tensor(self.last_token_id, dtype=outputs.dtype, device=outputs.device)
         processed = last_token_id_t - outputs
         action_outputs = self.action_tokenizer.decode(
             processed, time_horizon=self.predict_action_frames, action_dim=self.action_dim

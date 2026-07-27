@@ -261,6 +261,7 @@ def main():
                     if model_calls == 1:
                         print(f"      [debug] gen_len={model.last_generated_len} "
                               f"eoa={model.last_ended_with_eoa} "
+                              f"raw_ids={model.last_raw_ids} "
                               f"chunk_shape={action_chunk.shape} "
                               f"dim_absmax={np.round(np.abs(action_chunk).max(axis=0), 3).tolist()} "
                               f"first_row={np.round(action_chunk[0], 3).tolist()}", flush=True)
