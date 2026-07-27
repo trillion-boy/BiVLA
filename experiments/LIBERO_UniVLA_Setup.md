@@ -7,6 +7,35 @@ against the real `libero` package). Run in the same environment/session
 where your UniVLA SimplerEnv eval already works (same `bivla` conda env or
 equivalent) — this only adds LIBERO-specific packages on top.
 
+## 0. Clone BiVLA (the branch with this code)
+
+`eval_libero.py` / `inference_libero.py` are not on `main` yet — they're on
+the `claude/serene-davinci-sy33re` branch. If you already have a BiVLA clone
+in this Colab from earlier SimplerEnv runs, just `git fetch` + `checkout`
+that branch inside it instead of re-cloning:
+
+```bash
+%cd /content
+!git clone -b claude/serene-davinci-sy33re https://github.com/trillion-boy/bivla.git BiVLA
+%cd /content/BiVLA
+!git log -1 --oneline   # sanity check: should show the LIBERO-harness commit
+```
+
+If `trillion-boy/bivla` is private and the plain clone above fails with an
+auth error, use whatever method you already used to get BiVLA into Colab for
+the SimplerEnv runs (a personal access token in the URL, an SSH deploy key,
+or just re-running your existing clone cell and then `git checkout
+claude/serene-davinci-sy33re` inside it).
+
+If you already have `/content/BiVLA` cloned on a different branch:
+
+```bash
+%cd /content/BiVLA
+!git fetch origin claude/serene-davinci-sy33re
+!git checkout claude/serene-davinci-sy33re
+!git pull
+```
+
 ## 1. System packages
 
 ```bash
@@ -108,7 +137,7 @@ print(ckpt_dir, fast_dir)
 ## 6. Run the eval
 
 ```bash
-%cd /content/BiVLA/adaptive_sparse_vla   # adjust to wherever you cloned BiVLA
+%cd /content/BiVLA/adaptive_sparse_vla
 
 !python eval_libero.py \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
