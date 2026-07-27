@@ -1067,7 +1067,20 @@ class Emu3Model(Emu3PreTrainedModel):
         if use_cache:
             use_legacy_cache = not isinstance(past_key_values, Cache)
             if use_legacy_cache:
-                past_key_values = DynamicCache.from_legacy_cache(past_key_values)
+                # DynamicCache.from_legacy_cache was removed in transformers
+                # 5.x. The None case (fresh cache) is the only one that still
+                # occurs in practice -- newer generate() always hands in a
+                # Cache object, so a legacy tuple can only come from old
+                # external callers, where from_legacy_cache still exists.
+                if past_key_values is None:
+                    past_key_values = DynamicCache()
+                elif hasattr(DynamicCache, "from_legacy_cache"):
+                    past_key_values = DynamicCache.from_legacy_cache(past_key_values)
+                else:
+                    raise ValueError(
+                        "Legacy tuple past_key_values are not supported on this "
+                        "transformers version; pass a Cache object instead."
+                    )
             past_key_values_length = _cache_usable_length(past_key_values, seq_length)
 
         if position_ids is None:
@@ -1146,7 +1159,10 @@ class Emu3Model(Emu3PreTrainedModel):
 
         next_cache = None
         if use_cache:
-            next_cache = next_decoder_cache.to_legacy_cache() if use_legacy_cache else next_decoder_cache
+            if use_legacy_cache and hasattr(next_decoder_cache, "to_legacy_cache"):
+                next_cache = next_decoder_cache.to_legacy_cache()
+            else:
+                next_cache = next_decoder_cache
         if not return_dict:
             return tuple(v for v in [hidden_states, next_cache, all_hidden_states, all_self_attns] if v is not None)
         return BaseModelOutputWithPast(
