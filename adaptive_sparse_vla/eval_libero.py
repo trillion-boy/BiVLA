@@ -26,11 +26,17 @@ import os
 import sys
 import time
 
-# MuJoCo needs an explicit headless backend; without it robosuite dies on
+# MuJoCo needs an explicit headless backend; without one robosuite dies on
 # `'NoneType' object has no attribute 'eglQueryString'` deep inside a render
 # context. Setting it here means the eval works even when the notebook cell
 # that exported it ran in a different process (or a restarted runtime).
-os.environ.setdefault("MUJOCO_GL", "egl")
+#
+# Prefer GLX whenever a display is available (i.e. Xvfb is running). EGL
+# shares the GPU with CUDA and segfaults during env construction once a
+# policy is resident there; an Xvfb + GLX setup was verified working with
+# UniVLA on LIBERO while EGL was not, so honour a display when one exists.
+if "MUJOCO_GL" not in os.environ:
+    os.environ["MUJOCO_GL"] = "glx" if os.environ.get("DISPLAY") else "egl"
 
 EXP = os.path.dirname(__file__)
 ROOT = os.environ.get(
@@ -128,7 +134,12 @@ def parse_args():
                          "the efficiency interventions are identical for all")
     # --- univla backbone ---
     p.add_argument("--emu-hub", help="[univla] Emu3MoE LIBERO checkpoint dir")
-    p.add_argument("--vq-hub", help="[univla] Emu3 vision tokenizer dir")
+    p.add_argument("--vq-hub",
+                    help="[univla] base Emu3 dir holding the TEXT tokenizer "
+                         "(BAAI/Emu3-Stage1), not the LIBERO checkpoint")
+    p.add_argument("--vision-hub",
+                    help="[univla] Emu3 vision tokenizer dir "
+                         "(BAAI/Emu3-VisionTokenizer). Defaults to --vq-hub")
     p.add_argument("--fast-path",
                     help="[univla] FAST tokenizer dir bundled with the LIBERO "
                          "checkpoint (different from Bridge's fast_bridge_t5_s50)")
@@ -170,10 +181,13 @@ def parse_args():
     p.add_argument("--camera-resolution", type=int, default=256,
                     help="LIBERO renderer output size; the policy itself resizes "
                          "to 200x200 internally regardless of this value")
-    p.add_argument("--mujoco-gl", default=None, choices=["egl", "osmesa", "glfw"],
+    p.add_argument("--mujoco-gl", default=None,
+                    choices=["egl", "glx", "osmesa", "glfw"],
                     help="MuJoCo render backend. Default: respect $MUJOCO_GL, else "
-                         "egl. Use osmesa (CPU) if env creation segfaults while a "
-                         "model is resident on the GPU")
+                         "glx when $DISPLAY is set (Xvfb), else egl. Prefer glx "
+                         "with Xvfb: egl shares the GPU with CUDA and segfaults "
+                         "during env creation once a model is loaded. osmesa is "
+                         "the CPU-rendering last resort")
     p.add_argument("--device", default="cuda")
     p.add_argument("--vision-device", default=None)
     p.add_argument("--min-pixels", type=int, default=6400)
@@ -202,8 +216,12 @@ def preinit_mujoco_gl() -> None:
     env build will report the real problem.
     """
     global _GL_CONTEXT
-    if os.environ.get("MUJOCO_GL", "").lower() == "osmesa":
-        print("[env] osmesa (CPU rendering) -- skipping GL pre-init", flush=True)
+    backend = os.environ.get("MUJOCO_GL", "").lower()
+    if backend in ("osmesa", "glx"):
+        # osmesa renders on the CPU and glx goes through the X server
+        # (Xvfb), so neither contends with CUDA for the GPU.
+        print(f"[env] {backend} -- no GPU contention, skipping GL pre-init",
+              flush=True)
         return
     try:
         import mujoco
@@ -293,9 +311,12 @@ def check_paths(args) -> None:
         ("--emu-hub", args.emu_hub, "config.json",
          "the UNIVLA_LIBERO_IMG_BS192_8K checkpoint (watch out for the nested "
          "subfolder snapshot_download creates)"),
-        ("--vq-hub", args.vq_hub, "preprocessor_config.json",
+        ("--vq-hub", args.vq_hub, "config.json",
+         "the base Emu3 model holding the text tokenizer (snapshot_download "
+         "of BAAI/Emu3-Stage1) -- NOT the LIBERO checkpoint folder"),
+        ("--vision-hub", args.vision_hub or args.vq_hub, "preprocessor_config.json",
          "the frozen Emu3 vision tokenizer (snapshot_download of "
-         "BAAI/Emu3-VisionTokenizer) -- NOT the LIBERO checkpoint folder"),
+         "BAAI/Emu3-VisionTokenizer)"),
         ("--fast-path", args.fast_path, "processor_config.json",
          "the FAST action tokenizer dir (UniVLA/pretrain/fast_bridge_t5_s50 "
          "inside the BiVLA clone)"),
@@ -367,7 +388,7 @@ def main():
         model = EmuVLALiberoInference(
             emu_hub=args.emu_hub,
             vq_hub=args.vq_hub,
-            vision_hub=args.vq_hub,
+            vision_hub=args.vision_hub or args.vq_hub,
             device=args.device,
             vision_device=args.vision_device,
             fast_path=args.fast_path,

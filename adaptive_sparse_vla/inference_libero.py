@@ -169,8 +169,15 @@ class EmuVLALiberoInference:
             attn_implementation="sdpa",
         ).to(self.device).eval()
 
+        # NOTE: the text tokenizer belongs to the base Emu3 model, not to the
+        # LIBERO checkpoint. A working March-2026 run of this checkpoint used
+        # three distinct hubs: emu_hub=UNIVLA_LIBERO_IMG_BS192_8K,
+        # vq_hub=BAAI/Emu3-Stage1 (tokenizer), vision_hub=BAAI/Emu3-VisionTokenizer.
+        # Loading it from emu_hub instead produces the "Could not load tokenizer
+        # from subfolder bpe_tokenizer, falling back to root" warning, so pass
+        # --vq-hub Emu3-Stage1 and keep the tokenizer here.
         self.tokenizer = Emu3Tokenizer.from_pretrained(
-            self.emu_hub,
+            self.vq_hub,
             model_max_length=self.model.config.max_position_embeddings,
             padding_side="right",
             use_fast=False,
