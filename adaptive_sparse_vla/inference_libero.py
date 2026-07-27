@@ -234,10 +234,18 @@ class EmuVLALiberoInference:
 
     def _encode_view(self, image: np.ndarray) -> torch.Tensor:
         view = Image.fromarray(np.asarray(image, dtype=np.uint8)).resize(self.image_size)
-        pixel_values = self.image_processor(view, return_tensors="pt")["pixel_values"].to(
-            self.vision_device
-        )
-        return self.image_tokenizer.encode(pixel_values)
+        pixel_values = self.image_processor(view, return_tensors="pt")["pixel_values"]
+        # The vision tokenizer is loaded in bfloat16 on GPU; the image
+        # processor emits float32. Cast to the tokenizer's own parameter
+        # dtype (same convention as inference.py's encode_agent_view).
+        target_dtype = torch.float32
+        try:
+            target_dtype = next(self.image_tokenizer.parameters()).dtype
+        except (StopIteration, TypeError, AttributeError):
+            pass
+        pixel_values = pixel_values.to(self.vision_device, dtype=target_dtype)
+        with torch.inference_mode():
+            return self.image_tokenizer.encode(pixel_values)
 
     def unormalize_action(self, action: np.ndarray) -> np.ndarray:
         return 0.5 * (action + 1) * (_LIBERO_ACTION_HIGH - _LIBERO_ACTION_LOW) + _LIBERO_ACTION_LOW
