@@ -348,7 +348,11 @@ class Emu3Attention(nn.Module):
                 base=self.rope_theta,
             )
         else:
-            scaling_type = self.config.rope_scaling["type"]
+            # HF renamed this key from "type" to "rope_type" around
+            # transformers 4.43-4.45 (the rope_utils refactor). Different
+            # checkpoints' config.json were saved with whichever convention
+            # was current at export time, so accept either.
+            scaling_type = self.config.rope_scaling.get("type") or self.config.rope_scaling.get("rope_type")
             scaling_factor = self.config.rope_scaling["factor"]
             if scaling_type == "linear":
                 self.rotary_emb = Emu3LinearScalingRotaryEmbedding(
