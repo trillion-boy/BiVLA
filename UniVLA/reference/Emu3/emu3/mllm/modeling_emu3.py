@@ -50,6 +50,15 @@ try:
 except ImportError:  # ancient transformers without the subpackage layout
     class GenerationMixin:  # noqa: N801 - placeholder, PreTrainedModel provides generate
         pass
+
+
+def _cache_usable_length(cache, new_seq_length: int, layer_idx: int = 0) -> int:
+    # Cache.get_usable_length disappeared in newer transformers' cache_utils
+    # refactor. For DynamicCache (unbounded) it always equalled
+    # get_seq_length(), which is the surviving API.
+    if hasattr(cache, "get_usable_length"):
+        return cache.get_usable_length(new_seq_length, layer_idx)
+    return cache.get_seq_length(layer_idx)
 from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS, is_torch_greater_or_equal_than_1_13
 from transformers.utils import (
     add_start_docstrings,
@@ -445,7 +454,7 @@ class Emu3Attention(nn.Module):
                     "for auto-regressive decoding with k/v caching, please make sure to initialize the attention class "
                     "with a layer index."
                 )
-            kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
+            kv_seq_len += _cache_usable_length(past_key_value, kv_seq_len, self.layer_idx)
         cos, sin = self.rotary_emb(value_states, seq_len=kv_seq_len)
         query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
 
@@ -550,7 +559,7 @@ class Emu3FlashAttention2(Emu3Attention):
 
         kv_seq_len = key_states.shape[-2]
         if past_key_value is not None:
-            kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
+            kv_seq_len += _cache_usable_length(past_key_value, kv_seq_len, self.layer_idx)
         cos, sin = self.rotary_emb(value_states, seq_len=kv_seq_len)
         query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
 
@@ -744,7 +753,7 @@ class Emu3SdpaAttention(Emu3Attention):
 
         kv_seq_len = key_states.shape[-2]
         if past_key_value is not None:
-            kv_seq_len += past_key_value.get_usable_length(kv_seq_len, self.layer_idx)
+            kv_seq_len += _cache_usable_length(past_key_value, kv_seq_len, self.layer_idx)
         cos, sin = self.rotary_emb(value_states, seq_len=kv_seq_len)
 
         query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
@@ -1059,7 +1068,7 @@ class Emu3Model(Emu3PreTrainedModel):
             use_legacy_cache = not isinstance(past_key_values, Cache)
             if use_legacy_cache:
                 past_key_values = DynamicCache.from_legacy_cache(past_key_values)
-            past_key_values_length = past_key_values.get_usable_length(seq_length)
+            past_key_values_length = _cache_usable_length(past_key_values, seq_length)
 
         if position_ids is None:
             device = input_ids.device if input_ids is not None else inputs_embeds.device
