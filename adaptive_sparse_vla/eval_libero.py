@@ -255,6 +255,9 @@ def main():
                     action_chunk = model.step(policy_image, instruction, wrist_image=wrist_image)
                     model_time += time.time() - _t
                     model_calls += 1
+                    if model_calls == 1 or model_calls % 5 == 0:
+                        print(f"      [heartbeat] call {model_calls}  env-step {step}  "
+                              f"last infer {time.time() - _t:.1f}s", flush=True)
 
                     if args.exec_chunk > 0:
                         action_chunk = action_chunk[: args.exec_chunk]
