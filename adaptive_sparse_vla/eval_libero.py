@@ -26,6 +26,12 @@ import os
 import sys
 import time
 
+# MuJoCo needs an explicit headless backend; without it robosuite dies on
+# `'NoneType' object has no attribute 'eglQueryString'` deep inside a render
+# context. Setting it here means the eval works even when the notebook cell
+# that exported it ran in a different process (or a restarted runtime).
+os.environ.setdefault("MUJOCO_GL", "egl")
+
 EXP = os.path.dirname(__file__)
 ROOT = os.environ.get(
     "UNIVLA_ROOT",
