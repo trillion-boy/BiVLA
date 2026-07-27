@@ -143,8 +143,41 @@ def parse_args():
     return p.parse_args()
 
 
+def check_paths(args) -> None:
+    """Fail fast, before the 16GB model load, if any checkpoint path is wrong.
+
+    Without this, a missing local dir falls through to transformers trying to
+    interpret the path string as a HuggingFace repo id, which dies much later
+    with an opaque HFValidationError instead of saying "that folder isn't
+    there".
+    """
+    checks = [
+        ("--emu-hub", args.emu_hub, "config.json",
+         "the UNIVLA_LIBERO_IMG_BS192_8K checkpoint (watch out for the nested "
+         "subfolder snapshot_download creates)"),
+        ("--vq-hub", args.vq_hub, "preprocessor_config.json",
+         "the frozen Emu3 vision tokenizer (snapshot_download of "
+         "BAAI/Emu3-VisionTokenizer) -- NOT the LIBERO checkpoint folder"),
+        ("--fast-path", args.fast_path, "processor_config.json",
+         "the FAST action tokenizer dir (UniVLA/pretrain/fast_bridge_t5_s50 "
+         "inside the BiVLA clone)"),
+    ]
+    problems = []
+    for flag, path, marker, hint in checks:
+        if not os.path.isdir(path):
+            problems.append(f"  {flag}: directory does not exist: {path}\n"
+                            f"      -> expected: {hint}")
+        elif not os.path.exists(os.path.join(path, marker)):
+            problems.append(f"  {flag}: {path} exists but has no {marker}\n"
+                            f"      -> expected: {hint}\n"
+                            f"      contents: {sorted(os.listdir(path))[:15]}")
+    if problems:
+        sys.exit("[path error] fix these before anything loads:\n" + "\n".join(problems))
+
+
 def main():
     args = parse_args()
+    check_paths(args)
     os.makedirs(args.output_dir, exist_ok=True)
 
     from libero.libero import benchmark
