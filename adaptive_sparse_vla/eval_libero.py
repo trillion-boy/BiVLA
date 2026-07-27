@@ -21,10 +21,17 @@ Requires (see the setup script this ships with):
 """
 
 import argparse
+import faulthandler
 import json
 import os
 import sys
 import time
+
+# The failure mode this harness keeps hitting is a native-level hang inside
+# env construction (no exception, no output). Dump every thread's stack to
+# stderr every 90s so a wedged run identifies its own blocking line instead
+# of needing someone to guess.
+faulthandler.dump_traceback_later(90, repeat=True)
 
 # MuJoCo needs an explicit headless backend; without one robosuite dies on
 # `'NoneType' object has no attribute 'eglQueryString'` deep inside a render
@@ -359,6 +366,20 @@ def main():
     else:
         task_ids = list(range(task_suite.n_tasks))
 
+    # Build one throwaway env BEFORE the policy touches CUDA. Building this
+    # exact env in a model-free process succeeds, while building it after
+    # the model is resident hangs inside native render-context creation --
+    # so run the whole GL/renderer initialization (dlopen, platform
+    # selection, first context) now, while the GPU is still untouched.
+    # Later env builds reuse the already-initialized platform.
+    _t = time.time()
+    print("[env] warmup: building first env before model load ...",
+          end="", flush=True)
+    warm_env = build_env(task_suite.get_task(task_ids[0]), resolution=128)
+    warm_env.reset()
+    warm_env.close()
+    print(f" ok ({time.time() - _t:.1f}s)", flush=True)
+
     if args.backbone == "openvla":
         from inference_openvla_libero import OpenVLALiberoInference
 
@@ -418,18 +439,21 @@ def main():
         init_states = task_suite.get_task_init_states(task_id)
         print(f"\n=== task {task_id}: {instruction} ===", flush=True)
 
+        # One env per task, reset per trial -- same convention as OpenVLA's
+        # official LIBERO eval. Rebuilding per trial multiplies the number
+        # of native render-context creations (the fragile, hang-prone step)
+        # by 10 for no benefit: set_init_state fully determines the episode.
+        _te = time.time()
+        print(f"   building env for task {task_id} ...", end="", flush=True)
+        env = build_env(task, resolution=args.camera_resolution)
+        print(f" ready ({time.time() - _te:.1f}s)", flush=True)
+
         for trial in range(args.n_trials_per_task):
-            # Env construction compiles the MuJoCo model and spins up an EGL
-            # render context -- tens of seconds on a cold start, and silent
-            # while it happens. Announce each stage so a slow build is
-            # distinguishable from a hang or a killed process.
             _te = time.time()
-            print(f"   trial {trial}: building env ...", end="", flush=True)
-            env = build_env(task, resolution=args.camera_resolution)
-            print(f" reset ...", end="", flush=True)
+            print(f"   trial {trial}: reset ...", end="", flush=True)
             env.reset()
             obs = env.set_init_state(init_states[trial % len(init_states)])
-            print(f" ready ({time.time() - _te:.1f}s)", flush=True)
+            print(f" go ({time.time() - _te:.1f}s)", flush=True)
             model.reset()
             fov_gaze = (
                 MotionGaze() if args.foveate and args.foveate_center == "motion" else None
@@ -502,19 +526,20 @@ def main():
                 "elapsed": elapsed,
                 "model_ms_per_infer": model_ms,
             })
-            env.close()
-
             if args.save_video and frames:
                 vpath = os.path.join(
                     args.output_dir, f"task{task_id}_trial{trial}_{status.lower()}.gif"
                 )
                 save_gif(vpath, frames)
 
+        env.close()
+
     n_ok = sum(r["success"] for r in results)
     sr = n_ok / len(results) if results else 0.0
     summary = {
         "backbone": args.backbone,
-        "checkpoint": args.model_path if args.backbone == "spatialvla" else args.emu_hub,
+        "checkpoint": (args.model_path if args.backbone in ("spatialvla", "openvla")
+                       else args.emu_hub),
         "task_suite": args.task_suite,
         "task_ids": task_ids,
         "n_trials_per_task": args.n_trials_per_task,
