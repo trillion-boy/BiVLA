@@ -149,6 +149,53 @@ def parse_args():
     return p.parse_args()
 
 
+def ensure_libero_config() -> None:
+    """Make sure ~/.libero/config.yaml exists and has every key LIBERO wants.
+
+    LIBERO writes this file only when it is absent, and it does so from an
+    interactive prompt that raises EOFError in a notebook -- so it normally
+    gets pre-seeded by hand, and a half-written file then survives forever
+    and fails later with `Key init_states not found in config file`. Rebuild
+    any missing keys from the package layout. Deliberately avoids importing
+    `libero.libero`, which is what triggers the prompt in the first place.
+    """
+    import importlib.util
+
+    import yaml
+
+    cfg_dir = os.environ.get("LIBERO_CONFIG_PATH", os.path.expanduser("~/.libero"))
+    cfg_path = os.path.join(cfg_dir, "config.yaml")
+
+    spec = importlib.util.find_spec("libero")
+    if spec is None or not spec.origin:
+        return  # libero not installed; the import in main() will say so
+    root = os.path.join(os.path.dirname(spec.origin), "libero")
+    defaults = {
+        "benchmark_root": root,
+        "bddl_files": os.path.join(root, "bddl_files"),
+        "init_states": os.path.join(root, "init_files"),
+        "datasets": os.path.join(root, "..", "datasets"),
+        "assets": os.path.join(root, "assets"),
+    }
+
+    current = {}
+    if os.path.exists(cfg_path):
+        try:
+            with open(cfg_path) as f:
+                current = yaml.safe_load(f) or {}
+        except Exception:
+            current = {}  # unparseable (e.g. truncated mid-write) -> rebuild
+
+    missing = [k for k in defaults if k not in current]
+    if not missing:
+        return
+    merged = {**defaults, **current}
+    os.makedirs(cfg_dir, exist_ok=True)
+    with open(cfg_path, "w") as f:
+        yaml.dump(merged, f)
+    print(f"[libero] repaired {cfg_path}: added {missing}", flush=True)
+
+
 def check_paths(args) -> None:
     """Fail fast, before the 16GB model load, if any checkpoint path is wrong.
 
@@ -184,6 +231,7 @@ def check_paths(args) -> None:
 def main():
     args = parse_args()
     check_paths(args)
+    ensure_libero_config()
     os.makedirs(args.output_dir, exist_ok=True)
 
     from libero.libero import benchmark
