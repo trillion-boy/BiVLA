@@ -27,13 +27,22 @@ import os
 import sys
 import time
 
-# The failure modes this harness keeps hitting are native-level: hangs and
+# The failure modes this harness kept hitting are native-level: hangs and
 # silent deaths inside render/library initialization, with no Python
 # traceback. enable() prints the Python stack on SIGSEGV/SIGABRT/SIGBUS at
-# the moment of death; dump_traceback_later() prints all thread stacks every
-# 90s so a wedged run identifies its own blocking line.
+# the moment of death. The stall watchdog below prints all thread stacks
+# only when no progress has been made for a while -- it is re-armed on
+# every model call, so a healthy run stays silent.
 faulthandler.enable()
-faulthandler.dump_traceback_later(90, repeat=True)
+
+WATCHDOG_S = 300
+
+
+def rearm_watchdog() -> None:
+    faulthandler.dump_traceback_later(WATCHDOG_S, repeat=False)
+
+
+rearm_watchdog()  # covers startup: env warmup, model load, first env build
 
 # Keep TensorFlow out of this process entirely. transformers lazily does
 # `import tensorflow` inside image_transforms when TF is installed (it is,
@@ -43,6 +52,14 @@ faulthandler.dump_traceback_later(90, repeat=True)
 # first transformers import below.
 os.environ.setdefault("USE_TF", "0")
 os.environ.setdefault("USE_FLAX", "0")
+
+# Library deprecation chatter (HF resume_download, torch.jit, etc.) drowns
+# the dozen lines of real progress output. Actionable warnings from our own
+# code are unaffected.
+import warnings  # noqa: E402
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Import torch before any GL library gets loaded (the env warmup below pulls
 # in Mesa, whose libLLVM can collide with torch's bundled LLVM when torch
@@ -213,6 +230,10 @@ def parse_args():
                          "with Xvfb: egl shares the GPU with CUDA and segfaults "
                          "during env creation once a model is loaded. osmesa is "
                          "the CPU-rendering last resort")
+    p.add_argument("--verbose", action="store_true",
+                    help="chatty progress output: heartbeat every 5 model calls "
+                         "and the [debug] action line on every trial (default: "
+                         "heartbeat once a minute, [debug] once per run)")
     p.add_argument("--device", default="cuda")
     p.add_argument("--vision-device", default=None)
     p.add_argument("--min-pixels", type=int, default=6400)
@@ -451,6 +472,7 @@ def main():
               f"{args.foveate_phase}] keep={args.foveate_keep_percent:.0f}%", flush=True)
 
     results = []
+    first_debug = True  # print the [debug] action-sanity line once per run
     for task_id in task_ids:
         task = task_suite.get_task(task_id)
         instruction = task.language
@@ -467,11 +489,9 @@ def main():
         print(f" ready ({time.time() - _te:.1f}s)", flush=True)
 
         for trial in range(args.n_trials_per_task):
-            _te = time.time()
-            print(f"   trial {trial}: reset ...", end="", flush=True)
+            rearm_watchdog()
             env.reset()
             obs = env.set_init_state(init_states[trial % len(init_states)])
-            print(f" go ({time.time() - _te:.1f}s)", flush=True)
             model.reset()
             fov_gaze = (
                 MotionGaze() if args.foveate and args.foveate_center == "motion" else None
@@ -481,6 +501,7 @@ def main():
             done = False
             step = 0
             t0 = time.time()
+            last_beat = t0
             model_time = 0.0
             model_calls = 0
 
@@ -504,10 +525,18 @@ def main():
                     action_chunk = model.step(policy_image, instruction, wrist_image=wrist_image)
                     model_time += time.time() - _t
                     model_calls += 1
-                    if model_calls == 1 or model_calls % 5 == 0:
+                    rearm_watchdog()  # progress made; only a real stall dumps stacks
+                    if args.verbose:
+                        if model_calls == 1 or model_calls % 5 == 0:
+                            print(f"      [heartbeat] call {model_calls}  env-step {step}  "
+                                  f"last infer {time.time() - _t:.1f}s", flush=True)
+                    elif time.time() - last_beat > 60:
+                        last_beat = time.time()
                         print(f"      [heartbeat] call {model_calls}  env-step {step}  "
-                              f"last infer {time.time() - _t:.1f}s", flush=True)
-                    if model_calls == 1:
+                              f"{model_time / model_calls * 1000:.0f} ms/infer avg",
+                              flush=True)
+                    if model_calls == 1 and (args.verbose or first_debug):
+                        first_debug = False
                         print(f"      [debug] gen_len={getattr(model, 'last_generated_len', '?')} "
                               f"eoa={getattr(model, 'last_ended_with_eoa', 'n/a')} "
                               f"raw_ids={getattr(model, 'last_raw_ids', 'n/a')} "
@@ -552,6 +581,7 @@ def main():
 
         env.close()
 
+    faulthandler.cancel_dump_traceback_later()
     n_ok = sum(r["success"] for r in results)
     sr = n_ok / len(results) if results else 0.0
     summary = {
