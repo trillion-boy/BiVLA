@@ -122,30 +122,38 @@ def build_env(task, resolution: int = 256):
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--backbone", default="univla", choices=["univla", "spatialvla"],
+    p.add_argument("--backbone", default="univla",
+                    choices=["univla", "spatialvla", "openvla"],
                     help="which VLA to evaluate; the LIBERO harness, foveation and "
-                         "chunk-exec are identical for both")
+                         "the efficiency interventions are identical for all")
     # --- univla backbone ---
     p.add_argument("--emu-hub", help="[univla] Emu3MoE LIBERO checkpoint dir")
     p.add_argument("--vq-hub", help="[univla] Emu3 vision tokenizer dir")
     p.add_argument("--fast-path",
                     help="[univla] FAST tokenizer dir bundled with the LIBERO "
                          "checkpoint (different from Bridge's fast_bridge_t5_s50)")
-    # --- spatialvla backbone ---
+    # --- spatialvla / openvla backbones ---
     p.add_argument("--model-path",
-                    help="[spatialvla] HF id or local dir of the SpatialVLA checkpoint")
+                    help="[spatialvla|openvla] HF id or local dir of the checkpoint")
     p.add_argument("--unnorm-key",
-                    help="[spatialvla] which dataset's q01/q99 action statistics to "
-                         "de-normalize with; run with a bogus value to list the "
-                         "keys the checkpoint actually ships")
+                    help="[spatialvla|openvla] which dataset's action statistics to "
+                         "de-normalize with. OpenVLA's LIBERO checkpoints ship "
+                         "exactly one, which is picked automatically; pass a bogus "
+                         "value to have the available keys printed")
     p.add_argument("--invert-gripper", action="store_true",
                     help="[spatialvla] flip the gripper sign if the checkpoint was "
-                         "trained with the opposite open/close convention")
+                         "trained with the opposite open/close convention "
+                         "(openvla already applies its documented inversion)")
     p.add_argument("--task-suite", default="libero_goal",
                     choices=list(EPISODE_LENGTH.keys()))
     p.add_argument("--task-ids", default="",
                     help="comma-separated task indices within the suite; empty = all tasks")
     p.add_argument("--n-trials-per-task", type=int, default=10)
+    p.add_argument("--action-repeat", type=int, default=1,
+                    help="execute each predicted action N times open-loop before "
+                         "querying the model again. This is the chunk-exec analog "
+                         "for single-step policies like OpenVLA, which have no "
+                         "chunk to truncate: N=2 halves the forward passes")
     p.add_argument("--exec-chunk", type=int, default=0,
                     help="0 = execute the full predicted chunk (matches training); "
                          ">0 = execute only the first N of the predict_action_frames "
@@ -229,11 +237,12 @@ def check_paths(args) -> None:
     with an opaque HFValidationError instead of saying "that folder isn't
     there".
     """
-    if args.backbone == "spatialvla":
+    if args.backbone in ("spatialvla", "openvla"):
         # A HF hub id is resolved by transformers, not by us; only validate
         # when it looks like a local path.
         if not args.model_path:
-            sys.exit("[path error] --model-path is required for --backbone spatialvla")
+            sys.exit(f"[path error] --model-path is required for "
+                     f"--backbone {args.backbone}")
         if os.sep in args.model_path and not os.path.isdir(args.model_path):
             sys.exit(f"[path error] --model-path directory does not exist: "
                      f"{args.model_path}")
@@ -288,7 +297,20 @@ def main():
     else:
         task_ids = list(range(task_suite.n_tasks))
 
-    if args.backbone == "spatialvla":
+    if args.backbone == "openvla":
+        from inference_openvla_libero import OpenVLALiberoInference
+
+        print(f"[load] LIBERO OpenVLA checkpoint from {args.model_path} ...",
+              flush=True)
+        model = OpenVLALiberoInference(
+            model_path=args.model_path,
+            unnorm_key=args.unnorm_key,
+            device=args.device,
+        )
+        print(f"[openvla] unnorm_key={model.unnorm_key} "
+              f"(single-step policy; use --action-repeat for the chunk-exec "
+              f"analog)", flush=True)
+    elif args.backbone == "spatialvla":
         from inference_spatialvla_libero import SpatialVLALiberoInference
 
         print(f"[load] LIBERO SpatialVLA checkpoint from {args.model_path} ...",
@@ -391,6 +413,8 @@ def main():
 
                     if args.exec_chunk > 0:
                         action_chunk = action_chunk[: args.exec_chunk]
+                    if args.action_repeat > 1:
+                        action_chunk = np.repeat(action_chunk, args.action_repeat, axis=0)
 
                     for action_row in action_chunk:
                         gripper_open = float(action_row[-1]) <= 0.0
@@ -433,6 +457,7 @@ def main():
         "task_ids": task_ids,
         "n_trials_per_task": args.n_trials_per_task,
         "exec_chunk": int(args.exec_chunk),
+        "action_repeat": int(args.action_repeat),
         "predict_action_frames": int(model.predict_action_frames),
         "foveate": {
             "enabled": bool(args.foveate),
