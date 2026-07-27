@@ -274,9 +274,17 @@ def main():
         print(f"\n=== task {task_id}: {instruction} ===", flush=True)
 
         for trial in range(args.n_trials_per_task):
+            # Env construction compiles the MuJoCo model and spins up an EGL
+            # render context -- tens of seconds on a cold start, and silent
+            # while it happens. Announce each stage so a slow build is
+            # distinguishable from a hang or a killed process.
+            _te = time.time()
+            print(f"   trial {trial}: building env ...", end="", flush=True)
             env = build_env(task, resolution=args.camera_resolution)
+            print(f" reset ...", end="", flush=True)
             env.reset()
             obs = env.set_init_state(init_states[trial % len(init_states)])
+            print(f" ready ({time.time() - _te:.1f}s)", flush=True)
             model.reset()
             fov_gaze = (
                 MotionGaze() if args.foveate and args.foveate_center == "motion" else None
