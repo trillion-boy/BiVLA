@@ -48,29 +48,23 @@ except ImportError as e:  # transformers 5.x removed AutoModelForVision2Seq
 
 
 def resize_image_openvla(img: np.ndarray, size: int = 224) -> np.ndarray:
-    """Match OpenVLA's training-time image pipeline as closely as available.
+    """Match OpenVLA's training-time image pipeline.
 
     The reference implementation is a TF JPEG encode/decode round-trip
     followed by `tf.image.resize(..., method="lanczos3", antialias=True)`.
-    TensorFlow is used when importable (it is, in Colab) so the pipeline is
-    bit-comparable; otherwise PIL's JPEG round-trip plus LANCZOS is a close
-    stand-in, and the difference is noted rather than hidden.
+    TensorFlow is deliberately NOT used here: importing TF after Mesa's GL
+    libraries are loaded (which the LIBERO env warmup does) segfaults the
+    whole process, and a segfault is not catchable. PIL's JPEG round-trip
+    plus LANCZOS reproduces the same pipeline shape -- lossy-compress, then
+    Lanczos-downsample -- with only minor pixel-level differences from TF's
+    lanczos3 kernel.
     """
     img = np.asarray(img, dtype=np.uint8)
-    try:
-        import tensorflow as tf
-
-        enc = tf.image.encode_jpeg(tf.convert_to_tensor(img, dtype=tf.uint8))
-        dec = tf.io.decode_image(enc, expand_animations=False, dtype=tf.uint8)
-        out = tf.image.resize(dec, [size, size], method="lanczos3", antialias=True)
-        out = tf.cast(tf.clip_by_value(tf.round(out), 0, 255), tf.uint8)
-        return out.numpy()
-    except Exception:
-        buf = io.BytesIO()
-        Image.fromarray(img).save(buf, format="JPEG", quality=95)
-        buf.seek(0)
-        pil = Image.open(buf).convert("RGB").resize((size, size), Image.LANCZOS)
-        return np.asarray(pil, dtype=np.uint8)
+    buf = io.BytesIO()
+    Image.fromarray(img).save(buf, format="JPEG", quality=95)
+    buf.seek(0)
+    pil = Image.open(buf).convert("RGB").resize((size, size), Image.LANCZOS)
+    return np.asarray(pil, dtype=np.uint8)
 
 
 class OpenVLALiberoInference:

@@ -35,6 +35,15 @@ import time
 faulthandler.enable()
 faulthandler.dump_traceback_later(90, repeat=True)
 
+# Keep TensorFlow out of this process entirely. transformers lazily does
+# `import tensorflow` inside image_transforms when TF is installed (it is,
+# on Colab), and TF's native module segfaults when loaded after Mesa's GL
+# libraries (exit 139 with the crash stack pointing at TF's preload_check).
+# USE_TF=0 makes transformers treat TF as absent; must be set before the
+# first transformers import below.
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("USE_FLAX", "0")
+
 # Import torch before any GL library gets loaded (the env warmup below pulls
 # in Mesa, whose libLLVM can collide with torch's bundled LLVM when torch
 # loads second). Importing torch does NOT initialize CUDA -- the GPU stays
