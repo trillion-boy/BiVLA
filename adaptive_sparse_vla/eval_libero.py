@@ -182,6 +182,41 @@ def parse_args():
     return p.parse_args()
 
 
+_GL_CONTEXT = None  # module-level so the context is not garbage collected
+
+
+def preinit_mujoco_gl() -> None:
+    """Create the MuJoCo GL context *before* the policy touches CUDA.
+
+    Building MuJoCo's EGL context after PyTorch has initialized CUDA on the
+    same GPU segfaults: the process dies inside env construction with no
+    Python traceback, which looks like a hang. Observed identically with
+    both UniVLA and OpenVLA on an A100, while building the very same env in
+    a fresh process (no model loaded) succeeded -- i.e. it is the ordering,
+    not EGL itself, that is broken.
+
+    Creating the context here, before any model is loaded or moved to the
+    GPU, initializes EGL first and lets robosuite reuse the already-live
+    display. Skipped for osmesa, which renders on the CPU and so has no
+    contention to avoid. Failures are non-fatal: the run continues and the
+    env build will report the real problem.
+    """
+    global _GL_CONTEXT
+    if os.environ.get("MUJOCO_GL", "").lower() == "osmesa":
+        print("[env] osmesa (CPU rendering) -- skipping GL pre-init", flush=True)
+        return
+    try:
+        import mujoco
+
+        _GL_CONTEXT = mujoco.GLContext(64, 64)
+        _GL_CONTEXT.make_current()
+        print("[env] MuJoCo GL context pre-initialized before CUDA", flush=True)
+    except Exception as e:
+        print(f"[env] GL pre-init skipped ({type(e).__name__}: {e}); "
+              f"if the run dies silently while building the env, "
+              f"retry with --mujoco-gl osmesa", flush=True)
+
+
 def ensure_libero_config() -> None:
     """Make sure ~/.libero/config.yaml exists and has every key LIBERO wants.
 
@@ -285,6 +320,7 @@ def main():
     print(f"[env] MUJOCO_GL={os.environ.get('MUJOCO_GL')}", flush=True)
     check_paths(args)
     ensure_libero_config()
+    preinit_mujoco_gl()  # must happen before the policy initializes CUDA
     os.makedirs(args.output_dir, exist_ok=True)
 
     from libero.libero import benchmark

@@ -153,10 +153,17 @@ IPImage(sorted(glob.glob("/content/bivla_eval_libero/*.gif"))[-1])
 
 ### If the run dies silently during `building env`
 
-That is a native segfault from MuJoCo's EGL context colliding with the model
-already resident on the GPU — not a Python error, so there is no traceback.
-It was observed with UniVLA on an A100 while the same env built fine on its
-own. Switch to CPU rendering:
+That is a native segfault from MuJoCo's EGL context colliding with CUDA,
+already initialized by the model — not a Python error, so there is no
+traceback. It was observed identically with UniVLA and OpenVLA on an A100,
+while building the very same env in a fresh process (no model loaded)
+succeeded, which is what identifies it as an ordering problem rather than a
+broken EGL install.
+
+`eval_libero.py` now creates the MuJoCo GL context *before* the policy
+touches CUDA (look for `[env] MuJoCo GL context pre-initialized before
+CUDA`), which is the standard fix for this ordering bug. If a run still dies
+there, fall back to CPU rendering:
 
 ```bash
 !apt-get -qq install -y libosmesa6-dev
