@@ -232,6 +232,40 @@ class EmuVLALiberoInference:
               f"ids=[{allowed[0]}..{self.last_token_id}] eoa={self.eoa_token_id} "
               f"tok_pad={tok_pad} cfg_pad={cfg_pad}", flush=True)
 
+        if os.environ.get("BIVLA_PROBE"):
+            # Empirically the model emits all-NaN logits even on a 4-token
+            # text prompt, so the corruption is in the loaded weights or in
+            # the very first forward ops. Pinpoint it: scan every param and
+            # buffer for NaN, then walk hidden states layer by layer.
+            bad, total_nan, total_params = [], 0, 0
+            for name, p in list(self.model.named_parameters()) + list(self.model.named_buffers()):
+                total_params += 1
+                n = int(torch.isnan(p).sum())
+                if n:
+                    total_nan += n
+                    if len(bad) < 12:
+                        bad.append(f"{name}({n}/{p.numel()})")
+            print(f"      [probe] param scan: tensors={total_params} "
+                  f"nan_total={total_nan} first_bad={bad}", flush=True)
+            probe_ids = self.tokenizer(
+                self.tokenizer.bos_token + "hello", return_tensors="pt"
+            ).input_ids.to(self.device)
+            with torch.no_grad():
+                hs = self.model.model(
+                    input_ids=probe_ids, output_hidden_states=True, use_cache=False
+                ).hidden_states
+            first_nan = None
+            for i, h in enumerate(hs):
+                n = int(torch.isnan(h).sum())
+                if n and first_nan is None:
+                    first_nan = i
+                if i <= 2 or n:
+                    print(f"      [probe] hidden[{i}]: nan={n} "
+                          f"absmax={h.float().abs().max().item():.3e}", flush=True)
+                if first_nan is not None and i >= first_nan + 1:
+                    break
+            print(f"      [probe] first NaN hidden layer: {first_nan}", flush=True)
+
         self.vision_queue = Queue(maxsize=self.window_size)
         self.vision_gripper_queue = Queue(maxsize=self.window_size)
 
