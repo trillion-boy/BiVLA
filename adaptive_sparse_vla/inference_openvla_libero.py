@@ -35,7 +35,16 @@ from typing import Optional
 import numpy as np
 import torch
 from PIL import Image
-from transformers import AutoModelForVision2Seq, AutoProcessor
+
+try:
+    from transformers import AutoModelForVision2Seq, AutoProcessor
+except ImportError as e:  # transformers 5.x removed AutoModelForVision2Seq
+    raise ImportError(
+        "OpenVLA needs the transformers 4.40.x API (AutoModelForVision2Seq was "
+        "removed in 5.x). Install the stack OpenVLA documents, then restart "
+        "the runtime:\n"
+        '  pip install "transformers==4.40.1" "timm==0.9.10" "tokenizers==0.19.1"'
+    ) from e
 
 
 def resize_image_openvla(img: np.ndarray, size: int = 224) -> np.ndarray:

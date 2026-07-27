@@ -46,14 +46,20 @@ pre-3.10 argument order; mujoco 3.10 changed that signature, so any env step
 dies with `TypeError: mj_fullM(): incompatible function arguments`. Verified
 across versions: fine through 3.9.0, broken from 3.10.0.
 
-Unlike the UniVLA setup, do **not** pin transformers down to 4.44 — that pin
-exists for the vendored Emu3 code, and OpenVLA does not use it. OpenVLA
-needs `transformers>=4.40` with `timm`/`tokenizers` present.
+transformers must be pinned to exactly what OpenVLA documents. Leaving
+Colab's preinstalled 5.x in place fails immediately with
+`ImportError: cannot import name 'AutoModelForVision2Seq'` — that auto class
+was removed in transformers 5, and OpenVLA's remote code
+(`modeling_prismatic.py`) targets the 4.40 API. `timm==0.9.10` is equally
+non-negotiable: the Prismatic vision backbone is built against that exact
+timm version. This pinned trio imports cleanly alongside numpy 2.x
+(verified: transformers 4.40.1 / timm 0.9.10 / tokenizers 0.19.1 /
+numpy 2.5.1).
 
 ```bash
 !pip install -q libero
 !pip install -q "mujoco==3.9.0"
-!pip install -q "transformers>=4.40" timm accelerate
+!pip install -q "transformers==4.40.1" "timm==0.9.10" "tokenizers==0.19.1" accelerate
 ```
 
 ## 4. Restart the runtime — required
