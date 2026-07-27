@@ -41,6 +41,15 @@ from transformers.modeling_attn_mask_utils import (
 )
 from transformers.modeling_outputs import BaseModelOutputWithPast, CausalLMOutputWithPast, SequenceClassifierOutputWithPast
 from transformers.modeling_utils import PreTrainedModel
+
+# transformers >= 4.50 removed GenerationMixin from PreTrainedModel's bases;
+# models must inherit it explicitly or lose .generate(). Harmless on older
+# versions (PreTrainedModel already carries it there, MRO dedupes it).
+try:
+    from transformers.generation import GenerationMixin
+except ImportError:  # ancient transformers without the subpackage layout
+    class GenerationMixin:  # noqa: N801 - placeholder, PreTrainedModel provides generate
+        pass
 from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS, is_torch_greater_or_equal_than_1_13
 from transformers.utils import (
     add_start_docstrings,
@@ -1139,7 +1148,7 @@ class Emu3Model(Emu3PreTrainedModel):
         )
 
 
-class Emu3ForCausalLM(Emu3PreTrainedModel):
+class Emu3ForCausalLM(Emu3PreTrainedModel, GenerationMixin):
     _tied_weights_keys = ["lm_head.weight"]
 
     def __init__(self, config):
@@ -1468,7 +1477,7 @@ class SinusoidalPosEmb(nn.Module):
         emb = torch.cat((emb.sin(), emb.cos()), dim=-1)
         return emb
 
-class Emu3MoE(Emu3PreTrainedModel):
+class Emu3MoE(Emu3PreTrainedModel, GenerationMixin):
     _tied_weights_keys = ["lm_head.weight"]
 
     def __init__(self, config):
