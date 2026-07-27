@@ -1344,6 +1344,11 @@ class Emu3ForCausalLM(Emu3PreTrainedModel, GenerationMixin):
                     max_cache_length = past_key_values.get_max_cache_shape()
                 else:
                     max_cache_length = None
+                # Newer transformers' get_max_cache_shape() returns -1 (not
+                # None) for unbounded caches like DynamicCache; the crop
+                # below would then shave one token off the mask every step.
+                if max_cache_length is not None and max_cache_length <= 0:
+                    max_cache_length = None
             else:
                 cache_length = past_length = past_key_values[0][0].shape[2]
                 max_cache_length = None
@@ -1373,8 +1378,14 @@ class Emu3ForCausalLM(Emu3PreTrainedModel, GenerationMixin):
             # create position_ids on the fly for batch generation
             position_ids = attention_mask.long().cumsum(-1) - 1
             position_ids.masked_fill_(attention_mask == 0, 1)
-            if past_key_values:
-                position_ids = position_ids[:, -input_ids.shape[1] :]
+        # Newer transformers' generate() passes a full-sequence position_ids
+        # in model_kwargs every step (older versions never passed it, so
+        # only the locally-created one used to need slicing). Whatever its
+        # origin, it must match input_ids' length once tokens are cached --
+        # a full-length position_ids here broadcasts the RoPE cos/sin
+        # against the single-token query and corrupts the K/V shapes.
+        if position_ids is not None and position_ids.shape[1] != input_ids.shape[1]:
+            position_ids = position_ids[:, -input_ids.shape[1] :]
 
         # if `inputs_embeds` are passed, we only want to use them in the 1st generation step
         if inputs_embeds is not None and past_key_values is None:
@@ -1668,6 +1679,11 @@ class Emu3MoE(Emu3PreTrainedModel, GenerationMixin):
                     max_cache_length = past_key_values.get_max_cache_shape()
                 else:
                     max_cache_length = None
+                # Newer transformers' get_max_cache_shape() returns -1 (not
+                # None) for unbounded caches like DynamicCache; the crop
+                # below would then shave one token off the mask every step.
+                if max_cache_length is not None and max_cache_length <= 0:
+                    max_cache_length = None
             else:
                 cache_length = past_length = past_key_values[0][0].shape[2]
                 max_cache_length = None
@@ -1697,8 +1713,14 @@ class Emu3MoE(Emu3PreTrainedModel, GenerationMixin):
             # create position_ids on the fly for batch generation
             position_ids = attention_mask.long().cumsum(-1) - 1
             position_ids.masked_fill_(attention_mask == 0, 1)
-            if past_key_values:
-                position_ids = position_ids[:, -input_ids.shape[1] :]
+        # Newer transformers' generate() passes a full-sequence position_ids
+        # in model_kwargs every step (older versions never passed it, so
+        # only the locally-created one used to need slicing). Whatever its
+        # origin, it must match input_ids' length once tokens are cached --
+        # a full-length position_ids here broadcasts the RoPE cos/sin
+        # against the single-token query and corrupts the K/V shapes.
+        if position_ids is not None and position_ids.shape[1] != input_ids.shape[1]:
+            position_ids = position_ids[:, -input_ids.shape[1] :]
 
         # if `inputs_embeds` are passed, we only want to use them in the 1st generation step
         if inputs_embeds is not None and past_key_values is None:
