@@ -51,16 +51,23 @@ if not getattr(_pu.ProcessorMixin, "_check_patched", False):
     _pu.ProcessorMixin.check_argument_for_proper_class = lambda self, name, arg: None
     _pu.ProcessorMixin._check_patched = True
 
-from emu3.mllm import Emu3Tokenizer  # noqa: E402
-
-if not hasattr(Emu3Tokenizer, "mergeable_ranks"):
-    Emu3Tokenizer.mergeable_ranks = {}
-
 import numpy as np  # noqa: E402
 from PIL import Image as _PIL  # noqa: E402
 
-from inference_libero import EmuVLALiberoInference  # noqa: E402
 from foveation import MotionGaze, foveate_image_blur, foveate_image_logpolar  # noqa: E402
+
+
+def _patch_emu3_tokenizer() -> None:
+    """Emu3-only setup, deferred so --backbone spatialvla never imports emu3.
+
+    The vendored Emu3 stack pins itself to an older transformers generation;
+    keeping it off the import path entirely means a SpatialVLA run is not
+    hostage to that compatibility.
+    """
+    from emu3.mllm import Emu3Tokenizer
+
+    if not hasattr(Emu3Tokenizer, "mergeable_ranks"):
+        Emu3Tokenizer.mergeable_ranks = {}
 
 
 # Longest training-demo episode length per suite, +margin -- matches UniVLA's
@@ -115,11 +122,25 @@ def build_env(task, resolution: int = 256):
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--emu-hub", required=True)
-    p.add_argument("--vq-hub", required=True)
-    p.add_argument("--fast-path", required=True,
-                    help="FAST tokenizer dir bundled with the LIBERO checkpoint "
-                         "(different from Bridge's fast_bridge_t5_s50)")
+    p.add_argument("--backbone", default="univla", choices=["univla", "spatialvla"],
+                    help="which VLA to evaluate; the LIBERO harness, foveation and "
+                         "chunk-exec are identical for both")
+    # --- univla backbone ---
+    p.add_argument("--emu-hub", help="[univla] Emu3MoE LIBERO checkpoint dir")
+    p.add_argument("--vq-hub", help="[univla] Emu3 vision tokenizer dir")
+    p.add_argument("--fast-path",
+                    help="[univla] FAST tokenizer dir bundled with the LIBERO "
+                         "checkpoint (different from Bridge's fast_bridge_t5_s50)")
+    # --- spatialvla backbone ---
+    p.add_argument("--model-path",
+                    help="[spatialvla] HF id or local dir of the SpatialVLA checkpoint")
+    p.add_argument("--unnorm-key",
+                    help="[spatialvla] which dataset's q01/q99 action statistics to "
+                         "de-normalize with; run with a bogus value to list the "
+                         "keys the checkpoint actually ships")
+    p.add_argument("--invert-gripper", action="store_true",
+                    help="[spatialvla] flip the gripper sign if the checkpoint was "
+                         "trained with the opposite open/close convention")
     p.add_argument("--task-suite", default="libero_goal",
                     choices=list(EPISODE_LENGTH.keys()))
     p.add_argument("--task-ids", default="",
@@ -141,6 +162,10 @@ def parse_args():
     p.add_argument("--camera-resolution", type=int, default=256,
                     help="LIBERO renderer output size; the policy itself resizes "
                          "to 200x200 internally regardless of this value")
+    p.add_argument("--mujoco-gl", default=None, choices=["egl", "osmesa", "glfw"],
+                    help="MuJoCo render backend. Default: respect $MUJOCO_GL, else "
+                         "egl. Use osmesa (CPU) if env creation segfaults while a "
+                         "model is resident on the GPU")
     p.add_argument("--device", default="cuda")
     p.add_argument("--vision-device", default=None)
     p.add_argument("--min-pixels", type=int, default=6400)
@@ -204,6 +229,22 @@ def check_paths(args) -> None:
     with an opaque HFValidationError instead of saying "that folder isn't
     there".
     """
+    if args.backbone == "spatialvla":
+        # A HF hub id is resolved by transformers, not by us; only validate
+        # when it looks like a local path.
+        if not args.model_path:
+            sys.exit("[path error] --model-path is required for --backbone spatialvla")
+        if os.sep in args.model_path and not os.path.isdir(args.model_path):
+            sys.exit(f"[path error] --model-path directory does not exist: "
+                     f"{args.model_path}")
+        return
+
+    missing_flags = [f for f, v in [("--emu-hub", args.emu_hub),
+                                    ("--vq-hub", args.vq_hub),
+                                    ("--fast-path", args.fast_path)] if not v]
+    if missing_flags:
+        sys.exit(f"[path error] --backbone univla requires {', '.join(missing_flags)}")
+
     checks = [
         ("--emu-hub", args.emu_hub, "config.json",
          "the UNIVLA_LIBERO_IMG_BS192_8K checkpoint (watch out for the nested "
@@ -230,6 +271,9 @@ def check_paths(args) -> None:
 
 def main():
     args = parse_args()
+    if args.mujoco_gl:
+        os.environ["MUJOCO_GL"] = args.mujoco_gl
+    print(f"[env] MUJOCO_GL={os.environ.get('MUJOCO_GL')}", flush=True)
     check_paths(args)
     ensure_libero_config()
     os.makedirs(args.output_dir, exist_ok=True)
@@ -244,16 +288,33 @@ def main():
     else:
         task_ids = list(range(task_suite.n_tasks))
 
-    print(f"[load] LIBERO UniVLA checkpoint from {args.emu_hub} ...", flush=True)
-    model = EmuVLALiberoInference(
-        emu_hub=args.emu_hub,
-        vq_hub=args.vq_hub,
-        vision_hub=args.vq_hub,
-        device=args.device,
-        vision_device=args.vision_device,
-        fast_path=args.fast_path,
-        min_pixels_override=args.min_pixels,
-    )
+    if args.backbone == "spatialvla":
+        from inference_spatialvla_libero import SpatialVLALiberoInference
+
+        print(f"[load] LIBERO SpatialVLA checkpoint from {args.model_path} ...",
+              flush=True)
+        model = SpatialVLALiberoInference(
+            model_path=args.model_path,
+            unnorm_key=args.unnorm_key,
+            device=args.device,
+            invert_gripper=args.invert_gripper,
+        )
+        print(f"[spatialvla] unnorm_key={model.unnorm_key} "
+              f"chunk={model.predict_action_frames}", flush=True)
+    else:
+        _patch_emu3_tokenizer()
+        from inference_libero import EmuVLALiberoInference
+
+        print(f"[load] LIBERO UniVLA checkpoint from {args.emu_hub} ...", flush=True)
+        model = EmuVLALiberoInference(
+            emu_hub=args.emu_hub,
+            vq_hub=args.vq_hub,
+            vision_hub=args.vq_hub,
+            device=args.device,
+            vision_device=args.vision_device,
+            fast_path=args.fast_path,
+            min_pixels_override=args.min_pixels,
+        )
     print(
         f"[OK] model loaded  suite={args.task_suite}  tasks={task_ids}  "
         f"predict_action_frames={model.predict_action_frames}",
@@ -321,9 +382,9 @@ def main():
                         print(f"      [heartbeat] call {model_calls}  env-step {step}  "
                               f"last infer {time.time() - _t:.1f}s", flush=True)
                     if model_calls == 1:
-                        print(f"      [debug] gen_len={model.last_generated_len} "
-                              f"eoa={model.last_ended_with_eoa} "
-                              f"raw_ids={model.last_raw_ids} "
+                        print(f"      [debug] gen_len={getattr(model, 'last_generated_len', '?')} "
+                              f"eoa={getattr(model, 'last_ended_with_eoa', 'n/a')} "
+                              f"raw_ids={getattr(model, 'last_raw_ids', 'n/a')} "
                               f"chunk_shape={action_chunk.shape} "
                               f"dim_absmax={np.round(np.abs(action_chunk).max(axis=0), 3).tolist()} "
                               f"first_row={np.round(action_chunk[0], 3).tolist()}", flush=True)
@@ -366,6 +427,8 @@ def main():
     n_ok = sum(r["success"] for r in results)
     sr = n_ok / len(results) if results else 0.0
     summary = {
+        "backbone": args.backbone,
+        "checkpoint": args.model_path if args.backbone == "spatialvla" else args.emu_hub,
         "task_suite": args.task_suite,
         "task_ids": task_ids,
         "n_trials_per_task": args.n_trials_per_task,
