@@ -289,7 +289,7 @@ class EmuVLALiberoInference:
             outputs = self.model.generate(
                 pos_inputs.input_ids.to(self.device),
                 self.GENERATION_CONFIG,
-                max_new_tokens=80,
+                max_new_tokens=50,
                 logits_processor=[self._action_id_processor],
                 attention_mask=pos_inputs.attention_mask.to(self.device),
             )

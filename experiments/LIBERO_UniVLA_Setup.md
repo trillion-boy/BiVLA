@@ -137,31 +137,30 @@ ckpt_dir = snapshot_download(
 print(ckpt_dir)
 ```
 
-Note there is no separate FAST-tokenizer folder in this repo at all (checked
-the real file listing — only checkpoint folders, each with the usual
-config.json/safetensors/tokenizer files). That's not a gap: read
-`UniVLA/pretrain/fast_bridge_t5_s50/processing_action_tokenizer.py` in this
-repo and it's a `UniversalActionProcessor` — a DCT+BPE action tokenizer with
-`action_dim`/`time_horizon` left as `None` in its config, filled in at
-`decode()` call time rather than baked in per-embodiment. That is exactly
-the "FAST+" design (Physical Intelligence's action tokenizer, explicitly
-built to be reused as a black box across different robots/action spaces
-without refitting). So use the **same local folder already sitting at
-`UniVLA/pretrain/fast_bridge_t5_s50`** — no separate download needed:
+**FAST tokenizer — resolved (the earlier guess here was wrong).** The
+authors' own LIBERO inference example, vendored in this repo at
+`UniVLA/models/inference/inference_action.py:48`, uses
+`fast_path = ".../UniVLA/pretrain/fast"` — the **stock universal FAST+
+tokenizer**, NOT the Bridge-refit `fast_bridge_t5_s50` this doc previously
+suggested reusing. The refit has a different BPE vocabulary (vocab_size
+1024 vs FAST+'s 2048), so with it the model never emits the end-of-action
+token (`gen_len` hits the cap with `eoa=False` in the eval's debug line)
+and the decoded actions are small structureless drift — exactly what was
+observed empirically. The universal FAST+ tokenizer is public:
 
-```bash
---fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50
+```python
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id="physical-intelligence/fast",
+    local_dir="/content/BiVLA/UniVLA/pretrain/fast",
+)
 ```
 
-This is a reasonably confident inference, not a 100%-verified fact (I
-couldn't load the actual checkpoint to confirm the token IDs line up). The
-tell if it's wrong: the model would produce actions that don't correspond to
-anything sensible even on the very first baseline run (not just "low success
-rate" — actually garbled, structureless motion). If you see that, the
-LIBERO checkpoint was likely trained with a separately-fit FAST vocabulary
-that isn't in this HF repo, and it's worth asking whoever has access to the
-original training cluster (`/share/project/yuqi.wang/...`) for the exact
-`fast_path` they used.
+then pass:
+
+```bash
+--fast-path /content/BiVLA/UniVLA/pretrain/fast
+```
 
 ## 5.5. The vision tokenizer is a SEPARATE checkpoint, not the LIBERO folder
 
@@ -197,7 +196,7 @@ print(vision_dir)
 !python eval_libero.py \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
   --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
-  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
   --task-suite libero_goal \
   --n-trials-per-task 10 \
   --output-dir /content/bivla_eval_libero
@@ -212,7 +211,7 @@ on top:
 !python eval_libero.py \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
   --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
-  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
   --task-suite libero_goal --n-trials-per-task 10 \
   --exec-chunk 5 --output-dir /content/bivla_eval_libero
 
@@ -221,7 +220,7 @@ on top:
 !python eval_libero.py \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
   --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
-  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
   --task-suite libero_goal --n-trials-per-task 10 \
   --foveate --foveate-mode logpolar --foveate-keep-percent 20 \
   --output-dir /content/bivla_eval_libero
@@ -230,7 +229,7 @@ on top:
 !python eval_libero.py \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
   --vq-hub /content/BiVLA/pretrain/Emu3-VisionTokenizer \
-  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
   --task-suite libero_goal --n-trials-per-task 10 \
   --foveate --foveate-mode blur --foveate-keep-percent 20 \
   --output-dir /content/bivla_eval_libero
@@ -241,9 +240,11 @@ on top:
 `summary_<suite>_<timestamp>.json` to `--output-dir` with per-episode results
 and the overall success rate.
 
-## Known open question
+## Resolved questions
 
-Whether the local `fast_bridge_t5_s50` FAST tokenizer (reused as-is for
-LIBERO in step 5) actually matches the vocabulary the LIBERO checkpoint was
-trained against — see the caveat in step 5. Not verified end-to-end since
-this sandbox can't load the actual checkpoint.
+The FAST-tokenizer question that used to live here is settled: the LIBERO
+checkpoint uses the stock universal FAST+ tokenizer
+(`physical-intelligence/fast`), per the authors' own inference example at
+`UniVLA/models/inference/inference_action.py:48` — see step 5. The earlier
+symptom with the wrong (Bridge-refit) tokenizer was 0% success with
+`eoa=False` in the debug line and small drifting actions.
