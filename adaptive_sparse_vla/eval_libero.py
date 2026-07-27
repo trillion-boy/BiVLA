@@ -27,11 +27,20 @@ import os
 import sys
 import time
 
-# The failure mode this harness keeps hitting is a native-level hang inside
-# env construction (no exception, no output). Dump every thread's stack to
-# stderr every 90s so a wedged run identifies its own blocking line instead
-# of needing someone to guess.
+# The failure modes this harness keeps hitting are native-level: hangs and
+# silent deaths inside render/library initialization, with no Python
+# traceback. enable() prints the Python stack on SIGSEGV/SIGABRT/SIGBUS at
+# the moment of death; dump_traceback_later() prints all thread stacks every
+# 90s so a wedged run identifies its own blocking line.
+faulthandler.enable()
 faulthandler.dump_traceback_later(90, repeat=True)
+
+# Import torch before any GL library gets loaded (the env warmup below pulls
+# in Mesa, whose libLLVM can collide with torch's bundled LLVM when torch
+# loads second). Importing torch does NOT initialize CUDA -- the GPU stays
+# untouched until the model is moved there -- so this does not reintroduce
+# the CUDA-vs-renderer ordering problem.
+import torch  # noqa: E402,F401  (side effect: load torch's native libs first)
 
 # MuJoCo needs an explicit headless backend; without one robosuite dies on
 # `'NoneType' object has no attribute 'eglQueryString'` deep inside a render
