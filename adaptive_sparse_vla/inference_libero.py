@@ -328,6 +328,33 @@ class EmuVLALiberoInference:
                 )
             print(f"      [probe] unconstrained ids: "
                   f"{free[0, pos_inputs.input_ids.shape[-1]:].tolist()}", flush=True)
+            # Constant-0 output means degenerate logits (all-NaN or all-equal
+            # argmax to index 0), not a sampling/window issue. Bisect: are the
+            # logits themselves broken, and is it prompt-specific or global?
+            ids = pos_inputs.input_ids
+            print(f"      [probe] prompt: len={ids.shape[-1]} "
+                  f"head={ids[0, :8].tolist()} tail={ids[0, -8:].tolist()} "
+                  f"mask_sum={int(pos_inputs.attention_mask.sum())}", flush=True)
+            with torch.no_grad():
+                lg = self.model(
+                    input_ids=ids.to(self.device),
+                    attention_mask=pos_inputs.attention_mask.to(self.device),
+                ).logits[0, -1].float()
+            print(f"      [probe] vla-prompt logits: nan={int(torch.isnan(lg).sum())} "
+                  f"inf={int(torch.isinf(lg).sum())} max={lg.max().item():.2f} "
+                  f"min={lg.min().item():.2f} top5={lg.topk(5).indices.tolist()}",
+                  flush=True)
+            txt_ids = self.tokenizer(
+                self.tokenizer.bos_token + "The robot arm", return_tensors="pt"
+            ).input_ids.to(self.device)
+            with torch.no_grad():
+                lg2 = self.model(input_ids=txt_ids).logits[0, -1].float()
+            print(f"      [probe] text-only ({txt_ids.shape[-1]} toks) logits: "
+                  f"nan={int(torch.isnan(lg2).sum())} max={lg2.max().item():.2f} "
+                  f"top5={lg2.topk(5).indices.tolist()}", flush=True)
+            print(f"      [probe] rope_scaling={self.model.config.rope_scaling} "
+                  f"attn={getattr(self.model.config, '_attn_implementation', '?')} "
+                  f"tokenizer_class={type(self.tokenizer).__name__}", flush=True)
 
         outputs = raw[:, :-1]
         last_token_id_t = torch.tensor(self.last_token_id, dtype=outputs.dtype, device=outputs.device)
