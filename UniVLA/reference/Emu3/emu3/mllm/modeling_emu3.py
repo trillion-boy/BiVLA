@@ -1325,7 +1325,10 @@ class Emu3ForCausalLM(Emu3PreTrainedModel, GenerationMixin):
         if past_key_values is not None:
             if isinstance(past_key_values, Cache):
                 cache_length = past_key_values.get_seq_length()
-                past_length = past_key_values.seen_tokens
+                # Cache.seen_tokens was deprecated in transformers 4.38 and
+                # later removed; get_seq_length() is its replacement and
+                # returns the same count for DynamicCache.
+                past_length = getattr(past_key_values, "seen_tokens", cache_length)
                 if hasattr(past_key_values, "get_max_length"):
                     max_cache_length = past_key_values.get_max_length()
                 elif hasattr(past_key_values, "get_max_cache_shape"):
@@ -1646,7 +1649,10 @@ class Emu3MoE(Emu3PreTrainedModel, GenerationMixin):
         if past_key_values is not None:
             if isinstance(past_key_values, Cache):
                 cache_length = past_key_values.get_seq_length()
-                past_length = past_key_values.seen_tokens
+                # Cache.seen_tokens was deprecated in transformers 4.38 and
+                # later removed; get_seq_length() is its replacement and
+                # returns the same count for DynamicCache.
+                past_length = getattr(past_key_values, "seen_tokens", cache_length)
                 if hasattr(past_key_values, "get_max_length"):
                     max_cache_length = past_key_values.get_max_length()
                 elif hasattr(past_key_values, "get_max_cache_shape"):
