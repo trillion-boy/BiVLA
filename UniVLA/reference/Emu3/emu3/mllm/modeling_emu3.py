@@ -353,7 +353,7 @@ class Emu3Attention(nn.Module):
             # checkpoints' config.json were saved with whichever convention
             # was current at export time, so accept either.
             scaling_type = self.config.rope_scaling.get("type") or self.config.rope_scaling.get("rope_type")
-            scaling_factor = self.config.rope_scaling["factor"]
+            scaling_factor = self.config.rope_scaling.get("factor")
             if scaling_type == "linear":
                 self.rotary_emb = Emu3LinearScalingRotaryEmbedding(
                     self.head_dim,
@@ -366,6 +366,17 @@ class Emu3Attention(nn.Module):
                     self.head_dim,
                     max_position_embeddings=self.max_position_embeddings,
                     scaling_factor=scaling_factor,
+                    base=self.rope_theta,
+                )
+            elif scaling_type in (None, "default"):
+                # Newer transformers versions store an explicit
+                # {"rope_type": "default"} dict (rather than leaving
+                # rope_scaling=None) when no scaling is actually applied.
+                # "default" means unscaled base RoPE -- same as the
+                # rope_scaling is None branch above.
+                self.rotary_emb = Emu3RotaryEmbedding(
+                    self.head_dim,
+                    max_position_embeddings=self.max_position_embeddings,
                     base=self.rope_theta,
                 )
             else:
