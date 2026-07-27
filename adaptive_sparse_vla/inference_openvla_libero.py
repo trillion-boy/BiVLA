@@ -162,6 +162,22 @@ class OpenVLALiberoInference:
 
         prompt = self.PROMPT_TEMPLATE.format(instruction=instruction.strip().lower())
         inputs = self.processor(prompt, Image.fromarray(prepared), return_tensors="pt")
+
+        # OpenVLA's predict_action silently appends Llama's empty token
+        # (29871) to input_ids when the prompt doesn't end with it -- but it
+        # does not extend attention_mask, so passing both then fails with
+        # "tensor a (N+1) must match tensor b (N)". Append the token AND the
+        # mask bit here so the internal append never triggers.
+        ids = inputs["input_ids"]
+        if ids[0, -1].item() != 29871:
+            inputs["input_ids"] = torch.cat(
+                [ids, torch.full((ids.shape[0], 1), 29871, dtype=ids.dtype)], dim=1
+            )
+            am = inputs.get("attention_mask")
+            if am is not None:
+                inputs["attention_mask"] = torch.cat(
+                    [am, torch.ones((am.shape[0], 1), dtype=am.dtype)], dim=1
+                )
         inputs = self._move_inputs(inputs)
 
         with torch.inference_mode():
