@@ -134,20 +134,34 @@ ckpt_dir = snapshot_download(
     allow_patterns=["UNIVLA_LIBERO_IMG_BS192_8K/*"],
     local_dir="/content/UNIVLA_LIBERO_IMG_BS192_8K",
 )
-
-# The LIBERO checkpoint uses a different FAST action tokenizer than Bridge's
-# fast_bridge_t5_s50 (adaptive_sparse_vla/inference.py / inference_libero.py
-# both require --fast-path to point at a real FAST tokenizer directory —
-# there is no fallback default for it). Find the right folder name from the
-# `files` listing above (likely something like "fast" or "fast_libero") and
-# adjust this pattern to match.
-fast_dir = snapshot_download(
-    repo_id="Yuqi1997/UniVLA",
-    allow_patterns=["fast/*"],
-    local_dir="/content/univla_fast_libero",
-)
-print(ckpt_dir, fast_dir)
+print(ckpt_dir)
 ```
+
+Note there is no separate FAST-tokenizer folder in this repo at all (checked
+the real file listing — only checkpoint folders, each with the usual
+config.json/safetensors/tokenizer files). That's not a gap: read
+`UniVLA/pretrain/fast_bridge_t5_s50/processing_action_tokenizer.py` in this
+repo and it's a `UniversalActionProcessor` — a DCT+BPE action tokenizer with
+`action_dim`/`time_horizon` left as `None` in its config, filled in at
+`decode()` call time rather than baked in per-embodiment. That is exactly
+the "FAST+" design (Physical Intelligence's action tokenizer, explicitly
+built to be reused as a black box across different robots/action spaces
+without refitting). So use the **same local folder already sitting at
+`UniVLA/pretrain/fast_bridge_t5_s50`** — no separate download needed:
+
+```bash
+--fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50
+```
+
+This is a reasonably confident inference, not a 100%-verified fact (I
+couldn't load the actual checkpoint to confirm the token IDs line up). The
+tell if it's wrong: the model would produce actions that don't correspond to
+anything sensible even on the very first baseline run (not just "low success
+rate" — actually garbled, structureless motion). If you see that, the
+LIBERO checkpoint was likely trained with a separately-fit FAST vocabulary
+that isn't in this HF repo, and it's worth asking whoever has access to the
+original training cluster (`/share/project/yuqi.wang/...`) for the exact
+`fast_path` they used.
 
 ## 6. Run the eval
 
@@ -157,7 +171,7 @@ print(ckpt_dir, fast_dir)
 !python eval_libero.py \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
   --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
-  --fast-path /content/univla_fast_libero \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal \
   --n-trials-per-task 10 \
   --output-dir /content/bivla_eval_libero
@@ -169,19 +183,25 @@ on top:
 ```bash
 # chunk-exec: execute the first 5 of the 10 predicted actions before
 # calling the model again (halves forward-pass count)
-!python eval_libero.py --emu-hub ... --vq-hub ... --fast-path ... \
+!python eval_libero.py \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal --n-trials-per-task 10 \
   --exec-chunk 5 --output-dir /content/bivla_eval_libero
 
 # foveation (log-polar, matching the log-polar variant already run on
 # Bridge/SimplerEnv for OpenVLA/SpatialVLA/UniVLA)
-!python eval_libero.py --emu-hub ... --vq-hub ... --fast-path ... \
+!python eval_libero.py \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal --n-trials-per-task 10 \
   --foveate --foveate-mode logpolar --foveate-keep-percent 20 \
   --output-dir /content/bivla_eval_libero
 
 # foveation (blur variant)
-!python eval_libero.py --emu-hub ... --vq-hub ... --fast-path ... \
+!python eval_libero.py \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K --vq-hub /content/UNIVLA_LIBERO_IMG_BS192_8K \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast_bridge_t5_s50 \
   --task-suite libero_goal --n-trials-per-task 10 \
   --foveate --foveate-mode blur --foveate-keep-percent 20 \
   --output-dir /content/bivla_eval_libero
@@ -194,9 +214,7 @@ and the overall success rate.
 
 ## Known open question
 
-The exact FAST tokenizer subfolder name in `Yuqi1997/UniVLA` (step 5) is a
-best guess from the offline reference script
-(`UniVLA/models/inference/inference_action.py` uses a generic `fast_path`
-pointing at a shared `.../UniVLA/pretrain/fast` directory, separate from the
-per-checkpoint folder) — confirm it against the real `list_repo_files` output
-before trusting the download command as-is.
+Whether the local `fast_bridge_t5_s50` FAST tokenizer (reused as-is for
+LIBERO in step 5) actually matches the vocabulary the LIBERO checkpoint was
+trained against — see the caveat in step 5. Not verified end-to-end since
+this sandbox can't load the actual checkpoint.
