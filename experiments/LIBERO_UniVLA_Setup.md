@@ -32,8 +32,8 @@ different direction:
 |---|---|---|
 | action chunking | none (1 step) | native, 10 steps |
 | baseline: env steps / forward | 1 (fully closed-loop) | 10 (already amortized) |
-| available lever | `--action-repeat 2` → 2 steps/forward, **2x cheaper** | `--exec-chunk 5` → 5 steps/forward, **2x more expensive** |
-| what it buys | less compute, tests tolerance to open-loop drift | more frequent re-planning, tests whether 10-step open-loop execution is costing accuracy |
+| cheaper lever | `--action-repeat 2` → 2 steps/forward | `--action-repeat 2` → **20** steps/forward |
+| more-reactive lever | none (already 1 step) | `--exec-chunk 5` → 5 steps/forward, 2x the compute |
 | foveation | identical | identical |
 
 That asymmetry is not a flaw in the comparison -- it *is* the
@@ -232,17 +232,17 @@ command carries the full paths.
 ```
 
 ```bash
-# 2) chunk-exec -- executes 5 of the 10 predicted actions, then re-queries.
-#    NOTE this DOUBLES forward passes vs baseline (1 per 5 env steps instead
-#    of 1 per 10). It buys re-planning frequency, it does not save compute:
-#    UniVLA's baseline is already the cheap end of the axis.
+# 2) action-repeat 2 -- holds each of the 10 predicted actions for 2 env
+#    steps, so one forward now covers 20 env steps: 2x cheaper. This is the
+#    SAME mechanism (np.repeat) applied to OpenVLA, which is what makes the
+#    two backbones comparable under one intervention.
 !python eval_libero.py --backbone univla --mujoco-gl osmesa \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
   --vq-hub /content/pretrain/Emu3-Stage1 \
   --vision-hub /content/pretrain/Emu3-VisionTokenizer \
   --fast-path /content/BiVLA/UniVLA/pretrain/fast \
   --task-suite libero_spatial --n-trials-per-task 5 \
-  --exec-chunk 5 \
+  --action-repeat 2 \
   --output-dir /content/bivla_eval_libero_univla
 ```
 
@@ -269,6 +269,12 @@ command carries the full paths.
   --foveate --foveate-mode blur --foveate-keep-percent 20 \
   --output-dir /content/bivla_eval_libero_univla
 ```
+
+Optional 5th condition, unique to a chunked policy -- `--exec-chunk 5`
+executes only 5 of the 10 predicted actions before re-querying, doubling
+forward passes to double the re-planning rate. It answers whether UniVLA's
+default 10-step open-loop execution is costing accuracy. Run it only after
+the four above, since OpenVLA has no counterpart to compare it against.
 
 Each run writes `summary_libero_spatial_<timestamp>.json` with `backbone`,
 `checkpoint`, `exec_chunk`, `action_repeat`, foveation settings, per-episode
