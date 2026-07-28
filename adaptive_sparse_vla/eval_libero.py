@@ -617,6 +617,14 @@ def main():
         "n_trials_per_task": args.n_trials_per_task,
         "exec_chunk": int(args.exec_chunk),
         "action_repeat": int(args.action_repeat),
+        # UniVLA only: fraction of chunks the FAST tokenizer failed to decode.
+        # A failure silently substitutes a fixed drift action, so a condition
+        # that raises this rate is disturbing the policy in a way the success
+        # rate alone does not show.
+        "decode_failure_rate": (
+            getattr(model, "decode_failures", 0) / getattr(model, "decode_calls", 0)
+            if getattr(model, "decode_calls", 0) else None
+        ),
         "predict_action_frames": int(model.predict_action_frames),
         "foveate": {
             "enabled": bool(args.foveate),
@@ -639,6 +647,9 @@ def main():
     with open(out_path, "w") as f:
         json.dump(summary, f, indent=2)
 
+    if getattr(model, "decode_calls", 0):
+        print(f"[decode] FAST failures: {model.decode_failures}/{model.decode_calls} "
+              f"({model.decode_failures / model.decode_calls * 100:.1f}%)", flush=True)
     print(f"\n[SUMMARY] suite={args.task_suite}  success_rate={sr*100:.1f}% "
           f"({n_ok}/{len(results)})  avg_ms/infer={summary['avg_model_ms_per_infer']:.0f}",
           flush=True)

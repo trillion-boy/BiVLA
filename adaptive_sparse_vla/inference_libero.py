@@ -150,6 +150,8 @@ class EmuVLALiberoInference:
 
         self._last_prepared_image: Optional[np.ndarray] = None
         self._last_wrist_image: Optional[np.ndarray] = None
+        self.decode_calls = 0
+        self.decode_failures = 0
 
         self._init_model()
         self.image_processor.min_pixels = (
@@ -403,6 +405,16 @@ class EmuVLALiberoInference:
         action_outputs = self.action_tokenizer.decode(
             processed, time_horizon=self.predict_action_frames, action_dim=self.action_dim
         )
+        # The FAST tokenizer swallows malformed token sequences: on any decode
+        # error it substitutes all-zero DCT coefficients and prints to stdout.
+        # After un-normalization that is not a no-op but a fixed drift (the
+        # midpoint of the q01/q99 range), so the robot keeps moving for the
+        # whole chunk on stale information. Exact zeros cannot come out of a
+        # real decode, which makes this a reliable detector -- count it so the
+        # rate is comparable across conditions instead of scrolling past.
+        self.decode_calls += 1
+        if np.all(np.asarray(action_outputs[0]) == 0.0):
+            self.decode_failures += 1
         action = self.unormalize_action(action_outputs[0])
         # Gripper convention: OpenVLA's LIBERO eval binarizes the decoded
         # gripper dimension by sign after de-normalization rather than using
