@@ -11,10 +11,15 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 
 | condition | OpenVLA | Δ | UniVLA | Δ |
 |---|---|---|---|---|
-| baseline | 74.0% | — | 92.0% | — |
-| action-repeat 2 (2x cheaper) | 66.0% | −8.0 | **24.0%** | **−68.0** |
-| foveate blur 20% | 58.0% | −16.0 | 98.0% | +6.0 |
-| foveate log-polar 20% | **0.0%** | **−74.0** | 86.0% | −6.0 |
+| baseline | 74.0% | — | 96.0% | — |
+| action-repeat 2 (2x cheaper) | 66.0% | −8.0 | **28.0%** | **−68.0** |
+| foveate blur 20% | 58.0% | −16.0 | 94.0% | −2.0 |
+| foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
+
+UniVLA numbers are the post-fix runs (FAST decode failures 0/510-610 in every
+condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
+gave 92.0 / 24.0 / 98.0 / 86.0 — every condition moved by at most 4 points,
+i.e. within noise, so the defect was not driving any conclusion.
 
 Foveation rows for UniVLA are the `--foveate-views both` runs, i.e. every
 camera the policy sees is degraded (see the confound section below).
@@ -25,9 +30,9 @@ Significance (two-proportion z, n=50 per cell):
 |---|---|---|---|---|
 | OpenVLA action-repeat 2 | −8.0 | 9.1 | −0.88 | within noise |
 | OpenVLA log-polar | −74.0 | — | — | conclusive |
-| UniVLA action-repeat 2 | −68.0 | 7.2 | −9.5 | conclusive |
-| UniVLA blur (both views) | +6.0 | 4.3 | +1.39 | within noise |
-| UniVLA log-polar (both views) | −6.0 | 6.2 | −0.96 | within noise |
+| UniVLA action-repeat 2 | −68.0 | 6.9 | −9.8 | conclusive |
+| UniVLA blur (both views) | −2.0 | 4.4 | −0.46 | within noise |
+| UniVLA log-polar (both views) | −8.0 | 5.4 | −1.49 | within noise |
 
 ## The result is a double dissociation
 
@@ -65,8 +70,16 @@ rather than task difficulty:
 
 | task | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| baseline | 5 | 5 | 5 | 3 | 5 | 5 | 4 | 5 | 5 | 4 |
-| action-repeat 2 | 0 | 0 | 3 | 1 | 1 | 1 | 2 | 1 | 0 | 3 |
+| baseline | 5 | 5 | 5 | 4 | 5 | 5 | 5 | 5 | 5 | 4 |
+| action-repeat 2 | 0 | 0 | **5** | 0 | 0 | 0 | 3 | 2 | 1 | 3 |
+
+Task 2 is the only one that survives intact, and it is the only instruction
+in the suite that names no spatial relation: "pick up the black bowl **from
+table center**". Every other task ("between the plate and the ramekin",
+"next to the ramekin", "on the cookie box") requires selecting one bowl from
+several and then placing it precisely. Twenty steps of open-loop execution
+removes exactly the corrective feedback that precision needs, which is why
+relational tasks collapse and the unambiguous one does not.
 
 ### Why foveation splits them
 
