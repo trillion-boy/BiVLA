@@ -181,6 +181,58 @@ from huggingface_hub import list_repo_files
 print([f for f in list_repo_files("BAAI/Emu3-Stage1") if "safetensors" not in f])
 ```
 
+## 6.5. Patch the FAST tokenizer — required
+
+`physical-intelligence/fast` is the stock FAST+ release. The UniVLA authors
+added a robustness fix to *their* copy that the stock release does not have,
+and without it ~4.5% of action chunks are silently corrupted.
+
+FAST encodes an action chunk as DCT coefficients -> characters -> BPE tokens.
+Nothing structurally forces the model's generated BPE sequence to decode back
+to exactly `time_horizon * action_dim` characters, so it occasionally lands
+one or two short or long. The stock `decode()` then fails the reshape, and
+its except-block substitutes all-zero DCT coefficients -- which after
+un-normalization is **not** a no-op but a fixed drift
+(`[0.116, 0.033, 0, 0.009, 0.014, 0.056, -1]`), so the arm keeps moving for a
+full 10-step chunk on a dead command. Measured at 4.4-4.7%; patched, 0%.
+
+Insert only the length fix. Do **not** copy the whole file from
+`fast_bridge_t5_s50`: that copy also carries different quantization defaults
+(`scale=50, min_token=-112` vs the stock `scale=10, min_token=0`), and the
+stock values are the ones this checkpoint decodes correctly with.
+
+```python
+p = "/content/BiVLA/UniVLA/pretrain/fast/processing_action_tokenizer.py"
+src = open(p).read()
+
+if "max_length = self.time_horizon * self.action_dim" in src:
+    print("already patched")
+else:
+    open(p + ".bak", "w").write(src)
+    old = "                decoded_dct_coeff = decoded_dct_coeff.reshape(-1, self.action_dim)"
+    new = """                max_length = self.time_horizon * self.action_dim
+                if len(decoded_dct_coeff) > max_length:
+                    decoded_dct_coeff = decoded_dct_coeff[:max_length]
+                elif len(decoded_dct_coeff) < max_length:
+                    decoded_dct_coeff = np.pad(
+                        decoded_dct_coeff, (0, max_length - len(decoded_dct_coeff)),
+                        mode="constant")
+                decoded_dct_coeff = decoded_dct_coeff.reshape(-1, self.action_dim)"""
+    assert src.count(old) == 1, f"insertion point found {src.count(old)} times"
+    open(p, "w").write(src.replace(old, new))
+    print("patched (backup at .bak)")
+
+import subprocess
+print(subprocess.run(["grep", "-n", "scale: float|min_token: int", "-E", p],
+                     capture_output=True, text=True).stdout)
+```
+
+The last line must still print `scale: float = 10` and `min_token: int = 0`.
+Confirm with the smoke test below: `[decode] FAST failures: 0/N (0.0%)`.
+
+**This lives in `/content` and is lost on every runtime restart.** Re-apply it
+after any restart, before running evals.
+
 ## 7. Smoke test — one task, one trial
 
 ```bash
