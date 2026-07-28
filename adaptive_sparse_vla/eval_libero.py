@@ -220,6 +220,14 @@ def parse_args():
              "action was OPEN; full resolution once it has commanded a close",
     )
     p.add_argument("--foveate-keep-percent", type=float, default=20.0)
+    p.add_argument(
+        "--foveate-views", default="agent", choices=["agent", "both"],
+        help="which camera views foveation degrades. 'agent' (default) leaves "
+             "the wrist view untouched, which hands a two-camera policy like "
+             "UniVLA an unfoveated backup that a single-view policy like "
+             "OpenVLA does not get; 'both' degrades every view the policy "
+             "sees, which is the matched cross-architecture comparison",
+    )
     p.add_argument("--camera-resolution", type=int, default=256,
                     help="LIBERO renderer output size; the policy itself resizes "
                          "to 200x200 internally regardless of this value")
@@ -521,11 +529,17 @@ def main():
                         frames.append(image)
 
                     policy_image = image
+                    policy_wrist = wrist_image
                     if args.foveate and (args.foveate_phase == "always" or gripper_open):
                         policy_image = apply_foveation(image, args, fov_gaze)
+                        if args.foveate_views == "both":
+                            # Foveate the wrist view with its own centre (the
+                            # gaze tracker follows the agent view, so reuse of
+                            # its centre would be meaningless here).
+                            policy_wrist = apply_foveation(wrist_image, args, None)
 
                     _t = time.time()
-                    action_chunk = model.step(policy_image, instruction, wrist_image=wrist_image)
+                    action_chunk = model.step(policy_image, instruction, wrist_image=policy_wrist)
                     model_time += time.time() - _t
                     model_calls += 1
                     rearm_watchdog()  # progress made; only a real stall dumps stacks
