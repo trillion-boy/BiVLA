@@ -202,27 +202,58 @@ task, 50 episodes per condition — so the two backbones are comparable.
 
 ```bash
 %cd /content/BiVLA/adaptive_sparse_vla
-EMU=/content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K
-VQ=/content/pretrain/Emu3-Stage1
-VIS=/content/pretrain/Emu3-VisionTokenizer
-FAST=/content/BiVLA/UniVLA/pretrain/fast
-OUT=/content/bivla_eval_libero_univla
-COMMON="--backbone univla --mujoco-gl osmesa --emu-hub $EMU --vq-hub $VQ \
-        --vision-hub $VIS --fast-path $FAST --task-suite libero_spatial \
-        --n-trials-per-task 5 --output-dir $OUT"
+```
 
-# 1) baseline — executes all 10 predicted actions
-!python eval_libero.py $COMMON
+Each condition is its own cell. Shell-style variable assignments do not work
+in a Colab cell (`EMU=/content/...` is a Python syntax error), so every
+command carries the full paths.
 
-# 2) chunk-exec — executes the first 5 of 10, halving forward passes.
-#    This is the real chunk-exec that OpenVLA cannot do.
-!python eval_libero.py $COMMON --exec-chunk 5
+```bash
+# 1) baseline -- executes all 10 predicted actions
+!python eval_libero.py --backbone univla --mujoco-gl osmesa \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/pretrain/Emu3-Stage1 \
+  --vision-hub /content/pretrain/Emu3-VisionTokenizer \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
+  --task-suite libero_spatial --n-trials-per-task 5 \
+  --output-dir /content/bivla_eval_libero_univla
+```
 
+```bash
+# 2) chunk-exec -- first 5 of 10, halving forward passes.
+#    The real chunk-exec that OpenVLA cannot do.
+!python eval_libero.py --backbone univla --mujoco-gl osmesa \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/pretrain/Emu3-Stage1 \
+  --vision-hub /content/pretrain/Emu3-VisionTokenizer \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
+  --task-suite libero_spatial --n-trials-per-task 5 \
+  --exec-chunk 5 \
+  --output-dir /content/bivla_eval_libero_univla
+```
+
+```bash
 # 3) foveation, log-polar
-!python eval_libero.py $COMMON --foveate --foveate-mode logpolar --foveate-keep-percent 20
+!python eval_libero.py --backbone univla --mujoco-gl osmesa \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/pretrain/Emu3-Stage1 \
+  --vision-hub /content/pretrain/Emu3-VisionTokenizer \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
+  --task-suite libero_spatial --n-trials-per-task 5 \
+  --foveate --foveate-mode logpolar --foveate-keep-percent 20 \
+  --output-dir /content/bivla_eval_libero_univla
+```
 
+```bash
 # 4) foveation, blur
-!python eval_libero.py $COMMON --foveate --foveate-mode blur --foveate-keep-percent 20
+!python eval_libero.py --backbone univla --mujoco-gl osmesa \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/pretrain/Emu3-Stage1 \
+  --vision-hub /content/pretrain/Emu3-VisionTokenizer \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
+  --task-suite libero_spatial --n-trials-per-task 5 \
+  --foveate --foveate-mode blur --foveate-keep-percent 20 \
+  --output-dir /content/bivla_eval_libero_univla
 ```
 
 Each run writes `summary_libero_spatial_<timestamp>.json` with `backbone`,
