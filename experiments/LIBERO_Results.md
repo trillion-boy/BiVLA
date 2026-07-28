@@ -153,3 +153,27 @@ baseline re-run (~1 h) would close this.
   not compute. Only the action-repeat axis is an efficiency intervention.
 - `--exec-chunk` (the more-reactive direction, unique to a chunked policy)
   has not been run.
+
+## Open: the depth axis
+
+Neither axis above can make UniVLA faster. Temporal is already spent (its
+baseline runs 10 env steps per forward; doubling that collapses it to 28%),
+and spatial never touched wall-clock — a UniVLA step profiles as 6% VQ encode
+/ 13% prefill / **70% autoregressive decode** (`docs/VISUAL_TOKENS_VS_LATENCY.md`),
+so the whole visual path is a ~19% ceiling. Reducing visual *tokens* rather
+than visual *fidelity* does not escape it either: FastV, measured on this
+backbone, left latency at 1.0× while success fell 100 → 75 → 38%.
+
+The remaining lever is **decoder-layer bypass**, which shrinks the 70%
+directly because the decode pays for every layer on every token. On the same
+Emu3 backbone in SimplerEnv it was close to a free lunch — success 74% →
+78–81% at 1.10–1.25× (`docs/DEPTH_PRUNING_RESULTS.md`) — and it is already
+known to be backbone-dependent: the identical mechanism on SpatialVLA's Gemma2
+hurt 3 of 4 tasks with a *single* layer bypassed. That makes it a third
+independent axis for the same architecture-dependence claim.
+
+Now wired into the LIBERO harness (`--depth-prune N`, `--depth-ctrl`;
+bookkeeping unit-tested in `adaptive_sparse_vla/test_depth_libero_logic.py`).
+Not yet run — the conditions are cells 5–7 of `LIBERO_UniVLA_Setup.md`. This
+is the only condition in the whole grid where `avg_model_ms_per_infer` is
+expected to move, so it is the number to read first.

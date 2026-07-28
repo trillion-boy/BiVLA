@@ -329,8 +329,111 @@ default 10-step open-loop execution is costing accuracy. Run it only after
 the four above, since OpenVLA has no counterpart to compare it against.
 
 Each run writes `summary_libero_spatial_<timestamp>.json` with `backbone`,
-`checkpoint`, `exec_chunk`, `action_repeat`, foveation settings, per-episode
-results, mean latency and success rate.
+`checkpoint`, `exec_chunk`, `action_repeat`, foveation settings, the `depth`
+block, per-episode results, mean latency and success rate.
+
+## 8.5. The depth axis — the only lever that cuts UniVLA's latency
+
+The four runs above cover the temporal axis (`--action-repeat`) and the
+spatial axis (`--foveate`). Neither can make UniVLA faster:
+
+- **Temporal is already spent.** UniVLA's baseline executes 10 env steps per
+  forward. `--action-repeat 2` takes that to 20 and success collapses to 28%.
+- **Spatial does not touch wall-clock.** Foveation degrades pixels but the
+  image still becomes the same number of VQ tokens, so ms/inference is flat
+  (1882 -> 1888). It reduces information, not compute. Cutting the tokens
+  themselves does not help either: `docs/VISUAL_TOKENS_VS_LATENCY.md` profiles
+  a UniVLA step as 6% VQ encode / 13% prefill / **70% autoregressive decode**,
+  so the entire visual path is a ~19% ceiling — and FastV, measured, destroyed
+  success (100->75->38%) while leaving latency at 1.0x.
+
+The decode is 70% of the step, and it pays for **every layer on every token**.
+Bypassing redundant layers is the one intervention that shrinks it. Rank each
+decoder layer by `1 - cos(layer_in, layer_out)` — low means the layer barely
+changes the representation — and replace the most redundant ones with a
+pass-through. Training-free, no external module.
+
+This is validated on the same Emu3 backbone in SimplerEnv
+(`docs/DEPTH_PRUNING_RESULTS.md`): success **74% -> 78-81%** at **1.10-1.25x**
+speedup, i.e. it often *raises* accuracy while cutting latency. It is also
+known to be backbone-dependent — the same mechanism on SpatialVLA's Gemma2
+hurt 3 of 4 tasks at a single bypassed layer — which is exactly the
+architecture-dependence claim, now on a third axis.
+
+Start with static pruning, since it has one knob and the SimplerEnv sweep
+says 4 and 8 bracket the useful range:
+
+```bash
+# 5) depth-prune 4 -- bypass the 4 most redundant of Emu3's 32 layers
+!python eval_libero.py --backbone univla --mujoco-gl osmesa \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/pretrain/Emu3-Stage1 \
+  --vision-hub /content/pretrain/Emu3-VisionTokenizer \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
+  --task-suite libero_spatial --n-trials-per-task 5 \
+  --depth-prune 4 \
+  --output-dir /content/bivla_eval_libero_univla
+```
+
+```bash
+# 6) depth-prune 8 -- the aggressive end; SimplerEnv got ~1.25x here
+!python eval_libero.py --backbone univla --mujoco-gl osmesa \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/pretrain/Emu3-Stage1 \
+  --vision-hub /content/pretrain/Emu3-VisionTokenizer \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
+  --task-suite libero_spatial --n-trials-per-task 5 \
+  --depth-prune 8 \
+  --output-dir /content/bivla_eval_libero_univla
+```
+
+```bash
+# 7) phase-adaptive controller -- full depth for the precise approach+grasp,
+#    then bypass 8 once the policy commits to closing the gripper. Only worth
+#    running if depth-prune 8 loses accuracy that depth-prune 4 keeps: that
+#    gap is what the controller exists to recover.
+!python eval_libero.py --backbone univla --mujoco-gl osmesa \
+  --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
+  --vq-hub /content/pretrain/Emu3-Stage1 \
+  --vision-hub /content/pretrain/Emu3-VisionTokenizer \
+  --fast-path /content/BiVLA/UniVLA/pretrain/fast \
+  --task-suite libero_spatial --n-trials-per-task 5 \
+  --depth-ctrl --depth-deep 2 --depth-shallow 8 \
+  --output-dir /content/bivla_eval_libero_univla
+```
+
+### Reading the result
+
+The number that matters is **`avg_model_ms_per_infer`**, not success alone —
+this is the first LIBERO condition where it is supposed to move. Compare
+against the baseline run's value (~1882 ms):
+
+| outcome | reading |
+|---|---|
+| ms drops, success holds | the claim: UniVLA has exploitable depth redundancy |
+| ms drops, success drops | trade-off — try `--depth-prune 4`, then `--depth-ctrl` |
+| ms flat | the bypass is not taking effect; check the `[depth] calibrated:` line |
+
+At startup the run prints `[depth] static pruning ON: ...` and, on the first
+step, `[depth] calibrated: bypass=[...]` with the layer indices actually
+replaced. The summary JSON carries the same under a `depth` block. If
+`bypassed_layers` is empty, nothing was pruned and the run is just a baseline.
+
+Only the back half of the stack is eligible (`--depth-min-layer 0.5`) and
+adjacent layers are avoided while cheaper candidates remain — early layers
+perform the large foundational transforms every later layer depends on, and
+removing them corrupts the representation outright (measured on Gemma2:
+bypassing layers 2 and 4 made generation never terminate).
+
+The bookkeeping is unit-tested on CPU against a real, tiny vendored Emu3 —
+including that a cached `generate()` with layers bypassed decodes identically
+to uncached greedy decoding, which is what breaks if the placeholder KV
+entries are wrong:
+
+```bash
+cd /content/BiVLA/adaptive_sparse_vla && python test_depth_libero_logic.py
+# -> ALL 16 DEPTH-PRUNING CHECKS PASSED
+```
 
 Budget: OpenVLA averaged ~520 ms/inference and ~2 min/episode on an A100
 with OSMesa. UniVLA is a larger model with two camera views, so expect

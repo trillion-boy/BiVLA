@@ -31,14 +31,24 @@ They are image-space / action-list transforms applied by the caller (see
 eval_libero.py), exactly as adaptive_sparse_vla/eval.py does for the Bridge
 baseline -- keeping this class a plain "image (+wrist image), instruction ->
 raw action chunk" policy with no side channels.
+
+Depth pruning IS implemented here, because unlike foveation it is a property
+of the model's own forward pass and cannot be expressed as a transform on the
+caller's side. It is the same training-free mechanism validated on this
+backbone in SimplerEnv (docs/DEPTH_PRUNING_RESULTS.md: 74% -> 78-81% success
+at 1.10-1.25x speedup): rank decoder layers by 1 - cos(layer_in, layer_out)
+and replace the most redundant ones with a pass-through. Ported from
+EmuVLAInference rather than shared with it, for the same reason the rest of
+this class is separate.
 """
 
 from __future__ import annotations
 
+import math
 import os
 import sys
 from queue import Queue
-from typing import Optional, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -50,6 +60,11 @@ from transformers import (
     GenerationConfig,
     LogitsProcessor,
 )
+
+try:
+    from adaptive_sparse_vla.bypass_layer import BypassDecoderLayer
+except Exception:  # when imported as a top-level package on sys.path
+    from bypass_layer import BypassDecoderLayer
 
 _ROOT = os.environ.get(
     "UNIVLA_ROOT",
@@ -134,6 +149,13 @@ class EmuVLALiberoInference:
         use_gripper: bool = True,
         min_pixels_override: Optional[int] = None,
         eoa_token_id: int = 151845,
+        depth_prune: int = 0,
+        depth_ctrl: bool = False,
+        depth_deep: int = 2,
+        depth_shallow: int = 8,
+        depth_close_steps: int = 2,
+        depth_min_layer: float = 0.5,
+        depth_min_gap: int = 1,
     ):
         self.emu_hub = emu_hub
         self.vq_hub = vq_hub
@@ -152,6 +174,27 @@ class EmuVLALiberoInference:
         self._last_wrist_image: Optional[np.ndarray] = None
         self.decode_calls = 0
         self.decode_failures = 0
+
+        # --- depth axis (LLM decoder-layer bypass) ---
+        # Two mutually exclusive modes; depth_ctrl wins if both are set.
+        #   static      : bypass the same `depth_prune` layers all episode.
+        #   controller  : bypass `depth_deep` during approach+grasp, then
+        #                 `depth_shallow` once the policy commits to closing
+        #                 the gripper (one-way, so it cannot oscillate).
+        self.depth_prune = max(0, int(depth_prune))
+        self.depth_ctrl = bool(depth_ctrl)
+        self.depth_deep = max(0, int(depth_deep))
+        self.depth_shallow = max(0, int(depth_shallow))
+        self.depth_close_steps = max(1, int(depth_close_steps))
+        self.depth_min_layer = float(depth_min_layer)
+        self.depth_min_gap = max(0, int(depth_min_gap))
+        self._original_decoder_layers: Dict[int, torch.nn.Module] = {}
+        self._active_prune_layers: Tuple[int, ...] = ()
+        self._depth_ranking: List[int] = []
+        self._depth_ranking_ready = False
+        self._depth_state = "deep"
+        self._depth_calibrated = False
+        self.close_gripper_num = 0
 
         self._init_model()
         self.image_processor.min_pixels = (
@@ -278,6 +321,148 @@ class EmuVLALiberoInference:
         self.vision_queue = Queue(maxsize=self.window_size)
         self.vision_gripper_queue = Queue(maxsize=self.window_size)
 
+        n_layers = len(self._decoder_layers() or [])
+        if self.depth_ctrl:
+            print(f"[depth] phase-adaptive controller ON: deep={self.depth_deep} "
+                  f"shallow={self.depth_shallow} switch after {self.depth_close_steps} "
+                  f"consecutive close-gripper chunks; eligible layers "
+                  f"{int(self.depth_min_layer * n_layers)}..{n_layers - 1}", flush=True)
+        elif self.depth_prune > 0:
+            print(f"[depth] static pruning ON: bypass {self.depth_prune} most-redundant "
+                  f"layers; eligible {int(self.depth_min_layer * n_layers)}..{n_layers - 1}",
+                  flush=True)
+
+    # ------------------------------------------------------------------ #
+    # Depth axis: training-free decoder-layer bypass                      #
+    # ------------------------------------------------------------------ #
+    def _decoder_layers(self) -> Optional[torch.nn.ModuleList]:
+        layers = getattr(getattr(self.model, "model", None), "layers", None)
+        return layers if isinstance(layers, torch.nn.ModuleList) else None
+
+    def _restore_layers(self) -> None:
+        layers = self._decoder_layers()
+        if layers is None or not self._original_decoder_layers:
+            return
+        for idx, layer in self._original_decoder_layers.items():
+            layers[idx] = layer
+        self._original_decoder_layers = {}
+        self._active_prune_layers = ()
+
+    def _apply_pruning(self, layer_indices: Sequence[int]) -> None:
+        layers = self._decoder_layers()
+        if layers is None:
+            return
+        valid = tuple(
+            idx for idx in sorted({int(x) for x in layer_indices}) if 0 <= idx < len(layers)
+        )
+        self._restore_layers()
+        if not valid:
+            return
+        cfg = self.model.config
+        num_kv_heads = getattr(cfg, "num_key_value_heads", None)
+        n_heads = getattr(cfg, "num_attention_heads", None)
+        hidden = getattr(cfg, "hidden_size", None)
+        head_dim = (hidden // n_heads) if (hidden and n_heads) else None
+        for idx in valid:
+            self._original_decoder_layers[idx] = layers[idx]
+            layers[idx] = BypassDecoderLayer(idx, num_kv_heads=num_kv_heads, head_dim=head_dim)
+        self._active_prune_layers = valid
+
+    def _layer_redundancy(self, input_ids: torch.Tensor,
+                          attention_mask: torch.Tensor) -> Optional[List[float]]:
+        """One forward pass; per-layer importance = 1 - cos(layer in, layer out).
+        Low importance = the layer barely changes the representation = redundant
+        = safe to bypass. Must run with the stack unpruned."""
+        layers = self._decoder_layers()
+        if layers is None or len(layers) == 0:
+            return None
+        with torch.inference_mode():
+            out = self.model.model(
+                input_ids=input_ids.to(self.device),
+                attention_mask=attention_mask.to(self.device),
+                use_cache=False,
+                output_hidden_states=True,
+                return_dict=True,
+            )
+        hs = out.hidden_states
+        if hs is None or len(hs) < 2:
+            return None
+        scores = []
+        for lhs, rhs in zip(hs[:-1], hs[1:]):
+            cos = torch.nn.functional.cosine_similarity(lhs.float(), rhs.float(), dim=-1)
+            scores.append(float(1.0 - cos.mean().item()))
+        return scores
+
+    def _rank_layers(self, importance: Sequence[float]) -> List[int]:
+        """Eligible layers ordered most-redundant-first. Gap-respecting greedy
+        first (never bypass adjacent layers while cheaper options remain), then
+        the rest. Prefixes are nested, so deep is a subset of shallow when the
+        controller slices top-N."""
+        scores = np.asarray(importance, dtype=np.float32)
+        n = int(scores.shape[0])
+        start = int(math.floor(np.clip(self.depth_min_layer, 0.0, 1.0) * n))
+        candidates = list(range(start, n)) or list(range(n))
+        ranked = sorted(candidates, key=lambda i: (float(scores[i]), i))
+        ordered: List[int] = []
+        for i in ranked:
+            if any(abs(i - prev) <= self.depth_min_gap for prev in ordered):
+                continue
+            ordered.append(i)
+        for i in ranked:
+            if i not in ordered:
+                ordered.append(i)
+        return ordered
+
+    def _depth_apply_state(self) -> None:
+        if not self._depth_ranking:
+            return
+        count = self.depth_deep if self._depth_state == "deep" else self.depth_shallow
+        self._apply_pruning(self._depth_ranking[:max(0, count)])
+
+    def _maybe_calibrate_depth(self, input_ids: torch.Tensor,
+                               attention_mask: torch.Tensor) -> None:
+        """Rank layers once, then bypass. The controller re-ranks every episode
+        (reset() clears the flag); static pruning ranks once for the whole run,
+        matching how each mode was validated in SimplerEnv."""
+        if self.depth_ctrl:
+            if self._depth_ranking_ready:
+                return
+            importance = self._layer_redundancy(input_ids, attention_mask)
+            if importance is None:
+                return
+            self._depth_ranking = self._rank_layers(importance)
+            self._depth_ranking_ready = True
+            self._depth_state = "deep"
+            self._depth_apply_state()
+            print(f"[depth] calibrated: ranking(top8)={self._depth_ranking[:8]} "
+                  f"state=deep bypass={list(self._active_prune_layers)}", flush=True)
+            return
+
+        if self._depth_calibrated or self.depth_prune <= 0:
+            return
+        importance = self._layer_redundancy(input_ids, attention_mask)
+        if importance is None:
+            return
+        self._depth_calibrated = True
+        self._apply_pruning(self._rank_layers(importance)[:self.depth_prune])
+        print(f"[depth] calibrated: bypass={list(self._active_prune_layers)}", flush=True)
+
+    def depth_summary(self) -> dict:
+        out = {
+            "depth_prune": self.depth_prune,
+            "depth_ctrl": self.depth_ctrl,
+            "bypassed_layers": list(self._active_prune_layers),
+            "n_bypassed": len(self._active_prune_layers),
+        }
+        if self.depth_ctrl:
+            out.update({
+                "depth_deep": self.depth_deep,
+                "depth_shallow": self.depth_shallow,
+                "depth_close_steps": self.depth_close_steps,
+                "depth_state_at_end": self._depth_state,
+            })
+        return out
+
     def reset(self) -> None:
         self._last_prepared_image = None
         self._last_wrist_image = None
@@ -285,6 +470,14 @@ class EmuVLALiberoInference:
             self.vision_queue.get()
         while not self.vision_gripper_queue.empty():
             self.vision_gripper_queue.get()
+        # A new episode starts deep and re-ranks; the stack must be unpruned
+        # for the redundancy measurement to describe the real model.
+        self.close_gripper_num = 0
+        if self.depth_ctrl:
+            self._depth_state = "deep"
+            self._depth_ranking = []
+            self._depth_ranking_ready = False
+            self._restore_layers()
 
     def last_prepared_image(self) -> Optional[np.ndarray]:
         if self._last_prepared_image is None:
@@ -343,6 +536,11 @@ class EmuVLALiberoInference:
             mode="VLA",
             padding="longest",
         )
+
+        # Depth pruning calibrates on the real VLA prompt (the distribution the
+        # policy actually runs on), before any layer has been bypassed.
+        if self.depth_ctrl or self.depth_prune > 0:
+            self._maybe_calibrate_depth(pos_inputs.input_ids, pos_inputs.attention_mask)
 
         with torch.no_grad():
             outputs = self.model.generate(
@@ -421,4 +619,23 @@ class EmuVLALiberoInference:
         # its continuous value; UniVLA's own LIBERO wrapper does the same
         # (see model_wrapper_emu.py). open=-1, close=+1.
         action[..., -1] = np.where(action[..., -1] > 0, 1.0, -1.0)
+
+        # Phase-adaptive depth: one-way deep -> shallow once the policy has
+        # committed to closing the gripper for K consecutive chunks (grasp
+        # confirmed). The signal is the policy's own commanded gripper -- no env
+        # ground truth, no detector. One-way means no oscillation: the precise
+        # approach+grasp keeps full depth, transport and place run shallow.
+        if self.depth_ctrl:
+            if float(action[-1, -1]) > 0:
+                self.close_gripper_num += 1
+            else:
+                self.close_gripper_num = 0
+            if (
+                self._depth_state == "deep"
+                and self._depth_ranking_ready
+                and self.close_gripper_num >= self.depth_close_steps
+            ):
+                self._depth_state = "shallow"
+                self._depth_apply_state()
+
         return action

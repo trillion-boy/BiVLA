@@ -228,6 +228,28 @@ def parse_args():
              "OpenVLA does not get; 'both' degrades every view the policy "
              "sees, which is the matched cross-architecture comparison",
     )
+    p.add_argument("--depth-prune", type=int, default=0,
+                    help="[univla] depth axis: bypass the N most redundant LLM "
+                         "decoder layers (redundancy = 1 - cos(layer_in, "
+                         "layer_out), calibrated once on a real prompt). Unlike "
+                         "foveation this actually cuts wall-clock, because the "
+                         "autoregressive action decode -- ~70%% of a step -- pays "
+                         "for every layer on every token. Training-free")
+    p.add_argument("--depth-ctrl", action="store_true",
+                    help="[univla] depth axis, phase-adaptive: keep full depth "
+                         "for the precise approach+grasp, then bypass more layers "
+                         "once the policy commits to closing the gripper. "
+                         "Overrides --depth-prune")
+    p.add_argument("--depth-deep", type=int, default=2,
+                    help="[univla] layers bypassed during approach+grasp")
+    p.add_argument("--depth-shallow", type=int, default=8,
+                    help="[univla] layers bypassed after the grasp")
+    p.add_argument("--depth-close-steps", type=int, default=2,
+                    help="[univla] consecutive close-gripper chunks before the "
+                         "one-way deep->shallow switch (hysteresis)")
+    p.add_argument("--depth-min-layer", type=float, default=0.5,
+                    help="[univla] only layers past this fraction of the stack "
+                         "are eligible; early layers carry too much to bypass")
     p.add_argument("--camera-resolution", type=int, default=256,
                     help="LIBERO renderer output size; the policy itself resizes "
                          "to 200x200 internally regardless of this value")
@@ -466,6 +488,12 @@ def main():
             vision_device=args.vision_device,
             fast_path=args.fast_path,
             min_pixels_override=args.min_pixels,
+            depth_prune=args.depth_prune,
+            depth_ctrl=args.depth_ctrl,
+            depth_deep=args.depth_deep,
+            depth_shallow=args.depth_shallow,
+            depth_close_steps=args.depth_close_steps,
+            depth_min_layer=args.depth_min_layer,
         )
     print(
         f"[OK] model loaded  suite={args.task_suite}  tasks={task_ids}  "
@@ -477,7 +505,11 @@ def main():
               f"{model.predict_action_frames} predicted actions", flush=True)
     if args.foveate:
         print(f"  foveate[{args.foveate_mode}/{args.foveate_center}/"
-              f"{args.foveate_phase}] keep={args.foveate_keep_percent:.0f}%", flush=True)
+              f"{args.foveate_phase}] keep={args.foveate_keep_percent:.0f}% "
+              f"views={args.foveate_views}", flush=True)
+    if (args.depth_prune > 0 or args.depth_ctrl) and args.backbone != "univla":
+        print(f"[warn] --depth-prune/--depth-ctrl are wired for the univla "
+              f"backbone only; ignored for {args.backbone}", flush=True)
 
     results = []
     first_debug = True  # print the [debug] action-sanity line once per run
@@ -632,7 +664,11 @@ def main():
             "center": args.foveate_center,
             "phase": args.foveate_phase,
             "keep_percent": float(args.foveate_keep_percent),
+            "views": args.foveate_views,
         },
+        # UniVLA only: which decoder layers ended up bypassed. Absent for
+        # backbones the depth axis is not wired into.
+        "depth": (model.depth_summary() if hasattr(model, "depth_summary") else None),
         "success_rate": sr,
         "n_episodes": len(results),
         "avg_steps": float(np.mean([r["steps"] for r in results])) if results else 0.0,
