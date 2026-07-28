@@ -23,11 +23,23 @@ chunk**. That is the whole point of running both: the efficiency
 intervention takes a different form on each architecture, which is exactly
 the architecture-dependence claim.
 
+The shared axis is **env steps executed per forward pass** -- higher means
+more open-loop execution and less compute. The two architectures sit at
+opposite ends of it by default, and the lever each one offers points in a
+different direction:
+
 | | OpenVLA | UniVLA |
 |---|---|---|
 | action chunking | none (1 step) | native, 10 steps |
-| compute reduction | `--action-repeat 2` | `--exec-chunk 5` (real chunk-exec) |
+| baseline: env steps / forward | 1 (fully closed-loop) | 10 (already amortized) |
+| available lever | `--action-repeat 2` → 2 steps/forward, **2x cheaper** | `--exec-chunk 5` → 5 steps/forward, **2x more expensive** |
+| what it buys | less compute, tests tolerance to open-loop drift | more frequent re-planning, tests whether 10-step open-loop execution is costing accuracy |
 | foveation | identical | identical |
+
+That asymmetry is not a flaw in the comparison -- it *is* the
+architecture-dependence result. A non-chunking policy can only be made
+cheaper; a chunked policy is already cheap and can only be made more
+reactive.
 
 OpenVLA reference results on `libero_spatial` (this harness, 5 initial
 states/task): baseline 74%, action-repeat 2 → 66%, blur-20% → 58%,
@@ -220,8 +232,10 @@ command carries the full paths.
 ```
 
 ```bash
-# 2) chunk-exec -- first 5 of 10, halving forward passes.
-#    The real chunk-exec that OpenVLA cannot do.
+# 2) chunk-exec -- executes 5 of the 10 predicted actions, then re-queries.
+#    NOTE this DOUBLES forward passes vs baseline (1 per 5 env steps instead
+#    of 1 per 10). It buys re-planning frequency, it does not save compute:
+#    UniVLA's baseline is already the cheap end of the axis.
 !python eval_libero.py --backbone univla --mujoco-gl osmesa \
   --emu-hub /content/UNIVLA_LIBERO_IMG_BS192_8K/UNIVLA_LIBERO_IMG_BS192_8K \
   --vq-hub /content/pretrain/Emu3-Stage1 \
