@@ -686,6 +686,19 @@ def main():
     if getattr(model, "decode_calls", 0):
         print(f"[decode] FAST failures: {model.decode_failures}/{model.decode_calls} "
               f"({model.decode_failures / model.decode_calls * 100:.1f}%)", flush=True)
+    # Without this the controller is indistinguishable from --depth-prune
+    # <depth_deep>: if the grasp signal never fires it silently never goes
+    # shallow, and the success rate looks like a normal result.
+    if args.depth_ctrl and summary["depth"]:
+        d = summary["depth"]
+        frac = d.get("shallow_fraction")
+        print(f"[depth] episodes reaching shallow: "
+              f"{d['episodes_reaching_shallow']}/{d['episodes']}"
+              + (f" ({frac*100:.0f}%)" if frac is not None else ""), flush=True)
+        if not d["episodes_reaching_shallow"]:
+            print("[depth] WARNING: the controller never left the deep state, so "
+                  f"this run is equivalent to --depth-prune {d['depth_deep']}",
+                  flush=True)
     print(f"\n[SUMMARY] suite={args.task_suite}  success_rate={sr*100:.1f}% "
           f"({n_ok}/{len(results)})  avg_ms/infer={summary['avg_model_ms_per_infer']:.0f}",
           flush=True)

@@ -195,6 +195,11 @@ class EmuVLALiberoInference:
         self._depth_state = "deep"
         self._depth_calibrated = False
         self.close_gripper_num = 0
+        # How many episodes actually reached the shallow state. If this stays at
+        # 0 the grasp signal never fired and the whole run was really just
+        # --depth-prune <depth_deep>, which the success rate alone cannot show.
+        self.depth_episodes = 0
+        self.depth_switches = 0
 
         self._init_model()
         self.image_processor.min_pixels = (
@@ -460,6 +465,12 @@ class EmuVLALiberoInference:
                 "depth_shallow": self.depth_shallow,
                 "depth_close_steps": self.depth_close_steps,
                 "depth_state_at_end": self._depth_state,
+                "episodes": self.depth_episodes,
+                "episodes_reaching_shallow": self.depth_switches,
+                # 0.0 means the controller never left deep, i.e. the run was
+                # really --depth-prune <depth_deep> under another name.
+                "shallow_fraction": (self.depth_switches / self.depth_episodes
+                                     if self.depth_episodes else None),
             })
         return out
 
@@ -474,6 +485,7 @@ class EmuVLALiberoInference:
         # for the redundancy measurement to describe the real model.
         self.close_gripper_num = 0
         if self.depth_ctrl:
+            self.depth_episodes += 1
             self._depth_state = "deep"
             self._depth_ranking = []
             self._depth_ranking_ready = False
@@ -637,5 +649,9 @@ class EmuVLALiberoInference:
             ):
                 self._depth_state = "shallow"
                 self._depth_apply_state()
+                self.depth_switches += 1
+                if self.depth_switches == 1:
+                    print(f"      [depth] deep -> shallow (grasp confirmed): "
+                          f"bypass={list(self._active_prune_layers)}", flush=True)
 
         return action
