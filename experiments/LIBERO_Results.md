@@ -15,9 +15,9 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | action-repeat 2 (2x cheaper) | 66.0% | −8.0 | **28.0%** | **−68.0** |
 | foveate blur 20% | 58.0% | −16.0 | 94.0% | −2.0 |
 | foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
-| depth-prune 4 (1.08x faster) | not wired | — | 86.0% | −10.0 |
-| depth-prune 8 (1.29x faster) | not wired | — | 86.0% | −10.0 |
-| **depth-ctrl 2→8 (1.13x faster)** | not wired | — | **96.0%** | **0.0** |
+| depth-prune 4 | — | — | 86.0% (1.08x) | −10.0 |
+| depth-prune 8 | **28.0%** (1.30x) | **−46.0** | 86.0% (1.29x) | −10.0 |
+| **depth-ctrl 2→8** | not yet run | — | **96.0%** (1.13x) | **0.0** |
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
@@ -382,24 +382,60 @@ budget.
 | | success | ms/env step |
 |---|---|---|
 | OpenVLA baseline | 74.0% | 524 |
+| OpenVLA depth-prune 8 | **28.0%** | 403 |
 | UniVLA baseline | 96.0% | 188 |
 | UniVLA depth-prune 8 | 86.0% | **146** |
 | UniVLA depth-ctrl | 96.0% | 167 |
 
-The controller is 22 points more accurate than OpenVLA's baseline at 3.1×
-lower per-env-step cost. This is also a third axis for the
-architecture-dependence claim: the identical mechanism on SpatialVLA's Gemma2
-hurt 3 of 4 tasks with a **single** layer bypassed
-(`docs/VISUAL_TOKENS_VS_LATENCY.md`), while Emu3 absorbs eight. Exploitable
-depth redundancy is a property of the backbone, not of the task.
+### Depth redundancy is a property of the backbone
+
+Running the identical rule at the identical ratio (8 of 32 layers, 25%) on
+OpenVLA's Llama-2 costs **46 points** (74.0% → 28.0%, z=−5.18) for the same
+1.30× speedup. The bypass worked mechanically — the measured saving even beat
+the 17.5% the profiler predicts — so the compute came off exactly as intended
+and the backbone could not absorb it.
+
+| backbone | LLM | at 8/32 bypassed | verdict |
+|---|---|---|---|
+| UniVLA | Emu3, 32 layers | 96.0% → 86.0% (−10), recoverable to 0 by the controller | absorbs it |
+| OpenVLA | Llama-2, 32 layers | 74.0% → 28.0% (−46) | collapses |
+| SpatialVLA | Gemma2, 26 layers | hurt 3 of 4 tasks at a **single** bypassed layer | collapses |
+
+**Emu3 ≫ Llama-2 > Gemma2**, measured with one shared implementation
+(`depth_prune.py`) so the ranking rule cannot differ between them. This is the
+third axis on which the two LIBERO backbones dissociate:
+
+| axis | UniVLA | OpenVLA |
+|---|---|---|
+| temporal (action-repeat 2) | −68 ✗ | −8 ✓ |
+| visual (foveation) | −2 / −8 ✓ | −16 / −74 ✗ |
+| **depth (prune 8)** | **−10 ✓** | **−46 ✗** |
+
+### The two collapses have different shapes, which bounds the controller
+
+UniVLA's −10 concentrates: 3 of 5 lost episodes on task 4 alone, five tasks
+untouched. OpenVLA's −46 is diffuse: tasks 4, 5, 7 and 9 go to 0/5 and the
+rest sit at 2–3/5.
+
+That difference predicts where the phase-adaptive controller can work. It
+protects the approach+grasp window only, so it recovers damage localized to a
+precision phase — which is exactly what UniVLA's was — and should do much less
+for damage spread across every phase. Running `--depth-ctrl` on OpenVLA is
+therefore worth doing for the contrast rather than for the number: it bounds
+the claim to *"non-uniform depth allocation recovers phase-localized damage"*
+rather than the unsupported general one.
 
 ## Still open
 
-- **Depth pruning on OpenVLA/Llama-2.** Emu3 absorbs 8 bypassed layers, Gemma2
-  broke at 1. A third backbone turns a two-point contrast into a claim about
-  backbones generally, and unlike anything on the gaze axis it is fully
-  real-robot deployable. Wired (`depth_prune.py`, shared with UniVLA so the
-  selection rule is identical), not yet run.
+- **Where Llama-2 actually breaks.** It is measured at 8/32 bypassed (−46) but
+  not at 4/32, so the three-backbone ordering is currently
+  "Emu3 absorbs 8, Llama-2 breaks by 8, Gemma2 breaks at 1" — a `--depth-prune 4`
+  run would replace "by 8" with a number and match the sweep already run on
+  UniVLA.
+- **`--depth-ctrl` on OpenVLA**, for the contrast rather than the number: its
+  damage is diffuse where UniVLA's was phase-localized, so the controller is
+  predicted to recover much less. Confirming that bounds the claim to
+  phase-localized damage instead of leaving it general.
 - **Why foveation flipped sign between benchmarks.** The same OpenVLA
   foveation that costs −16/−74 here *gained* +17.7/+18.8 points on SimplerEnv
   Bridge (`LabMeeting_4Backbone_Summary.md`). Gaze placement is now excluded as
