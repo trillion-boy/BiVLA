@@ -16,10 +16,14 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | foveate blur 20% | 58.0% | −16.0 | 94.0% | −2.0 |
 | foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
 
-UniVLA numbers are the post-fix runs (FAST decode failures 0/510-610 in every
+UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
 gave 92.0 / 24.0 / 98.0 / 86.0 — every condition moved by at most 4 points,
 i.e. within noise, so the defect was not driving any conclusion.
+
+A blank-image control (both cameras zeroed, instruction only) puts UniVLA at
+**0.0%**, which is what licenses reading the foveation rows as robustness
+rather than as the policy ignoring its cameras — see the control section.
 
 Foveation rows for UniVLA are the `--foveate-views both` runs, i.e. every
 camera the policy sees is degraded (see the confound section below).
@@ -104,6 +108,46 @@ artifact.
 UniVLA shows no such pattern — its cabinet tasks (4, 9) survive foveation
 intact.
 
+## Control: is UniVLA using the image at all?
+
+UniVLA surviving log-polar at 20% admits two readings, and they point in
+opposite directions:
+
+- **(A)** the policy tolerates severe visual degradation → genuine robustness,
+- **(B)** the policy barely uses the agent image on `libero_spatial` → the
+  foveation result is vacuous and the suite is weak as a perception benchmark.
+
+A first attempt to separate them measured how much foveation perturbs the VQ
+token stream: **99.4%** of visual tokens change under log-polar 20% and 88.8%
+under blur 20%, yet success holds at 88–94%. That refutes "the quantizer
+absorbs the perturbation" but does not decide (A) vs (B) — token-ID equality
+is a brittle metric, since neighbouring codebook entries can carry nearly
+identical embeddings.
+
+The deciding control is to remove the image entirely. `foveate_image_logpolar`
+returns `np.zeros_like(frame)` when `keep_ratio <= 0`, so
+`--foveate-keep-percent 0 --foveate-views both` blanks **both** cameras and
+leaves only the instruction — no code change, same harness, same checkpoint.
+
+| condition | success | n |
+|---|---|---|
+| baseline | 96.0% | 50 |
+| both cameras blank | **0.0%** | 50 |
+
+Zero of fifty, every task, every trial running the full 230 steps. **(B) is
+dead**: the policy cannot do these tasks without vision, so the 88% under
+log-polar is tolerance of degraded input, not indifference to input.
+
+Two details make the control tight rather than merely suggestive:
+
+- **FAST decode failures were 0/440.** The policy emits perfectly well-formed
+  action sequences on a blank image — it fails because it has no information,
+  not because the degenerate input corrupted the tokenizer. Had the rate
+  spiked, the run would have measured a tokenizer artifact instead.
+- **Actions stay large** (`dim_absmax` ≈ 1.08 / 0.70 / 0.79 on translation).
+  The arm moves confidently in the wrong direction rather than freezing, which
+  rules out "the model detected a broken input and stopped".
+
 ## Confound checked and cleared: the wrist camera
 
 UniVLA takes two camera views (agent + wrist); OpenVLA takes one. The
@@ -128,18 +172,25 @@ un-normalization that is **not** a no-op but a fixed drift
 (`[0.116, 0.033, 0, 0.009, 0.014, 0.056, −1]`, the midpoint of the q01/q99
 range), so the arm keeps moving for a full 10-step chunk on a dead command.
 
-Measured rates (instrumentation added after the first four runs, so baseline
-is not yet covered):
+Measured rates, before and after the fix:
 
 | condition | decode failures |
 |---|---|
-| foveate log-polar 20%, both views | 30/639 (4.7%) |
-| foveate blur 20%, both views | 26/587 (4.4%) |
+| foveate log-polar 20%, both views (pre-fix) | 30/639 (4.7%) |
+| foveate blur 20%, both views (pre-fix) | 26/587 (4.4%) |
+| every post-fix run | 0/440–610 (0.0%) |
 
-Both foveation conditions sit at ~4.5% and still reach 86–98%, so the policy
-absorbs occasional dead chunks. **Open item:** the baseline decode-failure
-rate is unmeasured, so we cannot yet say whether foveation raises it. One
-baseline re-run (~1 h) would close this.
+The cause was the tokenizer, not the intervention: the stock
+`physical-intelligence/fast` release lacks a pad/truncate guard that the
+UniVLA authors added to their own copy, so a generated BPE sequence landing
+one or two characters short of `time_horizon * action_dim` failed the reshape
+and fell into the zero-substituting except-block. Inserting only that guard
+(not copying the authors' file, which also carries different quantization
+defaults) takes the rate to exactly zero, including on blank-image inputs.
+
+All UniVLA numbers in this document are post-fix. The pre-fix runs moved by at
+most 4 points, so the defect was never driving a conclusion — but it is now
+excluded as an explanation for any of them.
 
 ## Caveats
 
