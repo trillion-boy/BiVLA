@@ -16,6 +16,7 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | foveate blur 20% | 58.0% | −16.0 | 94.0% | −2.0 |
 | foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
 | depth-prune 8 (1.29x faster) | not wired | — | 86.0% | −10.0 |
+| **depth-ctrl 2→8 (1.13x faster)** | not wired | — | **96.0%** | **0.0** |
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
@@ -226,38 +227,65 @@ every layer on every generated token. Rank layers by
 | condition | success | ms/forward | ms/env step | speedup |
 |---|---|---|---|---|
 | baseline | 96.0% | 1882 | 188 | 1.00× |
-| **depth-prune 8** | **86.0%** | **1457** | **146** | **1.29×** |
+| depth-prune 8 (static) | 86.0% | 1457 | 146 | 1.29× |
+| **depth-ctrl 2→8 (phase-adaptive)** | **96.0%** | **1667** | **167** | **1.13×** |
 
 Eight of Emu3's 32 layers bypassed (`[16, 18, 20, 22, 24, 26, 29, 31]`,
-calibrated on the real VLA prompt). The speedup sits at the top of the
+calibrated on the real VLA prompt). The static speedup sits at the top of the
 1.23–1.29× band the same mechanism produced on this backbone in SimplerEnv,
-i.e. it reproduces across benchmarks. Decode failures stayed at 0/646.
+i.e. it reproduces across benchmarks. Decode failures stayed at 0.0% in both.
+
+**The phase-adaptive controller is a strict Pareto improvement over baseline:
+identical success at 1.13×.** It recovers all 10 points static pruning cost
+while keeping 215 of its 425 ms saving (51%).
 
 ### The accuracy cost is concentrated, not diffuse
 
 −10 points pooled is only z=−1.77 (p≈0.08), which by itself would read as
 borderline. The per-task breakdown is the stronger signal:
 
-| task | baseline | depth-prune 8 | Δ |
+| task | baseline | depth-prune 8 | depth-ctrl |
 |---|---|---|---|
-| 4 — bowl **in the top drawer** of the cabinet | 5/5 | **2/5** | **−3** |
-| 9 — bowl on the cabinet | 4/5 | 3/5 | −1 |
-| 1 — next to the ramekin | 5/5 | 4/5 | −1 |
-| 5 — on the ramekin | 5/5 | 4/5 | −1 |
-| 3 — on the cookie box | 4/5 | 5/5 | +1 |
-| 0, 2, 6, 7, 8 | 25/25 | 25/25 | 0 |
+| 4 — bowl **in the top drawer** of the cabinet | 5/5 | **2/5** | **5/5** |
+| 9 — bowl on the cabinet | 4/5 | 3/5 | **5/5** |
+| 1 — next to the ramekin | 5/5 | 4/5 | 4/5 |
+| 5 — on the ramekin | 5/5 | 4/5 | 5/5 |
+| 3 — on the cookie box | 4/5 | 5/5 | 4/5 |
+| 0, 2, 6, 7, 8 | 25/25 | 25/25 | 25/25 |
+| **total** | **48/50** | **43/50** | **48/50** |
 
-Three of the five lost episodes are one task, and it is the only instruction
-in the suite that requires reaching **into** a drawer — the most
+Three of the five episodes static pruning lost are one task, and it is the only
+instruction in the suite that requires reaching **into** a drawer — the most
 precision-demanding manipulation here. Five of ten tasks are untouched. Noise
 would scatter; this does not.
 
 That is the same failure signature depth pruning produced on SimplerEnv, where
 aggressive pruning's failures concentrated at the grasp moment while
-free-space transport tolerated it — and it is the specific hypothesis the
-phase-adaptive controller (`--depth-ctrl`) was built to test: keep full depth
-through the precise approach+grasp, go shallow once the policy has committed
-to closing the gripper. Not yet run.
+free-space transport tolerated it.
+
+### The phase-adaptive controller recovers it
+
+`--depth-ctrl --depth-deep 2 --depth-shallow 8` allocates depth non-uniformly
+in *time*: near-full depth through the approach+grasp, then bypass 8 once the
+policy's own commanded gripper has been closed for 2 consecutive chunks. The
+signal costs nothing (no env ground truth, no detector), the switch is one-way
+so it cannot oscillate, and deep is a strict prefix of shallow so the
+transition only ever adds layers.
+
+Task 4 goes **2/5 → 5/5** and task 9 **3/5 → 5/5**, restoring the baseline
+total exactly. That the recovery lands on the approach phase also settles what
+static pruning was breaking: had the failures been grasped-but-not-placed, the
+controller would already be shallow by then and could not have helped.
+
+Layer selection is stable — `bypass=[18, 20]` on most of the 50 episodes
+despite re-calibrating from scratch each time, so the redundancy ranking
+measures a property of the model rather than sampling noise.
+
+**Open control:** the controller averages roughly 4–5 bypassed layers over an
+episode, so `--depth-prune 4` must be run before claiming the *phase
+adaptivity* is what helps rather than simply pruning less. If static-4 also
+reaches 96% at ≥1.13×, the controller adds complexity for nothing and the
+honest result is static-4.
 
 ### Against OpenVLA
 
@@ -266,8 +294,9 @@ to closing the gripper. Not yet run.
 | OpenVLA baseline | 74.0% | 524 |
 | UniVLA baseline | 96.0% | 188 |
 | UniVLA depth-prune 8 | 86.0% | **146** |
+| UniVLA depth-ctrl | 96.0% | 167 |
 
-The pruned UniVLA is 12 points more accurate than OpenVLA's baseline at 3.6×
+The controller is 22 points more accurate than OpenVLA's baseline at 3.1×
 lower per-env-step cost. This is also a third axis for the
 architecture-dependence claim: the identical mechanism on SpatialVLA's Gemma2
 hurt 3 of 4 tasks with a **single** layer bypassed
@@ -276,12 +305,9 @@ depth redundancy is a property of the backbone, not of the task.
 
 ## Still open
 
-- **`--depth-ctrl`** — the direct follow-up to depth-prune 8's concentrated
-  loss. If keeping full depth through the approach+grasp recovers task 4
-  without giving back most of the 1.29×, that gap is the contribution rather
-  than static pruning itself.
-- **`--depth-prune 4`** — the safer static point, to establish whether the
-  accuracy/latency curve is smooth or has a cliff between 4 and 8.
+- **`--depth-prune 4`** — the control that decides whether the controller is a
+  contribution. It sits at roughly the controller's average depth, so if it
+  also reaches 96% at ≥1.13× then phase adaptivity buys nothing.
 - **Depth pruning on OpenVLA/Llama-2.** Emu3 absorbs 8 bypassed layers, Gemma2
   broke at 1. A third backbone turns a two-point contrast into a claim about
   backbones generally. Not wired — `--depth-prune` is univla-only today.
