@@ -103,6 +103,7 @@ import numpy as np  # noqa: E402
 from PIL import Image as _PIL  # noqa: E402
 
 from foveation import MotionGaze, foveate_image_blur, foveate_image_logpolar  # noqa: E402
+from libero_oracle_gaze import LiberoOracleGaze  # noqa: E402
 
 
 def _patch_emu3_tokenizer() -> None:
@@ -136,9 +137,12 @@ def save_gif(path: str, frames: list) -> None:
     pils[0].save(path, save_all=True, append_images=pils[1:], loop=0, duration=100)
 
 
-def apply_foveation(image: np.ndarray, args, gaze: "MotionGaze | None") -> np.ndarray:
+def apply_foveation(image: np.ndarray, args, gaze) -> np.ndarray:
+    # `gaze` is a MotionGaze or LiberoOracleGaze (same reset/update interface),
+    # or None for the fixed image centre. A gaze that returns None -- an oracle
+    # that could not resolve the scene -- also falls back to the centre.
     center = None
-    if args.foveate_center == "motion" and gaze is not None:
+    if args.foveate_center in ("motion", "oracle") and gaze is not None:
         center = gaze.update(image)
     fov = foveate_image_logpolar if args.foveate_mode == "logpolar" else foveate_image_blur
     return fov(image, keep_ratio=args.foveate_keep_percent / 100.0, center=center)
@@ -213,7 +217,18 @@ def parse_args():
                          "predicted actions before calling the model again")
     p.add_argument("--foveate", action="store_true")
     p.add_argument("--foveate-mode", default="logpolar", choices=["logpolar", "blur"])
-    p.add_argument("--foveate-center", default="image", choices=["image", "motion"])
+    p.add_argument("--foveate-center", default="image",
+                    choices=["image", "motion", "oracle"],
+                    help="where the fovea goes. 'image' = fixed centre (what "
+                         "every result so far used). 'motion' = centroid of "
+                         "frame differences, which tracks the arm rather than "
+                         "the target and never reads the instruction. "
+                         "'oracle' = the simulator's ground-truth pose of the "
+                         "object the task moves -- privileged state, so a "
+                         "diagnostic upper bound rather than a method: it "
+                         "answers whether fovea PLACEMENT is why the same "
+                         "foveation helps on SimplerEnv and destroys OpenVLA "
+                         "here")
     p.add_argument(
         "--foveate-phase", default="always", choices=["always", "pregrasp"],
         help="pregrasp = only foveate while the policy's last commanded gripper "
@@ -533,9 +548,20 @@ def main():
             env.reset()
             obs = env.set_init_state(init_states[trial % len(init_states)])
             model.reset()
-            fov_gaze = (
-                MotionGaze() if args.foveate and args.foveate_center == "motion" else None
-            )
+            fov_gaze = None
+            if args.foveate and args.foveate_center == "motion":
+                fov_gaze = MotionGaze()
+            elif args.foveate and args.foveate_center == "oracle":
+                fov_gaze = LiberoOracleGaze(env, resolution=args.camera_resolution)
+                if trial == 0:
+                    # Log which object the oracle locked onto, once per task.
+                    # libero_spatial puts several identical black bowls in the
+                    # scene, so tracking the wrong one would look like a normal
+                    # run while measuring nothing.
+                    c = fov_gaze.update()
+                    print(f"   [oracle-gaze] target={fov_gaze.target_name()} "
+                          f"fovea={None if c is None else (round(c[0]), round(c[1]))} "
+                          f"of {args.camera_resolution}px", flush=True)
             gripper_open = True
             frames = []
             done = False
