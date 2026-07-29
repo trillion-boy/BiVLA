@@ -30,6 +30,15 @@ whole episode by itself: before the grasp it is the thing to reach for, and
 after the grasp it travels with the gripper toward the destination, so the
 fovea follows the manipulation without needing a phase switch.
 
+Verified against all 10 `libero_spatial` BDDLs: the target is `_1` in every
+task and the distractor is `_2`, and each `_1`'s init region matches its
+instruction exactly ("next to the ramekin" -> `next_to_ramekin_region`, "on the
+stove" -> `flat_stove_1_cook_region`, and so on). The drawer task is the one
+that reads differently — `(In akita_black_bowl_1 wooden_cabinet_1_top_region)`
+with `(Open ...)`, and its distractor `_2` sits on the cabinet *top* — so it is
+also the case where picking the wrong object would be least visible. The oracle
+resolves it correctly.
+
 Coordinate conventions (the part that silently goes wrong)
 ----------------------------------------------------------
 Three flips compose here, and two of them cancel:
