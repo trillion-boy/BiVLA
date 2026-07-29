@@ -17,7 +17,7 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
 | depth-prune 4 | **56.0%** (1.13x) | **−18.0** | 86.0% (1.08x) | −10.0 |
 | depth-prune 8 | **28.0%** (1.30x) | **−46.0** | 86.0% (1.29x) | −10.0 |
-| **depth-ctrl 2→8** | not yet run | — | **96.0%** (1.13x) | **0.0** |
+| **depth-ctrl 2→8** | 50.0% (1.18x) | −24.0 | **96.0%** (1.13x) | **0.0** |
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
@@ -455,19 +455,41 @@ it a Pareto win: going from 4 to 8 bypassed layers is free there, so buying
 depth back only during the grasp is pure profit. OpenVLA's curve has no flat
 region, so mixing 2 and 8 can only produce a weighted average of two costs.
 
-**Prediction, recorded before the run:** on OpenVLA the controller lands
-around 40–55% at ~1.15–1.20×, i.e. *dominated by static-4* (56.0% at 1.13×) —
-the reverse of UniVLA, where it dominated every static setting. Confirming it
-would bound the contribution to an observable condition:
+**The prediction was recorded before the run:** 40–55% at ~1.15–1.20×, no
+better than static. Measured: **50.0% at 445 ms (1.18×)**, with the controller
+reaching the shallow state in 50/50 episodes, so the mechanism engaged fully.
+
+The right way to score a controller is how far it sits **above the static
+trade-off curve at matched latency**, since it is buying a mixture of two
+static settings:
+
+| | static curve at the controller's latency | controller | gain |
+|---|---|---|---|
+| UniVLA (1667 ms) | 86.0% (flat between 1750 and 1457 ms) | **96.0%** | **+10.0** |
+| OpenVLA (445 ms) | 47.6% (interpolating 463→403 ms) | 50.0% | +2.4, noise |
+
+**On OpenVLA the controller is just another point on the static curve.** It
+neither dominates static-4 nor is dominated by it — it buys the same trade at a
+different ratio. Only UniVLA leaves the curve, and the flat region is what lets
+it: going from 4 to 8 bypassed layers is free there, so spending depth *only*
+during the grasp is pure profit, whereas every layer OpenVLA gives back costs,
+so any mixture is a weighted average of two costs.
+
+That bounds the contribution to an observable condition:
 
 > Phase-adaptive depth allocation beats uniform allocation when the backbone's
 > depth–accuracy curve has a flat region, and not otherwise.
 
+A second, independent signature agrees. The controller re-ranks every episode,
+and the layers it picks are stable on UniVLA (`[18, 20]` on most of the 50) but
+churn on OpenVLA (`[20,23]`, `[17,20]`, `[23,25]`, `[20,25]`, `[17,23]`). Llama-2's
+eligible layers have near-equal redundancy, so the ordering is noise-sensitive
+— there is no distinctly idle layer to find. That is the same signature Gemma2
+showed (16 consecutive middle layers inside a 0.045-wide band), reached here
+from ranking stability rather than from success rate.
+
 ## Still open
 
-- **`--depth-ctrl` on OpenVLA**, to test the prediction recorded above: with
-  no flat region in its curve, the controller should be dominated by static-4
-  rather than dominating it as on UniVLA.
 - **A second LIBERO suite.** Everything here is `libero_spatial`, so "the
   dissociation is a property of this suite" is not yet excluded. Repeating
   baseline / foveation / depth-prune 8 on `libero_object` — whose targets are
