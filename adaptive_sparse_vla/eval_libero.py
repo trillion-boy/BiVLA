@@ -244,26 +244,26 @@ def parse_args():
              "sees, which is the matched cross-architecture comparison",
     )
     p.add_argument("--depth-prune", type=int, default=0,
-                    help="[univla] depth axis: bypass the N most redundant LLM "
+                    help="depth axis: bypass the N most redundant LLM "
                          "decoder layers (redundancy = 1 - cos(layer_in, "
                          "layer_out), calibrated once on a real prompt). Unlike "
                          "foveation this actually cuts wall-clock, because the "
                          "autoregressive action decode -- ~70%% of a step -- pays "
                          "for every layer on every token. Training-free")
     p.add_argument("--depth-ctrl", action="store_true",
-                    help="[univla] depth axis, phase-adaptive: keep full depth "
+                    help="depth axis, phase-adaptive: keep full depth "
                          "for the precise approach+grasp, then bypass more layers "
                          "once the policy commits to closing the gripper. "
                          "Overrides --depth-prune")
     p.add_argument("--depth-deep", type=int, default=2,
-                    help="[univla] layers bypassed during approach+grasp")
+                    help="layers bypassed during approach+grasp")
     p.add_argument("--depth-shallow", type=int, default=8,
-                    help="[univla] layers bypassed after the grasp")
+                    help="layers bypassed after the grasp")
     p.add_argument("--depth-close-steps", type=int, default=2,
-                    help="[univla] consecutive close-gripper chunks before the "
+                    help="consecutive close-gripper calls before the "
                          "one-way deep->shallow switch (hysteresis)")
     p.add_argument("--depth-min-layer", type=float, default=0.5,
-                    help="[univla] only layers past this fraction of the stack "
+                    help="only layers past this fraction of the stack "
                          "are eligible; early layers carry too much to bypass")
     p.add_argument("--camera-resolution", type=int, default=256,
                     help="LIBERO renderer output size; the policy itself resizes "
@@ -473,6 +473,12 @@ def main():
             model_path=args.model_path,
             unnorm_key=args.unnorm_key,
             device=args.device,
+            depth_prune=args.depth_prune,
+            depth_ctrl=args.depth_ctrl,
+            depth_deep=args.depth_deep,
+            depth_shallow=args.depth_shallow,
+            depth_close_steps=args.depth_close_steps,
+            depth_min_layer=args.depth_min_layer,
         )
         print(f"[openvla] unnorm_key={model.unnorm_key} "
               f"(single-step policy; use --action-repeat for the chunk-exec "
@@ -522,9 +528,9 @@ def main():
         print(f"  foveate[{args.foveate_mode}/{args.foveate_center}/"
               f"{args.foveate_phase}] keep={args.foveate_keep_percent:.0f}% "
               f"views={args.foveate_views}", flush=True)
-    if (args.depth_prune > 0 or args.depth_ctrl) and args.backbone != "univla":
-        print(f"[warn] --depth-prune/--depth-ctrl are wired for the univla "
-              f"backbone only; ignored for {args.backbone}", flush=True)
+    if (args.depth_prune > 0 or args.depth_ctrl) and args.backbone == "spatialvla":
+        print("[warn] --depth-prune/--depth-ctrl are not wired for spatialvla; "
+              "ignored", flush=True)
 
     results = []
     first_debug = True  # print the [debug] action-sanity line once per run

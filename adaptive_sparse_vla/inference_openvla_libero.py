@@ -25,6 +25,19 @@ OpenVLA predicts a single action per forward pass -- there is no action
 chunk to truncate. The efficiency intervention that corresponds to
 chunk-exec is therefore open-loop action repeat, which eval_libero.py
 applies via --action-repeat.
+
+Depth pruning IS implemented here, because unlike foveation it is a property
+of the model's own forward pass and cannot be expressed as a transform on the
+caller's side. The bypass machinery is shared with the other backbones
+(`depth_prune.py`) so the layer-selection rule is provably identical -- the
+cross-backbone claim is that exploitable depth redundancy differs by backbone
+(Emu3 absorbs 8 layers, Gemma2 broke at 1), which only means anything if the
+rule does not.
+
+Redundancy is measured with forward hooks rather than `output_hidden_states`,
+because OpenVLA's generate is wrapped inside `predict_action` and there is no
+clean way to ask it for hidden states. The hooks ride along on the first real
+`predict_action` of the episode, so calibration costs no extra forward pass.
 """
 
 from __future__ import annotations
@@ -35,6 +48,11 @@ from typing import Optional
 import numpy as np
 import torch
 from PIL import Image
+
+try:
+    from adaptive_sparse_vla.depth_prune import DepthPruner, measure_redundancy_with_hooks
+except Exception:  # when imported as a top-level package on sys.path
+    from depth_prune import DepthPruner, measure_redundancy_with_hooks
 
 try:
     from transformers import AutoModelForVision2Seq, AutoProcessor
@@ -84,6 +102,12 @@ class OpenVLALiberoInference:
         device: str = "cuda",
         image_size: int = 224,
         attn_implementation: Optional[str] = "eager",
+        depth_prune: int = 0,
+        depth_ctrl: bool = False,
+        depth_deep: int = 2,
+        depth_shallow: int = 8,
+        depth_close_steps: int = 2,
+        depth_min_layer: float = 0.5,
     ):
         self.model_path = model_path
         self.device = device
@@ -130,9 +154,28 @@ class OpenVLALiberoInference:
         self.predict_action_frames = 1  # OpenVLA is single-step, not chunked
         self.action_dim = 7
 
+        self.depth = DepthPruner(
+            self.model,
+            prune=depth_prune, ctrl=depth_ctrl, deep=depth_deep,
+            shallow=depth_shallow, close_steps=depth_close_steps,
+            min_layer=depth_min_layer,
+        )
+        if self.depth.enabled and self.depth.layers() is None:
+            raise RuntimeError(
+                "depth pruning is on but the Llama decoder stack could not be "
+                "located under this checkpoint's wrappers -- see "
+                "depth_prune.find_decoder_layers. Refusing to run rather than "
+                "silently evaluating an unpruned model."
+            )
+        self.depth.announce("openvla")
+
+    def depth_summary(self) -> dict:
+        return self.depth.summary()
+
     def reset(self) -> None:
         self._last_prepared_image = None
         self.last_raw_actions = None
+        self.depth.reset_episode()
 
     def last_prepared_image(self) -> Optional[np.ndarray]:
         if self._last_prepared_image is None:
@@ -180,10 +223,28 @@ class OpenVLALiberoInference:
                 )
         inputs = self._move_inputs(inputs)
 
-        with torch.inference_mode():
-            action = self.model.predict_action(
-                **inputs, unnorm_key=self.unnorm_key, do_sample=False
+        def _predict():
+            with torch.inference_mode():
+                return self.model.predict_action(
+                    **inputs, unnorm_key=self.unnorm_key, do_sample=False
+                )
+
+        if self.depth.needs_calibration():
+            # Hooks ride along on this real call, so ranking the layers costs
+            # no extra forward pass. This one step therefore runs on the
+            # unpruned model -- 1 of up to 230 in an episode, and pruning
+            # applies from the next call on.
+            captured = {}
+            importance = measure_redundancy_with_hooks(
+                self.depth.layers(), lambda: captured.setdefault("a", _predict())
             )
+            action = captured.get("a")
+            if action is None:
+                action = _predict()
+            self.depth.calibrate(importance)
+        else:
+            action = _predict()
+
         if torch.is_tensor(action):
             action = action.detach().float().cpu().numpy()
         action = np.asarray(action, dtype=np.float64).reshape(-1, self.action_dim)
@@ -195,4 +256,8 @@ class OpenVLALiberoInference:
         g = np.sign(g)
         g[g == 0] = -1.0  # sign(0) would leave an invalid neutral command
         action[..., -1] = -g
+
+        # Phase-adaptive depth reads the policy's own commanded gripper. After
+        # the inversion above, LIBERO convention applies: +1 is close.
+        self.depth.note_gripper(float(action[-1, -1]) > 0)
         return action
