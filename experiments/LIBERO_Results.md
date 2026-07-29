@@ -15,6 +15,7 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | action-repeat 2 (2x cheaper) | 66.0% | −8.0 | **28.0%** | **−68.0** |
 | foveate blur 20% | 58.0% | −16.0 | 94.0% | −2.0 |
 | foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
+| depth-prune 8 (1.29x faster) | not wired | — | 86.0% | −10.0 |
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
@@ -201,11 +202,13 @@ excluded as an explanation for any of them.
   in this process).
 - Foveation as implemented **does not reduce latency** — ms/inference is
   unchanged (OpenVLA 524 → 518, UniVLA 1882 → 1888). It reduces information,
-  not compute. Only the action-repeat axis is an efficiency intervention.
-- `--exec-chunk` (the more-reactive direction, unique to a chunked policy)
-  has not been run.
+  not compute. Of the interventions here, only action-repeat (fewer forward
+  passes) and depth pruning (cheaper forward pass) are efficiency levers.
+- Per-task `ms/infer` varies 1340–1700 within a single run because OSMesa
+  renders on the CPU in the same process and scene complexity differs. Compare
+  run-level means, not individual tasks.
 
-## Open: the depth axis
+## The depth axis: the one lever that moves wall-clock
 
 Neither axis above can make UniVLA faster. Temporal is already spent (its
 baseline runs 10 env steps per forward; doubling that collapses it to 28%),
@@ -215,16 +218,72 @@ so the whole visual path is a ~19% ceiling. Reducing visual *tokens* rather
 than visual *fidelity* does not escape it either: FastV, measured on this
 backbone, left latency at 1.0× while success fell 100 → 75 → 38%.
 
-The remaining lever is **decoder-layer bypass**, which shrinks the 70%
-directly because the decode pays for every layer on every token. On the same
-Emu3 backbone in SimplerEnv it was close to a free lunch — success 74% →
-78–81% at 1.10–1.25× (`docs/DEPTH_PRUNING_RESULTS.md`) — and it is already
-known to be backbone-dependent: the identical mechanism on SpatialVLA's Gemma2
-hurt 3 of 4 tasks with a *single* layer bypassed. That makes it a third
-independent axis for the same architecture-dependence claim.
+Decoder-layer bypass attacks the 70% directly, because the decode pays for
+every layer on every generated token. Rank layers by
+`1 - cos(layer_in, layer_out)`, replace the most redundant with a pass-through
+(`--depth-prune N`). Training-free, no external module.
 
-Now wired into the LIBERO harness (`--depth-prune N`, `--depth-ctrl`;
-bookkeeping unit-tested in `adaptive_sparse_vla/test_depth_libero_logic.py`).
-Not yet run — the conditions are cells 5–7 of `LIBERO_UniVLA_Setup.md`. This
-is the only condition in the whole grid where `avg_model_ms_per_infer` is
-expected to move, so it is the number to read first.
+| condition | success | ms/forward | ms/env step | speedup |
+|---|---|---|---|---|
+| baseline | 96.0% | 1882 | 188 | 1.00× |
+| **depth-prune 8** | **86.0%** | **1457** | **146** | **1.29×** |
+
+Eight of Emu3's 32 layers bypassed (`[16, 18, 20, 22, 24, 26, 29, 31]`,
+calibrated on the real VLA prompt). The speedup sits at the top of the
+1.23–1.29× band the same mechanism produced on this backbone in SimplerEnv,
+i.e. it reproduces across benchmarks. Decode failures stayed at 0/646.
+
+### The accuracy cost is concentrated, not diffuse
+
+−10 points pooled is only z=−1.75 (p≈0.08), which by itself would read as
+borderline. The per-task breakdown is the stronger signal:
+
+| task | baseline | depth-prune 8 | Δ |
+|---|---|---|---|
+| 4 — bowl **in the top drawer** of the cabinet | 5/5 | **2/5** | **−3** |
+| 9 — bowl on the cabinet | 4/5 | 3/5 | −1 |
+| 1 — next to the ramekin | 5/5 | 4/5 | −1 |
+| 5 — on the ramekin | 5/5 | 4/5 | −1 |
+| 3 — on the cookie box | 4/5 | 5/5 | +1 |
+| 0, 2, 6, 7, 8 | 25/25 | 25/25 | 0 |
+
+Three of the five lost episodes are one task, and it is the only instruction
+in the suite that requires reaching **into** a drawer — the most
+precision-demanding manipulation here. Five of ten tasks are untouched. Noise
+would scatter; this does not.
+
+That is the same failure signature depth pruning produced on SimplerEnv, where
+aggressive pruning's failures concentrated at the grasp moment while
+free-space transport tolerated it — and it is the specific hypothesis the
+phase-adaptive controller (`--depth-ctrl`) was built to test: keep full depth
+through the precise approach+grasp, go shallow once the policy has committed
+to closing the gripper. Not yet run.
+
+### Against OpenVLA
+
+| | success | ms/env step |
+|---|---|---|
+| OpenVLA baseline | 74.0% | 524 |
+| UniVLA baseline | 96.0% | 188 |
+| UniVLA depth-prune 8 | 86.0% | **146** |
+
+The pruned UniVLA is 12 points more accurate than OpenVLA's baseline at 3.6×
+lower per-env-step cost. This is also a third axis for the
+architecture-dependence claim: the identical mechanism on SpatialVLA's Gemma2
+hurt 3 of 4 tasks with a **single** layer bypassed
+(`docs/VISUAL_TOKENS_VS_LATENCY.md`), while Emu3 absorbs eight. Exploitable
+depth redundancy is a property of the backbone, not of the task.
+
+## Still open
+
+- **`--depth-ctrl`** — the direct follow-up to depth-prune 8's concentrated
+  loss. If keeping full depth through the approach+grasp recovers task 4
+  without giving back most of the 1.29×, that gap is the contribution rather
+  than static pruning itself.
+- **`--depth-prune 4`** — the safer static point, to establish whether the
+  accuracy/latency curve is smooth or has a cliff between 4 and 8.
+- **Depth pruning on OpenVLA/Llama-2.** Emu3 absorbs 8 bypassed layers, Gemma2
+  broke at 1. A third backbone turns a two-point contrast into a claim about
+  backbones generally. Not wired — `--depth-prune` is univla-only today.
+- **`--exec-chunk`** (the more-reactive direction, unique to a chunked policy)
+  has not been run.
