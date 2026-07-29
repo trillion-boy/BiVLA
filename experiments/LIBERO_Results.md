@@ -118,32 +118,54 @@ object each task moves (`libero_oracle_gaze.py`; verified per task against all
 10 BDDLs and by rendering the crosshair). It is privileged state, so it is a
 ceiling rather than a method: it answers what a perfect gaze could buy.
 
-| log-polar 20% on OpenVLA | fovea | success |
-|---|---|---|
-| fixed image centre | centre | 0.0% (n=30) |
-| **oracle** | **on the target** | **22.0%** |
-| (no foveation) | — | 74.0% |
+| OpenVLA, keep=20% | fovea at image centre | **fovea on the target** | Δ |
+|---|---|---|---|
+| log-polar | 0.0% (n=30) | **22.0%** | +22.0 (z=3.75) |
+| blur | 58.0% | **50.0%** | −8.0 (z=−0.81, noise) |
+| (no foveation) | 74.0% | | |
 
-Both gaps are conclusive (0 → 22 is z=3.75; 22 vs 74 is z=−6.10). So moving
-the fovea onto the target recovers a real amount and **placement is a genuine
-cause** — but a perfect gaze still leaves 52 points on the table, so it is not
-the only one. Latency was 521 ms against a 524 ms baseline: a third
-independent confirmation that foveation does not buy speed.
+**A perfect gaze does not rescue foveation on this benchmark.** The row that
+answers the question is blur, whose degradation profile does not depend on
+where the centre sits — and moving its fovea onto the target changes nothing
+measurable. The best any foveation configuration reaches is 58.0%, still
+−16 against baseline, and the oracle's 50.0% is itself conclusively below
+baseline (z=−2.55).
 
-**Confound, not yet cleared.** Log-polar with an off-centre pole is *more*
-destructive than a centred one, because `max_radius` is computed to the
-farthest corner: at the image centre it is 181 px, but at task 8's oracle
-centre (26, 158) it is 279 px — the same sample budget spread over a 54%
-larger radial range, asymmetrically. Moving the fovea onto the target
-therefore buys target sharpness and pays in global warp, and the 22% mixes the
-two.
+Log-polar's +22 is not a placement effect in the useful sense. `warpPolar` in
+log mode spends an enormous share of its sample budget near the pole; with the
+pole at the image centre that budget lands on empty table while every bowl is
+crushed. Moving the pole relieves a pathological configuration rather than
+demonstrating that a sharp target is what matters — and it still lands at 22%,
+far below what blur reaches without any gaze at all. Log-polar is simply the
+wrong degradation mode for this scene, and no gaze fixes that.
 
-The clean test is **blur**, which displaces no pixel at all, so its degradation
-profile is independent of where the centre sits. Against the 58.0% that blur
-scores at the fixed centre, `--foveate-mode blur --foveate-center oracle`
-separates "the fovea was in the wrong place" from "foveation removes
-information this policy uses". Not yet run — and until it is, the 22% is a
-lower bound on what placement is worth, not a verdict on it.
+Per task, the two effects that cancel are visible (n=5 each, so individually
+noisy):
+
+| task | target | blur, centre | blur, oracle |
+|---|---|---|---|
+| 9 — on the cabinet | right periphery | 0/5 | **3/5** |
+| 4 — in the drawer | right | 1/5 | 0/5 |
+| 3 — on the cookie box | centre | 5/5 | 4/5 |
+| 7 — on the stove | near centre | 5/5 | 4/5 |
+
+Peripheral targets gain, central ones give it back. That is what a *single*
+fovea implies here: the policy needs the target bowl, the destination plate and
+the gripper at once, and one sharp disc covers at most two. Centring it is a
+compromise across all three; moving it to the target trades the plate and the
+gripper away. There is no good place to put one fovea, which is why placement
+nets out to zero.
+
+**This closes the axis, and it strengthens the dissociation rather than
+weakening it.** The obvious objection to OpenVLA's foveation collapse was that
+the fovea was simply in the wrong place. It was put in the provably right
+place — from simulator ground truth, an upper bound no deployable gaze can
+beat — and the collapse stands. An instruction-conditioned gaze (the model's
+own attention over visual tokens) was scoped and deliberately not built: its
+ceiling is the oracle's, and the oracle does not clear the fixed centre.
+
+Latency was 521 ms against a 524 ms baseline — a third independent
+confirmation that foveation costs information, not compute.
 
 ## Control: is UniVLA using the image at all?
 
@@ -373,25 +395,28 @@ depth redundancy is a property of the backbone, not of the task.
 
 ## Still open
 
-- **Blur + oracle gaze**, the one run that decides whether the gaze direction
-  is worth pursuing. Log-polar's off-centre warp confounds the 22% above;
-  blur has no such term. This is the gate: if it does not clear blur's 58% at
-  the fixed centre by a real margin, an instruction-conditioned gaze is capped
-  too low to be worth building, and the axis closes.
-- **Why foveation flipped sign between benchmarks**, beyond placement. The
-  same OpenVLA foveation that costs −16/−74 here *gained* +17.7/+18.8 points on
-  SimplerEnv Bridge (`LabMeeting_4Backbone_Summary.md`). Oracle gaze shows
-  placement accounts for part of it but not 52 of the 74 points. The remaining
-  candidate is baseline competence: the SimplerEnv run used the generalist
-  `openvla-7b` at 15.6%, this one a suite-specific fine-tune at 74.0%. A policy
-  already operating at 74% is exploiting visual detail that foveation removes;
-  one at 15.6% is not, so decluttering can only help it. Also unlike Bridge,
-  `libero_spatial` deliberately stages two *identical* bowls disambiguated only
-  by spatial language, which is why an instruction-blind gaze
-  (`--foveate-center motion`) is structurally unable to help here.
 - **Depth pruning on OpenVLA/Llama-2.** Emu3 absorbs 8 bypassed layers, Gemma2
   broke at 1. A third backbone turns a two-point contrast into a claim about
   backbones generally, and unlike anything on the gaze axis it is fully
-  real-robot deployable. Not wired — `--depth-prune` is univla-only today.
+  real-robot deployable. Wired (`depth_prune.py`, shared with UniVLA so the
+  selection rule is identical), not yet run.
+- **Why foveation flipped sign between benchmarks.** The same OpenVLA
+  foveation that costs −16/−74 here *gained* +17.7/+18.8 points on SimplerEnv
+  Bridge (`LabMeeting_4Backbone_Summary.md`). Gaze placement is now excluded as
+  the explanation. Two observations constrain what is left:
+  - It is **benchmark-level, not backbone-level**: both backbones that gained
+    on SimplerEnv lost on LIBERO (OpenVLA +18.8 → −74, UniVLA +8.3 → −8).
+  - It is **not baseline competence** either, or not only: UniVLA gained +8.3 on
+    SimplerEnv from a *78.1%* baseline, so "a weak policy benefits from
+    decluttering" does not cover it.
+
+  What differs is the scene. Bridge frames one target object centrally against
+  cluttered real imagery; `libero_spatial` stages two *identical* bowls
+  off-centre on a clean synthetic tabletop, disambiguated only by spatial
+  language. Foveation removes clutter on one and signal on the other. Testing
+  that directly would need a competence-matched pair on one benchmark, and the
+  generalist `openvla-7b` cannot supply it: it ships no LIBERO action
+  statistics, so any `unnorm_key` choice confounds "weak policy" with "wrong
+  action scaling". Left as a stated limitation rather than a guess.
 - **`--exec-chunk`** (the more-reactive direction, unique to a chunked policy)
   has not been run.
