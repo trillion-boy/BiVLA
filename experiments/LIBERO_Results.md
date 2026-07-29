@@ -15,6 +15,7 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | action-repeat 2 (2x cheaper) | 66.0% | −8.0 | **28.0%** | **−68.0** |
 | foveate blur 20% | 58.0% | −16.0 | 94.0% | −2.0 |
 | foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
+| depth-prune 4 (1.08x faster) | not wired | — | 86.0% | −10.0 |
 | depth-prune 8 (1.29x faster) | not wired | — | 86.0% | −10.0 |
 | **depth-ctrl 2→8 (1.13x faster)** | not wired | — | **96.0%** | **0.0** |
 
@@ -227,17 +228,52 @@ every layer on every generated token. Rank layers by
 | condition | success | ms/forward | ms/env step | speedup |
 |---|---|---|---|---|
 | baseline | 96.0% | 1882 | 188 | 1.00× |
+| depth-prune 4 (static) | 86.0% | 1750 | 175 | 1.08× |
 | depth-prune 8 (static) | 86.0% | 1457 | 146 | 1.29× |
 | **depth-ctrl 2→8 (phase-adaptive)** | **96.0%** | **1667** | **167** | **1.13×** |
 
-Eight of Emu3's 32 layers bypassed (`[16, 18, 20, 22, 24, 26, 29, 31]`,
-calibrated on the real VLA prompt). The static speedup sits at the top of the
-1.23–1.29× band the same mechanism produced on this backbone in SimplerEnv,
-i.e. it reproduces across benchmarks. Decode failures stayed at 0.0% in both.
+Layers are picked per episode from a redundancy ranking over the back half of
+the stack (`[16, 18, 20, 22, 24, 26, 29, 31]` at N=8), calibrated on the real
+VLA prompt. The static-8 speedup sits at the top of the 1.23–1.29× band the
+same mechanism produced on this backbone in SimplerEnv, i.e. it reproduces
+across benchmarks. Decode failures stayed at 0.0% in every condition.
 
 **The phase-adaptive controller is a strict Pareto improvement over baseline:
 identical success at 1.13×.** It recovers all 10 points static pruning cost
 while keeping 215 of its 425 ms saving (51%).
+
+The measured latencies match the profiler independently. If the decode is 70%
+of a step and layers are cut uniformly, bypassing 4/32 predicts 1717 ms
+(measured 1750) and 8/32 predicts 1553 ms (measured 1457) — so the bypass is
+removing real computation, not just changing the output.
+
+### The static curve is flat, which is what makes the controller a result
+
+The obvious objection is that the controller averages ~4–5 bypassed layers per
+episode, so maybe "prune less" would do the same job with none of the
+machinery. `--depth-prune 4` answers it:
+
+| bypassed | success | speedup |
+|---|---|---|
+| 4 | 86.0% | 1.08× |
+| 8 | 86.0% | 1.29× |
+
+**Pruning less does not buy the accuracy back.** Along the static axis the
+only configuration that reaches 96% is bypassing nothing. static-4 is
+dominated on *both* axes by the controller (10 points worse and slower) and on
+latency by static-8 at equal accuracy — it is the one setting nobody would
+ship. Non-uniform allocation in time, not a smaller uniform budget, is what
+recovers the accuracy.
+
+The two static settings also fail differently: static-8 loses 3 of its 7
+episodes on task 4 alone, while static-4's 7 losses scatter across five tasks
+with at most 2 each. Shallow uniform pruning degrades everything slightly
+rather than breaking one capability — which is why meeting it halfway cannot
+work.
+
+Honest bound: controller vs static-4 on accuracy alone is z=1.77 (p≈0.08),
+borderline at n=50. The claim rests on winning both axes at once plus the
+flatness of the static curve, not on that one comparison.
 
 ### The accuracy cost is concentrated, not diffuse
 
@@ -281,11 +317,9 @@ Layer selection is stable — `bypass=[18, 20]` on most of the 50 episodes
 despite re-calibrating from scratch each time, so the redundancy ranking
 measures a property of the model rather than sampling noise.
 
-**Open control:** the controller averages roughly 4–5 bypassed layers over an
-episode, so `--depth-prune 4` must be run before claiming the *phase
-adaptivity* is what helps rather than simply pruning less. If static-4 also
-reaches 96% at ≥1.13×, the controller adds complexity for nothing and the
-honest result is static-4.
+The "just prune less" control (`--depth-prune 4`) is answered above: it also
+lands at 86.0%, so the accuracy is not bought back by a smaller uniform
+budget.
 
 ### Against OpenVLA
 
@@ -305,9 +339,17 @@ depth redundancy is a property of the backbone, not of the task.
 
 ## Still open
 
-- **`--depth-prune 4`** — the control that decides whether the controller is a
-  contribution. It sits at roughly the controller's average depth, so if it
-  also reaches 96% at ≥1.13× then phase adaptivity buys nothing.
+- **Why foveation flipped sign between benchmarks.** The same OpenVLA
+  foveation that costs −16/−74 here *gained* +17.7/+18.8 points on SimplerEnv
+  Bridge (`LabMeeting_4Backbone_Summary.md`). The leading explanation is fovea
+  placement — Bridge's targets sit near the image centre, `libero_spatial`'s do
+  not, and within LIBERO the OpenVLA losses track target eccentricity exactly.
+  The confound is baseline competence: the SimplerEnv run used the generalist
+  `openvla-7b` at 15.6%, this one a suite-specific fine-tune at 74.0%, and a
+  weak policy has room for an attention prior that a strong one does not.
+  Deciding it needs an **oracle gaze** (fovea placed on the simulator's target
+  pose) — `--foveate-center motion` cannot, since frame differencing tracks the
+  arm rather than the target and never reads the instruction.
 - **Depth pruning on OpenVLA/Llama-2.** Emu3 absorbs 8 bypassed layers, Gemma2
   broke at 1. A third backbone turns a two-point contrast into a claim about
   backbones generally. Not wired — `--depth-prune` is univla-only today.
