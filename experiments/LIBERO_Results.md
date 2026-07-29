@@ -235,7 +235,7 @@ i.e. it reproduces across benchmarks. Decode failures stayed at 0/646.
 
 ### The accuracy cost is concentrated, not diffuse
 
-−10 points pooled is only z=−1.75 (p≈0.08), which by itself would read as
+−10 points pooled is only z=−1.77 (p≈0.08), which by itself would read as
 borderline. The per-task breakdown is the stronger signal:
 
 | task | baseline | depth-prune 8 | Δ |
