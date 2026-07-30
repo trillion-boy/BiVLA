@@ -18,6 +18,7 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | depth-prune 4 | **56.0%** (1.13x) | **−18.0** | 86.0% (1.08x) | −10.0 |
 | depth-prune 8 | **28.0%** (1.30x) | **−46.0** | 86.0% (1.29x) | −10.0 |
 | **depth-ctrl 2→8** | 50.0% (1.18x) | −24.0 | **96.0%** (1.13x) | **0.0** |
+| blur 20% + depth-ctrl | not run | — | 88.0% (1.14x) | −8.0 |
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
@@ -206,6 +207,37 @@ Two details make the control tight rather than merely suggestive:
 - **Actions stay large** (`dim_absmax` ≈ 1.08 / 0.70 / 0.79 on translation).
   The arm moves confidently in the wrong direction rather than freezing, which
   rules out "the model detected a broken input and stopped".
+
+## Do the two affordable interventions compose?
+
+UniVLA is the only place the question can be asked: blur foveation costs it
+−2.0 and the depth controller 0.0, so both are individually free there. If the
+two kinds of slack — visual information and decoder compute — were independent,
+running them together should cost about the sum.
+
+| condition | success | Δ | ms/forward |
+|---|---|---|---|
+| baseline | 96.0% | — | 1882 |
+| blur 20%, both views | 94.0% | −2.0 | 1888 |
+| depth-ctrl 2→8 | 96.0% | 0.0 | 1667 |
+| **both together** | **88.0%** | **−8.0** | **1658** |
+
+The measured −8.0 against a −2.0 sum leaves a −6.0 interaction term, so the
+point estimate says the two are **not** independent. But nothing here separates
+statistically at n=50 (SE ≈ 5.4): combo vs baseline is z=−1.49, combo vs blur
+alone z=−1.05. The honest statement is the weaker one:
+
+> UniVLA holds **88.0%** while running on 20% of its visual information *and*
+> 25% fewer decoder layers, at 1.14×. The −8.0 against baseline is not
+> significant at this sample size.
+
+Whether the −6.0 interaction is real needs more episodes. What the run does
+establish is that the mechanisms both engaged — 50/50 episodes reached the
+shallow state, decode failures 0/615 — so the number is not an artifact of one
+intervention silently failing to apply.
+
+OpenVLA has no counterpart: foveation alone costs it −16 and depth-prune 8
+costs −46, so there is no regime in which both are affordable to combine.
 
 ## Confound checked and cleared: the wrist camera
 
