@@ -19,6 +19,7 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 | depth-prune 8 | **28.0%** (1.30x) | **−46.0** | 86.0% (1.29x) | −10.0 |
 | **depth-ctrl 2→8** | 50.0% (1.18x) | −24.0 | **96.0%** (1.13x) | **0.0** |
 | blur 20% + depth-ctrl | not run | — | 88.0% (1.14x) | −8.0 |
+| log-polar 20% + depth-ctrl | not run | — | 84.0% (1.14x) | −12.0 |
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
@@ -218,22 +219,32 @@ running them together should cost about the sum.
 | condition | success | Δ | ms/forward |
 |---|---|---|---|
 | baseline | 96.0% | — | 1882 |
-| blur 20%, both views | 94.0% | −2.0 | 1888 |
 | depth-ctrl 2→8 | 96.0% | 0.0 | 1667 |
-| **both together** | **88.0%** | **−8.0** | **1658** |
+| blur 20%, both views | 94.0% | −2.0 | 1888 |
+| **blur + depth-ctrl** | **88.0%** | **−8.0** | **1658** |
+| log-polar 20%, both views | 88.0% | −8.0 | 1886 |
+| **log-polar + depth-ctrl** | **84.0%** | **−12.0** | **1653** |
 
-The measured −8.0 against a −2.0 sum leaves a −6.0 interaction term, so the
-point estimate says the two are **not** independent. But nothing here separates
-statistically at n=50 (SE ≈ 5.4): combo vs baseline is z=−1.49, combo vs blur
-alone z=−1.05. The honest statement is the weaker one:
+Run with both foveation modes, and the interaction reproduces:
 
-> UniVLA holds **88.0%** while running on 20% of its visual information *and*
-> 25% fewer decoder layers, at 1.14×. The −8.0 against baseline is not
-> significant at this sample size.
+| combination | measured Δ | additive prediction | interaction |
+|---|---|---|---|
+| blur + ctrl | −8.0 | −2.0 | **−6.0** |
+| log-polar + ctrl | −12.0 | −8.0 | **−4.0** |
 
-Whether the −6.0 interaction is real needs more episodes. What the run does
-establish is that the mechanisms both engaged — 50/50 episodes reached the
-shallow state, decode failures 0/615 — so the number is not an artifact of one
+Neither interaction term clears significance on its own (n=50, SE ≈ 5.4–5.9),
+and only the log-polar combination is significantly below baseline (z=−2.04;
+blur's is z=−1.49). But **two independent foveation modes give the same sign
+and a similar magnitude**, which is what makes "exactly additive" the reading
+the data does not support. Written at the strength it earns:
+
+> UniVLA holds **84–88%** while running on 20% of its visual information *and*
+> 25% fewer decoder layers, at 1.14×. Combining the two costs **4–6 points more
+> than the sum of their individual costs**, consistently across both foveation
+> modes.
+
+Both mechanisms verifiably engaged in both runs — 50/50 episodes reached the
+shallow state, decode failures 0/615 and 0/634 — so this is not one
 intervention silently failing to apply.
 
 OpenVLA has no counterpart: foveation alone costs it −16 and depth-prune 8
