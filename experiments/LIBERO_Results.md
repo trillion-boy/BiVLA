@@ -9,17 +9,34 @@ Checkpoints: `openvla/openvla-7b-finetuned-libero-spatial`,
 
 ## Headline
 
-| condition | OpenVLA | Δ | UniVLA | Δ |
-|---|---|---|---|---|
-| baseline | 74.0% | — | 96.0% | — |
-| action-repeat 2 (2x cheaper) | 66.0% | −8.0 | **28.0%** | **−68.0** |
-| foveate blur 20% | 58.0% | −16.0 | 94.0% | −2.0 |
-| foveate log-polar 20% | **0.0%** | **−74.0** | 88.0% | −8.0 |
-| depth-prune 4 | **56.0%** (1.13x) | **−18.0** | 86.0% (1.08x) | −10.0 |
-| depth-prune 8 | **28.0%** (1.30x) | **−46.0** | 86.0% (1.29x) | −10.0 |
-| **depth-ctrl 2→8** | 50.0% (1.18x) | −24.0 | **96.0%** (1.13x) | **0.0** |
-| blur 20% + depth-ctrl | not run | — | 88.0% (1.14x) | −8.0 |
-| log-polar 20% + depth-ctrl | not run | — | 84.0% (1.14x) | −12.0 |
+| condition | OpenVLA | Δ | ms (speedup) | UniVLA | Δ | ms (speedup) |
+|---|---|---|---|---|---|---|
+| baseline | 74.0% | — | 524 (1.00x) | 96.0% | — | 1882 (1.00x) |
+| action-repeat 2 | 66.0% | −8.0 | **262 (2.00x)** ¹ | **28.0%** | **−68.0** | **941 (2.00x)** ¹ |
+| foveate blur 20% | 58.0% | −16.0 | 518 (1.01x) | 94.0% | −2.0 | 1888 (1.00x) |
+| foveate log-polar 20% | **0.0%** | **−74.0** | 518 (1.01x) | 88.0% | −8.0 | 1886 (1.00x) |
+| depth-prune 4 | **56.0%** | **−18.0** | 463 (1.13x) | 86.0% | −10.0 | 1750 (1.08x) |
+| depth-prune 8 | **28.0%** | **−46.0** | 403 (1.30x) | 86.0% | −10.0 | 1457 (1.29x) |
+| **depth-ctrl 2→8** | 50.0% | −24.0 | 445 (1.18x) | **96.0%** | **0.0** | **1667 (1.13x)** |
+| blur 20% + depth-ctrl | not run | — | — | 88.0% | −8.0 | 1658 (1.14x) |
+| log-polar 20% + depth-ctrl | not run | — | — | 84.0% | −12.0 | 1653 (1.14x) |
+
+ms is per model call. Two things the column does not say on its own:
+
+¹ Action-repeat is the one row where the call does not get cheaper — it still
+costs 524 / 1882 ms. What halves is the number of calls, so the figure above is
+amortized over the episode rather than measured per call. Every other row
+genuinely reduced the cost of a call, where the two are the same number.
+
+² The two backbones' ms are not comparable to each other. UniVLA emits ~10
+actions per call and executes all of them, so per env step it is **~188 ms**,
+not 1882; OpenVLA emits one, so its 524 ms *is* the per-step figure. UniVLA is
+the faster policy per env step. The speedup column is within-backbone and is
+unaffected.
+
+**Only one cell moved wall-clock without paying accuracy: UniVLA's depth-ctrl**
+(96.0% at 1.13x). Every foveation row sits at 1.00–1.01x, and action-repeat —
+the largest speedup at 2.00x — is the one that costs UniVLA 68 points.
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
 condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
