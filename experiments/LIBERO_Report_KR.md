@@ -165,6 +165,34 @@ attention을 이용한 지시문 조건부 시선 구현은 천장이 낮다고 
 
 ## 5. 걱정되는 부분 — SimplerEnv와의 불일치 (자문 요청 1)
 
+### 5.1 SimplerEnv에서의 기존 결과 (참고)
+
+SimplerEnv WidowX-Bridge, 4 task × N=24. RoboVLMs는 제외했습니다.
+
+| 개입 | OpenVLA | SpatialVLA | UniVLA |
+|---|---|---|---|
+| baseline | 15.6% | 32.3% | 78.1% |
+| chunk-exec | 해당 없음¹ | **45.9% (+13.6, 1.9× 가속)** ✓ | 65.6% (−12.5) ✗ |
+| foveate log-polar 20% | **34.4% (+18.8)** ✓ | 25.0% (−7.3) ✗ | **86.5% (+8.3)** ✓ |
+| foveate blur 20% | **33.3% (+17.7)** ✓ | ²  | 76.0% (−2.1) △ |
+
+¹ OpenVLA는 forward당 액션 1개만 예측해 "예측해둔 chunk 중 일부만 실행"의
+전제가 성립하지 않습니다.
+² SpatialVLA의 blur는 chunk-exec와 결합한 조건에서만 측정되어(36.5%),
+baseline 단독 대비 값이 없습니다. log-polar 손해의 대부분을 회복시켰다는
+것까지는 확인됐습니다(27.1% → 38.6%).
+
+여기서도 **어떤 개입도 세 백본에 공통으로 통하지 않았습니다.** 개입의 세부
+변형(log-polar vs blur)조차 백본마다 승자가 달랐습니다.
+
+SpatialVLA의 log-polar 실패는 원인까지 규명되어 있습니다. SpatialVLA는 각 시각
+토큰에 픽셀 격자좌표를 카메라 intrinsics와 추정 depth로 역투영해 **3D 위치를
+명시적으로 부여**하는데, log-polar는 픽셀을 실제로 이동시키므로 워핑 후 모든
+토큰이 잘못된 3D 위치를 갖게 됩니다. 픽셀을 이동시키지 않는 blur가 손해를
+회복시킨 것이 이 설명을 뒷받침합니다.
+
+### 5.2 그런데 LIBERO에서 부호가 반대입니다
+
 같은 foveation 코드가 두 벤치마크에서 부호가 반대입니다.
 
 | 백본 | SimplerEnv Bridge | LIBERO spatial |
