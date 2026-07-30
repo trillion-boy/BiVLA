@@ -307,12 +307,20 @@ excluded as an explanation for any of them.
 - **The gap against the published 84.7% is systematic, not sampling.** Since
   states 5–9 score the same as 0–4, the subsample is excluded; and at n=100 the
   discrepancy is *more* significant, not less (z=−2.97, p≈0.003, against −2.10
-  at n=50). The remaining known deviation is the image path: the reference
-  encodes JPEG and resizes with TF `lanczos3`, while this harness uses a PIL
-  JPEG round-trip at quality 95 plus PIL LANCZOS, because importing TensorFlow
-  after Mesa's GL libraries segfaults the process. Every conclusion here is a
-  within-harness delta with that path held fixed, so a constant offset cancels
-  — but the offset is real and is reported rather than attributed to noise.
+  at n=50). The only known deviation was the image path: the reference encodes
+  JPEG and resizes with TF `lanczos3`, while this harness uses a PIL JPEG
+  round-trip at quality 95 plus PIL LANCZOS, because importing TensorFlow after
+  Mesa's GL libraries segfaults the process.
+- **The JPEG round-trip is excluded as the cause — measured, not assumed.**
+  Re-running the same 50 episodes with the compression step off
+  (`--openvla-jpeg-quality 0`, PIL LANCZOS only) gives **72.0%** (36/50) against
+  **74.0%** (37/50) with it on. A 2.0-point delta, one episode, well inside
+  noise, and in the *wrong* direction to close a 10.7-point gap. What remains is
+  the resize kernel itself (TF `lanczos3` and PIL `LANCZOS` differ in kernel
+  radius and edge handling) or something not yet identified. Every conclusion
+  here is a within-harness delta with the path held fixed, so a constant offset
+  cancels — but the offset is real and is reported rather than attributed to
+  noise.
 - Foveation as implemented **does not reduce latency** — ms/inference is
   unchanged (OpenVLA 524 → 518, UniVLA 1882 → 1888). It reduces information,
   not compute. Of the interventions here, only action-repeat (fewer forward

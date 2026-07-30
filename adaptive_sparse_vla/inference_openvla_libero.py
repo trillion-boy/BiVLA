@@ -82,8 +82,14 @@ def resize_image_openvla(img: np.ndarray, size: int = 224,
     harness's OpenVLA baseline sits 10.7 points below the published 84.7% by a
     systematic, reproducible margin (z=-2.97 at n=100; the initial-state
     subsample is excluded, since states 0-4 and 5-9 both score 74.0%).
-    `jpeg_quality=None` skips the compression step so the contribution of this
-    path can be measured rather than assumed.
+
+    `jpeg_quality=None` skips the compression step, which is how that path was
+    measured rather than assumed -- and it came back innocent: 72.0% (36/50)
+    without the round-trip against 74.0% (37/50) with it, a one-episode delta
+    in the wrong direction to explain a 10.7-point gap. The compression is
+    therefore not the cause; the resize kernel (TF lanczos3 vs PIL LANCZOS) or
+    something not yet identified is. The flag is kept because the measurement
+    is worth being able to repeat.
     """
     img = np.asarray(img, dtype=np.uint8)
     if jpeg_quality is None:
