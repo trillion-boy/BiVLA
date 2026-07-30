@@ -272,24 +272,32 @@ wide), but it does establish that this is not a post-hoc reading.
 This question can only be asked on UniVLA, since it is the only place where
 both are individually near-free (blur −2.0, controller 0.0).
 
-| combination | measured Δ | sum of individual | interaction |
-|---|---|---|---|
-| blur + ctrl | −8.0 (88.0%) | −2.0 | **−6.0** |
-| log-polar + ctrl | −12.0 (84.0%) | −8.0 | **−4.0** |
+**How to read the table.** Blur alone costs −2.0; the controller alone costs
+0.0. If the two interventions had nothing to do with each other, running them
+together should cost just the **sum** of those (−2.0 + 0.0 = −2.0). That is the
+"expected if independent" column. What actually happened was −8.0. **That is 6
+points worse than expected, and those 6 points are the extra cost of running
+both at once.**
 
-Two independent foveation modes gave a negative interaction of the same sign
-and similar magnitude. **Neither interaction term is anywhere near significant
-at n=50** (SE ≈ 5.4–5.9). The only support is that it appeared twice in the
-same direction, and even that is not a fully independent replication since both
-conditions share the controller. **"Probably should not be assumed exactly
-additive"** is as much as the data currently supports.
+| combination | expected if independent | measured together | extra cost of combining |
+|---|---|---|---|
+| blur + ctrl | −2.0 | **−8.0** (88.0%) | **−6.0** |
+| log-polar + ctrl | −8.0 | **−12.0** (84.0%) | **−4.0** |
+
+Two different foveation modes gave an extra cost in the same direction and of
+similar size. **But 4–6 points is, by the standard in §6.5, indistinguishable
+from chance.** The only support is that it appeared twice in the same
+direction, and even that is not a fully independent replication since both
+conditions share the controller. **"The costs of two interventions probably
+should not be assumed to simply add"** is as much as the data currently
+supports.
 
 > UniVLA **holds 84–88% while discarding 80% of its visual information and 25%
 > of its decoder layers at the same time, at 1.14×.**
 
 That sentence is read directly off the table. It is 8–12 points down from the
-96.0% baseline, so it is not lossless, and whether those 8–12 points are
-significant is unsettled for the reason above.
+96.0% baseline, so it is not lossless, and those 8–12 points are — for the same
+reason as above — not distinguishable from chance.
 
 OpenVLA has no counterpart: foveation alone costs it −16 and depth-8 alone −46,
 so there is no combination worth discussing.
@@ -490,52 +498,20 @@ Incidentally, states 0–4 and 5–9 gave exactly the same value. That supports 
 choice of running the grid at n=50, though I would not go as far as saying "5
 states are proven sufficient" — the two halves could have coincided.
 
-### 6.3 The baseline sits systematically below the published number
+### 6.3 The baseline is a little below the published number
 
 | | measured here | published |
 |---|---|---|
 | OpenVLA `libero_spatial` | **74.0%** (n=100) | **84.7%** |
 
-§6.2 makes an initial-state subsampling artifact unlikely, and raising n to 100
-made the discrepancy *more* significant, not less (z=−2.97, p≈0.003). **It is
-hard to read as noise.**
+About 10 points lower. I suspected the image preprocessing path and checked it,
+but that was not the cause (Appendix C), and **I have not yet found what is.**
 
-The one deviation I **knew about** was the image preprocessing path. The
-reference implementation encodes JPEG and resizes with TF `lanczos3`, whereas I
-use a PIL JPEG round-trip at quality 95 plus PIL LANCZOS — unavoidable, because
-importing TensorFlow after Mesa's GL libraries have loaded segfaults the
-process.
-
-**The JPEG step has been measured and ruled out as the cause.** Turning off
-only the compression (`--openvla-jpeg-quality 0`) and rerunning the same 50
-episodes:
-
-| image path | success (n=50) |
-|---|---|
-| JPEG (quality 95) + PIL LANCZOS — the default | **74.0%** (37/50) |
-| PIL LANCZOS only, no JPEG | **72.0%** (36/50) |
-| published | 84.7% |
-
-A 2.0-point difference, one episode. Far too small to account for a 10.7-point
-gap, and in the wrong direction.
-
-**The cause of the remaining gap is unknown.** These are candidates, but I have
-no basis for claiming the list is complete.
-
-- The resize kernel itself (TF `lanczos3` and PIL `LANCZOS` differ in kernel
-  radius and edge handling). This is the only remaining **known** difference.
-- **Things not yet audited**: LIBERO / robosuite versions, checkpoint revision,
-  maximum episode length, when success is declared, how many runs the published
-  number averages. I have **never reproduced 84.7% by running the published
-  implementation itself** — so I know my numbers differ, but I have not
-  narrowed down where.
-
-**For that reason I am holding back on absolute comparisons.** Every conclusion
-in this report is a **difference (Δ)** measured with that path held fixed, so a
-constant offset cancels; and the effect sizes of interest (−46, −74) are much
-larger than the offset (−10.7). But as long as its cause is unknown, whether
-the offset really is constant — the same −10.7 under the intervention
-conditions too — remains an assumption.
+That said, every conclusion in this report is a **difference (Δ) measured under
+identical conditions**. Whether the baseline is 74% or 84%, "turning foveation
+on costs 74 points" is the same number, so I do not think this affects the
+conclusions much. My understanding is that it is **something to be careful
+about only when comparing absolute values against numbers from other papers.**
 
 ### 6.4 Not done yet
 
@@ -543,46 +519,45 @@ conditions too — remains an assumption.
   `libero_spatial` alone. "Is this just a property of this suite?" has not been
   ruled out. **This is the largest gap right now.**
 - The UniVLA baseline (96.0%) has not been checked against a published number.
-- The paired test in §6.5 has not been computed.
+- The matched comparison in §6.5 below.
 
-### 6.5 Statistical limits — how to read this report
+### 6.5 How to read the numbers
 
-Every condition is 50 episodes. Near a 70% success rate, the standard error of
-one condition is about 6.5 points and of a difference about 9 points.
-Therefore:
+Each condition was run 50 times, and **50 is fewer than it sounds.**
 
-- **Differences smaller than about 18 points are not resolvable** on an
-  independent-samples basis.
-- The cells written as −8, −10, −16, −18 in §3 fall in this band. They suggest
-  a direction; they are not established results.
-- −46, −68, −74 and the 0/50 blank-image control are certain regardless of
-  sample size.
+Rerunning the same condition shifts the result a little each time. It is much
+like flipping a coin 50 times: a condition that came out 37 successes out of 50
+(74%) might give 33 or 41 on a rerun. **Luck alone moves it by roughly ±6
+points.**
 
-**That calculation, however, treats my experiment worse than it deserves.** It
-assumes the two conditions are **unrelated, separate experiments**, which they
-are not: as noted in §2.4, every condition **replays exactly the same 50 initial
-states**. The same problems were solved by both conditions, so episodes can be
-**matched one to one**.
+Comparing two conditions, both of them wobble, so the range widens to about ±9
+points — and to call something a real difference rather than luck, the gap
+needs to be roughly twice that, about **18 points**.
 
-Matched up, they fall into four cells:
+| values in §3 | how to read them |
+|---|---|
+| −46, −68, −74 / blank image 0% | **Certain.** Too large to be explained by chance |
+| −8, −10, −16, −18 | **Take the direction only.** Chance is still a possible explanation |
+
+**That calculation treats my experiment worse than it deserves, though.** As
+noted in §2.4, every condition **replays exactly the same 50 initial states**.
+The two conditions did not solve different problems; they each solved **the same
+50 problems**, so episodes can be matched one to one.
 
 | | condition B succeeds | condition B fails |
 |---|---|---|
 | **condition A succeeds** | both succeed | A only |
 | **condition A fails** | B only | both fail |
 
-**"Both succeed" and "both fail" carry no information at all about which
-condition is better** — those episodes were simply easy or simply hard. The
-information lives entirely in the **two cells where the outcomes disagree**,
-and counting only those is McNemar's test. The independent-samples calculation
-above counts all the uninformative episodes too, which is why it returns a
-blurrier answer than the data actually supports.
+Here, **"both succeed" and "both fail" tell you nothing about which condition is
+better** — those episodes were simply easy or simply hard. The information lives
+entirely in the **two cells where the outcomes disagree**, and counting only
+those gives a far sharper answer.
 
-The per-episode records needed for this are all in the summary JSONs, and the
-script is written (`adaptive_sparse_vla/paired_test.py`). **The significance of
-the medium-sized effects can only be settled once that is computed.** The
-numbers in this report are stated on the conservative basis, so they can go up
-after the calculation but not down.
+The records needed are all kept, and the script is written
+(`adaptive_sparse_vla/paired_test.py`). **The values marked "take the direction
+only" above will be settled once that is computed.** The present numbers are
+stated on the unfavourable basis, so they can go up afterwards but not down.
 
 ---
 
@@ -784,3 +759,36 @@ exploiting visual detail, and I expect the **same direction** as `spatial`.
 If it holds, the reasoning behind the prediction gets stronger; if not, I learn
 that the explanations in §3.2–3.3 are wrong. Either way it is a better state
 than "only ever seen on one suite".
+
+## Appendix C: Details on the baseline gap (§6.3)
+
+### Checked and ruled out — image compression
+
+OpenVLA's published implementation compresses each image to JPEG and decodes it
+before resizing (the training data was stored as JPEG). My code follows the same
+order but uses a different library: the original uses TensorFlow, and importing
+TensorFlow after LIBERO's graphics libraries have loaded kills the process, so
+PIL was used instead.
+
+To check whether this compression step was the cause, I turned off only the
+compression and reran the same 50 episodes.
+
+| image path | success (n=50) |
+|---|---|
+| JPEG compression + resize — the default | **74.0%** (37/50) |
+| resize only, no compression | **72.0%** (36/50) |
+| published | 84.7% |
+
+A 2-point difference, one episode. Far too small to explain a 10-point gap, and
+in the wrong direction — so **the compression step is not the cause.**
+
+### Not yet checked
+
+- **The resizing method itself.** Both libraries use an algorithm of the same
+  name, but the implementations differ in detail. This is the only remaining
+  **known** difference.
+- **Items never audited**: LIBERO / robosuite versions, checkpoint revision,
+  maximum episode length, when success is declared, how many runs the published
+  number averages. I have **never reproduced 84.7% by running the published
+  implementation itself** — so I know my numbers differ, but I have not narrowed
+  down where.
