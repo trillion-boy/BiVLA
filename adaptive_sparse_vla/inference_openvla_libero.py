@@ -65,7 +65,8 @@ except ImportError as e:  # transformers 5.x removed AutoModelForVision2Seq
     ) from e
 
 
-def resize_image_openvla(img: np.ndarray, size: int = 224) -> np.ndarray:
+def resize_image_openvla(img: np.ndarray, size: int = 224,
+                         jpeg_quality: Optional[int] = 95) -> np.ndarray:
     """Match OpenVLA's training-time image pipeline.
 
     The reference implementation is a TF JPEG encode/decode round-trip
@@ -76,10 +77,21 @@ def resize_image_openvla(img: np.ndarray, size: int = 224) -> np.ndarray:
     plus LANCZOS reproduces the same pipeline shape -- lossy-compress, then
     Lanczos-downsample -- with only minor pixel-level differences from TF's
     lanczos3 kernel.
+
+    That substitution is the one known deviation from the reference, and this
+    harness's OpenVLA baseline sits 10.7 points below the published 84.7% by a
+    systematic, reproducible margin (z=-2.97 at n=100; the initial-state
+    subsample is excluded, since states 0-4 and 5-9 both score 74.0%).
+    `jpeg_quality=None` skips the compression step so the contribution of this
+    path can be measured rather than assumed.
     """
     img = np.asarray(img, dtype=np.uint8)
+    if jpeg_quality is None:
+        return np.asarray(
+            Image.fromarray(img).resize((size, size), Image.LANCZOS), dtype=np.uint8
+        )
     buf = io.BytesIO()
-    Image.fromarray(img).save(buf, format="JPEG", quality=95)
+    Image.fromarray(img).save(buf, format="JPEG", quality=int(jpeg_quality))
     buf.seek(0)
     pil = Image.open(buf).convert("RGB").resize((size, size), Image.LANCZOS)
     return np.asarray(pil, dtype=np.uint8)
@@ -102,6 +114,7 @@ class OpenVLALiberoInference:
         device: str = "cuda",
         image_size: int = 224,
         attn_implementation: Optional[str] = "eager",
+        jpeg_quality: Optional[int] = 95,
         depth_prune: int = 0,
         depth_ctrl: bool = False,
         depth_deep: int = 2,
@@ -112,6 +125,7 @@ class OpenVLALiberoInference:
         self.model_path = model_path
         self.device = device
         self.image_size = int(image_size)
+        self.jpeg_quality = jpeg_quality
         self.dtype = torch.bfloat16 if str(device).startswith("cuda") else torch.float32
 
         self._last_prepared_image: Optional[np.ndarray] = None
@@ -200,7 +214,7 @@ class OpenVLALiberoInference:
         wrist_image: Optional[np.ndarray] = None,  # accepted, unused: single-view model
     ) -> np.ndarray:
         """Returns a (1, 7) raw action row in LIBERO convention."""
-        prepared = resize_image_openvla(image, self.image_size)
+        prepared = resize_image_openvla(image, self.image_size, self.jpeg_quality)
         self._last_prepared_image = prepared
 
         prompt = self.PROMPT_TEMPLATE.format(instruction=instruction.strip().lower())

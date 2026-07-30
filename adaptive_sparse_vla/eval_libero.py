@@ -197,6 +197,14 @@ def parse_args():
                          "de-normalize with. OpenVLA's LIBERO checkpoints ship "
                          "exactly one, which is picked automatically; pass a bogus "
                          "value to have the available keys printed")
+    p.add_argument("--openvla-jpeg-quality", type=int, default=95,
+                    help="[openvla] JPEG quality for the training-time image "
+                         "round-trip. 0 skips compression entirely. The "
+                         "reference uses TF's encoder, which cannot run in this "
+                         "process (importing TensorFlow after Mesa segfaults), "
+                         "and this harness's baseline sits a systematic 10.7 "
+                         "points below the published number -- this flag exists "
+                         "to measure how much of that the image path explains")
     p.add_argument("--invert-gripper", action="store_true",
                     help="[spatialvla] flip the gripper sign if the checkpoint was "
                          "trained with the opposite open/close convention "
@@ -473,6 +481,8 @@ def main():
             model_path=args.model_path,
             unnorm_key=args.unnorm_key,
             device=args.device,
+            jpeg_quality=(args.openvla_jpeg_quality
+                          if args.openvla_jpeg_quality > 0 else None),
             depth_prune=args.depth_prune,
             depth_ctrl=args.depth_ctrl,
             depth_deep=args.depth_deep,
