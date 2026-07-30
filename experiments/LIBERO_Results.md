@@ -296,11 +296,23 @@ excluded as an explanation for any of them.
 
 ## Caveats
 
-- 5 of 50 available initial states per task. OpenVLA's baseline reproduces
-  at 74% against a published 84.7%; the gap is ~2 SE and plausibly explained
-  by the initial-state subsample plus a PIL LANCZOS resize standing in for
-  the reference TF `lanczos3` (TensorFlow segfaults when imported after Mesa
-  in this process).
+- **The harness is deterministic and the numbers reproduce exactly.** An
+  independent 100-episode re-run of the OpenVLA baseline (10 initial states per
+  task) returns 74.0%, and its first-5-states half returns 74.0% task for task
+  against the original run — 5/5, 3/5, 4/5, 5/5 on tasks 3, 4, 7, 9, matching
+  every recorded value.
+- **Five initial states are a representative sample.** States 0–4 and 5–9 each
+  give exactly 74.0%, so the subsample every condition here uses is not
+  favourable or unfavourable. This is what licenses running the grid at n=50.
+- **The gap against the published 84.7% is systematic, not sampling.** Since
+  states 5–9 score the same as 0–4, the subsample is excluded; and at n=100 the
+  discrepancy is *more* significant, not less (z=−2.97, p≈0.003, against −2.10
+  at n=50). The remaining known deviation is the image path: the reference
+  encodes JPEG and resizes with TF `lanczos3`, while this harness uses a PIL
+  JPEG round-trip at quality 95 plus PIL LANCZOS, because importing TensorFlow
+  after Mesa's GL libraries segfaults the process. Every conclusion here is a
+  within-harness delta with that path held fixed, so a constant offset cancels
+  — but the offset is real and is reported rather than attributed to noise.
 - Foveation as implemented **does not reduce latency** — ms/inference is
   unchanged (OpenVLA 524 → 518, UniVLA 1882 → 1888). It reduces information,
   not compute. Of the interventions here, only action-repeat (fewer forward
