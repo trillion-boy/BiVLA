@@ -28,8 +28,8 @@ costs 524 / 1882 ms. What halves is the number of calls, so the figure above is
 amortized over the episode rather than measured per call. Every other row
 genuinely reduced the cost of a call, where the two are the same number.
 
-² The two backbones' ms are not comparable to each other. UniVLA emits ~10
-actions per call and executes all of them, so per env step it is **~188 ms**,
+² The two backbones' ms are not comparable to each other. UniVLA emits ≈10
+actions per call and executes all of them, so per env step it is **≈188 ms**,
 not 1882; OpenVLA emits one, so its 524 ms *is* the per-step figure. UniVLA is
 the faster policy per env step. The speedup column is within-backbone and is
 unaffected.
@@ -39,7 +39,7 @@ unaffected.
 the largest speedup at 2.00x — is the one that costs UniVLA 68 points.
 
 UniVLA numbers are the post-fix runs (FAST decode failures 0/440-610 in every
-condition). The pre-fix runs, which carried a ~4.5% corrupted-chunk rate,
+condition). The pre-fix runs, which carried a ≈4.5% corrupted-chunk rate,
 gave 92.0 / 24.0 / 98.0 / 86.0 — every condition moved by at most 4 points,
 i.e. within noise, so the defect was not driving any conclusion.
 
@@ -352,7 +352,7 @@ Neither axis above can make UniVLA faster. Temporal is already spent (its
 baseline runs 10 env steps per forward; doubling that collapses it to 28%),
 and spatial never touched wall-clock — a UniVLA step profiles as 6% VQ encode
 / 13% prefill / **70% autoregressive decode** (`docs/VISUAL_TOKENS_VS_LATENCY.md`),
-so the whole visual path is a ~19% ceiling. Reducing visual *tokens* rather
+so the whole visual path is a ≈19% ceiling. Reducing visual *tokens* rather
 than visual *fidelity* does not escape it either: FastV, measured on this
 backbone, left latency at 1.0× while success fell 100 → 75 → 38%.
 
@@ -385,7 +385,7 @@ removing real computation, not just changing the output.
 
 ### The static curve is flat, which is what makes the controller a result
 
-The obvious objection is that the controller averages ~4–5 bypassed layers per
+The obvious objection is that the controller averages ≈4–5 bypassed layers per
 episode, so maybe "prune less" would do the same job with none of the
 machinery. `--depth-prune 4` answers it:
 
@@ -506,8 +506,8 @@ is the number to report:
 
 | speedup | OpenVLA | UniVLA |
 |---|---|---|
-| ~1.13× | 56.0% (−18) | **96.0% (0)**, via the controller |
-| ~1.30× | 28.0% (−46) | 86.0% (−10) |
+| ≈1.13× | 56.0% (−18) | **96.0% (0)**, via the controller |
+| ≈1.30× | 28.0% (−46) | 86.0% (−10) |
 
 This is the third axis on which the two LIBERO backbones dissociate:
 
@@ -535,7 +535,7 @@ it a Pareto win: going from 4 to 8 bypassed layers is free there, so buying
 depth back only during the grasp is pure profit. OpenVLA's curve has no flat
 region, so mixing 2 and 8 can only produce a weighted average of two costs.
 
-**The prediction was recorded before the run:** 40–55% at ~1.15–1.20×, no
+**The prediction was recorded before the run:** 40–55% at ≈1.15–1.20×, no
 better than static. Measured: **50.0% at 445 ms (1.18×)**, with the controller
 reaching the shallow state in 50/50 episodes, so the mechanism engaged fully.
 
