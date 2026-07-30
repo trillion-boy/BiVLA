@@ -41,8 +41,12 @@ def condition_of(s: dict) -> str:
         bits.append(f"exec-chunk{s['exec_chunk']}")
     fov = s.get("foveate") or {}
     if fov.get("enabled"):
+        # NEVER default a missing field to its usual value. `views` was added
+        # to the summary later than the first foveation runs, and defaulting it
+        # to "agent" silently relabelled the matched both-views runs as
+        # agent-only -- exactly the class of error this script exists to catch.
         bits.append(f"foveate-{fov.get('mode')}-{fov.get('keep_percent'):g}%"
-                    f"-{fov.get('center')}-{fov.get('views', 'agent')}")
+                    f"-{fov.get('center')}-{fov.get('views', '?')}")
     d = s.get("depth") or {}
     if d.get("depth_ctrl"):
         bits.append(f"depth-ctrl{d.get('depth_deep')}to{d.get('depth_shallow')}")
@@ -62,15 +66,23 @@ def main() -> None:
 
     problems, rows = [], []
     seen = defaultdict(list)
+    by_content = {}
 
     for path in paths:
         try:
-            s = json.load(open(path))
+            raw = open(path, "rb").read()
+            s = json.loads(raw)
         except Exception as exc:
             problems.append(f"{os.path.basename(path)}: unreadable ({exc})")
             continue
 
         name = os.path.basename(path)
+        # Byte-identical files are re-downloads ("foo (1).json"), not repeated
+        # runs. Counting them as duplicate conditions buries the real ones.
+        digest = hash(raw)
+        if digest in by_content:
+            continue
+        by_content[digest] = name
         backbone = s.get("backbone", "?")
         suite = s.get("task_suite", "?")
         cond = condition_of(s)
@@ -78,15 +90,26 @@ def main() -> None:
         n = len(eps)
         sr = s.get("success_rate", 0.0) * 100
         ms = s.get("avg_model_ms_per_infer", 0.0)
+
+        # A 1-task, 1-trial run is a smoke test, not a broken campaign run.
+        # Keeping it out of the table stops it colliding with the real
+        # baseline as a "duplicate condition".
+        n_tasks = len(s.get("task_ids") or [])
+        n_trials = s.get("n_trials_per_task", 0)
+        if n_tasks <= 2 and n_trials <= 2:
+            print(f"[note] {name}: smoke test ({n_tasks} task x {n_trials} trial) "
+                  f"-- excluded from the table")
+            continue
+
         rows.append((backbone, suite, cond, n, sr, ms, name))
         seen[(backbone, suite, cond)].append((sr, name))
 
         # -- coverage
-        expect = len(s.get("task_ids") or []) * s.get("n_trials_per_task", 0)
+        expect = n_tasks * n_trials
         if expect and n != expect:
             problems.append(f"{name}: {n} episodes, expected {expect}")
-        if len(s.get("task_ids") or []) != 10:
-            problems.append(f"{name}: {len(s.get('task_ids') or [])} tasks, not 10")
+        if n_tasks != 10:
+            problems.append(f"{name}: {n_tasks} tasks, not 10")
 
         # -- did the intervention reach the model?
         d = s.get("depth") or {}
