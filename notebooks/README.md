@@ -35,6 +35,26 @@ hooked at different points, a difference in their results says nothing about the
 backbones. **When porting, keep the hooks and change only the env/policy
 adapters.**
 
+## Each notebook states what it assumes about the policy
+
+The hook *points* are universal; the wiring is not. Every notebook has a
+"what this assumes" section listing the places a different architecture or
+benchmark breaks the method — because all of these fail **quietly**, lowering
+the success rate rather than raising an error, which is indistinguishable from
+"the method does not work on this backbone".
+
+The ones most likely to bite when porting:
+
+- **02** — a policy that consumes a *window* of past frames needs every frame in
+  the window foveated, not just the newest.
+- **03** — action repeat is only meaningful in a **relative/delta** action space.
+  In an absolute one it is a no-op, and the run will look like a free win.
+  CALVIN supports both modes; check which is active.
+- **04** — assumes a flat stack of interchangeable self-attention decoder layers
+  whose autoregressive decode dominates the step. Interleaved cross-attention
+  blocks, non-LLM action heads, and non-`DynamicCache` cache types each break a
+  different part of it.
+
 ## Verification
 
 Every code cell in all four notebooks executes top to bottom with no simulator
