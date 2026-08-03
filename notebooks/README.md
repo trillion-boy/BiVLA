@@ -55,13 +55,29 @@ The ones most likely to bite when porting:
   blocks, non-LLM action heads, and non-`DynamicCache` cache types each break a
   different part of it.
 
+## Nothing benchmark-specific is in the loop
+
+`01` puts every simulator difference into a single `EnvAdapter`: what `reset()`
+and `step()` return (classic gym's 4-tuple vs gymnasium's 5-tuple), where the
+camera frame lives, how success is reported, whether there is a settle period.
+Porting means writing one adapter — the loop and all three hooks stay untouched.
+LIBERO and SimplerEnv adapters are included as examples, neither privileged.
+
 ## Verification
 
 Every code cell in all four notebooks executes top to bottom with no simulator
-and no checkpoint. `04` ends with seven assertions on a small synthetic stack —
-including that a bypassed layer is an exact identity and that the KV cache has
-no gaps, which is the failure that would otherwise show up only as a quietly
-lower success rate.
+and no checkpoint, and each notebook ends in assertions rather than eyeballing:
+
+- **01** runs the loop against both simulator APIs × both policy shapes
+  (chunked and single-action, including a flat `(action_dim,)` return), plus a
+  settle period and an unsolvable env.
+- **02** checks the hook on a single array, a dict of views and a list of views,
+  and that restricting to named views leaves the others bit-identical.
+- **03** shows repeat=2 halving the calls while leaving env steps unchanged, for
+  both a single-action and a chunk-10 policy.
+- **04** ends with seven assertions on a synthetic stack — including that a
+  bypassed layer is an exact identity and that the KV cache has no gaps, the
+  failure that would otherwise surface only as a quietly lower success rate.
 
 ## What is deliberately not here
 
