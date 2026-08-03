@@ -402,10 +402,10 @@ SimplerEnv WidowX-Bridge, 4 tasks × N=24. RoboVLMs is excluded.
 
 | intervention | OpenVLA | SpatialVLA | UniVLA |
 |---|---|---|---|
-| baseline | 15.6% | 32.3% | 78.1% |
-| chunk-exec | n/a ¹ | **45.9% (+13.6, 1.9× faster)** ✓ | 65.6% (−12.5) ✗ |
-| foveate log-polar 20% | **34.4% (+18.8)** ✓ | 25.0% (−7.3) ✗ | **86.5% (+8.3)** ✓ |
-| foveate blur 20% | **33.3% (+17.7)** ✓ | ² | 76.0% (−2.1) △ |
+| baseline | 15.6% | 32.3% | **73.9%** |
+| chunk-exec | n/a ¹ | **45.9% (+13.6, 1.9× faster)** ✓ | 65.6% (−8.3) ✗ |
+| foveate log-polar 20% | **34.4% (+18.8)** ✓ | 25.0% (−7.3) ✗ | **86.5% (+12.6)** ✓ |
+| foveate blur 20% | **33.3% (+17.7)** ✓ | ² | 76.0% (+2.2) △ |
 
 ¹ OpenVLA predicts one action per call, so "execute part of a predicted chunk"
 does not apply (§2.2a).
@@ -429,7 +429,7 @@ The same foveation code has opposite signs on the two benchmarks.
 | backbone | SimplerEnv Bridge | LIBERO spatial |
 |---|---|---|
 | OpenVLA | **+18.8pp** (15.6 → 34.4) | **−74pp** (74.0 → 0.0) |
-| UniVLA | **+8.3pp** (78.1 → 86.5) | **−8pp** (96.0 → 88.0) |
+| UniVLA | **+12.6pp** (73.9 → 86.5) | **−8pp** (96.0 → 88.0) |
 
 What has been narrowed down so far:
 
@@ -437,7 +437,7 @@ What has been narrowed down so far:
   SimplerEnv **both** lost on LIBERO. The direction is the same.
 - **Policy strength alone does not explain it.** The hypothesis that "a weak
   policy benefits from having the background cleaned up" fails to explain
-  UniVLA gaining +8.3 on SimplerEnv from an already strong 78.1% baseline.
+  UniVLA gaining +12.6 on SimplerEnv from an already strong 73.9% baseline.
 - **Gaze placement is unlikely to be the main cause** (§4.1, with the caveat
   stated there).
 
