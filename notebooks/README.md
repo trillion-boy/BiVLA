@@ -17,6 +17,19 @@ Each notebook carries the method's code inline — copied verbatim from
 **Read `01` first.** It defines the control loop and the three hook points that
 `02`–`04` attach to; the other three describe themselves in its terms.
 
+## Method first, our results last
+
+Each notebook states the method and its hook point without reference to any
+particular model, then keeps whatever we happened to measure in a clearly
+marked appendix at the end. **No code cell names a model or a benchmark** — the
+only place benchmark constants appear is inside an `EnvAdapter`, which is the
+one object you are meant to replace.
+
+The appendices report backbones anonymously (A/B/C) on purpose. What transfers
+is the size of the spread between them and the questions worth asking on a new
+setup; the specific numbers do not, and labelling them invites exactly the
+assumption the appendix warns against.
+
 ## Why the hook points are the same for every backbone
 
 Each method is defined at a point that exists in every VLA, not at one specific

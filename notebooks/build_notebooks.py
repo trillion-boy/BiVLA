@@ -402,6 +402,8 @@ cells01 = [
         """LIBERO / robosuite: 4-tuple step, success via `done`, settle first."""
         return EnvAdapter(
             env,
+            # The 180-degree flip is part of LIBERO's convention, applied by
+            # its reference evaluations; it is not a per-policy choice.
             get_image=lambda obs: obs["agentview_image"][::-1, ::-1],
             is_success=lambda obs, term, info: bool(term),
             noop_action=[0, 0, 0, 0, 0, 0, -1],   # -1 = gripper OPEN in LIBERO
@@ -527,8 +529,9 @@ cells01 = [
 
 
     class SingleActionPolicy(StubPolicy):
-        """Emits ONE action per call, as a flat vector -- the OpenVLA-shaped
-        case, and the shape most likely to break a loop that assumes 2-D."""
+        """Emits ONE action per call, as a flat vector.
+
+        The shape most likely to break a loop that assumes 2-D output."""
 
         def step(self, image, instruction):
             return np.zeros((self.action_dim,), dtype=np.float32)
@@ -904,22 +907,35 @@ cells02 = [
     print("\\nhook is shape-agnostic")
     '''),
     md("""
-    ## Caveats to carry into the results table
+    ## Two properties of the method itself
 
-    * **This does not reduce latency.** The image size is unchanged, so the
-      policy processes the same number of visual tokens. Measured: 1882 → 1888
-      ms on UniVLA, 524 → 518 ms on OpenVLA. Foveation is an accuracy
-      intervention; if a speedup is wanted it has to come from somewhere else
-      (see notebook 04).
-    * **Direction of effect is not universal.** On SimplerEnv Bridge, log-polar
-      at 20% *helped* OpenVLA (+18.8) and UniVLA (+8.3) but *hurt* SpatialVLA
-      (−7.3). On LIBERO the same code hurt both of the backbones it helped on
-      Bridge. Expect the sign to depend on the scene, and do not assume a
-      result transfers.
-    * **Fovea placement was tested and is probably not the explanation.**
-      Placing the fovea exactly on the target using simulator ground truth
-      (an upper bound no deployable gaze can beat) did not recover the loss on
-      LIBERO — blur went 58% → 50%, i.e. no detectable improvement.
+    * **It cannot reduce latency.** The output has the same dimensions as the
+      input, so the policy sees the same number of visual tokens and does the
+      same work. This follows from the transform, not from any measurement:
+      foveation is an accuracy intervention. If a speedup is wanted it has to
+      come from somewhere else (notebook 04).
+    * **The sign of the effect is not fixed.** Removing peripheral detail can
+      delete clutter or delete signal depending on where the task-relevant
+      content sits in the frame. Nothing about the transform guarantees which,
+      so treat the direction as an empirical question per scene — not a
+      property to be assumed from another benchmark.
+    """),
+    md("""## Appendix — what we observed on our own runs
+
+Context only. **None of this is a property of the method**; it is what happened on the backbones and benchmarks we ran, at 50 episodes per
+condition, where differences under roughly 18 points are not resolvable.
+Do not carry these numbers to a new setup — carry the questions.
+
+    | | observation |
+    |---|---|
+    | latency | unchanged in every condition we ran (two backbones, ±6 ms) |
+    | direction, benchmark A | log-polar 20% helped two backbones (+18.8, +8.3) and hurt a third (−7.3) |
+    | direction, benchmark B | the same code hurt both of the backbones it had helped on A |
+    | fovea placement | placing the fovea on the target using simulator ground truth — an upper bound no deployable gaze can beat — did not recover the loss (58% → 50%, not distinguishable from chance) |
+
+    The third row is the one worth repeating on a new setup, because it is a
+    cheap way to find out whether a foveation loss is about *where* the fovea
+    is or about *how much* was removed.
     """),
 ]
 write("02_fixed_foveation.ipynb", cells02)
@@ -952,22 +968,23 @@ cells03 = [
     | what gets executed | the **same action, copied** | **two different actions** the model actually predicted |
     | requires | nothing | the policy must emit multiple actions per call |
     | information lost | yes — motion becomes stepwise | comparatively little |
-    | applies to OpenVLA | ✅ | ❌ **impossible** |
+    | works on a single-action policy | ✅ | ❌ **not defined** |
 
-    **OpenVLA emits exactly one action per call**, so there is no chunk to
-    truncate — chunk-exec is not a slower or worse option for it, it simply
-    does not exist. Action repeat is therefore the only temporal intervention
-    that runs *identically* on every backbone, which is why it is the one in
-    the comparison grid.
+    **A policy that emits one action per call has no chunk to truncate**, so
+    chunk-exec is not a worse option for it — it does not exist. Action repeat
+    is therefore the only temporal intervention that runs *identically*
+    regardless of whether a policy chunks, which is what makes it comparable
+    across a set of backbones that do not all chunk.
 
     That is itself a finding worth stating in the analysis: the temporal axis
     is really two mechanisms — one universal but lossy, one lossless but
     requiring native action chunking — and a backbone that cannot chunk is
     forced onto the worse one.
 
-    For reference, on SimplerEnv Bridge chunk-exec at k=2 was SpatialVLA's
-    strongest result (32.3% → 45.9%, at 1.9× faster) while it *cost* UniVLA
-    12.5 points. Same intervention, opposite sign.
+    In our own runs the two came out in opposite directions on different
+    backbones — chunk-exec at k=2 was one backbone's best result (+13.6 at 1.9×
+    faster) and cost another 12.5 points. That is context, not a prediction:
+    see the appendix at the end.
     """),
     md("""
     ## HOOK B — where this goes
@@ -1023,7 +1040,7 @@ cells03 = [
 
 
     # usage with the loop from 01:
-    #   run_episode(env, policy, instruction,
+    #   run_episode(adapter, policy, instruction,
     #               action_fn=make_action_repeat_hook(repeat=2))
     '''),
     code('''
@@ -1123,11 +1140,11 @@ cells03 = [
     and say which. The `run_episode` in notebook 01 returns both
     `ms_per_call` and `ms_per_env_step` for exactly this reason.
 
-    One more asymmetry worth knowing: a policy that already emits a chunk of 10
-    and executes all of them is *already* amortised 10× per call. Applying
-    repeat=2 on top pushes it to 20 environment steps of open-loop execution
-    between observations. That is why the same repeat=2 that cost OpenVLA 8
-    points (within noise) cost UniVLA 68.
+One more asymmetry, and it is structural rather than empirical: a policy that
+    already emits a chunk of 10 and executes all of them is *already* amortised
+    10× per call. Applying repeat=2 on top pushes it to 20 environment steps of
+    open-loop execution between observations, while the same flag on a
+    single-action policy pushes it to 2.
 
     **So repeat=2 is not one intervention strength across backbones.** The
     quantity that actually determines the damage is *environment steps executed
@@ -1207,6 +1224,29 @@ cells03 = [
     print("\\ncalls halve; env steps do not. The per-call cost is untouched,")
     print("so reporting ms/call alone would show no effect at all.")
     '''),
+    md("""## Appendix — what we observed on our own runs
+
+Context only. **None of this is a property of the method**; it is what
+happened on the backbones and benchmarks we ran, at 50 episodes per
+condition, where differences under roughly 18 points are not resolvable.
+Do not carry these numbers to a new setup — carry the questions.
+
+    | condition | observation |
+    |---|---|
+    | repeat 2, single-action policy | −8 points, not distinguishable from chance |
+    | repeat 2, chunk-10 policy | **−68 points** |
+    | chunk-exec k=2, one chunking backbone | **+13.6 points at 1.9× faster** |
+    | chunk-exec k=2, another chunking backbone | −12.5 points |
+
+    Rows 1 and 2 are the same flag at very different open-loop horizons (2 vs
+    20 env steps per observation), so they are not two measurements of one
+    intervention strength. Rows 3 and 4 are the same intervention with opposite
+    signs on two backbones that both support it.
+
+    The transferable lesson is the bookkeeping, not the numbers: **record
+    env-steps-per-observation next to every temporal result**, or a backbone
+    can look fragile when it was simply pushed ten times further.
+    """),
 ]
 write("03_action_repeat.ipynb", cells03)
 
@@ -1221,16 +1261,18 @@ cells04 = [
     states pass straight through to the next layer. No retraining, no
     fine-tuning, no change to the weights that remain.
 
-    **This is the only one of the three that makes a model call cheaper.**
-    Profiling a UniVLA control step gives 6% VQ encoding / 13% prefill / **70%
-    autoregressive decode**, and decode pays for every layer on every generated
-    token. Anything on the visual path is capped at ~19% no matter how
-    aggressive it is; removing layers is what actually moves wall-clock.
+    **This is the only one of the three that makes a model call cheaper**, and
+    the size of the saving follows one quantity: **the share of the step spent
+    inside the decoder stack.** Removing N of L layers removes roughly N/L of
+    that share, and nothing else. So the first thing to do on any backbone is
+    profile a control step and find out what that share is — everything the
+    method can possibly buy is bounded by it.
 
-    That 70% is a UniVLA measurement, not a constant. **Profile the target
-    backbone before assuming the same payoff** — the share of time spent in the
-    decoder stack is what sets the ceiling here, and it differs a lot by
-    architecture (see the assumptions section below).
+    For scale, one backbone we profiled spent 6% on visual encoding, 13% on
+    prefill and **70% on autoregressive decode**, which is why attacking the
+    visual path there was capped at ~19% however aggressive it got. **That
+    split is a property of that model, not a constant** (see the assumptions
+    section below for architectures where it does not hold at all).
 
     **"Fixed"** means the same N layers stay bypassed for the whole episode.
     (A phase-adaptive variant that changes N mid-episode exists and is
@@ -1252,7 +1294,7 @@ cells04 = [
 
     | safeguard | rule | why |
     |---|---|---|
-    | **protect the early stack** | only the back half is eligible | Early layers perform the foundational transforms everything downstream depends on. Measured on Gemma2: bypassing layers 2 and 4 made generation never terminate. |
+    | **protect the early stack** | only the back half is eligible | Early layers perform the foundational transforms everything downstream depends on. On one backbone we ran, bypassing layers 2 and 4 made generation never terminate at all. |
     | **enforce a gap** | no two bypassed layers adjacent | Consecutive removals compound — the second layer's input is already wrong — so a gap-respecting greedy pass runs first, then the remainder fills in. |
 
     Both thresholds (`min_layer=0.5`, `min_gap=1`) are **heuristics tuned on the
@@ -1327,10 +1369,13 @@ cells04 = [
     ```
 
     Finding the layer stack is the only backbone-specific part, and it is
-    handled by walking candidate attribute paths rather than hard-coding one —
-    Emu3 exposes it at `model.model.layers`, while OpenVLA wraps a Llama inside
-    Prismatic so it sits at `model.language_model.model.layers`. A hard-coded
-    path that silently misses is how an "unpruned" run gets reported as pruned.
+    handled by walking candidate attribute paths rather than hard-coding one.
+    A model that *is* the language model exposes the stack at `model.layers`;
+    one wrapped by a multimodal head buries it a level or two deeper, at
+    `model.language_model.model.layers` or similar. A hard-coded path that
+    silently misses is how an "unpruned" run gets reported as pruned, so
+    `find_decoder_layers` returns `None` and the caller refuses to run rather
+    than guessing.
     """),
     code('''
     import math
@@ -1338,7 +1383,13 @@ cells04 = [
 
 
     def find_decoder_layers(model):
-        """Locate the decoder stack across the wrappers different VLAs use."""
+        """Locate the decoder stack across the wrappers different VLAs use.
+
+        Wrappers nest the language model at different depths, so the attribute
+        path is not portable -- one exposes it directly, another buries it
+        under a multimodal wrapper. Walking candidates beats hard-coding a
+        path, which is how a silently-unpruned run gets reported as pruned.
+        """
         candidates = (
             ("model", "layers"),
             ("language_model", "model", "layers"),
@@ -1432,9 +1483,13 @@ cells04 = [
             self._originals, self._active = {}, ()
 
         def _head_shape(self):
-            """Prismatic-style wrappers nest the LLM config; the outer config
-            has no attention shape and a wrong head_dim makes a KV placeholder
-            the cache cannot concatenate."""
+            """Read the attention shape, following nested configs.
+
+            Multimodal wrappers usually keep the language model's config as a
+            sub-config; the outer one carries no attention shape at all, and a
+            wrong head_dim produces a KV placeholder the cache cannot
+            concatenate.
+            """
             cfg = getattr(self.model, "config", None)
             for attr in ("text_config", "llm_config", "language_model_config"):
                 sub = getattr(cfg, attr, None)
@@ -1634,20 +1689,40 @@ cells04 = [
     print("\\nALL CHECKS PASSED")
     '''),
     md("""
-    ## Caveats to carry into the results table
+    ## Three rules that hold regardless of backbone
 
     * **Calibrate on the unpruned stack, every episode.** A bypassed layer has
-      input == output, so if it is measured while already bypassed it scores ~0
-      redundancy and locks itself in permanently.
-    * **How much depth a backbone can spare is a property of the backbone**, and
-      it varies enormously. Measured at the identical rule and ratio (8 of 32
-      layers): Emu3 lost 10 points, Llama-2 lost 46. Gemma2 (26 layers) lost
-      accuracy on 3 of 4 tasks with a **single** layer bypassed. Do not carry a
-      value of N across backbones — measure the curve.
-    * **Verify the speedup actually happened.** Bypassing layers should reduce
-      ms/call by roughly N/total. If success drops and latency did not move,
-      the layers were not really bypassed — check that `find_decoder_layers`
-      found the right stack.
+      input == output, so measuring it while already bypassed scores it ~0
+      redundancy and locks it in permanently.
+    * **Do not carry a value of N between backbones — measure the curve.** How
+      much depth a model can spare is a property of that model, and the rule
+      above only ranks layers; it does not tell you how many are safe to cut.
+    * **Verify the speedup actually happened.** Bypassing N of L layers should
+      reduce ms/call by roughly N/L. If success dropped and latency did not
+      move, the layers were not really bypassed — check that
+      `find_decoder_layers` found the right stack rather than concluding the
+      method failed.
+    """),
+    md("""## Appendix — what we observed on our own runs
+
+Context only. **None of this is a property of the method**; it is what
+happened on the backbones and benchmarks we ran, at 50 episodes per
+condition, where differences under roughly 18 points are not resolvable.
+Do not carry these numbers to a new setup — carry the questions.
+
+    Run at the **identical rule and ratio** — 8 of 32 layers, same ranking, same
+    safeguards — the tolerance differed by a factor of four or more:
+
+    | backbone family | layers | at 8/32 bypassed |
+    |---|---|---|
+    | A | 32 | −10 points |
+    | B | 32 | **−46 points** |
+    | C | 26 | lost accuracy on 3 of 4 tasks at a **single** bypassed layer |
+
+    The spread is the finding. It is also the reason the selection rule lives in
+    one shared place: a claim that backbones differ in exploitable depth
+    redundancy means nothing unless every backbone was ranked and cut
+    identically.
     """),
 ]
 write("04_fixed_depth_pruning.ipynb", cells04)
