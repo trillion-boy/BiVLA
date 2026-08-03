@@ -1178,37 +1178,58 @@ cells03 = [
     **To add a fourth backbone: nothing to do.**
     """),
     md("""
-    ## ⚠️ This only means anything in a *relative* action space
+    ## ⚠️ Before running this on a new benchmark: is the action space relative?
 
-    **The single most important thing to check before running this condition.**
+    > **Who this is for:** whoever sets up a benchmark this method has not been
+    > run on yet. **When:** once, at setup — not per run.
+    >
+    > Already checked: **LIBERO** (robosuite `OSC_POSE`) and **SimplerEnv** are
+    > both relative, so results from them are interpretable as-is.
+    > **Not checked: CALVIN**, which exposes *both* relative and absolute action
+    > modes, with the active one depending on the config and on how the policy
+    > was trained.
 
-    | action space | what `np.repeat` actually does |
-    |---|---|
-    | **relative / delta** (`Δx, Δy, Δz, Δrot, gripper`) | commands the same displacement twice → the arm travels **twice as far** open-loop. This is the intervention as intended. |
-    | **absolute** (target joint angles, or an absolute end-effector pose) | commands the same *target* twice → the second step is a **no-op**; the arm simply holds position. |
+    Repeating an action does something completely different depending on what
+    an action *is*:
 
-    In an absolute action space, action repeat costs nothing and does nothing.
-    Success barely moves, model calls halve, and the obvious conclusion —
-    "action repeat is free on this backbone!" — is entirely an artifact of the
-    controller. The run would look like a clean win and would be meaningless.
+    | action space | an action means | repeating it twice |
+    |---|---|---|
+    | **relative / delta** (`Δx, Δy, Δz, Δrot, gripper`) | "move 5 cm forward" | moves 10 cm — the arm travels **twice as far** open-loop. The intervention as intended. |
+    | **absolute** (target joint angles or end-effector pose) | "go to position (30, 20)" | already there — the second step is a **no-op** and the arm holds still. |
 
-    LIBERO (robosuite `OSC_POSE`) and SimplerEnv are both delta, which is why
-    the numbers reported so far are interpretable. **CALVIN supports both**: it
-    exposes relative and absolute action modes, and which one is active depends
-    on the config and on how the policy was trained. Check it explicitly.
+    ### Why this is worth ten minutes
+
+    In an absolute action space the condition **costs nothing and does nothing**:
+
+    * success rate barely moves — no real intervention was applied
+    * model calls genuinely halve — the model really was called half as often
+
+    The results table then reads **"2× faster at no cost in accuracy"**, which
+    looks like the strongest result in the whole study and is entirely an
+    artifact of the controller absorbing the repeat. Nothing about the run
+    errors, warns, or looks wrong.
+
+    ### The check
+
+    Hold one action for several steps and watch whether the arm keeps moving.
+    No theory needed.
 
     ```python
-    # Quick check, no theory required: hold one action for many steps
-    # and see whether the arm keeps moving or stops.
     obs = env.reset()
-    a = policy.step(get_image(obs), instruction)[0]
+    a = policy.step(get_image(obs), instruction)[0]   # one action
+
     positions = []
     for _ in range(10):
-        obs, *_ = env.step(list(a))
-        positions.append(read_ee_position(obs))   # whatever the env exposes
-    # keeps drifting  -> relative  (repeat is meaningful)
-    # stops after one -> absolute  (repeat is a no-op; do not run this condition)
+        obs, *_ = env.step(list(a))                  # the SAME action, 10 times
+        positions.append(read_ee_position(obs))      # however the env exposes it
+
+    print(positions)
+    # keeps drifting  -> relative   run this condition; results are meaningful
+    # stops after one -> absolute   do NOT run it; repeat is a no-op here
     ```
+
+    If the action space turns out to be absolute, the temporal axis needs a
+    different intervention on that benchmark — not this one.
 
     ## What it costs the trajectory (relative action spaces)
 
