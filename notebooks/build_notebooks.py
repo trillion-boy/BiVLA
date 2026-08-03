@@ -324,6 +324,43 @@ cells01 = [
             return obs, term, trunc, info
     '''),
     md("""
+    ## The policy contract, as we actually implemented it
+
+    All three backbones we ran expose the same two methods, so the loop above
+    drives them unchanged. Each wrapper is ~150 lines and does nothing but
+    translate between this contract and the checkpoint's own API.
+
+    ```python
+    class <Backbone>Inference:
+        def reset(self) -> None: ...
+        def step(self, image, instruction, wrist_image=None) -> np.ndarray
+            # returns (T, action_dim) in the benchmark's action convention
+    ```
+
+    What differs between them is only what comes back:
+
+    | backbone | T (actions per call) | views used | notes |
+    |---|---|---|---|
+    | OpenVLA | **1** | agent only | one action per forward; no chunk exists |
+    | UniVLA (Emu3) | ~10 | agent **+ wrist** | raises if the wrist view is missing on a checkpoint trained with it |
+    | SpatialVLA | chunk | agent only | accepts `wrist_image` and ignores it |
+
+    Two things belong in the wrapper and nowhere else, because they are
+    checkpoint properties rather than method properties:
+
+    * **`unnorm_key`** — which dataset's percentile statistics de-normalise the
+      action. Passed explicitly and validated against the keys the checkpoint
+      actually ships; a wrong key produces plausible-looking but wrong motion.
+    * **the gripper convention** — the training range and sign differ per
+      checkpoint. OpenVLA's LIBERO wrapper rescales `[0,1] -> [-1,1]`,
+      binarises by sign, then **inverts**, because LIBERO uses `-1 = open`.
+      Doing only one of those two steps gives a policy that reaches correctly
+      and never grasps.
+
+    Neither belongs in a method notebook — but both must be right before any
+    intervention result means anything.
+    """),
+    md("""
     ## The reference loop
 
     Deliberately plain. The hooks are `image_fn` / `action_fn` parameters that
@@ -494,43 +531,6 @@ cells01 = [
               f"{summary['avg_steps_per_call']:.1f} env-steps/call")
         return summary
     '''),
-    md("""
-    ## The policy contract, as we actually implemented it
-
-    All three backbones we ran expose the same two methods, so the loop above
-    drives them unchanged. Each wrapper is ~150 lines and does nothing but
-    translate between this contract and the checkpoint's own API.
-
-    ```python
-    class <Backbone>Inference:
-        def reset(self) -> None: ...
-        def step(self, image, instruction, wrist_image=None) -> np.ndarray
-            # returns (T, action_dim) in the benchmark's action convention
-    ```
-
-    What differs between them is only what comes back:
-
-    | backbone | T (actions per call) | views used | notes |
-    |---|---|---|---|
-    | OpenVLA | **1** | agent only | one action per forward; no chunk exists |
-    | UniVLA (Emu3) | ~10 | agent **+ wrist** | raises if the wrist view is missing on a checkpoint trained with it |
-    | SpatialVLA | chunk | agent only | accepts `wrist_image` and ignores it |
-
-    Two things belong in the wrapper and nowhere else, because they are
-    checkpoint properties rather than method properties:
-
-    * **`unnorm_key`** — which dataset's percentile statistics de-normalise the
-      action. Passed explicitly and validated against the keys the checkpoint
-      actually ships; a wrong key produces plausible-looking but wrong motion.
-    * **the gripper convention** — the training range and sign differ per
-      checkpoint. OpenVLA's LIBERO wrapper rescales `[0,1] -> [-1,1]`,
-      binarises by sign, then **inverts**, because LIBERO uses `-1 = open`.
-      Doing only one of those two steps gives a policy that reaches correctly
-      and never grasps.
-
-    Neither belongs in a method notebook — but both must be right before any
-    intervention result means anything.
-    """),
     md(CAVEAT_MEASURE),
     md("""
     ## Portability check — run this before trusting the loop anywhere
