@@ -920,17 +920,20 @@ cells02 = [
       so treat the direction as an empirical question per scene — not a
       property to be assumed from another benchmark.
     """),
-    md("""## Appendix — what we observed on our own runs
+    md("""
+    ## Appendix — what we observed on our own runs
 
-Context only. **None of this is a property of the method**; it is what happened on the backbones and benchmarks we ran, at 50 episodes per
-condition, where differences under roughly 18 points are not resolvable.
-Do not carry these numbers to a new setup — carry the questions.
+    Context only. **None of this is a property of the method** — it is what
+    happened on the backbones and benchmarks we ran, at 50–96 episodes per
+    condition depending on the benchmark. At those sizes a difference of
+    roughly 10 points or less is not reliably distinguishable from chance.
+    Do not carry these numbers to a new setup — carry the questions.
 
     | | observation |
     |---|---|
     | latency | unchanged in every condition we ran (two backbones, ±6 ms) |
-    | direction, benchmark A | log-polar 20% helped two backbones (+18.8, +8.3) and hurt a third (−7.3) |
-    | direction, benchmark B | the same code hurt both of the backbones it had helped on A |
+    | direction, benchmark A | log-polar 20% moved one backbone clearly up (+18.8) and two others by less than the resolution (+8.3, −7.3) |
+    | direction, benchmark B | the same code hurt both of the backbones that had gone up on A, one of them decisively (−74) |
     | fovea placement | placing the fovea on the target using simulator ground truth — an upper bound no deployable gaze can beat — did not recover the loss (58% → 50%, not distinguishable from chance) |
 
     The third row is the one worth repeating on a new setup, because it is a
@@ -1224,12 +1227,14 @@ One more asymmetry, and it is structural rather than empirical: a policy that
     print("\\ncalls halve; env steps do not. The per-call cost is untouched,")
     print("so reporting ms/call alone would show no effect at all.")
     '''),
-    md("""## Appendix — what we observed on our own runs
+    md("""
+    ## Appendix — what we observed on our own runs
 
-Context only. **None of this is a property of the method**; it is what
-happened on the backbones and benchmarks we ran, at 50 episodes per
-condition, where differences under roughly 18 points are not resolvable.
-Do not carry these numbers to a new setup — carry the questions.
+    Context only. **None of this is a property of the method** — it is what
+    happened on the backbones and benchmarks we ran, at 50–96 episodes per
+    condition depending on the benchmark. At those sizes a difference of
+    roughly 10 points or less is not reliably distinguishable from chance.
+    Do not carry these numbers to a new setup — carry the questions.
 
     | condition | observation |
     |---|---|
@@ -1703,21 +1708,28 @@ cells04 = [
       `find_decoder_layers` found the right stack rather than concluding the
       method failed.
     """),
-    md("""## Appendix — what we observed on our own runs
+    md("""
+    ## Appendix — what we observed on our own runs
 
-Context only. **None of this is a property of the method**; it is what
-happened on the backbones and benchmarks we ran, at 50 episodes per
-condition, where differences under roughly 18 points are not resolvable.
-Do not carry these numbers to a new setup — carry the questions.
+    Context only. **None of this is a property of the method** — it is what
+    happened on the backbones and benchmarks we ran, at 50–96 episodes per
+    condition depending on the benchmark. At those sizes a difference of
+    roughly 10 points or less is not reliably distinguishable from chance.
+    Do not carry these numbers to a new setup — carry the questions.
 
-    Run at the **identical rule and ratio** — 8 of 32 layers, same ranking, same
-    safeguards — the tolerance differed by a factor of four or more:
+    Ranked and cut by the **identical rule**, how much depth each backbone
+    could spare differed enormously:
 
-    | backbone family | layers | at 8/32 bypassed |
-    |---|---|---|
-    | A | 32 | −10 points |
-    | B | 32 | **−46 points** |
-    | C | 26 | lost accuracy on 3 of 4 tasks at a **single** bypassed layer |
+    | backbone | layers | bypassed | result |
+    |---|---|---|---|
+    | A | 32 | 8 (25%) | −10 points |
+    | B | 32 | 8 (25%) | **−46 points** |
+    | C | 26 | **1** (4%) | lost accuracy on 3 of 4 tasks |
+
+    A and B are directly comparable — same depth, same ratio, and a 4.6× gap in
+    what it cost. C is not on that scale at all: it was never run at 25%,
+    because a single bypassed layer already hurt. Read C as "broke immediately",
+    not as a third point on the same curve.
 
     The spread is the finding. It is also the reason the selection rule lives in
     one shared place: a claim that backbones differ in exploitable depth
