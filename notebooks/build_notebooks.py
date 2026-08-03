@@ -23,7 +23,36 @@ def code(text):
             "outputs": [], "source": textwrap.dedent(text).strip("\n").splitlines(keepends=True)}
 
 
+def _check_markdown(name, cells):
+    """Refuse to write a markdown cell that renders as a preformatted block.
+
+    Markdown treats a 4-space-indented line as code. These cells are authored
+    as indented triple-quoted strings and dedented on the way out, so a single
+    line left at column 0 makes textwrap.dedent find no common prefix, strip
+    nothing, and turn the whole cell into a grey box. It is invisible in the
+    source and only shows up when the notebook is opened, which is exactly why
+    it is checked here instead of by eye.
+    """
+    for i, c in enumerate(cells):
+        if c["cell_type"] != "markdown":
+            continue
+        in_fence = False
+        for ln, line in enumerate("".join(c["source"]).split("\n")):
+            if line.strip().startswith("```"):
+                in_fence = not in_fence
+                continue
+            if in_fence or not line.strip():
+                continue
+            if line.startswith("    "):
+                raise SystemExit(
+                    f"{name} cell {i} line {ln}: indented prose outside a code "
+                    f"fence -- this cell would render as a code block.\n"
+                    f"  {line[:70]}\n"
+                    f"  (usually one line left at column 0 defeats the dedent)")
+
+
 def write(name, cells):
+    _check_markdown(name, cells)
     nb = {
         "cells": cells,
         "metadata": {
@@ -465,6 +494,43 @@ cells01 = [
               f"{summary['avg_steps_per_call']:.1f} env-steps/call")
         return summary
     '''),
+    md("""
+    ## The policy contract, as we actually implemented it
+
+    All three backbones we ran expose the same two methods, so the loop above
+    drives them unchanged. Each wrapper is ~150 lines and does nothing but
+    translate between this contract and the checkpoint's own API.
+
+    ```python
+    class <Backbone>Inference:
+        def reset(self) -> None: ...
+        def step(self, image, instruction, wrist_image=None) -> np.ndarray
+            # returns (T, action_dim) in the benchmark's action convention
+    ```
+
+    What differs between them is only what comes back:
+
+    | backbone | T (actions per call) | views used | notes |
+    |---|---|---|---|
+    | OpenVLA | **1** | agent only | one action per forward; no chunk exists |
+    | UniVLA (Emu3) | ~10 | agent **+ wrist** | raises if the wrist view is missing on a checkpoint trained with it |
+    | SpatialVLA | chunk | agent only | accepts `wrist_image` and ignores it |
+
+    Two things belong in the wrapper and nowhere else, because they are
+    checkpoint properties rather than method properties:
+
+    * **`unnorm_key`** — which dataset's percentile statistics de-normalise the
+      action. Passed explicitly and validated against the keys the checkpoint
+      actually ships; a wrong key produces plausible-looking but wrong motion.
+    * **the gripper convention** — the training range and sign differ per
+      checkpoint. OpenVLA's LIBERO wrapper rescales `[0,1] -> [-1,1]`,
+      binarises by sign, then **inverts**, because LIBERO uses `-1 = open`.
+      Doing only one of those two steps gives a policy that reaches correctly
+      and never grasps.
+
+    Neither belongs in a method notebook — but both must be right before any
+    intervention result means anything.
+    """),
     md(CAVEAT_MEASURE),
     md("""
     ## Portability check — run this before trusting the loop anywhere
@@ -777,6 +843,41 @@ cells02 = [
     #               image_fn=make_foveation_hook("blur", 20.0))
     '''),
     md("""
+    ## How this was wired into the three backbones we ran
+
+    **It was not wired into any of them.** That is the whole point of hook A.
+
+    All three run through one shared evaluation loop, and the transform is
+    applied there — on the frame read from the environment, before the frame
+    reaches `policy.step`. From `adaptive_sparse_vla/eval_libero.py`:
+
+    ```python
+    image = get_libero_image(obs)            # raw env frame, 256x256 uint8
+    wrist_image = get_libero_wrist_image(obs)
+
+    policy_image, policy_wrist = image, wrist_image
+    if args.foveate:
+        policy_image = apply_foveation(image, args, fov_gaze)
+        if args.foveate_views == "both":
+            policy_wrist = apply_foveation(wrist_image, args, None)
+
+    action_chunk = model.step(policy_image, instruction,
+                              wrist_image=policy_wrist)     # <- unchanged
+    ```
+
+    `model` here is the OpenVLA, UniVLA or SpatialVLA wrapper, selected by a
+    flag. **None of them contains a line of foveation code**, and none of them
+    knows whether the frame it received was transformed.
+
+    That is what makes the comparison legitimate: the three backbones get
+    pixel-identical inputs from an identical call site, so a difference in
+    their results is a difference between the backbones and not between three
+    slightly different integrations.
+
+    **To add a fourth backbone, write a wrapper with a `step` method. There is
+    no foveation work to do.**
+    """),
+    md("""
     ## What this assumes about the policy — check before porting
 
     The transform itself is model-agnostic, but *wiring it in* is not. Four
@@ -1053,6 +1154,30 @@ cells03 = [
     print("tile (WRONG)  :", np.tile(demo, (2, 1))[:, 0].tolist())
     '''),
     md("""
+    ## How this was wired into the three backbones we ran
+
+    Also nowhere — same as hook A. One line in the shared loop, after every
+    policy has already returned. From `adaptive_sparse_vla/eval_libero.py`:
+
+    ```python
+    action_chunk = model.step(policy_image, instruction, wrist_image=policy_wrist)
+
+    if args.exec_chunk > 0:
+        action_chunk = action_chunk[: args.exec_chunk]        # truncate first
+    if args.action_repeat > 1:
+        action_chunk = np.repeat(action_chunk, args.action_repeat, axis=0)
+
+    for action_row in action_chunk:
+        obs, _, done, _ = env.step(action_row.tolist())
+    ```
+
+    It works unchanged whether `action_chunk` came back with one row (OpenVLA)
+    or ten (UniVLA), which is exactly why this is the temporal condition that
+    is comparable across all of them.
+
+    **To add a fourth backbone: nothing to do.**
+    """),
+    md("""
     ## ⚠️ This only means anything in a *relative* action space
 
     **The single most important thing to check before running this condition.**
@@ -1143,8 +1268,8 @@ cells03 = [
     and say which. The `run_episode` in notebook 01 returns both
     `ms_per_call` and `ms_per_env_step` for exactly this reason.
 
-One more asymmetry, and it is structural rather than empirical: a policy that
-    already emits a chunk of 10 and executes all of them is *already* amortised
+    One more asymmetry, and it is structural rather than empirical: a policy
+    that already emits a chunk of 10 and executes all of them is *already* amortised
     10× per call. Applying repeat=2 on top pushes it to 20 environment steps of
     open-loop execution between observations, while the same flag on a
     single-action policy pushes it to 2.
@@ -1558,6 +1683,75 @@ cells04 = [
             self._done = False
             self.restore()
     '''),
+    md("""
+    ## How this was wired into the three backbones we ran
+
+    This is the one hook that **does** need per-backbone code — and it is worth
+    being precise about which part, because the rest is shared on purpose.
+
+    ### Shared, identical for every backbone (`adaptive_sparse_vla/depth_prune.py`)
+
+    Locating the stack, the redundancy metric, the ranking rule, both
+    safeguards, the bypass module, and the restore bookkeeping. A claim that
+    backbones differ in exploitable depth redundancy only means something if
+    every backbone was ranked and cut by the same rule, so this lives in one
+    file that all three import.
+
+    ### Per-backbone: only *how the measurement is taken*
+
+    The metric is the same — layer input vs layer output on the real prompt's
+    prefill — but the backbones do not expose the same call path.
+
+    **UniVLA (Emu3)** can be called directly, so it asks for hidden states:
+
+    ```python
+    out = self.model.model(input_ids=..., attention_mask=...,
+                           use_cache=False, output_hidden_states=True,
+                           return_dict=True)
+    hs = out.hidden_states
+    return [1.0 - cos(a, b).mean() for a, b in zip(hs[:-1], hs[1:])]
+    ```
+
+    Costs **one extra prefill** per calibration, which slightly inflates this
+    backbone's measured ms/infer — i.e. it biases *against* depth pruning here,
+    not for it.
+
+    **OpenVLA** cannot: its `generate` is wrapped inside `predict_action`, with
+    no way to ask for hidden states. So forward hooks ride along on the first
+    real action prediction of the episode:
+
+    ```python
+    if self.depth.needs_calibration():
+        captured = {}
+        importance = measure_redundancy_with_hooks(
+            self.depth.layers(), lambda: captured.setdefault("a", _predict()))
+        action = captured.get("a")          # reuse the hooked call's output
+        self.depth.calibrate(importance)
+    else:
+        action = _predict()
+    ```
+
+    Costs **no extra forward pass** — that episode's first step simply runs
+    unpruned, 1 of up to ~230.
+
+    **SpatialVLA (Gemma2)** needed a separate implementation
+    (`SpatialVLA/experiments/tome/depth_prune_gemma2.py`) because its cache is
+    a pre-allocated sliding-window `HybridCache` rather than the per-layer list
+    the shared bypass writes into.
+
+    ### What this means for a fourth backbone
+
+    Two questions, in order:
+
+    1. Does `find_decoder_layers` return the stack? If not, add its path — do
+       not let it return `None` and run anyway.
+    2. Does cached generation still match uncached greedy decoding once layers
+       are bypassed? If not, the cache is not a per-layer list and the
+       placeholder needs rewriting for that cache type.
+
+    Everything else — ranking, safeguards, the N-layer choice — is already
+    shared and should not be re-implemented.
+    """),
     md("""
     ## What this assumes about the architecture — check before porting
 
