@@ -172,6 +172,18 @@ def parse_args():
         "inference cost per env step.",
     )
     p.add_argument(
+        "--action-repeat",
+        type=int,
+        default=1,
+        help="Hold each predicted action for N consecutive env steps (1 = off). "
+        "Applied AFTER --exec-chunk truncation, so the two compose as "
+        "'truncate to k, then hold each for N'. Unlike the other backbones, "
+        "UniVLA's baseline already executes a 5-action chunk per forward, so "
+        "N=2 puts it at ~10 env steps of open-loop execution per observation "
+        "rather than 2 -- record steps-per-call alongside the success rate or "
+        "the comparison is not at a matched horizon.",
+    )
+    p.add_argument(
         "--foveate", action="store_true", default=False,
         help="foveate the policy's visual input; the env still steps on the "
         "raw, unfoveated scene.",
@@ -561,6 +573,14 @@ def main():
             if args.exec_chunk > 0:
                 env_actions = env_actions[: args.exec_chunk]
                 raw_actions = raw_actions[: args.exec_chunk]
+            # --- HOOK B: hold each action for N consecutive env steps --------
+            # Truncate first, then repeat: with k=2, N=2 this executes two
+            # actions twice each, whereas repeating first would execute the
+            # first action twice and nothing else. Repeat each element in
+            # place (np.repeat semantics), NOT tile -- [a,b] -> [a,a,b,b].
+            if args.action_repeat > 1:
+                env_actions = [a for a in env_actions for _ in range(args.action_repeat)]
+                raw_actions = [a for a in raw_actions for _ in range(args.action_repeat)]
             if args.save_video and step % 4 == 0:
                 frames.append(raw_frame)
                 prepared_frame = model.last_prepared_image()
@@ -674,6 +694,7 @@ def main():
             np.mean([r["model_ms_per_env_step"] for r in results])
         ),
         "exec_chunk": int(args.exec_chunk),
+        "action_repeat": int(args.action_repeat),
         "predict_action_frames": int(getattr(model, "predict_action_frames", 5)),
         "foveate": {
             "enabled": bool(args.foveate),
