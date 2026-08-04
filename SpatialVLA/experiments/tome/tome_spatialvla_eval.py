@@ -65,6 +65,13 @@ def parse_args():
     p.add_argument("--spec-decode-cache-budget", type=int, default=64,
                    help="HybridCache is sized prompt_len+this (not +max_new_tokens=256) "
                         "to cut clone cost; raise if a WARNING about hitting the budget appears")
+    p.add_argument("--action-repeat", type=int, default=1,
+                   help="hold each predicted action for N consecutive env steps "
+                        "(1 = off). At N=2 the model is called half as often. "
+                        "Only meaningful in a RELATIVE action space -- SimplerEnv's "
+                        "world_vector is a displacement, so repeating it moves the "
+                        "arm twice as far; in an absolute action space the repeat "
+                        "would be a silent no-op.")
     p.add_argument("--exec-chunk", type=int, default=0,
                    help="execute k of the model's predicted action chunk per generate "
                         "(0 = off = re-generate every step; k>chunk_size clamps to chunk_size). "
@@ -251,10 +258,18 @@ def main():
                 action["world_vector"], action["rot_axangle"],
                 np.atleast_1d(action["gripper"]),
             ])
-            obs, _, done, truncated, info = env.step(env_action)
-            final_info = info
-            if not grasped and isinstance(info, dict) and info.get("is_src_obj_grasped", False):
-                grasped = True
+            # --- HOOK B: hold this action for N consecutive env steps -------
+            # Applied after the policy has returned and before the env sees it,
+            # so the policy itself is untouched and every backbone gets the
+            # identical operation. N=1 is the unmodified loop.
+            for _ in range(max(1, args.action_repeat)):
+                obs, _, done, truncated, info = env.step(env_action)
+                final_info = info
+                if not grasped and isinstance(info, dict) and info.get("is_src_obj_grasped", False):
+                    grasped = True
+                step += 1
+                if done or truncated or step >= cfg["max_episode_steps"]:
+                    break
             image = observe(env, obs)
             new_instr = env.get_language_instruction()
             if new_instr != instruction:
@@ -263,7 +278,6 @@ def main():
                 if chunk_state is not None:
                     from chunk_exec import reset_chunk_execution
                     reset_chunk_execution(policy)  # task changed -> stale plan, replan now
-            step += 1
 
         success = bool(final_info.get("success", done))
         grasped = grasped or bool(final_info.get("ever_grasped_src", False))
@@ -282,6 +296,8 @@ def main():
     avg_ms = float(np.mean([r["model_ms_per_infer"] for r in results]))
     avg_steps = float(np.mean([r["steps"] for r in results]))
     parts = []
+    if args.action_repeat > 1:
+        parts.append(f"action-repeat={args.action_repeat}")
     if args.foveate:
         parts.append(f"foveated[{args.foveate_mode}/{args.foveate_center}/"
                      f"{args.foveate_phase}] keep={args.foveate_keep_percent:.0f}%")
@@ -344,6 +360,7 @@ def main():
                          "draft_layers": spec_pruner.ranking[:args.spec_decode_layer_count],
                          "ranking": spec_pruner.ranking, "stats": spec_stats}
                         if args.spec_decode and spec_pruner is not None else {"enabled": False}),
+        "action_repeat": int(args.action_repeat),
         "exec_chunk": ({"enabled": True, "k": chunk_state["k"],
                         "chunk_size": chunk_state["chunk_size"],
                         "gen_calls": chunk_state["gen_calls"], "steps": chunk_state["steps"]}
