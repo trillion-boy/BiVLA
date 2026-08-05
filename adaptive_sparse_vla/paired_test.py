@@ -1,18 +1,31 @@
-"""Compare two LIBERO runs as a paired experiment, which is what they are.
+"""Compare two runs as a paired experiment, which is what they are.
 
-Every condition in this campaign replays the SAME (task_id, trial) initial
-states through the same deterministic loop, so a run is 50 matched pairs, not
-50 independent samples from each of two populations. Treating them as
-independent -- which is what a two-proportion z-test does -- throws away the
-pairing and badly understates the evidence: at n=50 an unpaired test cannot
-resolve anything smaller than roughly 18 points, so real 8-16 point effects get
-reported as "noise" when the paired data may say otherwise.
+Every condition in this campaign replays the SAME initial states through the
+same deterministic loop, so a run is N matched pairs, not N independent samples
+from each of two populations. Treating them as independent -- which is what a
+two-proportion z-test does -- throws away the pairing and badly understates the
+evidence: at n=50 an unpaired test cannot resolve anything smaller than roughly
+18 points, so real 8-16 point effects get reported as "noise" when the paired
+data may say otherwise.
 
 McNemar's test uses only the episodes where the two runs DISAGREE. If an
 episode succeeds under both conditions, or fails under both, it carries no
 information about which condition is better and only inflates the variance.
 
-    python paired_test.py baseline.json foveate_blur.json
+Both harnesses are supported, and each is detected from the episode records
+rather than from a flag:
+
+    LIBERO      one summary JSON per run, episodes keyed by (task_id, trial)
+    SimplerEnv  one summary JSON per TASK, episodes keyed by ep_id
+
+    python paired_test.py baseline.json foveate_blur.json         # LIBERO
+    python paired_test.py runs/baseline runs/action_repeat2       # SimplerEnv
+
+For SimplerEnv, pass the directory holding the per-task subdirectories; every
+`results_*.json` beneath it is merged and keyed by (task, ep_id). The per-task
+files are required to agree on the condition they were run under -- a directory
+that mixes, say, an action-repeat run with a baseline run is a mistake, not a
+condition, so it is refused rather than averaged.
 
 Prints the 2x2 agreement table, the exact binomial p-value on the discordant
 pairs, and the per-task breakdown -- the last because a change that costs 5
@@ -25,21 +38,97 @@ p-value that looks fine and answers a question nobody asked.
 """
 from __future__ import annotations
 
+import glob
 import json
 import os
 import sys
 from math import comb
 
+# Fields that define WHICH condition a SimplerEnv run is. Per-task files inside
+# one directory must agree on all of them, or the directory is not one run.
+_CONDITION_FIELDS = (
+    "model_type", "exec_chunk", "action_repeat", "llm_prune_count",
+    "foveate", "fastv", "depth_ctrl",
+)
+
+
+def _episodes_of(summary: dict, path: str) -> tuple[str, dict]:
+    """-> (schema, {key: success}) for one summary, schema detected from a record."""
+    records = summary.get("episodes") or []
+    if not records:
+        raise SystemExit(f"{path}: no episodes in this summary")
+    first = records[0]
+    if "task_id" in first and "trial" in first:
+        return "libero", {
+            (e["task_id"], e["trial"]): bool(e["success"]) for e in records
+        }
+    if "ep_id" in first:
+        task = summary.get("task")
+        if not task:
+            raise SystemExit(f"{path}: SimplerEnv summary has no 'task' field")
+        return "simpler_env", {
+            (task, e["ep_id"]): bool(e["success"]) for e in records
+        }
+    raise SystemExit(
+        f"{path}: cannot tell which harness wrote this -- episode records have "
+        f"neither (task_id, trial) nor ep_id, only {sorted(first)}"
+    )
+
 
 def load(path: str) -> tuple[dict, dict]:
-    with open(path) as fh:
-        s = json.load(fh)
-    eps = {}
-    for e in s.get("episodes") or []:
-        eps[(e["task_id"], e["trial"])] = bool(e["success"])
-    if not eps:
-        raise SystemExit(f"{path}: no episodes in this summary")
-    return s, eps
+    """Load one run. `path` is a summary JSON, or a SimplerEnv run directory."""
+    if not os.path.isdir(path):
+        with open(path) as fh:
+            summary = json.load(fh)
+        schema, eps = _episodes_of(summary, path)
+        summary.setdefault("task_suite", schema)
+        return summary, eps
+
+    files = sorted(
+        glob.glob(os.path.join(path, "results_*.json"))
+        + glob.glob(os.path.join(path, "*", "results_*.json"))
+    )
+    if not files:
+        raise SystemExit(f"{path}: no results_*.json under this directory")
+
+    merged: dict = {}
+    per_file: list[tuple[str, dict]] = []
+    for f in files:
+        with open(f) as fh:
+            s = json.load(fh)
+        schema, eps = _episodes_of(s, f)
+        if schema != "simpler_env":
+            raise SystemExit(
+                f"{f}: a directory of runs is the SimplerEnv layout, but this "
+                f"file is {schema}. Pass the LIBERO summary JSON directly."
+            )
+        clash = merged.keys() & eps.keys()
+        if clash:
+            raise SystemExit(
+                f"{f}: episodes {sorted(clash)[:4]} already came from another "
+                f"file in {path} -- the same task appears twice"
+            )
+        merged.update(eps)
+        per_file.append((f, s))
+
+    # One directory is supposed to be ONE condition. If the per-task files
+    # disagree about the condition, merging them produces a number that
+    # describes no experiment that was actually run.
+    ref_path, ref = per_file[0]
+    for f, s in per_file[1:]:
+        for field in _CONDITION_FIELDS:
+            if s.get(field) != ref.get(field):
+                raise SystemExit(
+                    f"{path}: these per-task files were not run under the same "
+                    f"condition -- '{field}' is {ref.get(field)!r} in "
+                    f"{os.path.basename(ref_path)} but {s.get(field)!r} in "
+                    f"{os.path.basename(f)}"
+                )
+
+    summary = dict(ref)
+    summary["task"] = f"{len(per_file)} tasks"
+    summary["task_suite"] = "simpler_env"
+    return summary, merged
 
 
 def exact_two_sided(b: int, c: int) -> float:
@@ -57,30 +146,67 @@ def exact_two_sided(b: int, c: int) -> float:
     return min(1.0, 2.0 * tail)
 
 
+def horizon(summary: dict) -> int | None:
+    """Env steps executed per model call, or None if the run did not record it.
+
+    This is the quantity the temporal conditions actually change, and it is not
+    comparable across backbones without being stated: a chunking policy at
+    action-repeat 2 sits at 2x its chunk length, not at 2.
+    """
+    repeat = int(summary.get("action_repeat", 1) or 1)
+    chunk = summary.get("exec_chunk")
+    if chunk is None:
+        return repeat if "action_repeat" in summary else None
+    chunk = int(chunk)
+    if chunk <= 0:  # 0 means "execute the whole predicted chunk"
+        chunk = int(summary.get("predict_action_frames", 1) or 1)
+    return chunk * repeat
+
+
 def label(summary: dict, path: str) -> str:
-    bits = [summary.get("backbone", "?")]
+    bits = [summary.get("backbone") or summary.get("model_type") or "?"]
     fov = summary.get("foveate") or {}
     if fov.get("enabled"):
         bits.append(f"fov-{fov.get('mode')}-{fov.get('keep_percent'):g}%")
+    # LIBERO nests the depth settings under "depth"; SimplerEnv writes
+    # llm_prune_count / depth_ctrl at the top level.
     d = summary.get("depth") or {}
-    if d.get("depth_ctrl"):
-        bits.append(f"depth-ctrl{d.get('depth_deep')}to{d.get('depth_shallow')}")
-    elif d.get("depth_prune"):
-        bits.append(f"depth-prune{d['depth_prune']}")
-    if summary.get("action_repeat", 1) > 1:
+    ctrl = summary.get("depth_ctrl") or {}
+    if d.get("depth_ctrl") or ctrl.get("enabled"):
+        deep = d.get("depth_deep", ctrl.get("deep"))
+        shallow = d.get("depth_shallow", ctrl.get("shallow"))
+        bits.append(f"depth-ctrl{deep}to{shallow}")
+    elif d.get("depth_prune") or summary.get("llm_prune_count"):
+        bits.append(f"depth-prune{d.get('depth_prune') or summary['llm_prune_count']}")
+    if (summary.get("exec_chunk") or 0) > 0:
+        bits.append(f"chunk{summary['exec_chunk']}")
+    if int(summary.get("action_repeat", 1) or 1) > 1:
         bits.append(f"rep{summary['action_repeat']}")
     if len(bits) == 1:
         bits.append("baseline")
-    return f"{'/'.join(bits)}  [{os.path.basename(path)}]"
+    h = horizon(summary)
+    tail = "" if h is None else f", {h} env step{'s' if h != 1 else ''}/call"
+    return f"{'/'.join(bits)}  [{os.path.basename(path.rstrip('/'))}{tail}]"
 
 
 def main() -> None:
     if len(sys.argv) != 3:
-        raise SystemExit("usage: python paired_test.py <run_a.json> <run_b.json>")
+        raise SystemExit(
+            "usage: python paired_test.py <run_a> <run_b>\n"
+            "  each argument is a LIBERO summary JSON, or a SimplerEnv run "
+            "directory containing per-task results_*.json"
+        )
     path_a, path_b = sys.argv[1], sys.argv[2]
     sum_a, a = load(path_a)
     sum_b, b_eps = load(path_b)
 
+    # Suite first: if these are different benchmarks the episode-set diff below
+    # would just dump every key from both, which buries the actual problem.
+    if sum_a.get("task_suite") != sum_b.get("task_suite"):
+        raise SystemExit(
+            f"different suites ({sum_a.get('task_suite')} vs "
+            f"{sum_b.get('task_suite')}) -- nothing to pair"
+        )
     if set(a) != set(b_eps):
         only_a, only_b = sorted(set(a) - set(b_eps)), sorted(set(b_eps) - set(a))
         raise SystemExit(
@@ -88,11 +214,6 @@ def main() -> None:
             "paired.\n"
             f"  only in A ({len(only_a)}): {only_a[:8]}{' ...' if len(only_a) > 8 else ''}\n"
             f"  only in B ({len(only_b)}): {only_b[:8]}{' ...' if len(only_b) > 8 else ''}"
-        )
-    if sum_a.get("task_suite") != sum_b.get("task_suite"):
-        raise SystemExit(
-            f"different suites ({sum_a.get('task_suite')} vs "
-            f"{sum_b.get('task_suite')}) -- nothing to pair"
         )
 
     keys = sorted(a)
@@ -112,9 +233,17 @@ def main() -> None:
     print(f"{'A success':>14} {both:>10} {a_only:>8}")
     print(f"{'A fail':>14} {b_only:>10} {neither:>8}")
     print(f"\n  A {sr_a:.1f}%   B {sr_b:.1f}%   difference {sr_b - sr_a:+.1f} points")
+    ha, hb = horizon(sum_a), horizon(sum_b)
+    if ha is not None and hb is not None and ha != hb:
+        print(f"  NOTE: different open-loop horizons ({ha} vs {hb} env steps "
+              f"per model call) -- this p-value says the two runs differ, not "
+              f"that the intervention would differ at a matched horizon")
     print(f"  discordant pairs: {a_only + b_only} "
           f"({a_only} A-only, {b_only} B-only)")
-    print(f"  McNemar exact two-sided p = {p:.4f}")
+    # A large, lopsided set of discordant pairs drives p below what %.4f can
+    # show, and printing "0.0000" reads as a formatting bug rather than a result.
+    print(f"  McNemar exact two-sided p = {p:.4f}" if p >= 1e-4
+          else f"  McNemar exact two-sided p = {p:.2e}")
 
     if a_only + b_only < 6:
         print("  -- too few disagreements to conclude anything either way")

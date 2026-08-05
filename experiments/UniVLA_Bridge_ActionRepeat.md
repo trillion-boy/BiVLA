@@ -20,20 +20,60 @@ The same ratio was ~5 on the baseline campaign (2826 ms/infer, 603 ms/env-step).
 
 ## Results
 
-| task | baseline ¹ | action repeat 2 | Δ | grasp base → repeat |
+Baseline was re-run in the same session, immediately after, on the same GPU.
+
+| task | baseline | action repeat 2 | Δ | grasp base → repeat |
 |---|---|---|---|---|
-| eggplant | 100.0 | **16.7** | −83.3 | 100.0 → **83.3** |
-| stack | 75.0 | 4.2 | −70.8 | 100.0 → 12.5 |
-| spoon | 70.8 | 0.0 | −70.8 | 75.0 → 4.2 |
-| carrot | 66.7 | 8.3 | −58.4 | 66.7 → 16.7 |
-| **avg** | **78.1%** | **7.3%** (7/96) | **−70.8** | 85.4 → **29.2** |
+| eggplant | 100.0 (24/24) | **16.7** (4/24) | −83.3 | 100.0 → **83.3** |
+| stack | 75.0 (18/24) | 4.2 (1/24) | −70.8 | 100.0 → 12.5 |
+| spoon | 70.8 (17/24) | 0.0 (0/24) | −70.8 | 75.0 → 4.2 |
+| carrot | 66.7 (16/24) | 8.3 (2/24) | −58.4 | 66.7 → 16.7 |
+| **avg** | **78.1%** (75/96) | **7.3%** (7/96) | **−70.8** | 85.4 → **29.2** |
 
-¹ The 2026-07-20 chunk-exec/foveation campaign's baseline. Three UniVLA/Bridge
-baselines exist (82.3% / 78.1% / 74.0%); see the note in
-`LabMeeting_4Backbone_Summary.md`. **The choice does not matter here** — the
-effect is −65 to −75 against any of them, and eggplant is 100% in all three.
+### The baseline reproduced exactly, which settles a standing question
 
-An unpaired z on the average is ≈14. A paired test would only make it larger.
+Three UniVLA/Bridge baselines were on record (82.3% / 78.1% / 74.0%). This
+re-run matches the 2026-07-20 campaign **on every task**:
+
+| task | 2026-07-20 | 2026-08-05 | 2026-06-29 (depth campaign) |
+|---|---|---|---|
+| eggplant | 24/24 | **24/24** ✓ | 24/24 |
+| carrot | 16/24 | **16/24** ✓ | 16/24 |
+| stack | 18/24 | **18/24** ✓ | **14/24** ✗ |
+| spoon | 17/24 | **17/24** ✓ | 17/24 |
+| avg | 78.1% | **78.1%** ✓ | 74.0% |
+
+**78.1% is the UniVLA/Bridge baseline.** The depth-pruning campaign's Stack of
+14/24 does not reproduce; that campaign kept no per-episode JSON, so what
+differed about it cannot now be recovered. Its own deltas should still be read
+against its own 74.0%, but the number should not be carried into any other
+table. (Matching counts is not the same as matching episodes — the July run's
+per-episode records were not kept either — but agreeing on all four tasks is
+strong enough to act on.)
+
+### Paired test
+
+Every condition replays env ids 0–23 per task, so these are 96 matched pairs:
+
+| | repeat 2 success | repeat 2 fail |
+|---|---|---|
+| **baseline success** | 6 | **69** |
+| **baseline fail** | 1 | 20 |
+
+**McNemar exact two-sided p = 1.2 × 10⁻¹⁹** (`adaptive_sparse_vla/paired_test.py`).
+Of 70 discordant pairs, 69 go the same way. The per-task flip map shows a single
+episode that action repeat *fixed* (carrot ep 21):
+
+```
+carrot   16/24 -> 2/24    -------.....-------.-+..
+eggplant 24/24 -> 4/24    -.----------...---------
+spoon    17/24 -> 0/24    ---.---.-.-.-----.-..---
+stack    18/24 -> 1/24    -...-----.--------..--.-
+```
+
+Note the two runs are **not at a matched horizon** (5 vs 10 env steps per model
+call). The p-value establishes that these two runs differ, not that the
+intervention would differ if the horizons were equal.
 
 ## The failure is "never finishes", not "finishes wrong"
 
