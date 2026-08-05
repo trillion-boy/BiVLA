@@ -47,7 +47,7 @@ from math import comb
 # Fields that define WHICH condition a SimplerEnv run is. Per-task files inside
 # one directory must agree on all of them, or the directory is not one run.
 _CONDITION_FIELDS = (
-    "model_type", "exec_chunk", "action_repeat", "llm_prune_count",
+    "model_type", "model", "exec_chunk", "action_repeat", "llm_prune_count",
     "foveate", "fastv", "depth_ctrl",
 )
 
@@ -164,7 +164,8 @@ def horizon(summary: dict) -> int | None:
 
 
 def label(summary: dict, path: str) -> str:
-    bits = [summary.get("backbone") or summary.get("model_type") or "?"]
+    bits = [summary.get("backbone") or summary.get("model_type")
+            or summary.get("model") or "?"]
     fov = summary.get("foveate") or {}
     if fov.get("enabled"):
         bits.append(f"fov-{fov.get('mode')}-{fov.get('keep_percent'):g}%")

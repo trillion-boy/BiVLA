@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import math
+import pathlib
+import sys
 import time
 from typing import Optional, Tuple
 
@@ -10,6 +12,44 @@ import torch
 from PIL import Image as PILImage
 from transforms3d.euler import euler2axangle
 from transformers import AutoModelForVision2Seq, AutoProcessor
+
+
+def _load_depth_prune():
+    """Import the shared depth-pruning rule from `adaptive_sparse_vla/`.
+
+    Imported, never copied. The cross-backbone claim is that exploitable depth
+    redundancy is a property of the backbone, and that only means something if
+    every backbone is ranked and bypassed by an identical rule; a second copy
+    of the ranking logic in this tree would drift and invalidate the comparison
+    without anyone noticing.
+
+    This file lives in a subdirectory of the repo, so walk up to whichever
+    parent holds `adaptive_sparse_vla/` rather than assuming a working
+    directory. Raises if it cannot be found -- running unpruned under a
+    `--depth-prune` flag would look like "pruning is free" in the results.
+    """
+    try:
+        from adaptive_sparse_vla.depth_prune import (
+            DepthPruner,
+            measure_redundancy_with_hooks,
+        )
+        return DepthPruner, measure_redundancy_with_hooks
+    except ImportError:
+        pass
+    for parent in pathlib.Path(__file__).resolve().parents:
+        if (parent / "adaptive_sparse_vla" / "depth_prune.py").exists():
+            sys.path.insert(0, str(parent))
+            from adaptive_sparse_vla.depth_prune import (
+                DepthPruner,
+                measure_redundancy_with_hooks,
+            )
+            return DepthPruner, measure_redundancy_with_hooks
+    raise ImportError(
+        "depth pruning needs adaptive_sparse_vla/depth_prune.py, which was not "
+        "found in any parent of this file. Clone the whole BiVLA repo rather "
+        "than RetinaBased/ alone -- the pruning rule is shared across backbones "
+        "on purpose and is not duplicated here."
+    )
 def _uniform_sample_grid(height: int, width: int, keep_ratio: float) -> Tuple[np.ndarray, np.ndarray]:
     keep_ratio = float(np.clip(keep_ratio, 0.0, 1.0))
     if keep_ratio <= 0.0:
@@ -221,6 +261,20 @@ class OpenVLAInference:
                 moved[key] = value.to(self.device)
         return moved
 
+    def _run_predict(self, model_inputs):
+        """The raw policy call, split out so HOOK C can wrap it.
+
+        Depth pruning needs to run this same call under forward hooks on its
+        first invocation. Overriding this instead of the whole method keeps the
+        timing and post-processing below in exactly one place.
+        """
+        with torch.inference_mode():
+            return self.model.predict_action(
+                **model_inputs,
+                unnorm_key=self.unnorm_key,
+                do_sample=False,
+            )
+
     def _predict_raw_action(self, prepared: np.ndarray, instruction: str) -> np.ndarray:
         prompt = self.PROMPT_TEMPLATE.format(instruction=instruction.strip())
         model_inputs = self.processor(
@@ -231,12 +285,7 @@ class OpenVLAInference:
         model_inputs = self._move_inputs(model_inputs)
 
         t0 = time.time()
-        with torch.inference_mode():
-            action = self.model.predict_action(
-                **model_inputs,
-                unnorm_key=self.unnorm_key,
-                do_sample=False,
-            )
+        action = self._run_predict(model_inputs)
         if torch.is_tensor(action):
             action = action.detach().float().cpu().numpy()
         if torch.cuda.is_available():
@@ -348,6 +397,69 @@ class ActionRepeatOpenVLAInference(OpenVLAInference):
         # simple_eval's normalize_env_actions executes every dict in the list
         # before the next model call -> k env steps per forward.
         return raw, [dict(env_action) for _ in range(self.repeat_k)]
+
+
+class DepthPrunedOpenVLAInference(OpenVLAInference):
+    """HOOK C: bypass the N most redundant decoder layers for the whole episode.
+
+    This is the *fixed* depth-pruning condition, not the phase-adaptive
+    controller -- the amount never changes within an episode.
+
+    Layers are ranked by `1 - cos(layer_in, layer_out)`, measured on the real
+    prompt's prefill, and the N least-changing eligible layers are replaced by a
+    pass-through. Both the ranking and the two safeguards (only the back half is
+    eligible; bypassed layers must not be adjacent) come from
+    `adaptive_sparse_vla/depth_prune.py`, which every backbone shares.
+
+    The redundancy measurement rides along on the first real policy call of the
+    run, so it costs no extra forward pass. That one call therefore executes
+    unpruned -- 1 of several thousand in a 24-episode run -- and pruning applies
+    from the second call onward.
+    """
+
+    def __init__(
+        self,
+        *args,
+        depth_prune: int = 1,
+        depth_min_layer: float = 0.5,
+        depth_min_gap: int = 1,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        DepthPruner, self._measure_redundancy = _load_depth_prune()
+        self.depth = DepthPruner(
+            self.model,
+            prune=depth_prune,
+            min_layer=depth_min_layer,
+            min_gap=depth_min_gap,
+        )
+        if self.depth.enabled and self.depth.layers() is None:
+            raise RuntimeError(
+                "depth pruning is on but the decoder stack could not be located "
+                "under this checkpoint's wrappers -- see "
+                "depth_prune.find_decoder_layers. Refusing to run rather than "
+                "silently evaluating an unpruned model."
+            )
+        self.depth.announce("openvla")
+
+    def depth_summary(self) -> dict:
+        return self.depth.summary()
+
+    def _run_predict(self, model_inputs):
+        if not self.depth.needs_calibration():
+            return super()._run_predict(model_inputs)
+        # Zero-arg super() does not work from inside the lambda below (no self
+        # in its frame), so bind the unwrapped call explicitly.
+        unwrapped = lambda: OpenVLAInference._run_predict(self, model_inputs)
+        captured = {}
+        importance = self._measure_redundancy(
+            self.depth.layers(), lambda: captured.setdefault("a", unwrapped())
+        )
+        action = captured.get("a")
+        if action is None:  # hooks failed to run the call at all
+            action = unwrapped()
+        self.depth.calibrate(importance)
+        return action
 
 
 class RetinotopicCachedOpenVLAInference(FoveatedOpenVLAInference):

@@ -88,6 +88,7 @@ if not hasattr(_paligemma_processing, "make_batched_images"):
 from openvla_inference import (
     ActionRepeatOpenVLAInference,
     BlurFoveatedOpenVLAInference,
+    DepthPrunedOpenVLAInference,
     FoveatedOpenVLAInference,
     OpenVLAInference,
     RetinotopicCachedOpenVLAInference,
@@ -165,6 +166,7 @@ def parse_args():
             "openvla_foveated",
             "openvla_foveated_blur",
             "openvla_chunk",
+            "openvla_depth",
             "openvla_retina",
         ],
         required=True,
@@ -176,6 +178,32 @@ def parse_args():
         help="openvla_chunk only: execute each predicted action this many "
         "env steps (OpenVLA predicts one action per forward, so the "
         "chunk-exec analog is action-repeat; k=2 halves the forwards).",
+    )
+    parser.add_argument(
+        "--depth-prune",
+        type=int,
+        default=1,
+        help="openvla_depth only: bypass this many of the most redundant "
+        "decoder layers for the whole episode (fixed depth pruning). The "
+        "ranking rule and its safeguards are shared with the other backbones "
+        "via adaptive_sparse_vla/depth_prune.py -- change the COUNT per "
+        "backbone if you must, never the rule.",
+    )
+    parser.add_argument(
+        "--depth-min-layer",
+        type=float,
+        default=0.5,
+        help="openvla_depth only: only the back (1 - this) fraction of the "
+        "decoder stack is eligible for bypass. Early layers perform the "
+        "foundational transforms everything downstream depends on.",
+    )
+    parser.add_argument(
+        "--depth-min-gap",
+        type=int,
+        default=1,
+        help="openvla_depth only: bypassed layers must be at least this far "
+        "apart, so two adjacent layers are not both removed while cheaper "
+        "candidates remain.",
     )
     parser.add_argument("--task", choices=sorted(TASK_CONFIGS.keys()), required=True)
     parser.add_argument("--n-episodes", type=int, default=24)
@@ -337,6 +365,15 @@ def build_model(args):
             device=args.device,
             repeat_k=args.action_repeat,
         )
+    if args.model == "openvla_depth":
+        return DepthPrunedOpenVLAInference(
+            model_path=args.openvla_model_path,
+            unnorm_key=args.openvla_unnorm_key,
+            device=args.device,
+            depth_prune=args.depth_prune,
+            depth_min_layer=args.depth_min_layer,
+            depth_min_gap=args.depth_min_gap,
+        )
     if args.model == "openvla_retina":
         return RetinotopicCachedOpenVLAInference(
             model_path=args.openvla_model_path,
@@ -487,8 +524,34 @@ def main():
         "grasp_rate": grasp_count / len(results),
         "avg_steps": float(np.mean([item["steps"] for item in results])),
         "avg_elapsed": float(np.mean([item["elapsed"] for item in results])),
+        # Which condition this run IS. paired_test.py reads these to label the
+        # run and to refuse a directory whose per-task files were not all run
+        # the same way, which is otherwise invisible once the logs scroll past.
+        "action_repeat": (
+            int(args.action_repeat) if args.model == "openvla_chunk" else 1
+        ),
+        # OpenVLA predicts exactly one action per forward, so the open-loop
+        # horizon is action_repeat x 1. Recorded explicitly because the same
+        # flag on a chunking backbone lands at a different horizon.
+        "predict_action_frames": 1,
+        "exec_chunk": 0,
+        "foveate": {
+            "enabled": args.model
+            in ("openvla_foveated", "openvla_foveated_blur", "openvla_retina"),
+            "mode": {
+                "openvla_foveated": "logpolar",
+                "openvla_foveated_blur": "blur",
+                "openvla_retina": "logpolar+cache",
+            }.get(args.model),
+            "keep_percent": float(args.foveated_keep_percent),
+        },
+        "llm_prune_count": (
+            int(args.depth_prune) if args.model == "openvla_depth" else 0
+        ),
         "episodes": results,
     }
+    if args.model == "openvla_depth":
+        summary["depth"] = model.depth_summary()
 
     stats_rows = [item["model_stats"] for item in results if item.get("model_stats")]
     if stats_rows:
@@ -517,6 +580,13 @@ def main():
         print(f"model_ms_per_env_step: {step_ms:.1f}ms  (amortized over executed actions)", flush=True)
     if args.model == "openvla_chunk":
         print(f"action-repeat: each prediction executed for {args.action_repeat} env steps", flush=True)
+    if args.model == "openvla_depth":
+        d = summary["depth"]
+        print(
+            f"depth: bypassed {d['n_bypassed']} of {d['n_layers']} layers "
+            f"{d['bypassed_layers']}",
+            flush=True,
+        )
     if args.model == "openvla_retina":
         ms = summary.get("model_stats") or {}
         pre_rr, post_rr = ms.get("pregrasp_reuse_rate"), ms.get("postgrasp_reuse_rate")
