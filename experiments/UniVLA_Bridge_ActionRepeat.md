@@ -120,12 +120,21 @@ The same flag, the same code, applied at the same hook point:
 | UniVLA / Bridge | 5 | **10** | **−70.8** |
 | UniVLA / LIBERO | 10 | 20 | **−68.0** |
 
-**The honest reading is horizon, not architecture.** UniVLA did not collapse
-because it is Emu3-based; it collapsed because its baseline already executed a
-5-action chunk, so the same flag landed it at 10 steps. Any chunking policy would
-be in the same position. The two UniVLA rows (5→10 and 10→20) give nearly the
-same −70, which suggests the damage is already saturated by 10 steps rather than
-scaling with the horizon.
+UniVLA did not collapse because it is Emu3-based; it collapsed because its
+baseline already executed a 5-action chunk, so the same flag landed it at 10
+steps. The two UniVLA rows (5→10 and 10→20) give nearly the same −70, which
+suggests the damage is already saturated by 10 steps rather than scaling with
+the horizon.
+
+> **Correction (2026-08-05).** This section originally concluded "the honest
+> reading is horizon, not architecture". The OpenVLA/Bridge run later that day
+> refutes that: OpenVLA goes 1→2 steps under the same flag and loses 8.3 points,
+> while SpatialVLA goes 1→2 and gains 10.4. **Identical horizon change, opposite
+> sign** — so absolute horizon cannot be the explanation. The hypothesis that
+> fits all five measurements is distance from the horizon the policy was
+> *trained* to execute, and SpatialVLA is the only backbone deployed below its
+> own trained chunk length. See `OpenVLA_Bridge_Grid.md`; it also lists what is
+> and is not statistically established, which is less than this file implied.
 
 This is exactly why the grid uses action repeat rather than chunk-exec: it is the
 one temporal operation that is *identical* across backbones. The consequence is
