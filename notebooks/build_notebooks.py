@@ -1033,7 +1033,7 @@ cells02 = [
     | | observation |
     |---|---|
     | latency | unchanged in every condition we ran (two backbones, ±6 ms) |
-    | direction, benchmark A | log-polar 20% moved two backbones up (+18.8, +12.6) and one down (−7.3) |
+    | direction, benchmark A | log-polar 20% moved one backbone clearly up (+18.8) and two others by less than the resolution (+8.3, −7.3) |
     | direction, benchmark B | the same code hurt both of the backbones that had gone up on A, one of them decisively (−74) |
     | fovea placement | placing the fovea on the target using simulator ground truth — an upper bound no deployable gaze can beat — did not recover the loss (58% → 50%, not distinguishable from chance) |
 
@@ -1087,7 +1087,7 @@ cells03 = [
 
     In our own runs the two came out in opposite directions on different
     backbones — chunk-exec at k=2 was one backbone's best result (+13.6 at 1.9×
-    faster) and cost another 8.3 points. That is context, not a prediction:
+    faster) and cost another 12.5 points. That is context, not a prediction:
     see the appendix at the end.
     """),
     md("""
@@ -1387,7 +1387,7 @@ cells03 = [
     | repeat 2, single-action policy | −8 points, not distinguishable from chance |
     | repeat 2, chunk-10 policy | **−68 points** |
     | chunk-exec k=2, one chunking backbone | **+13.6 points at 1.9× faster** |
-    | chunk-exec k=2, another chunking backbone | −8.3 points |
+    | chunk-exec k=2, another chunking backbone | −12.5 points |
 
     Rows 1 and 2 are the same flag at very different open-loop horizons (2 vs
     20 env steps per observation), so they are not two measurements of one

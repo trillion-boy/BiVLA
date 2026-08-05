@@ -402,10 +402,10 @@ SimplerEnv WidowX-Bridge, 4 tasks × N=24. RoboVLMs is excluded.
 
 | intervention | OpenVLA | SpatialVLA | UniVLA |
 |---|---|---|---|
-| baseline | 15.6% | 32.3% | **73.9%** |
-| chunk-exec | n/a ¹ | **45.9% (+13.6, 1.9× faster)** ✓ | 65.6% (−8.3) ✗ |
-| foveate log-polar 20% | **34.4% (+18.8)** ✓ | 25.0% (−7.3) ✗ | **86.5% (+12.6)** ✓ |
-| foveate blur 20% | **33.3% (+17.7)** ✓ | ² | 76.0% (+2.2) △ |
+| baseline | 15.6% | 32.3% | 78.1% |
+| chunk-exec | n/a ¹ | **45.9% (+13.6, 1.9× faster)** ✓ | 65.6% (−12.5) ✗ |
+| foveate log-polar 20% | **34.4% (+18.8)** ✓ | 25.0% (−7.3) ✗ | **86.5% (+8.3)** ✓ |
+| foveate blur 20% | **33.3% (+17.7)** ✓ | ² | 76.0% (−2.1) △ |
 
 ¹ OpenVLA predicts one action per call, so "execute part of a predicted chunk"
 does not apply (§2.2a).
@@ -414,6 +414,18 @@ does not apply (§2.2a).
 that it recovered most of the log-polar loss (27.1% → 38.6%). The script for
 the standalone measurement is ready but **has not been run yet for lack of
 compute** (§7.1). It is a 2–3 hour gap to fill.
+
+**A caution about the baseline.** The UniVLA baseline of 78.1% above was
+measured **in the same campaign as the conditions in this table**. Separate
+measurements of the same checkpoint on the same 4 tasks at the same N=24 exist
+from other dates (a reference run at 82.3%, the depth-pruning campaign at
+74.0%), and the three disagree mainly on the stack task. Decoding is greedy, so
+the likely cause is GPU kernel non-determinism flipping borderline episodes —
+the same effect is on record for SpatialVLA, whose stack baseline was measured
+twice at 33.3% and 29.2%. Every Δ here is therefore computed **against its own
+campaign's baseline**, and absolute success rates should not be compared across
+campaigns. The full comparison is in
+`experiments/LabMeeting_4Backbone_Summary.md`.
 
 Here too, **no intervention worked across all three backbones.** Even the
 variant of an intervention (log-polar vs blur) had a different winner per
@@ -429,7 +441,7 @@ The same foveation code has opposite signs on the two benchmarks.
 | backbone | SimplerEnv Bridge | LIBERO spatial |
 |---|---|---|
 | OpenVLA | **+18.8pp** (15.6 → 34.4) | **−74pp** (74.0 → 0.0) |
-| UniVLA | **+12.6pp** (73.9 → 86.5) | **−8pp** (96.0 → 88.0) |
+| UniVLA | **+8.3pp** (78.1 → 86.5) | **−8pp** (96.0 → 88.0) |
 
 What has been narrowed down so far:
 
@@ -437,7 +449,7 @@ What has been narrowed down so far:
   SimplerEnv **both** lost on LIBERO. The direction is the same.
 - **Policy strength alone does not explain it.** The hypothesis that "a weak
   policy benefits from having the background cleaned up" fails to explain
-  UniVLA gaining +12.6 on SimplerEnv from an already strong 73.9% baseline.
+  UniVLA gaining +8.3 on SimplerEnv from an already strong 78.1% baseline.
 - **Gaze placement is unlikely to be the main cause** (§4.1, with the caveat
   stated there).
 
