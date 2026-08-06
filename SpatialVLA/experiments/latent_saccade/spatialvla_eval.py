@@ -165,10 +165,12 @@ TASK_CONFIGS = {
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
         "variation": "episode_id",
-        # The reference sweeps all 60. --n-episodes takes a prefix of this
-        # range, so 24 episodes means ids 0..23 -- a subset of the protocol,
-        # not a different one, but not comparable to a published 60-episode
-        # number either.
+        # Run all 60. The ids are ordered by object triplet (id // 12), so a
+        # prefix is a biased sample, not a smaller unbiased one: ids 0..23 cover
+        # only the first two of five triplets and miss both that contain the
+        # coke can beside the redbull can -- the only episodes where the policy
+        # has to tell two look-alike cans apart from the instruction. Measured
+        # at n=24 this task scored 91.7% against a published 69.6%.
         "obj_episode_range": [0, 60],
     },
     # Drawer tasks render with the ray-tracing shader and swap the overlay per
@@ -422,6 +424,23 @@ def step_grasped(info) -> bool:
     if not isinstance(info, dict):
         return False
     return bool(info.get("is_src_obj_grasped") or info.get("is_grasped"))
+
+
+# Keys that carry a grasp signal, in either the per-step or the episode record.
+# MoveNear reports none of them -- its success is "did the object move near the
+# target", and a gripper never enters the criterion -- so a 0% grasp rate there
+# is the env declining to answer, not the policy failing to grasp.
+_GRASP_KEYS = ("is_src_obj_grasped", "is_grasped", "ever_grasped_src")
+
+
+def grasp_is_reported(info) -> bool:
+    """Does this env report a grasp signal at all?"""
+    if not isinstance(info, dict):
+        return False
+    if any(k in info for k in _GRASP_KEYS):
+        return True
+    return any(k in (info.get("episode_stats") or {})
+               for k in ("grasped", "consec_grasp"))
 
 
 def episode_grasped(final_info) -> bool:

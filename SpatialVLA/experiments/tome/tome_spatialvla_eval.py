@@ -23,7 +23,7 @@ import numpy as np
 # latent_saccade/DINO classes are only imported inside that file's main()).
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "latent_saccade"))
 from spatialvla_eval import (TASK_CONFIGS, build_env, get_image,  # noqa: E402
-                             episode_grasped, step_grasped)
+                             episode_grasped, grasp_is_reported, step_grasped)
 
 # official SpatialVLA policy (no wrapper)
 from simpler_env.policies.spatialvla.spatialvla_model import SpatialVLAInference  # noqa: E402
@@ -169,7 +169,18 @@ def main():
 
     base_ids = list(range(*cfg["obj_episode_range"]))
     ep_ids = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
+    # A prefix of a protocol is not a small version of it. MoveNear's 60 ids are
+    # ordered by object triplet (id // 12), so --n-episodes 24 silently drops the
+    # three triplets containing the two look-alike cans -- the only episodes that
+    # test language grounding -- and reports a score ~20 points high.
+    if len(ep_ids) < len(base_ids):
+        print(f"[WARN] running {len(ep_ids)} of this task's {len(base_ids)} "
+              f"initial states (ids {ep_ids[0]}..{ep_ids[-1]}). These are ordered, "
+              f"not shuffled, so a prefix is a biased sample -- fine for a paired "
+              f"comparison against another run of the same prefix, NOT comparable "
+              f"to a published full-protocol number.", flush=True)
     results = []
+    grasp_seen = False   # does this env report grasping at all? MoveNear does not
     calibrated = False
     if pruner is not None:
         pruner.install_calibration_hooks()
@@ -267,6 +278,7 @@ def main():
                 obs, _, done, truncated, info = env.step(env_action)
                 final_info = info
                 grasped = grasped or step_grasped(info)
+                grasp_seen = grasp_seen or grasp_is_reported(info)
                 step += 1
                 if done or truncated or step >= cfg["max_episode_steps"]:
                     break
@@ -292,7 +304,9 @@ def main():
     n_ok = sum(r["success"] for r in results)
     n_grasp = sum(r["grasped"] for r in results)
     sr = n_ok / len(results)
-    gr = n_grasp / len(results)
+    # None, not 0.0: an env that never reports grasping has no grasp rate, and
+    # writing 0% there reads as a total failure to grasp.
+    gr = (n_grasp / len(results)) if grasp_seen else None
     avg_ms = float(np.mean([r["model_ms_per_infer"] for r in results]))
     avg_steps = float(np.mean([r["steps"] for r in results]))
     parts = []
@@ -327,7 +341,8 @@ def main():
     print(f"\n{'='*50}")
     print(f"  SpatialVLA (official) | {tag}")
     print(f"  task:    {args.task}")
-    print(f"  파지율:  {n_grasp}/{len(results)} = {gr:.1%}")
+    print(f"  파지율:  {n_grasp}/{len(results)} = {gr:.1%}" if gr is not None
+          else "  파지율:  n/a (이 환경은 grasp를 보고하지 않는다)")
     print(f"  성공률:  {n_ok}/{len(results)} = {sr:.1%}")
     print(f"  평균스텝: {avg_steps:.0f}")
     print(f"  ms/infer: {avg_ms:.0f}  (latency; lower=faster)")
