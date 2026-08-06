@@ -101,12 +101,12 @@ TASK_CONFIGS = {
     },
 
     # ── Google Robot / Fractal ─────────────────────────────────────────────
-    # These go through simpler_env.make(), which applies SimplerEnv's own
-    # `prepackaged_config` -- robot, control mode, control/sim freq, scene and
-    # the visual-matching overlay all come from the simulator rather than being
-    # restated here. Restating them is how a Fractal run silently ends up on
-    # the wrong scene or without an overlay, which is exactly the failure that
-    # cost us a UniVLA campaign on Bridge.
+    # `env_name`/`env_kwargs` are the authors' own ENVIRONMENT_MAP entries, and
+    # `prepackaged_config=True` (set in build_env) leaves robot, control mode,
+    # control/sim freq, scene and the visual-matching overlay to the simulator
+    # rather than restating them here. Restating them is how a Fractal run
+    # silently ends up on the wrong scene or without an overlay, which is
+    # exactly the failure that cost us a UniVLA campaign on Bridge.
     #
     # Only `obs_camera_name`, `max_episode_steps` and how an episode index maps
     # to an initial state are ours to choose.
@@ -131,6 +131,8 @@ TASK_CONFIGS = {
     # mode a paired test cannot detect and cannot survive.
     "google_robot_pick_horizontal_coke_can": {
         "prepackaged": True,
+        "env_name": "GraspSingleOpenedCokeCanInScene-v0",
+        "env_kwargs": {"lr_switch": True},
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
         "variation": "xy_grid",
@@ -139,6 +141,8 @@ TASK_CONFIGS = {
     },
     "google_robot_pick_vertical_coke_can": {
         "prepackaged": True,
+        "env_name": "GraspSingleOpenedCokeCanInScene-v0",
+        "env_kwargs": {"laid_vertically": True},
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
         "variation": "xy_grid",
@@ -147,6 +151,8 @@ TASK_CONFIGS = {
     },
     "google_robot_pick_standing_coke_can": {
         "prepackaged": True,
+        "env_name": "GraspSingleOpenedCokeCanInScene-v0",
+        "env_kwargs": {"upright": True},
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
         "variation": "xy_grid",
@@ -155,6 +161,7 @@ TASK_CONFIGS = {
     },
     "google_robot_move_near": {
         "prepackaged": True,
+        "env_name": "MoveNearGoogleBakedTexInScene-v1",
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
         "variation": "episode_id",
@@ -169,6 +176,7 @@ TASK_CONFIGS = {
     # default four; enable deliberately, with the extra wall-clock budgeted.
     "google_robot_open_drawer": {
         "prepackaged": True,
+        "env_name": "OpenDrawerCustomInScene-v0",
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 113,
         "variation": "seed_only",
@@ -176,6 +184,7 @@ TASK_CONFIGS = {
     },
     "google_robot_place_in_closed_drawer": {
         "prepackaged": True,
+        "env_name": "PlaceIntoClosedDrawerCustomInScene-v0",
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 200,
         "variation": "seed_only",
@@ -296,19 +305,36 @@ def build_env(cfg, ep_id, no_overlay=False, overlay_path=None, task_name=None):
     # visual-matching overlay; re-deriving those here is how a run silently
     # loses its overlay and reports a collapse that is really a setup bug.
     if cfg.get("prepackaged"):
-        import simpler_env
+        import gymnasium as gym
+        import simpler_env  # noqa: F401  -- imports mani_skill2_real2sim.envs, which registers the ids
         if task_name is None:
-            raise ValueError("prepackaged tasks need task_name to reach simpler_env.make")
-        # obs_mode is passed explicitly because simpler_env.make writes
-        #     env_kwargs["obs_mode"] = "rgbd",
-        # -- the trailing comma makes it the tuple ("rgbd",), which the env
-        # rejects. make() applies our kwargs after its own, so this overwrites
-        # the tuple with the string it meant to set.
-        env = simpler_env.make(
-            task_name,
-            obs_mode="rgbd",
-            max_episode_steps=cfg["max_episode_steps"],
-        )
+            raise ValueError("prepackaged tasks need task_name to pick an env id")
+        # gym.make directly rather than simpler_env.make: older installs of
+        # simpler_env define make(task_name) with no **kwargs, so passing
+        # obs_mode/max_episode_steps through it raises TypeError. Newer ones
+        # also write `env_kwargs["obs_mode"] = "rgbd",` -- the trailing comma
+        # makes it the tuple ("rgbd",), which the env rejects. Going straight
+        # to gym.make sidesteps both, and `prepackaged_config=True` still
+        # leaves robot, control mode, freqs, scene and overlay to the env.
+        try:
+            env = gym.make(
+                cfg["env_name"],
+                obs_mode="rgbd",
+                prepackaged_config=True,
+                max_episode_steps=cfg["max_episode_steps"],
+                **cfg.get("env_kwargs", {}),
+            )
+        except TypeError as e:
+            # An old ManiSkill2_real2sim predates prepackaged_config. Falling
+            # back to hand-set robot/scene/overlay would run, and would be the
+            # wrong experiment; say what to fix instead.
+            raise RuntimeError(
+                f"{task_name}: {cfg['env_name']} rejected the prepackaged "
+                f"visual-matching config ({e}). The SimplerEnv checkout at "
+                f"{SIMPLER_ENV_ROOT} is older than the Google Robot eval "
+                f"protocol. Update it rather than restating robot/scene/overlay "
+                f"here -- getting those wrong is silent, not loud."
+            ) from e
         seed, options = prepackaged_reset_options(cfg, ep_id)
         obs, _ = env.reset(seed=seed, options=options)
         # The overlay is not optional on these -- the checkpoint was evaluated
