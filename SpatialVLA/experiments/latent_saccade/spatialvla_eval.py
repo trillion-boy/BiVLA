@@ -159,6 +159,12 @@ TASK_CONFIGS = {
         "obj_init_xy_grid": {"x": (-0.35, -0.12, 5), "y": (-0.02, 0.42, 5)},
         "obj_episode_range": [0, 25],
     },
+    # Two MoveNear variants exist and they are not cosmetic: v0's triplets are
+    # the `baked_*` meshes (textures baked for real-to-sim visual matching), v1's
+    # are the plain ones. simpler_env.make() maps the task name to v1, but the
+    # authors' reference eval script runs v0. Measured here, v1 scores 86.7%
+    # against a published 69.6%, so which one a number came from has to be
+    # recorded next to it. Both are registered; do not mix them in one table.
     "google_robot_move_near": {
         "prepackaged": True,
         "env_name": "MoveNearGoogleBakedTexInScene-v1",
@@ -171,6 +177,14 @@ TASK_CONFIGS = {
         # coke can beside the redbull can -- the only episodes where the policy
         # has to tell two look-alike cans apart from the instruction. Measured
         # at n=24 this task scored 91.7% against a published 69.6%.
+        "obj_episode_range": [0, 60],
+    },
+    "google_robot_move_near_v0": {
+        "prepackaged": True,
+        "env_name": "MoveNearGoogleBakedTexInScene-v0",
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 80,
+        "variation": "episode_id",
         "obj_episode_range": [0, 60],
     },
     # Drawer tasks render with the ray-tracing shader and swap the overlay per
