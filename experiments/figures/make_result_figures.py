@@ -50,35 +50,48 @@ def band(d):
 #       "ns"     paired McNemar, not distinguishable from chance
 #       "legacy" earlier campaign, per-episode records not kept -> unpaired only
 #       None     not run
+# The last column is the SAME backbone as column 2 on a different benchmark.
+# It is in the grid because that comparison is the point: if an intervention's
+# sign can flip without changing the policy at all, no default is safe.
 BACKBONES = [
-    ("OpenVLA", 15.6, "no chunk\ntrained k=1"),
-    ("SpatialVLA", 30.2, "chunk head\ntrained k~4"),
-    ("UniVLA", 78.1, "native chunk\ntrained k=5"),
-    ("RoboVLMs", 39.6, "LSTM state\ntrained k=10"),
+    ("OpenVLA", 15.6, "Bridge\nno chunk, k=1"),
+    ("SpatialVLA", 30.2, "Bridge\nchunk head, k~4"),
+    ("UniVLA", 78.1, "Bridge\nnative chunk, k=5"),
+    ("RoboVLMs", 39.6, "Bridge\nLSTM state, k=10"),
+    ("SpatialVLA", 84.4, "Fractal\nsame policy as col 2"),
 ]
 ROWS = [
     ("Fixed foveation", "log-polar, keep 20%", {
         "OpenVLA": (+18.8, "bonf"), "SpatialVLA": (-7.3, "legacy"),
-        "UniVLA": (+8.3, "legacy"), "RoboVLMs": (-19.8, "legacy")}),
+        "UniVLA": (+8.3, "legacy"), "RoboVLMs": (-19.8, "legacy"),
+        "SpatialVLA/Fractal": (None, None)}),
     ("Fixed foveation", "blur, keep 20%", {
         "OpenVLA": (+17.7, "bonf"), "SpatialVLA": (-2.1, "legacy"),
-        "UniVLA": (-2.1, "legacy"), "RoboVLMs": (-16.7, "legacy")}),
+        "UniVLA": (-2.1, "legacy"), "RoboVLMs": (-16.7, "legacy"),
+        "SpatialVLA/Fractal": (None, None)}),
     ("Action repeat", "hold for 2 env steps", {
         "OpenVLA": (-8.3, "ns"), "SpatialVLA": (+12.5, "p05"),
-        "UniVLA": (-70.8, "bonf"), "RoboVLMs": (None, None)}),
+        "UniVLA": (-70.8, "bonf"), "RoboVLMs": (None, None),
+        "SpatialVLA/Fractal": (+0.0, "ns")}),
     ("Action repeat", "hold for 4 env steps", {
         "OpenVLA": (-11.5, "bonf"), "SpatialVLA": (-12.5, "ns"),
-        "UniVLA": (None, None), "RoboVLMs": (None, None)}),
+        "UniVLA": (None, None), "RoboVLMs": (None, None),
+        "SpatialVLA/Fractal": (-40.0, "bonf")}),
     ("Fixed depth pruning", "bypass redundant layers", {
         "OpenVLA": (+1.0, "ns"), "SpatialVLA": (-9.4, "legacy"),
-        "UniVLA": (None, None), "RoboVLMs": (None, None)}),
+        "UniVLA": (None, None), "RoboVLMs": (None, None),
+        "SpatialVLA/Fractal": (None, None)}),
 ]
 
 FINDINGS = [
     ("The same intervention reverses sign across backbones.",
      "Action repeat 2 costs UniVLA 70.8 points and gains SpatialVLA 12.5. "
-     "Identical code, identical hook, opposite direction — so this is not a "
-     "difference of degree that a better default would smooth out."),
+     "Identical code, identical hook, opposite direction — not a difference of "
+     "degree that a better default would smooth out."),
+    ("It also changes sign without changing the policy at all.",
+     "Columns 2 and 5 are one checkpoint on two benchmarks. Action repeat "
+     "2 is +12.5 on Bridge and exactly +0.0 on Fractal (11 of 22 discordant "
+     "pairs each way). So the benchmark decides too, not only the backbone."),
     ("Damage tracks distance from the trained execution length, not the horizon.",
      "OpenVLA (k=1) and UniVLA (k=5) are both already at their trained length and "
      "only lose by moving. SpatialVLA is the one backbone deployed below its own "
@@ -136,12 +149,12 @@ def figure1():
          f'width="{W}" height="{H}" font-family="Helvetica Neue, Arial, sans-serif">',
          f'<rect width="{W}" height="{H}" fill="{SURF}"/>',
          f'<text x="{LX}" y="46" font-size="26" font-weight="600" fill="{INK}">'
-         f'One intervention, four backbones, opposite answers</text>',
+         f'The same intervention, opposite answers</text>',
          f'<text x="{LX}" y="72" font-size="13.5" fill="{MUT}">'
          f'Change in success rate against each backbone’s own baseline.</text>',
          f'<text x="{LX}" y="90" font-size="13.5" fill="{MUT}">'
-         f'SimplerEnv WidowX-Bridge · 4 tasks × 24 episodes = 96 matched pairs '
-         f'per condition · frozen weights throughout.</text>']
+         f'Bridge columns: 4 tasks × 24 = 96 matched pairs per condition. '
+         f'Fractal column: 135. Frozen weights throughout.</text>']
 
     # column headers
     for i, (name, base, arch) in enumerate(BACKBONES):
@@ -170,8 +183,10 @@ def figure1():
                  f'{esc(detail)}</text>')
         prev = group
 
-        for i, (name, _, _) in enumerate(BACKBONES):
-            d, tier = cells[name]
+        for i, (name, _, note) in enumerate(BACKBONES):
+            # Two columns share the name "SpatialVLA"; the benchmark disambiguates.
+            key = f"{name}/{note.split(chr(10))[0]}" if name == "SpatialVLA" and i > 1 else name
+            d, tier = cells[key]
             x = LX + LW + CW * i
             if d is None:
                 o.append(f'<text x="{x+CW/2:.0f}" y="{ry+RH/2+5:.0f}" font-size="13" '
