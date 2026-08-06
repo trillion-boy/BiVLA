@@ -108,28 +108,61 @@ TASK_CONFIGS = {
     # the wrong scene or without an overlay, which is exactly the failure that
     # cost us a UniVLA campaign on Bridge.
     #
-    # Only `obs_camera_name` and `max_episode_steps` are ours to choose:
-    # the first because the harness has to know which camera to read, and the
-    # second because SimplerEnv's default caps differ per task family.
+    # Only `obs_camera_name`, `max_episode_steps` and how an episode index maps
+    # to an initial state are ours to choose.
+    #
+    # `variation` says where that mapping lives, because the three Google Robot
+    # env families do it three different ways and only one of them accepts the
+    # `episode_id` the Bridge tasks use:
+    #
+    #   "xy_grid"     GraspSingle (coke can) has no episode_id at all. The
+    #                 reference eval sweeps a 5x5 grid of object init xy over
+    #                 [-0.35,-0.12] x [-0.02,0.42], so ep_id indexes that grid.
+    #   "episode_id"  MoveNear does accept episode_id; the reference sweeps
+    #                 0..59 (source/target object triplet x xy config).
+    #   "seed_only"   The drawer envs pick their station (9 overlays, each with
+    #                 its own robot pose) from the episode RNG, so the seed is
+    #                 the whole variation.
+    #
+    # In every case the seed is set to ep_id explicitly. Without it the URDF
+    # variant -- and, on the drawers, the station -- is drawn from a per-env
+    # RNG that we reseed every episode by rebuilding the env, so two conditions
+    # would silently be scored on different initial states. That is the failure
+    # mode a paired test cannot detect and cannot survive.
     "google_robot_pick_horizontal_coke_can": {
         "prepackaged": True,
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
+        "variation": "xy_grid",
+        "obj_init_xy_grid": {"x": (-0.35, -0.12, 5), "y": (-0.02, 0.42, 5)},
+        "obj_episode_range": [0, 25],
     },
     "google_robot_pick_vertical_coke_can": {
         "prepackaged": True,
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
+        "variation": "xy_grid",
+        "obj_init_xy_grid": {"x": (-0.35, -0.12, 5), "y": (-0.02, 0.42, 5)},
+        "obj_episode_range": [0, 25],
     },
     "google_robot_pick_standing_coke_can": {
         "prepackaged": True,
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
+        "variation": "xy_grid",
+        "obj_init_xy_grid": {"x": (-0.35, -0.12, 5), "y": (-0.02, 0.42, 5)},
+        "obj_episode_range": [0, 25],
     },
     "google_robot_move_near": {
         "prepackaged": True,
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 80,
+        "variation": "episode_id",
+        # The reference sweeps all 60. --n-episodes takes a prefix of this
+        # range, so 24 episodes means ids 0..23 -- a subset of the protocol,
+        # not a different one, but not comparable to a published 60-episode
+        # number either.
+        "obj_episode_range": [0, 60],
     },
     # Drawer tasks render with the ray-tracing shader and swap the overlay per
     # station, so they cost several times a coke-can episode. Kept out of the
@@ -138,13 +171,47 @@ TASK_CONFIGS = {
         "prepackaged": True,
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 113,
+        "variation": "seed_only",
+        "obj_episode_range": [0, 24],
     },
     "google_robot_place_in_closed_drawer": {
         "prepackaged": True,
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 200,
+        "variation": "seed_only",
+        "obj_episode_range": [0, 24],
     },
 }
+
+
+def prepackaged_reset_options(cfg, ep_id):
+    """-> (seed, options) turning an episode index into one fixed initial state.
+
+    Kept next to TASK_CONFIGS rather than inside build_env because the three
+    eval harnesses all need the same mapping, and an episode index that means
+    something different in two of them is not a paired experiment.
+    """
+    mode = cfg.get("variation", "seed_only")
+    ep_id = int(ep_id)
+    if mode == "episode_id":
+        return ep_id, {"obj_init_options": {"episode_id": ep_id}}
+    if mode == "xy_grid":
+        import numpy as np
+        g = cfg["obj_init_xy_grid"]
+        xs, ys = np.linspace(*g["x"]), np.linspace(*g["y"])
+        n = len(xs) * len(ys)
+        if ep_id >= n:
+            raise ValueError(
+                f"episode {ep_id} is outside this task's {len(xs)}x{len(ys)} "
+                f"object-placement grid ({n} distinct initial states). Asking "
+                f"for more episodes than the protocol defines would re-run the "
+                f"same states and inflate n without adding information."
+            )
+        x, y = xs[ep_id // len(ys)], ys[ep_id % len(ys)]
+        return ep_id, {"obj_init_options": {"init_xy": [float(x), float(y)]}}
+    if mode == "seed_only":
+        return ep_id, {}
+    raise ValueError(f"unknown variation mode {mode!r}")
 
 
 def parse_args():
@@ -242,7 +309,8 @@ def build_env(cfg, ep_id, no_overlay=False, overlay_path=None, task_name=None):
             obs_mode="rgbd",
             max_episode_steps=cfg["max_episode_steps"],
         )
-        obs, _ = env.reset(options={"obj_init_options": {"episode_id": int(ep_id)}})
+        seed, options = prepackaged_reset_options(cfg, ep_id)
+        obs, _ = env.reset(seed=seed, options=options)
         # The overlay is not optional on these -- the checkpoint was evaluated
         # against the visual-matching image, and without it we would be scoring
         # a distribution the policy has never seen.
@@ -294,6 +362,30 @@ def build_env(cfg, ep_id, no_overlay=False, overlay_path=None, task_name=None):
         }
     obs, _ = env.reset(options=reset_options)
     return env, obs
+
+
+def step_grasped(info) -> bool:
+    """Did the gripper hold the target object on THIS step?
+
+    Bridge (put_on_in_scene) calls it `is_src_obj_grasped`; the Google Robot
+    grasp/move-near envs call it `is_grasped` / `is_src_obj_grasped` depending
+    on the family. Reading only the Bridge key does not crash on Fractal -- it
+    silently reports a 0% grasp rate, and grasp-vs-success is the split that
+    every failure diagnosis in this project has turned on.
+    """
+    if not isinstance(info, dict):
+        return False
+    return bool(info.get("is_src_obj_grasped") or info.get("is_grasped"))
+
+
+def episode_grasped(final_info) -> bool:
+    """Did the gripper ever hold it, from the env's own episode-level record."""
+    if not isinstance(final_info, dict):
+        return False
+    if final_info.get("ever_grasped_src"):
+        return True
+    stats = final_info.get("episode_stats") or {}
+    return bool(stats.get("grasped") or stats.get("consec_grasp"))
 
 
 def get_image(env, obs, cam_name):
@@ -411,10 +503,9 @@ def main():
             obs, _, done, truncated, info = env.step(env_action)
             image = apply_brightness(get_image(env, obs, cam_name), args.brightness)
 
-            if not grasped and isinstance(info, dict):
-                if info.get("is_src_obj_grasped", False):
-                    grasped = True
-                    print(f"[Grasp] env-reported grasp at step={step}", flush=True)
+            if not grasped and step_grasped(info):
+                grasped = True
+                print(f"[Grasp] env-reported grasp at step={step}", flush=True)
 
             if args.save_video and step % 4 == 0:
                 frames.append(image.copy())

@@ -22,7 +22,8 @@ import numpy as np
 # env helpers from the latent_saccade eval (module-level import is safe: the
 # latent_saccade/DINO classes are only imported inside that file's main()).
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "latent_saccade"))
-from spatialvla_eval import TASK_CONFIGS, build_env, get_image  # noqa: E402
+from spatialvla_eval import (TASK_CONFIGS, build_env, get_image,  # noqa: E402
+                             episode_grasped, step_grasped)
 
 # official SpatialVLA policy (no wrapper)
 from simpler_env.policies.spatialvla.spatialvla_model import SpatialVLAInference  # noqa: E402
@@ -250,8 +251,7 @@ def main():
             ])
             obs, _, done, truncated, info = env.step(env_action)
             final_info = info
-            if not grasped and isinstance(info, dict) and info.get("is_src_obj_grasped", False):
-                grasped = True
+            grasped = grasped or step_grasped(info)
             image = observe(env, obs)
             new_instr = env.get_language_instruction()
             if new_instr != instruction:
@@ -265,7 +265,7 @@ def main():
             step += 1
 
         success = bool(final_info.get("success", done))
-        grasped = grasped or bool(final_info.get("ever_grasped_src", False))
+        grasped = grasped or episode_grasped(final_info)
         model_ms = (model_time / model_calls * 1000.0) if model_calls else 0.0
         g_mark = "G+" if grasped else "G-"
         print(f"   → {g_mark} {'SUCCESS' if success else 'FAIL'}  "
