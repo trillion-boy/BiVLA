@@ -1,0 +1,234 @@
+{
+  "model": "SpatialVLA-official",
+  "task": "google_robot_pick_vertical_coke_can",
+  "success_rate": 0.4,
+  "grasp_rate": 0.48,
+  "avg_model_ms_per_infer": 895.8529647304898,
+  "avg_steps": 57.8,
+  "foveate": {
+    "enabled": false,
+    "keep_percent": 20.0,
+    "mode": "logpolar",
+    "center": "image",
+    "phase": "always"
+  },
+  "tome": {
+    "enabled": false,
+    "r": 8,
+    "layers": 6,
+    "protect": "none"
+  },
+  "temporal_stride": 1,
+  "depth_prune": {
+    "count": 0
+  },
+  "spec_decode": {
+    "enabled": false
+  },
+  "action_repeat": 4,
+  "exec_chunk": {
+    "enabled": false
+  },
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 960.8467936515808
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 887.3046278953552
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 892.8869009017944
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "success": false,
+      "grasped": true,
+      "steps": 80,
+      "model_ms_per_infer": 887.9830718040466
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": false,
+      "grasped": true,
+      "steps": 80,
+      "model_ms_per_infer": 896.3990449905396
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": false,
+      "grasped": true,
+      "steps": 80,
+      "model_ms_per_infer": 900.5139827728271
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": true,
+      "grasped": true,
+      "steps": 29,
+      "model_ms_per_infer": 892.3990428447723
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 895.5432891845703
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 897.429883480072
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": true,
+      "grasped": true,
+      "steps": 18,
+      "model_ms_per_infer": 896.8236446380615
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 897.4051713943481
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 894.9939012527466
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": true,
+      "grasped": true,
+      "steps": 26,
+      "model_ms_per_infer": 889.3953732081821
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "success": true,
+      "grasped": true,
+      "steps": 22,
+      "model_ms_per_infer": 892.2201792399088
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 891.8457269668579
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 893.3261156082153
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "success": true,
+      "grasped": false,
+      "steps": 17,
+      "model_ms_per_infer": 885.3756904602051
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 892.8100228309631
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "success": true,
+      "grasped": true,
+      "steps": 25,
+      "model_ms_per_infer": 883.9054448263986
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "success": true,
+      "grasped": true,
+      "steps": 35,
+      "model_ms_per_infer": 884.3948046366373
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "success": true,
+      "grasped": false,
+      "steps": 26,
+      "model_ms_per_infer": 893.601519720895
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 900.0773429870605
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "success": true,
+      "grasped": true,
+      "steps": 23,
+      "model_ms_per_infer": 899.194081624349
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "success": true,
+      "grasped": true,
+      "steps": 24,
+      "model_ms_per_infer": 891.7458057403564
+    },
+    {
+      "ep": 24,
+      "ep_id": 24,
+      "success": false,
+      "grasped": true,
+      "steps": 80,
+      "model_ms_per_infer": 897.9026556015015
+    }
+  ]
+}
