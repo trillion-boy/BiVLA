@@ -14,12 +14,12 @@ const s = pres.addSlide();
 s.background = { color: 'FFFFFF' };
 
 /* ---------- title ---------- */
-s.addText('Where the four conditions attach', {
+s.addText('Where the three interventions attach', {
   x: 0.55, y: 0.32, w: 12.2, h: 0.55, margin: 0,
   fontFace: 'Calibri', fontSize: 32, bold: true, color: INK,
 });
-s.addText('Every hook attaches outside the frozen weights.  '
-        + 'Original policy is this same loop with all three off.', {
+s.addText('Every hook attaches outside the frozen weights.  The fourth condition, '
+        + 'Original policy, is this same loop with all three off.', {
   x: 0.55, y: 0.92, w: 12.2, h: 0.32, margin: 0,
   fontFace: 'Calibri', fontSize: 13, color: MUT,
 });
@@ -145,9 +145,10 @@ s.addShape(pres.ShapeType.line, { x: 1.32, y: 6.40, w: 0, h: -2.87,
   line: { ...FB, endArrowType: 'triangle' } });
 note('next observation', 6.10, 6.44, 1.60);
 
-s.addNotes('Methods figure for the four-condition grid: original policy, fixed foveation (hook A), '
-         + 'action repeat (hook B), fixed depth pruning (hook C). All shapes are native PowerPoint '
-         + 'objects and can be edited directly.');
+s.addNotes('Methods figure for the four-condition grid. Three of the four attach somewhere -- '
+         + 'fixed foveation (hook A), action repeat (hook B), fixed depth pruning (hook C); '
+         + 'the fourth, original policy, is the same loop with all three off. '
+         + 'All shapes are native PowerPoint objects and can be edited directly.');
 
 pres.writeFile({ fileName: '/home/user/BiVLA/experiments/figures/hook_points.pptx' })
     .then(f => console.log('wrote', f));
