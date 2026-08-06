@@ -1,0 +1,125 @@
+/content/vsim/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Some kwargs in processor config are unused and will not have any effect: action_config, statistics, bin_policy, num_obs_steps, intrinsic_config, obs_delta, action_chunk_size. 
+*** policy_setup: google_robot, unnorm_key: fractal20220817_data/0.1.0 ***
+Add 0 TRANSLATION TOKENS, tokenizer vocab size 257152 / 265347
+Add 0 ROTATION TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+Add 0 GRIPPER TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  2.75it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.68it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.69it/s]
+[OK] official SpatialVLAInference loaded (no wrapper, no DINO)
+
+── ep 00 (env_id=0) ──
+/content/vsim/lib/python3.10/site-packages/gymnasium/envs/registration.py:513: DeprecationWarning: [33mWARN: The environment MoveNearGoogleBakedTexInScene-v0 is out of date. You should consider upgrading to version `v1`.[0m
+  logger.deprecation(
+[2026-08-06 15:06:01.458] [svulkan2] [error] GLFW error: X11: The DISPLAY environment variable is missing
+[2026-08-06 15:06:01.458] [svulkan2] [warning] Continue without GLFW.
+/content/vsim/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+   instruction: move blue plastic bottle near pepsi can
+The 'batch_size' attribute of HybridCache is deprecated and will be removed in v4.49. Use the more precisely named 'self.max_batch_size' attribute instead.
+[ChunkProbe] raw_action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['rotation_delta']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['open_gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] action['rot_axangle']: shape=(3,) type=ndarray
+[ChunkProbe] action['gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['terminate_episode']: shape=(1,) type=ndarray
+   → G- FAIL  (80 steps, 939 ms/infer)
+
+── ep 01 (env_id=1) ──
+[2026-08-06 15:07:32.306] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move blue plastic bottle near orange
+   → G- SUCCESS  (21 steps, 927 ms/infer)
+
+── ep 02 (env_id=2) ──
+[2026-08-06 15:07:56.048] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move pepsi can near blue plastic bottle
+   → G- SUCCESS  (18 steps, 926 ms/infer)
+
+── ep 03 (env_id=3) ──
+[2026-08-06 15:08:16.622] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move pepsi can near orange
+   → G- SUCCESS  (18 steps, 929 ms/infer)
+
+── ep 04 (env_id=4) ──
+[2026-08-06 15:08:37.395] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move orange near blue plastic bottle
+   → G- SUCCESS  (15 steps, 929 ms/infer)
+
+── ep 05 (env_id=5) ──
+[2026-08-06 15:08:54.725] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move orange near pepsi can
+   → G- SUCCESS  (14 steps, 924 ms/infer)
+
+── ep 06 (env_id=6) ──
+[2026-08-06 15:09:11.052] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move blue plastic bottle near pepsi can
+   → G- FAIL  (80 steps, 924 ms/infer)
+
+── ep 07 (env_id=7) ──
+[2026-08-06 15:10:37.912] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move blue plastic bottle near orange
+   → G- FAIL  (80 steps, 923 ms/infer)
+
+── ep 08 (env_id=8) ──
+[2026-08-06 15:12:04.451] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move pepsi can near blue plastic bottle
+   → G- SUCCESS  (16 steps, 925 ms/infer)
+
+── ep 09 (env_id=9) ──
+[2026-08-06 15:12:22.785] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move pepsi can near orange
+   → G- SUCCESS  (20 steps, 925 ms/infer)
+
+── ep 10 (env_id=10) ──
+[2026-08-06 15:12:45.425] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move orange near blue plastic bottle
+   → G- SUCCESS  (15 steps, 924 ms/infer)
+
+── ep 11 (env_id=11) ──
+[2026-08-06 15:13:02.701] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move orange near pepsi can
+   → G- SUCCESS  (13 steps, 925 ms/infer)
+
+── ep 12 (env_id=12) ──
+[2026-08-06 15:13:17.856] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move 7up can near apple
+   → G- SUCCESS  (21 steps, 929 ms/infer)
+
+── ep 13 (env_id=13) ──
+[2026-08-06 15:13:41.620] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move 7up can near sponge
+   → G- SUCCESS  (20 steps, 924 ms/infer)
+
+── ep 14 (env_id=14) ──
+[2026-08-06 15:14:04.187] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move apple near 7up can
+   → G- SUCCESS  (16 steps, 926 ms/infer)
+
+── ep 15 (env_id=15) ──
+[2026-08-06 15:14:22.568] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move apple near sponge
+   → G- SUCCESS  (17 steps, 931 ms/infer)
+
+── ep 16 (env_id=16) ──
+[2026-08-06 15:14:42.156] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move sponge near 7up can
+   → G- SUCCESS  (13 steps, 921 ms/infer)
+
+── ep 17 (env_id=17) ──
+[2026-08-06 15:14:57.295] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move sponge near apple
+   → G- FAIL  (80 steps, 926 ms/infer)
+
+── ep 18 (env_id=18) ──
+[2026-08-06 15:16:25.619] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move 7up can near apple
+   → G- FAIL  (80 steps, 932 ms/infer)
+
+── ep 19 (env_id=19) ──
+[2026-08-06 15:17:53.519] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: move 7up can near sponge

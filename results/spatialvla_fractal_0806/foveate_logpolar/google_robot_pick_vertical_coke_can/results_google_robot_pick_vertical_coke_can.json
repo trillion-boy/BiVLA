@@ -1,0 +1,234 @@
+{
+  "model": "SpatialVLA-official",
+  "task": "google_robot_pick_vertical_coke_can",
+  "success_rate": 0.88,
+  "grasp_rate": 0.88,
+  "avg_model_ms_per_infer": 933.4629238502181,
+  "avg_steps": 30.64,
+  "foveate": {
+    "enabled": true,
+    "keep_percent": 20.0,
+    "mode": "logpolar",
+    "center": "image",
+    "phase": "always"
+  },
+  "tome": {
+    "enabled": false,
+    "r": 8,
+    "layers": 6,
+    "protect": "none"
+  },
+  "temporal_stride": 1,
+  "depth_prune": {
+    "count": 0
+  },
+  "spec_decode": {
+    "enabled": false
+  },
+  "action_repeat": 1,
+  "exec_chunk": {
+    "enabled": false
+  },
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 942.1141982078552
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 928.1956732273102
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": true,
+      "grasped": true,
+      "steps": 16,
+      "model_ms_per_infer": 934.8123520612717
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "success": true,
+      "grasped": true,
+      "steps": 36,
+      "model_ms_per_infer": 927.7414547072517
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": false,
+      "grasped": false,
+      "steps": 80,
+      "model_ms_per_infer": 928.8043349981308
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": true,
+      "grasped": true,
+      "steps": 43,
+      "model_ms_per_infer": 935.606834500335
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": true,
+      "grasped": true,
+      "steps": 56,
+      "model_ms_per_infer": 934.697504554476
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": true,
+      "grasped": true,
+      "steps": 18,
+      "model_ms_per_infer": 926.7451233334012
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": true,
+      "grasped": true,
+      "steps": 17,
+      "model_ms_per_infer": 927.0848386427936
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": true,
+      "grasped": true,
+      "steps": 15,
+      "model_ms_per_infer": 926.230255762736
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": true,
+      "grasped": true,
+      "steps": 21,
+      "model_ms_per_infer": 928.764127549671
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": true,
+      "grasped": true,
+      "steps": 47,
+      "model_ms_per_infer": 929.8912565758887
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": true,
+      "grasped": true,
+      "steps": 21,
+      "model_ms_per_infer": 921.7397939591181
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "success": true,
+      "grasped": true,
+      "steps": 17,
+      "model_ms_per_infer": 933.5776216843549
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "success": true,
+      "grasped": true,
+      "steps": 14,
+      "model_ms_per_infer": 933.3770275115967
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "success": true,
+      "grasped": true,
+      "steps": 24,
+      "model_ms_per_infer": 934.5267713069916
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "success": true,
+      "grasped": true,
+      "steps": 19,
+      "model_ms_per_infer": 935.9453853807951
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "success": true,
+      "grasped": true,
+      "steps": 17,
+      "model_ms_per_infer": 949.8609514797434
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "success": true,
+      "grasped": true,
+      "steps": 18,
+      "model_ms_per_infer": 933.3946969774034
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "success": true,
+      "grasped": true,
+      "steps": 15,
+      "model_ms_per_infer": 930.8016777038574
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "success": true,
+      "grasped": true,
+      "steps": 29,
+      "model_ms_per_infer": 940.9762250966039
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "success": true,
+      "grasped": true,
+      "steps": 21,
+      "model_ms_per_infer": 940.1469003586542
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "success": true,
+      "grasped": true,
+      "steps": 19,
+      "model_ms_per_infer": 934.7097999171207
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "success": true,
+      "grasped": true,
+      "steps": 17,
+      "model_ms_per_infer": 935.8396950890036
+    },
+    {
+      "ep": 24,
+      "ep_id": 24,
+      "success": true,
+      "grasped": true,
+      "steps": 26,
+      "model_ms_per_infer": 940.9885956690862
+    }
+  ]
+}
