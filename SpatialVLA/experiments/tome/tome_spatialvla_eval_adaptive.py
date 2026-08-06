@@ -8,7 +8,7 @@ eval (TASK_CONFIGS / build_env / get_image), but drives the *official* policy.
 
 Usage:
   python tome_spatialvla_eval.py --model-path <ckpt> --task widowx_put_eggplant_in_basket \
-      --n-episodes 8 --output-dir <dir>                 # baseline
+      --output-dir <dir>          # baseline, full protocol
   python tome_spatialvla_eval.py ... --tome --tome-r 8 --tome-layers 6 --tome-protect none
 """
 import argparse
@@ -40,7 +40,13 @@ def parse_args():
     p.add_argument("--unnorm-key", default="bridge_orig/1.0.0")
     p.add_argument("--policy-setup", default="widowx_bridge")
     p.add_argument("--task", default="widowx_put_eggplant_in_basket")
-    p.add_argument("--n-episodes", type=int, default=8)
+    p.add_argument("--n-episodes", type=int, default=0,
+                   help="how many initial states to run. 0 = every state this "
+                        "task's protocol defines, which is what a reported number "
+                        "should be. A smaller count takes an ORDERED PREFIX, which "
+                        "is a biased sample wherever the ids are grouped (MoveNear's "
+                        "are grouped by object triplet) -- fine for a quick check, "
+                        "not for a result.")
     p.add_argument("--output-dir", default="./tome_spatialvla_results")
     p.add_argument("--tome", action="store_true", default=False)
     p.add_argument("--tome-r", type=int, default=8)
@@ -165,7 +171,8 @@ def main():
         chunk_state = apply_chunk_execution(policy, k=args.exec_chunk)
 
     base_ids = list(range(*cfg["obj_episode_range"]))
-    ep_ids = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
+    n_want = args.n_episodes or len(base_ids)
+    ep_ids = [base_ids[i % len(base_ids)] for i in range(n_want)]
     results = []
     calibrated = False
     if pruner is not None:

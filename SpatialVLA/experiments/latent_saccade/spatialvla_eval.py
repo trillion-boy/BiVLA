@@ -13,12 +13,12 @@ ActionEnsembler, image history, do_normalize=False, cv2 resize, raw prompt 등
   # Latent Saccade ON
   python experiments/latent_saccade/spatialvla_eval.py \\
     --model-path IPEC-COMMUNITY/spatialvla-4b-224-pt \\
-    --task widowx_put_eggplant_in_basket --n-episodes 24
+    --task widowx_put_eggplant_in_basket
 
   # Baseline (OFF)
   python experiments/latent_saccade/spatialvla_eval.py \\
     --model-path IPEC-COMMUNITY/spatialvla-4b-224-pt \\
-    --task widowx_put_eggplant_in_basket --n-episodes 24 --no-latent-mask
+    --task widowx_put_eggplant_in_basket --no-latent-mask
 """
 
 import sys
@@ -255,7 +255,13 @@ def parse_args():
                    choices=["widowx_bridge", "google_robot"])
     p.add_argument("--task", default="widowx_put_eggplant_in_basket",
                    choices=list(TASK_CONFIGS.keys()))
-    p.add_argument("--n-episodes", type=int, default=24)
+    p.add_argument("--n-episodes", type=int, default=0,
+                   help="how many initial states to run. 0 = every state this "
+                        "task's protocol defines, which is what a reported number "
+                        "should be. A smaller count takes an ORDERED PREFIX, which "
+                        "is a biased sample wherever the ids are grouped (MoveNear's "
+                        "are grouped by object triplet) -- fine for a quick check, "
+                        "not for a result.")
     p.add_argument("--output-dir", default="./latent_saccade_spatialvla_results")
     # Saccade weights (fovea-only boost, grasp/place 분리)
     p.add_argument("--bg-weight",        type=float, default=1.0,
@@ -535,7 +541,8 @@ def main():
 
     # ── Episode loop ───────────────────────────────────────────────────────
     base_ids = list(range(*task_cfg["obj_episode_range"]))
-    ep_ids   = [base_ids[i % len(base_ids)] for i in range(args.n_episodes)]
+    n_want = args.n_episodes or len(base_ids)
+    ep_ids = [base_ids[i % len(base_ids)] for i in range(n_want)]
     results  = []
 
     for ep_count, ep_id in enumerate(ep_ids):
