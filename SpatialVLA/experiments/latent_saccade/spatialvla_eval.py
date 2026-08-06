@@ -172,11 +172,31 @@ TASK_CONFIGS = {
         "obj_episode_range": [0, 60],
     },
     # Drawer tasks render with the ray-tracing shader and swap the overlay per
-    # station, so they cost several times a coke-can episode. Kept out of the
-    # default four; enable deliberately, with the extra wall-clock budgeted.
+    # station, so they cost several times a coke-can episode. Enable
+    # deliberately, with the extra wall-clock budgeted.
+    #
+    # The published "Open/Close Drawer" column is ONE number covering both
+    # directions, so reporting only `open_drawer` against it would compare our
+    # half to their whole. Both are registered; run both or neither.
+    #
+    # These use "seed_only": the env draws its station (9 overlays, each with
+    # its own robot pose), its drawer (top/middle/bottom) and its URDF variant
+    # from the episode RNG. That samples the reference protocol rather than
+    # enumerating it -- the reference sweeps 4 URDFs x 9 stations x 6 env ids =
+    # 216 episodes, which we are not paying for. Our number is therefore a
+    # Monte-Carlo estimate of theirs, comparable in expectation and noisier;
+    # it is not the same measurement and should not be tabled as if it were.
     "google_robot_open_drawer": {
         "prepackaged": True,
         "env_name": "OpenDrawerCustomInScene-v0",
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 113,
+        "variation": "seed_only",
+        "obj_episode_range": [0, 24],
+    },
+    "google_robot_close_drawer": {
+        "prepackaged": True,
+        "env_name": "CloseDrawerCustomInScene-v0",
         "obs_camera_name": "overhead_camera",
         "max_episode_steps": 113,
         "variation": "seed_only",
