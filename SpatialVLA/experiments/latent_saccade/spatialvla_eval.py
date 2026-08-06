@@ -99,6 +99,51 @@ TASK_CONFIGS = {
         "robot_init_x": 0.147,
         "robot_init_y": 0.028,
     },
+
+    # ── Google Robot / Fractal ─────────────────────────────────────────────
+    # These go through simpler_env.make(), which applies SimplerEnv's own
+    # `prepackaged_config` -- robot, control mode, control/sim freq, scene and
+    # the visual-matching overlay all come from the simulator rather than being
+    # restated here. Restating them is how a Fractal run silently ends up on
+    # the wrong scene or without an overlay, which is exactly the failure that
+    # cost us a UniVLA campaign on Bridge.
+    #
+    # Only `obs_camera_name` and `max_episode_steps` are ours to choose:
+    # the first because the harness has to know which camera to read, and the
+    # second because SimplerEnv's default caps differ per task family.
+    "google_robot_pick_horizontal_coke_can": {
+        "prepackaged": True,
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 80,
+    },
+    "google_robot_pick_vertical_coke_can": {
+        "prepackaged": True,
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 80,
+    },
+    "google_robot_pick_standing_coke_can": {
+        "prepackaged": True,
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 80,
+    },
+    "google_robot_move_near": {
+        "prepackaged": True,
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 80,
+    },
+    # Drawer tasks render with the ray-tracing shader and swap the overlay per
+    # station, so they cost several times a coke-can episode. Kept out of the
+    # default four; enable deliberately, with the extra wall-clock budgeted.
+    "google_robot_open_drawer": {
+        "prepackaged": True,
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 113,
+    },
+    "google_robot_place_in_closed_drawer": {
+        "prepackaged": True,
+        "obs_camera_name": "overhead_camera",
+        "max_episode_steps": 200,
+    },
 }
 
 
@@ -178,7 +223,39 @@ def parse_args():
     return p.parse_args()
 
 
-def build_env(cfg, ep_id, no_overlay=False, overlay_path=None):
+def build_env(cfg, ep_id, no_overlay=False, overlay_path=None, task_name=None):
+    # Google Robot / Fractal: let SimplerEnv build it. `prepackaged_config`
+    # inside the env sets robot, control mode, freqs, scene and the
+    # visual-matching overlay; re-deriving those here is how a run silently
+    # loses its overlay and reports a collapse that is really a setup bug.
+    if cfg.get("prepackaged"):
+        import simpler_env
+        if task_name is None:
+            raise ValueError("prepackaged tasks need task_name to reach simpler_env.make")
+        # obs_mode is passed explicitly because simpler_env.make writes
+        #     env_kwargs["obs_mode"] = "rgbd",
+        # -- the trailing comma makes it the tuple ("rgbd",), which the env
+        # rejects. make() applies our kwargs after its own, so this overwrites
+        # the tuple with the string it meant to set.
+        env = simpler_env.make(
+            task_name,
+            obs_mode="rgbd",
+            max_episode_steps=cfg["max_episode_steps"],
+        )
+        obs, _ = env.reset(options={"obj_init_options": {"episode_id": int(ep_id)}})
+        # The overlay is not optional on these -- the checkpoint was evaluated
+        # against the visual-matching image, and without it we would be scoring
+        # a distribution the policy has never seen.
+        inner = env.unwrapped
+        if not getattr(inner, "rgb_overlay_path", None):
+            raise RuntimeError(
+                f"{task_name}: SimplerEnv returned no rgb_overlay_path. The "
+                f"real_inpainting assets are missing under "
+                f"{SIMPLER_ENV_ROOT}/ManiSkill2_real2sim/data. Refusing to run "
+                f"rather than evaluate on the raw sim render."
+            )
+        return env, obs
+
     from simpler_env.utils.env.env_builder import build_maniskill2_env, get_robot_control_mode
     robot = cfg["robot"]
     try:
@@ -306,7 +383,7 @@ def main():
 
     for ep_count, ep_id in enumerate(ep_ids):
         print(f"\n── ep {ep_count:02d} (env_id={ep_id}) ──────────────────────────", flush=True)
-        env, obs    = build_env(task_cfg, ep_id, no_overlay=args.no_overlay, overlay_path=args.overlay_path)
+        env, obs    = build_env(task_cfg, ep_id, no_overlay=args.no_overlay, overlay_path=args.overlay_path, task_name=args.task)
         instruction = env.get_language_instruction()
         image       = get_image(env, obs, cam_name)
         image       = apply_brightness(image, args.brightness)

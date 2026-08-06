@@ -174,7 +174,7 @@ def main():
 
     for ep_count, ep_id in enumerate(ep_ids):
         print(f"\n── ep {ep_count:02d} (env_id={ep_id}) ──", flush=True)
-        env, obs = build_env(cfg, ep_id)
+        env, obs = build_env(cfg, ep_id, task_name=args.task)
         instruction = env.get_language_instruction()
         image = observe(env, obs)
         policy.reset(instruction)
