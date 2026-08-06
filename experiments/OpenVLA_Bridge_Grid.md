@@ -174,12 +174,23 @@ OpenVLA holds only at the aggregate.
 | OpenVLA action repeat 2, −8.3 (and −8.0 on LIBERO) | p=0.057 | suggestive, replicated |
 | OpenVLA depth, per-task monotone split | eggplant p=0.0215 (α=0.0125) | pattern, not a single test |
 | OpenVLA depth, aggregate | p≥0.80 at every depth | no effect detected |
-| SpatialVLA action repeat 2, +10.4 | unpaired z=1.50 | **not established** |
+| **SpatialVLA repeat 2 → repeat 4, −25.0** | **p=3.9×10⁻⁵** | **conclusive** |
+| SpatialVLA action repeat 2, +12.5 | p=0.0428 | suggestive |
+| SpatialVLA action repeat 4, −12.5 | p=0.0501 | not established |
 
-Across ~15 comparisons a Bonferroni threshold is α≈0.003; the five marked
+Across ~15 comparisons a Bonferroni threshold is α≈0.003; the six marked
 conclusive clear it. "Not established" means *not detected* — depth pruning at 4
 layers has a CI of [−8.3, +10.4] and is compatible with a 10-point gain or an
 8-point loss.
+
+The SpatialVLA rows replace the old unpaired +10.4, which was re-measured on
+2026-08-05 with per-episode records retained (`SpatialVLA_Bridge_Rerun_0805.md`).
+The re-run reproduced the old repeat-2 number on all four tasks. Its two
+baseline-relative comparisons straddle 0.05 in opposite directions and neither
+is conclusive on its own; the conclusive statement is the *shape* — 30.2 → 42.7
+→ 17.7 at horizons 1, 2, 4, with the 2→4 collapse at p=3.9×10⁻⁵. Against
+OpenVLA's monotone 15.6 → 7.3 → 4.2 on the same x-axis, the sign of the
+intervention differs by backbone.
 
 ## Reproduce
 

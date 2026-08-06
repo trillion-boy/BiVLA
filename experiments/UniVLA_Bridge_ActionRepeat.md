@@ -116,7 +116,7 @@ The same flag, the same code, applied at the same hook point:
 
 | backbone / benchmark | baseline horizon | under repeat 2 | Δ |
 |---|---|---|---|
-| SpatialVLA / Bridge | 1 | 2 | **+10.4** |
+| SpatialVLA / Bridge | 1 | 2 | **+12.5** |
 | UniVLA / Bridge | 5 | **10** | **−70.8** |
 | UniVLA / LIBERO | 10 | 20 | **−68.0** |
 
@@ -129,7 +129,7 @@ the horizon.
 > **Correction (2026-08-05).** This section originally concluded "the honest
 > reading is horizon, not architecture". The OpenVLA/Bridge run later that day
 > refutes that: OpenVLA goes 1→2 steps under the same flag and loses 8.3 points,
-> while SpatialVLA goes 1→2 and gains 10.4. **Identical horizon change, opposite
+> while SpatialVLA goes 1→2 and gains 12.5. **Identical horizon change, opposite
 > sign** — so absolute horizon cannot be the explanation. The hypothesis that
 > fits all five measurements is distance from the horizon the policy was
 > *trained* to execute, and SpatialVLA is the only backbone deployed below its
@@ -146,11 +146,12 @@ when it is horizon-dependence.
 
 Neither is isolated by the runs so far. Two cheap follow-ups:
 
-* **SpatialVLA action repeat 4 and 5.** Puts a non-chunking backbone at 4 and 5
-  env steps per call, spanning the gap between SpatialVLA's +10.4 at 2 and
-  UniVLA's −70.8 at 10, on a single backbone. If it degrades smoothly the story
-  is horizon; if it holds to 5 and then falls, the threshold sits between 5 and
-  10 and the backbones agree.
+* ~~**SpatialVLA action repeat 4 and 5.**~~ **Done, 2026-08-05.** Repeat 4 gives
+  17.7% against a 30.2% baseline and a 42.7% peak at repeat 2 — so SpatialVLA
+  degrades between 2 and 4, not smoothly from 1. The peak sits *below* the
+  trained chunk length (~4), which the horizon account alone does not predict;
+  see `SpatialVLA_Bridge_Rerun_0805.md` for the two candidate explanations and
+  why action repeat 4 is not the same operation as a 4-step chunk.
 * **UniVLA `--exec-chunk 5 --action-repeat 2` vs `--exec-chunk 10`** — not
   runnable as-is (the chunk is only 5), but the equivalent on a longer-chunk
   policy would hold the horizon fixed while varying displacement.

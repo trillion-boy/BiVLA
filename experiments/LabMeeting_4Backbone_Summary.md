@@ -62,6 +62,24 @@ chunk 중 일부만 실행"하는 chunk-exec 자체를 적용할 전제조건이
 
 **세팅:** `spatialvla-4b-224-pt`(frozen), A100 40GB.
 
+> **추가 (2026-08-05): 이 절의 chunk-exec 자리는 action repeat으로 대체됐다.**
+> 그리드를 4개 백본에 공통으로 적용하려면 개입이 백본마다 같은 연산이어야
+> 하는데, chunk-exec은 chunk를 예측하는 백본에만 존재한다. 그래서 최종
+> 그리드는 **action repeat**(어느 백본에서나 동일한 연산: 액션 배열을
+> `env.step` 전에 N번 반복)을 쓴다. per-episode JSON을 남기고 다시 측정한
+> 결과는 아래와 같고, 짝지은 McNemar 검정을 붙였다.
+>
+> | horizon (모델 호출당 env 스텝) | 성공률 | Δ | p |
+> |---|---|---|---|
+> | 1 (baseline) | 29/96 = **30.2%** | — | — |
+> | 2 | 41/96 = **42.7%** | +12.5 | 0.0428 |
+> | 4 | 17/96 = **17.7%** | −12.5 | 0.0501 |
+> | 2 → 4 | | **−25.0** | **3.9×10⁻⁵** |
+>
+> 정점이 1이 아니라 2에 있다. **OpenVLA는 같은 축에서 15.6 → 7.3 → 4.2로
+> 단조 감소**하므로, 같은 개입이 백본에 따라 부호가 뒤집힌다. 상세는
+> `experiments/SpatialVLA_Bridge_Rerun_0805.md`.
+
 **Phase 1 — chunk-exec과 log-polar foveation**
 
 | Config | Eggplant | Carrot | Stack | Spoon | **평균 성공률** | ms/infer |

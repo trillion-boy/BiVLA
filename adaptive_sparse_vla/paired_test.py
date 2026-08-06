@@ -146,6 +146,31 @@ def exact_two_sided(b: int, c: int) -> float:
     return min(1.0, 2.0 * tail)
 
 
+def _exec_chunk(summary: dict) -> int:
+    """Executed chunk length k, 0 meaning "the whole predicted chunk".
+
+    Three harnesses write this field three ways -- an int (UniVLA, OpenVLA),
+    `{"enabled": False}` or `{"enabled": True, "k": n}` (SpatialVLA) -- so it
+    has to be read rather than assumed. Comparing a dict to an int raises,
+    which at least fails loudly; silently reading it as 0 would not.
+    """
+    v = summary.get("exec_chunk")
+    if isinstance(v, dict):
+        return int(v.get("k", 0)) if v.get("enabled") else 0
+    return int(v or 0)
+
+
+def _prune_count(summary: dict) -> int:
+    """Number of bypassed decoder layers, across the same three schemas."""
+    d = summary.get("depth_prune")
+    if isinstance(d, dict):
+        return int(d.get("count", 0))
+    if d is not None:
+        return int(d or 0)
+    nested = summary.get("depth") or {}
+    return int(nested.get("depth_prune") or summary.get("llm_prune_count") or 0)
+
+
 def horizon(summary: dict) -> int | None:
     """Env steps executed per model call, or None if the run did not record it.
 
@@ -153,11 +178,10 @@ def horizon(summary: dict) -> int | None:
     comparable across backbones without being stated: a chunking policy at
     action-repeat 2 sits at 2x its chunk length, not at 2.
     """
+    if "action_repeat" not in summary:
+        return None
     repeat = int(summary.get("action_repeat", 1) or 1)
-    chunk = summary.get("exec_chunk")
-    if chunk is None:
-        return repeat if "action_repeat" in summary else None
-    chunk = int(chunk)
+    chunk = _exec_chunk(summary)
     if chunk <= 0:  # 0 means "execute the whole predicted chunk"
         chunk = int(summary.get("predict_action_frames", 1) or 1)
     return chunk * repeat
@@ -169,18 +193,18 @@ def label(summary: dict, path: str) -> str:
     fov = summary.get("foveate") or {}
     if fov.get("enabled"):
         bits.append(f"fov-{fov.get('mode')}-{fov.get('keep_percent'):g}%")
-    # LIBERO nests the depth settings under "depth"; SimplerEnv writes
-    # llm_prune_count / depth_ctrl at the top level.
+    # LIBERO nests the depth-controller settings under "depth"; the SimplerEnv
+    # harnesses write depth_ctrl / llm_prune_count / depth_prune at the top.
     d = summary.get("depth") or {}
     ctrl = summary.get("depth_ctrl") or {}
     if d.get("depth_ctrl") or ctrl.get("enabled"):
         deep = d.get("depth_deep", ctrl.get("deep"))
         shallow = d.get("depth_shallow", ctrl.get("shallow"))
         bits.append(f"depth-ctrl{deep}to{shallow}")
-    elif d.get("depth_prune") or summary.get("llm_prune_count"):
-        bits.append(f"depth-prune{d.get('depth_prune') or summary['llm_prune_count']}")
-    if (summary.get("exec_chunk") or 0) > 0:
-        bits.append(f"chunk{summary['exec_chunk']}")
+    elif _prune_count(summary):
+        bits.append(f"depth-prune{_prune_count(summary)}")
+    if _exec_chunk(summary) > 0:
+        bits.append(f"chunk{_exec_chunk(summary)}")
     if int(summary.get("action_repeat", 1) or 1) > 1:
         bits.append(f"rep{summary['action_repeat']}")
     if len(bits) == 1:
