@@ -97,6 +97,41 @@ from simpler_env.utils.env.env_builder import build_maniskill2_env, get_robot_co
 from simpler_env.utils.env.observation_utils import get_image_from_maniskill2_obs_dict
 
 
+def _load_fractal_protocol():
+    """Import the repo-root Google Robot protocol module.
+
+    Imported, never copied. The SpatialVLA harness imports the same module, and
+    the cross-backbone claim only means something if `--task X --episode-ids 7`
+    lands on the SAME initial state in both. A local copy of the table here
+    would drift and no result would show it.
+    """
+    here = os.path.abspath(os.path.dirname(__file__))
+    for _ in range(6):
+        if os.path.exists(os.path.join(here, "simpler_fractal_protocol.py")):
+            if here not in sys.path:
+                sys.path.insert(0, here)
+            import simpler_fractal_protocol as proto
+            return proto
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    raise ImportError(
+        "simpler_fractal_protocol.py not found in any parent of "
+        f"{os.path.dirname(__file__)}. It lives at the BiVLA repo root and "
+        "holds the Google Robot episode->initial-state mapping this harness "
+        "shares with the SpatialVLA one."
+    )
+
+
+_proto = _load_fractal_protocol()
+GOOGLE_ROBOT_TASKS = _proto.GOOGLE_ROBOT_TASKS
+build_prepackaged_env = _proto.build_prepackaged_env
+step_grasped = _proto.step_grasped
+grasp_is_reported = _proto.grasp_is_reported
+episode_grasped = _proto.episode_grasped
+
+
 TASK_CONFIGS = {
     "widowx_put_eggplant_in_basket": {
         "env_name": "PutEggplantInBasketScene-v0",
@@ -154,7 +189,23 @@ TASK_CONFIGS = {
         "robot_init_x": 0.147,
         "robot_init_y": 0.028,
     },
+
+    # Google Robot / Fractal tasks come from the repo-root protocol module,
+    # which the SpatialVLA harness imports too. One table, so an episode index
+    # cannot come to mean two different initial states in two harnesses.
+    **GOOGLE_ROBOT_TASKS,
 }
+
+
+def policy_setup_for(task: str) -> str:
+    """-> the embodiment convention this task is scored under.
+
+    Derived from the task, never passed in. The gripper convention and the
+    action-unnormalization statistics both hinge on this, and both fail
+    quietly: a Google Robot run under Bridge statistics does not crash, it
+    produces a low-but-plausible success rate that reads as a real result.
+    """
+    return "google_robot" if task.startswith("google_robot") else "widowx_bridge"
 
 
 def parse_args():
@@ -206,13 +257,30 @@ def parse_args():
         "candidates remain.",
     )
     parser.add_argument("--task", choices=sorted(TASK_CONFIGS.keys()), required=True)
-    parser.add_argument("--n-episodes", type=int, default=24)
+    parser.add_argument(
+        "--n-episodes",
+        type=int,
+        default=0,
+        help="how many initial states to run. 0 = every state this task's "
+        "protocol defines, which is what a reported number should be. A "
+        "smaller count takes an ORDERED PREFIX, which is a biased sample "
+        "wherever the ids are grouped (MoveNear's are grouped by object "
+        "triplet, so the first 24 of 60 cover only two of five) -- fine for a "
+        "quick check, not for a result.",
+    )
     parser.add_argument("--episode-ids", default="")
     parser.add_argument("--output-dir", default="")
     parser.add_argument("--save-video", action="store_true")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--openvla-model-path", default="openvla/openvla-7b")
-    parser.add_argument("--openvla-unnorm-key", default="bridge_orig")
+    parser.add_argument(
+        "--openvla-unnorm-key",
+        default="",
+        help="action un-normalization statistics. Empty = derive from the "
+        "task's embodiment (bridge_orig for widowx_*, fractal20220817_data "
+        "for google_robot_*), which is what the checkpoint was evaluated "
+        "under. Override only to test a deliberate mismatch.",
+    )
     parser.add_argument("--foveated-keep-percent", type=float, default=20.0)
     parser.add_argument("--retina-mid-refresh", type=int, default=2)
     parser.add_argument("--retina-outer-refresh", type=int, default=4)
@@ -242,7 +310,15 @@ def get_video_frame(model, fallback_image: np.ndarray) -> np.ndarray:
     return np.asarray(fallback_image, dtype=np.uint8).copy()
 
 
-def build_env(task_cfg: dict, ep_id: int, policy_name: str):
+def build_env(task_cfg: dict, ep_id: int, policy_name: str, task_name: str = ""):
+    # Google Robot / Fractal: build_prepackaged_env is shared with the
+    # SpatialVLA harness, so both back ends hit the same env with the same
+    # reset options for a given episode index.
+    if task_cfg.get("prepackaged"):
+        if not task_name:
+            raise ValueError("prepackaged tasks need task_name to pick an env id")
+        return build_prepackaged_env(task_cfg, ep_id, task_name, SIMPLER_ENV_ROOT)
+
     robot = task_cfg["robot"]
     env_kwargs = dict(
         obs_mode="rgbd",
@@ -281,6 +357,18 @@ def get_image(env, obs, camera_name: str) -> np.ndarray:
 
 
 def get_oracle_context(env, obs, camera_name: str) -> dict:
+    try:
+        return _get_oracle_context(env, obs, camera_name)
+    except (AttributeError, KeyError, TypeError):
+        # Same reasoning as get_bridge_proprio: only the oracle-gaze
+        # conditions read this, and the Google Robot envs name their actors
+        # differently. Returning empty is honest -- an oracle condition then
+        # has no oracle and will say so -- whereas crashing loses the whole run.
+        return {"actor_seg": None, "source_actor_ids": [], "target_actor_ids": [],
+                "source_name": "", "target_name": ""}
+
+
+def _get_oracle_context(env, obs, camera_name: str) -> dict:
     unwrapped = env.unwrapped
     seg = obs["image"][camera_name].get("Segmentation")
     actor_seg = None if seg is None else np.asarray(seg[..., 1], dtype=np.int32)
@@ -308,11 +396,21 @@ def get_oracle_context(env, obs, camera_name: str) -> dict:
     }
 
 
-def get_bridge_proprio(env, obs) -> np.ndarray:
+def get_bridge_proprio(env, obs) -> Optional[np.ndarray]:
+    """TCP pose + gripper opening, or None if this env does not expose them.
+
+    Only the oracle-gaze and retina conditions read this; the OpenVLA policy
+    itself discards it. The Google Robot envs do not expose the same agent
+    accessors, so this returns None there rather than aborting an episode over
+    a field nothing in the condition being measured actually consumes.
+    """
     del obs
-    unwrapped = env.unwrapped
-    tcp = unwrapped.tcp.pose
-    gripper_open = 1.0 - float(unwrapped.agent.get_gripper_closedness())
+    try:
+        unwrapped = env.unwrapped
+        tcp = unwrapped.tcp.pose
+        gripper_open = 1.0 - float(unwrapped.agent.get_gripper_closedness())
+    except (AttributeError, TypeError, ValueError):
+        return None
     return np.concatenate(
         [
             np.asarray(tcp.p, dtype=np.float32),
@@ -341,34 +439,39 @@ def build_model(args):
     if args.model == "openvla":
         return OpenVLAInference(
             model_path=args.openvla_model_path,
-            unnorm_key=args.openvla_unnorm_key,
+            unnorm_key=args.openvla_unnorm_key or None,
+            policy_setup=policy_setup_for(args.task),
             device=args.device,
         )
     if args.model == "openvla_foveated":
         return FoveatedOpenVLAInference(
             model_path=args.openvla_model_path,
-            unnorm_key=args.openvla_unnorm_key,
+            unnorm_key=args.openvla_unnorm_key or None,
+            policy_setup=policy_setup_for(args.task),
             device=args.device,
             keep_percent=args.foveated_keep_percent,
         )
     if args.model == "openvla_foveated_blur":
         return BlurFoveatedOpenVLAInference(
             model_path=args.openvla_model_path,
-            unnorm_key=args.openvla_unnorm_key,
+            unnorm_key=args.openvla_unnorm_key or None,
+            policy_setup=policy_setup_for(args.task),
             device=args.device,
             keep_percent=args.foveated_keep_percent,
         )
     if args.model == "openvla_chunk":
         return ActionRepeatOpenVLAInference(
             model_path=args.openvla_model_path,
-            unnorm_key=args.openvla_unnorm_key,
+            unnorm_key=args.openvla_unnorm_key or None,
+            policy_setup=policy_setup_for(args.task),
             device=args.device,
             repeat_k=args.action_repeat,
         )
     if args.model == "openvla_depth":
         return DepthPrunedOpenVLAInference(
             model_path=args.openvla_model_path,
-            unnorm_key=args.openvla_unnorm_key,
+            unnorm_key=args.openvla_unnorm_key or None,
+            policy_setup=policy_setup_for(args.task),
             device=args.device,
             depth_prune=args.depth_prune,
             depth_min_layer=args.depth_min_layer,
@@ -377,7 +480,8 @@ def build_model(args):
     if args.model == "openvla_retina":
         return RetinotopicCachedOpenVLAInference(
             model_path=args.openvla_model_path,
-            unnorm_key=args.openvla_unnorm_key,
+            unnorm_key=args.openvla_unnorm_key or None,
+            policy_setup=policy_setup_for(args.task),
             device=args.device,
             **retina_kwargs,
         )
@@ -405,21 +509,33 @@ def main():
     output_dir = args.output_dir or os.path.join("results", args.model, args.task)
     os.makedirs(output_dir, exist_ok=True)
 
-    print(f"[load] model={args.model}", flush=True)
+    setup = policy_setup_for(args.task)
+    print(f"[load] model={args.model} policy_setup={setup} "
+          f"unnorm_key={args.openvla_unnorm_key or '(derived)'}", flush=True)
     model = build_model(args)
-    print("[ok] model loaded", flush=True)
+    print(f"[ok] model loaded  unnorm_key={model.unnorm_key} "
+          f"sticky_gripper={model.sticky_gripper_num_repeat}", flush=True)
 
     if args.episode_ids.strip():
         episode_ids = [int(part.strip()) for part in args.episode_ids.split(",") if part.strip()]
     else:
         base_ids = list(range(*task_cfg["obj_episode_range"]))
-        episode_ids = [base_ids[idx % len(base_ids)] for idx in range(args.n_episodes)]
+        # n_episodes 0 = the whole protocol. Anything smaller is an ordered
+        # prefix; see the --n-episodes help.
+        n_want = args.n_episodes or len(base_ids)
+        episode_ids = [base_ids[idx % len(base_ids)] for idx in range(n_want)]
+    if len(episode_ids) < len(range(*task_cfg["obj_episode_range"])):
+        print(f"[warn] running {len(episode_ids)} of this task's "
+              f"{len(range(*task_cfg['obj_episode_range']))} protocol episodes "
+              f"-- an ordered prefix, not an unbiased subsample", flush=True)
 
     results = []
+    grasp_seen = False
 
     for run_idx, episode_id in enumerate(episode_ids):
         print(f"\n-- episode {run_idx:02d} (env_id={episode_id}) --", flush=True)
-        env, obs = build_env(task_cfg, episode_id, policy_name=args.model)
+        env, obs = build_env(task_cfg, episode_id, policy_name=args.model,
+                             task_name=args.task)
         instruction = env.get_language_instruction()
         image = get_image(env, obs, camera_name)
         print(f"instruction: {instruction}", flush=True)
@@ -463,7 +579,12 @@ def main():
                 )
                 obs, _, done, truncated, info = env.step(flat_action)
                 final_info = info
-                grasped = grasped or bool(info.get("is_src_obj_grasped", False))
+                # Read every grasp key the env families use, not just Bridge's.
+                # Reading only `is_src_obj_grasped` does not crash on Fractal --
+                # it silently reports 0% grasp, and grasp-vs-success is the
+                # split every failure diagnosis in this project turns on.
+                grasped = grasped or step_grasped(info)
+                grasp_seen = grasp_seen or grasp_is_reported(info)
                 image = get_image(env, obs, camera_name)
 
                 new_instruction = env.get_language_instruction()
@@ -477,6 +598,7 @@ def main():
 
         elapsed = time.time() - start_time
         success = bool(final_info.get("success", False))
+        grasped = grasped or episode_grasped(final_info)
         status = "SUCCESS" if success else "FAIL"
         print(f"result: {status} grasped={grasped} steps={step_count} time={elapsed:.1f}s", flush=True)
 
@@ -520,8 +642,19 @@ def main():
     summary = {
         "model": args.model,
         "task": args.task,
+        # The embodiment conventions this run was scored under. Recorded, not
+        # assumed: the same --model on the same checkpoint means a different
+        # gripper convention and different action statistics per setup, and a
+        # results file that does not say which one is not reproducible.
+        "policy_setup": policy_setup_for(args.task),
+        "unnorm_key": model.unnorm_key,
+        "sticky_gripper_num_repeat": int(model.sticky_gripper_num_repeat),
+        "n_episodes": len(results),
+        "protocol_episodes": len(range(*task_cfg["obj_episode_range"])),
         "success_rate": success_count / len(results),
-        "grasp_rate": grasp_count / len(results),
+        # None, not 0.0: an env that never reports grasping has no grasp rate,
+        # and writing 0% there reads as a total failure to grasp.
+        "grasp_rate": (grasp_count / len(results)) if grasp_seen else None,
         "avg_steps": float(np.mean([item["steps"] for item in results])),
         "avg_elapsed": float(np.mean([item["elapsed"] for item in results])),
         # Which condition this run IS. paired_test.py reads these to label the
@@ -568,8 +701,13 @@ def main():
     print("\n==================================================", flush=True)
     print(f"task:         {args.task}", flush=True)
     print(f"model:        {args.model}", flush=True)
+    print(f"setup:        {summary['policy_setup']} (unnorm={summary['unnorm_key']}, "
+          f"sticky={summary['sticky_gripper_num_repeat']})", flush=True)
     print(f"success_rate: {success_count}/{len(results)} = {summary['success_rate']:.1%}", flush=True)
-    print(f"grasp_rate:   {grasp_count}/{len(results)} = {summary['grasp_rate']:.1%}", flush=True)
+    if summary["grasp_rate"] is None:
+        print("grasp_rate:   n/a (this env does not report a grasp signal)", flush=True)
+    else:
+        print(f"grasp_rate:   {grasp_count}/{len(results)} = {summary['grasp_rate']:.1%}", flush=True)
     print(f"avg_steps:    {summary['avg_steps']:.0f}", flush=True)
     print(f"avg_elapsed:  {summary['avg_elapsed']:.1f}s", flush=True)
     model_ms = (summary.get("model_stats") or {}).get("model_ms_per_infer")

@@ -184,23 +184,59 @@ def _inverse_logpolar(
     return np.asarray(np.clip(restored, 0, 255), dtype=np.uint8)
 
 
+# Per-embodiment policy conventions. These are NOT tuning knobs -- they are the
+# settings the OpenVLA checkpoint was evaluated under in SimplerEnv, and a run
+# that gets one wrong still produces a plausible-looking success rate.
+#
+# `sticky_gripper_num_repeat` is the one that bites. The Google Robot gripper
+# takes a RELATIVE command, and a single-step close does not physically close
+# the fingers; SimplerEnv's convention is to latch the transition and re-issue
+# it for N env steps. WidowX takes an ABSOLUTE command (open/closed), so it
+# needs no latch and N=1 leaves the Bridge path bit-for-bit unchanged.
+POLICY_SETUPS = {
+    "widowx_bridge": {
+        "unnorm_key": "bridge_orig",
+        "sticky_gripper_num_repeat": 1,
+    },
+    "google_robot": {
+        "unnorm_key": "fractal20220817_data",
+        "sticky_gripper_num_repeat": 15,
+    },
+}
+
+
 class OpenVLAInference:
     PROMPT_TEMPLATE = "In: What action should the robot take to {instruction}?\nOut:"
 
     def __init__(
         self,
         model_path: str,
-        unnorm_key: str = "bridge_orig",
+        unnorm_key: Optional[str] = None,
         device: str = "cuda",
         attn_implementation: Optional[str] = "eager",
+        policy_setup: str = "widowx_bridge",
+        sticky_gripper_num_repeat: Optional[int] = None,
     ):
+        if policy_setup not in POLICY_SETUPS:
+            raise ValueError(
+                f"unknown policy_setup {policy_setup!r}; expected one of "
+                f"{sorted(POLICY_SETUPS)}"
+            )
+        setup = POLICY_SETUPS[policy_setup]
         self.model_path = model_path
-        self.unnorm_key = unnorm_key
+        self.policy_setup = policy_setup
+        self.unnorm_key = unnorm_key or setup["unnorm_key"]
+        self.sticky_gripper_num_repeat = int(
+            setup["sticky_gripper_num_repeat"]
+            if sticky_gripper_num_repeat is None
+            else sticky_gripper_num_repeat
+        )
         self.device = device
         self.dtype = torch.bfloat16 if str(device).startswith("cuda") else torch.float32
         self._last_prepared_image: Optional[np.ndarray] = None
         self._episode_model_time = 0.0
         self._episode_model_calls = 0
+        self._reset_gripper_state()
 
         self.processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
         load_kwargs = dict(
@@ -217,8 +253,19 @@ class OpenVLAInference:
             self.model = AutoModelForVision2Seq.from_pretrained(model_path, **load_kwargs)
         self.model = self.model.to(device).eval()
 
+    def _reset_gripper_state(self) -> None:
+        self._prev_gripper: Optional[float] = None
+        self._sticky_on = False
+        self._sticky_action = 0.0
+        self._sticky_repeat = 0
+
     def reset(self) -> None:
         self._last_prepared_image = None
+        # Latched gripper state is per-episode. Carrying it across the episode
+        # boundary would let one episode's half-finished close leak into the
+        # next one's first steps, which is invisible in the logs and shows up
+        # only as a couple of unexplained failures.
+        self._reset_gripper_state()
 
     def last_prepared_image(self) -> Optional[np.ndarray]:
         if self._last_prepared_image is None:
@@ -312,19 +359,53 @@ class OpenVLAInference:
         raw_action = self._predict_raw_action(self._last_prepared_image, instruction)
         return self.transform_action(raw_action)
 
-    def transform_action(self, raw_action: np.ndarray):
-        raw_action = np.asarray(raw_action, dtype=np.float32).reshape(-1)
+    def _gripper_command(self, open_gripper: float) -> np.ndarray:
+        """One env step's worth of gripper command. Advances the latch.
+
+        Call this ONCE PER ENV STEP, not once per model call. Under action
+        repeat the two differ by k, and only the per-env-step reading keeps the
+        latch the same physical duration at every k -- otherwise the k=4
+        condition would silently hold the gripper transition for 4x as long as
+        the baseline, and the horizon curve would be measuring that instead of
+        the horizon.
+        """
+        binary = 1.0 if float(open_gripper) > 0.5 else -1.0
+        if self.policy_setup != "google_robot":
+            # Absolute command: +1 open, -1 closed. Stateless, so repeating it
+            # is a no-op and every previously measured Bridge number stands.
+            return np.array([binary], dtype=np.float32)
+
+        rel = 0.0 if self._prev_gripper is None else (self._prev_gripper - binary)
+        self._prev_gripper = binary
+        if abs(rel) > 0.5 and not self._sticky_on:
+            self._sticky_on = True
+            self._sticky_action = rel
+        if self._sticky_on:
+            self._sticky_repeat += 1
+            rel = self._sticky_action
+        if self._sticky_repeat >= self.sticky_gripper_num_repeat:
+            self._sticky_on = False
+            self._sticky_repeat = 0
+            self._sticky_action = 0.0
+        return np.array([rel], dtype=np.float32)
+
+    def _env_action_from_raw(self, raw_action: np.ndarray) -> dict:
+        """Build ONE env action from an already-predicted raw action."""
         env_action = {
             "world_vector": raw_action[:3].astype(np.float32),
             "rot_axangle": np.zeros(3, dtype=np.float32),
-            "gripper": np.array([1.0 if raw_action[6] > 0.5 else -1.0], dtype=np.float32),
+            "gripper": self._gripper_command(raw_action[6]),
             "terminate_episode": np.array([0.0], dtype=np.float32),
         }
         ax, angle = euler2axangle(*raw_action[3:6])
         env_action["rot_axangle"] = (np.asarray(ax, dtype=np.float32) * float(angle)).astype(
             np.float32
         )
-        return raw_action, env_action
+        return env_action
+
+    def transform_action(self, raw_action: np.ndarray):
+        raw_action = np.asarray(raw_action, dtype=np.float32).reshape(-1)
+        return raw_action, self._env_action_from_raw(raw_action)
 
 
 class FoveatedOpenVLAInference(OpenVLAInference):
@@ -393,10 +474,13 @@ class ActionRepeatOpenVLAInference(OpenVLAInference):
         )
         self._last_prepared_image = np.asarray(prepared, dtype=np.uint8)
         raw_action = self._predict_raw_action(self._last_prepared_image, instruction)
-        raw, env_action = self.transform_action(raw_action)
+        raw_action = np.asarray(raw_action, dtype=np.float32).reshape(-1)
         # simple_eval's normalize_env_actions executes every dict in the list
-        # before the next model call -> k env steps per forward.
-        return raw, [dict(env_action) for _ in range(self.repeat_k)]
+        # before the next model call -> k env steps per forward. Each one is
+        # built separately so the gripper latch (Google Robot) advances once
+        # per ENV step, exactly as at k=1; the arm displacement is the same
+        # prediction repeated, which is what action repeat means.
+        return raw_action, [self._env_action_from_raw(raw_action) for _ in range(self.repeat_k)]
 
 
 class DepthPrunedOpenVLAInference(OpenVLAInference):
