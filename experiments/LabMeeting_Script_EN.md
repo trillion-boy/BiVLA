@@ -79,6 +79,11 @@ mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
 >
 > "To 'isn't move_near just the weak task' — there's a control. Action repeat 4
 > damages **pick harder, −41.3.**"
+>
+> "And to 'isn't that one environment peculiar' — we re-ran the whole comparison
+> on a different version of the task, different objects. **−28.3, against −31.7
+> on the original.** The two baselines aren't even distinguishable. So it isn't
+> the environment.
 
 **Produce the counterexample yourself** ← non-removable
 

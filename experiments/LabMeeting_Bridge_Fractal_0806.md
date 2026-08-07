@@ -49,7 +49,10 @@ drew, and that is exactly what the paired test measures.
 capability the task demands. Remove capacity and **the ability to resolve which
 object was named dies first**, while grasping is untouched or improves (5
 cells). Control: action repeat 4 damages the *pick* tasks harder (−41.3), so
-this is not "move_near is simply the weak task."
+this is not "move_near is simply the weak task." And it is not one environment
+either: re-run on a different version of the task with a different object set,
+depth prune 4 costs **−28.3 (p = 0.0002)** against **−31.7 (p = 0.0002)** on the
+original.
 
 **The counterexample (lead with it).** On OpenVLA, pruning depth at 1/2/4 does
 not move `move_near` at all (+8.3 / +0.0 / +8.3) — and the campaign's best
@@ -687,7 +690,27 @@ against 54.1% — a whole-protocol average, not that task's number. It is a
 −4.0 delta, not a collapse. `move_near_v0` is the cell that decides §3c and it
 is still running.
 
-**Where the split stands, as a score:** five confirmations (two foveation
+**The version check — §3c does not depend on the environment version.**
+Everything §3c claims rested on one task, `move_near_v0`, which left it open to
+"that particular environment has a quirk." It does not. Re-running the whole
+comparison on `move_near_v1` — a different version with a different object set
+(blue plastic bottle, pepsi, orange, 7up, apple, sponge, redbull) — reproduces
+the effect almost exactly:
+
+| | baseline | depth prune 4 | Δ | broke / fixed | p |
+|---|---|---|---|---|---|
+| `move_near_v0` | 83.3% | 51.7% | **−31.7** | 22 / 3 | 0.0002 |
+| `move_near_v1` | 86.7% | 58.3% | **−28.3** | 19 / 2 | 0.0002 |
+
+The two baselines are themselves indistinguishable (86.7 vs 83.3, McNemar
+p = 0.6250 over the paired episodes), so neither version is the easier task and
+the reproduction is not an artefact of difficulty. Note the scope: v0 and v1 are
+two versions of the same task, not two different tasks. This retires "the v0
+environment is peculiar"; it does not yet establish the split across referential
+tasks in general. Kept in its own results directory, never merged into the grid.
+
+**Where the split stands, as a score:** five confirmations, plus a version
+check that reproduces the largest of them on an independent environment version; (two foveation
 variants on OpenVLA, three depth conditions on SpatialVLA), one disconfirmation
 now spanning a whole curve (depth on OpenVLA), one control behaving as
 predicted (action repeat hits both families equally). The disconfirmation has a
@@ -836,19 +859,8 @@ The referential-grounding split (§3c) is the campaign's main positive result an
 it now has one failure against it (§3c-bis). Everything below is chosen to
 decide that, not to add another agreeing cell.
 
-0. **SpatialVLA / Fractal `move_near_v1` — baseline done, intervention pending.**
-   Everything §3c claims rests on the single task `move_near_v0`, so it has to
-   reappear in another version demanding the same capability. The baseline
-   landed first: **52/60 = 86.7%** against v0's 50/60 = 83.3% — **4 discordant
-   episodes (1 broke, 3 fixed), McNemar p = 0.6250.** The two versions are
-   **indistinguishable in difficulty** for SpatialVLA. The reason v0 was chosen
-   — its baseline sits close to SpatialVLA's — holds for v1 as well, so "v1 is
-   simply a different task" is no longer available as an objection.
-   **What remains is `--depth-prune 4` on v1.** It cost −31.7 on v0; if it
-   breaks v1 too, §3c is not a property of one task, and if it doesn't, §3c
-   shrinks to an observation about `move_near_v0`. Either way the result is
-   **not merged into this table** — the protocol rule against mixing v0 and v1
-   in one table (`simpler_fractal_protocol.py`) stands.
+0. ~~**SpatialVLA / Fractal `move_near_v1`.**~~ **Done — §3c survives it.**
+   See "The version check" below.
 
 1. **OpenVLA / Fractal depth prune with `--depth-min-layer 0.08`.** The decisive
    run. OpenVLA's default protects the front half, so its prune-4 deleted layers
