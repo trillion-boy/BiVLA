@@ -191,24 +191,26 @@ must work out WHICH of three named objects to act on.
                                    pick_coke_can (75)   move_near (60)
 OpenVLA    log-polar, 80% of vision      −1.3              −41.7  ***
 OpenVLA    blur,      80% of vision      +9.3              −31.7  **
-SpatVLA    prune 2 of 26 layers         +13.3  **          −10.0
-SpatVLA    prune 4 of 26 layers          −6.7              −31.7  **
+SpatVLA    prune 2 of 26  (L8-10)       +13.3  **          −10.0
+SpatVLA    prune 4 of 26  (L8-19)        −6.7              −31.7  **
 SpatVLA    prune 2 + repeat 2           +10.7  **          −16.7  **
-────────────────────────────────────── control ──────────────────────
+─────────────────────────────── control ─────────────────────────────
 SpatVLA    action repeat 4              −41.3  ***         −38.3  ***
+──────────────────────── and one that DISAGREES ─────────────────────
+OpenVLA    prune 4 of 32  (L17-26)      +21.3  **           +8.3
 ```
 
 **[SAY]**
 "Now the same data split by task. This is the thing I want you to take away.
 
-Five conditions. **Two different backbones. Three interventions with nothing
-mechanically in common** — one warps pixels, one only removes detail, one
-deletes decoder layers.
+Start with the **top five rows**. **Two different backbones. Three
+interventions with nothing mechanically in common** — one warps pixels, one only
+removes detail, one deletes decoder layers.
 
-**[PAUSE — run your finger down the two columns]**
+**[PAUSE — run your finger down the two columns of the top five]**
 
-Every single one leaves the pick tasks alone or **improves** them, and every
-single one damages `move_near`.
+All five leave the pick tasks alone or **improve** them, and all five damage
+`move_near`.
 
 `move_near` is the only Fractal task where you have to work out **which object
 is which** — pick the named one out of three and move it near another named one.
@@ -224,7 +226,24 @@ kills the pick tasks slightly harder** — minus 41 versus minus 38. The pick
 tasks aren't robust in general. They're robust to *this kind* of removal.
 
 Take away re-planning and both families fall together. Take away vision or
-depth and they come apart. **Time and capacity fail differently.**"
+depth and they come apart. **Time and capacity fail differently.**
+
+**[the bottom row — say it before they find it]**
+
+"Now the last row, which does **not** fit. Depth pruning on OpenVLA improved
+*both* families. `move_near` went **up** eight points. That's a failed
+prediction and I'm not going to dress it up.
+
+There is one concrete difference, and it's checkable rather than convenient.
+The two harnesses protect different parts of the stack: SpatialVLA deleted
+layers **8 to 19** — early-middle, where vision and language are still being
+bound — and OpenVLA's default only lets it touch the **back half**, so it
+deleted 17 to 26. Same name in our table, different region of the network.
+
+The run that settles it is queued: set OpenVLA's eligible range to match. If
+`move_near` still won't break there, **the depth evidence for this story is
+gone** and it rests on foveation alone. Either way the score is five
+confirmations and one failure, and I'd rather you heard that from me."
 
 ---
 
@@ -465,8 +484,9 @@ four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
 p = 0.0038                                                    (slide 3)
 +18.8 vs −19.3  OpenVLA foveation, Bridge vs Fractal          (slide 3b)
 +8.1 at ONE layer,  −17.8 at FOUR,  nested sets               (slide 4)
-FIVE conditions, 2 backbones, 3 interventions, same split     (slide 4b)
-   ...and the control: repeat 4 hits BOTH, −41 vs −38         (slide 4b)
+FIVE agree, ONE fails (OpenVLA depth, move_near +8.3)         (slide 4b)
+   ...control: repeat 4 hits BOTH, −41 vs −38                 (slide 4b)
+   ...the failure's confound: L8-19 vs L17-26, different halves
 −8.9 p=0.18   hiding   move_near −31.7 p=0.0026               (slide 4c)
 one sentence:  what gets deleted is WHICH-OBJECT, not HOW-TO-MOVE
 ```

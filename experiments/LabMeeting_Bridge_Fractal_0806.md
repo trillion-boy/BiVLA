@@ -49,7 +49,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
 | depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | 92.6%  +8.1** | -- |
 | depth prune 2 | -- | -- | -- | 87.4%  +3.0 | -- |
-| depth prune 4 | 16.7%  +1.0 | -- | -- | 66.7%  −17.8*** | -- |
+| depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | -- | 66.7%  −17.8*** | -- |
 | depth prune 8 | 15.6%  +0.0 | -- | -- | -- | -- |
 | depth prune 2 + action repeat 2 | -- | -- | -- | 83.0%  −1.5 | -- |
 
@@ -116,7 +116,7 @@ This is not a technicality. Both OpenVLA cells individually miss p<0.05
 them clears it. Reporting only the per-cell tests would understate precisely
 the effect this campaign is about.
 
-Nine such tests below, so Bonferroni for that family is α = 0.05/9 ≈ 0.0056.
+Eleven such tests below, so Bonferroni for that family is α = 0.05/11 ≈ 0.0045.
 The generator derives that threshold from the number of rows actually in the
 table, so it tightens on its own as the grid fills.
 
@@ -161,13 +161,18 @@ and OpenVLA's sign flips. Tested directly:
 | comparison | condition | splits | p |
 |---|---|---|---|
 | **OpenVLA: Bridge vs Fractal** | **foveation log-polar** | **28/10 vs 13/39** | **0.0000055** ✓Bonf |
+| **OpenVLA: Bridge vs Fractal** | **foveation blur** | **26/9 vs 27/39** | **0.0017** ✓Bonf |
 | **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0/11 vs 20/22** | **0.0038** ✓Bonf |
 | OpenVLA: Bridge vs Fractal | repeat 2 | 3/11 vs 22/15 | **0.0266** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | 10/22 vs 6/60 | **0.0085** |
+| OpenVLA: Bridge vs Fractal | depth prune 4 | 11/10 vs 30/9 | 0.0802 |
 | SpatialVLA: Bridge vs Fractal | repeat 2 | 21/9 vs 11/11 | 0.1624 |
 
-**Four of five are established.** Only SpatialVLA's repeat-2 gain shrinking to
-zero is unresolved at this n — say so rather than leaning on it.
+**Five of seven are established, three of them clearing Bonferroni.** Two are
+not: SpatialVLA's repeat-2 gain shrinking to zero, and — worth naming because
+it looks like a reversal and is not one — **depth pruning, where OpenVLA is
+inert on Bridge (+1.0) and gains 15.6 on Fractal, but the discordant splits
+give p = 0.0802.** Do not quote that pair as a reversal.
 
 At repeat 4, on Bridge every one of the 11 episodes OpenVLA moved was broken;
 on Fractal it moved 42 and fixed 20 of them. Same weights.
@@ -209,7 +214,9 @@ that is a mechanistically sensible place for it to fail. §3c takes this up as
 a hypothesis and tests it.
 
 **Blur, the same cell:** aggregate −8.9 (p = 0.18) — but `move_near` −31.7
-(p = 0.0026) and the pick tasks **+9.3**. Blur moves no pixels at all, so
+(p = 0.0026) and the pick tasks **+9.3**. Its Bridge-vs-Fractal interaction is
+**p = 0.0017**, clearing Bonferroni, so foveation now has *two* established
+benchmark reversals rather than one. Blur moves no pixels at all, so
 whatever costs `move_near` 30-plus points is the *quantity* removed rather than
 log-polar's warp. It also means the aggregate for this condition would have been
 reported as a null.
@@ -330,9 +337,10 @@ on **OpenVLA** collapsed `move_near` from 61.7% to 20.0% while leaving the
 coke-can tasks flat (15/75 → 14/75) — and said explicitly that one task on one
 intervention made it a hypothesis, not a result.
 
-**It has now reproduced five times, across two backbones and three
-mechanically unrelated interventions** — a log-polar warp that moves pixels, a
-space-variant blur that moves none, and decoder-layer deletion. Every one of
+**It has reproduced five times, across two backbones and three mechanically
+unrelated interventions** — a log-polar warp that moves pixels, a space-variant
+blur that moves none, and decoder-layer deletion — **and failed once**
+(§3c-bis, depth pruning on OpenVLA, where nothing broke). Every one of
 them leaves motor execution intact or improves it, and every one damages
 referential grounding:
 
@@ -389,6 +397,56 @@ result, and it makes a testable prediction: any Fractal task requiring
 referential disambiguation should degrade under the *capacity* interventions,
 any single-target pick task should not, and the *time* intervention should
 ignore the distinction.
+
+### 3c-bis. The prediction failed on OpenVLA, and here is the honest version
+
+§3c predicts that removing decoder capacity damages `move_near` and spares the
+pick tasks. We ran depth prune 4 on OpenVLA / Fractal. **It did not.**
+
+| OpenVLA / Fractal, prune 4 of 32 | rate | Δ | fixed / broke | p |
+|---|---|---|---|---|
+| all 135 | 54.1% | **+15.6** | 30 / 9 | **0.0011** |
+| `pick_coke_can` (75) | 41.3% | **+21.3** | 20 / 4 | **0.0015** |
+| `move_near_v0` (60) | 70.0% | **+8.3** | 10 / 5 | 0.3018 |
+
+Both families improved. The *ordering* survives — the pick tasks gain 2.5× more
+than the referential one — but the **sign does not**, and the sign is what §3c
+claims. Written plainly: **this is a failed prediction, and it is the sixth
+test of the split, five of which agreed.**
+
+Two further things are true and both need saying.
+
+**First, taken on its own this is the campaign's largest positive result.**
++15.6 points, p = 0.0011, over the full protocol, at 454 ms/infer against the
+baseline's 511 — **11% faster and 15.6 points better** by deleting 4 of 32
+decoder layers. That is nearly double SpatialVLA's +8.1, and it clears
+Bonferroni where SpatialVLA's did not.
+
+**Second, the two depth-prune runs are not the same intervention.** The two
+harnesses protect different parts of the stack:
+
+| | eligible range | layers actually bypassed |
+|---|---|---|
+| SpatialVLA (26 layers) | `min-layer 2` → **2..25** | **8, 9, 10, 19** — early-middle |
+| OpenVLA (32 layers) | `min-layer 0.5` → **16..31** | **17, 20, 23, 26** — back half only |
+
+They carry the same name in our tables and delete different regions of the
+network. If referential grounding is built in the early-middle blocks — where
+vision and language are still being bound — and the back half is closer to
+action decoding, then OpenVLA's run never touched the thing §3c is about.
+
+**That reads as a rescue, so it has to be run rather than argued.** Setting
+OpenVLA's `--depth-min-layer 0.08` makes its eligible range 2..31, matching
+SpatialVLA's regime. If `move_near` still refuses to break there, **§3c's depth
+evidence is finished** and the split rests on foveation alone. That run is
+queued below, and we should report §3c with this failure attached either way.
+
+**Where the split stands, stated as a score:** five confirmations (two
+foveation variants on OpenVLA, three depth conditions on SpatialVLA), one
+disconfirmation (depth on OpenVLA), one control that behaves as predicted
+(action repeat hits both families equally). The disconfirmation has a concrete,
+testable confound. That is not "confirmed", and we should stop writing it as if
+it were.
 
 ### 3d. Stacking two interventions: the gain does not survive, the split does
 
@@ -511,7 +569,7 @@ step is to look at what is actually in those four scenes.
 | **SpatialVLA** foveation | **unpaired legacy only** | complete |
 | **SpatialVLA** depth prune | legacy (prune 1 only, unpaired) | **1, 2 and 4 complete, paired** |
 | **SpatialVLA** combination | not started | **prune 2 + repeat 2 done, paired** |
-| **OpenVLA** depth prune | Bridge only (1, 4, 8) | not started |
+| **OpenVLA** depth prune | Bridge only (1, 4, 8) | **4 done, paired**; 1 and 2 running |
 
 ### Two liabilities
 
@@ -528,32 +586,32 @@ reader compare deltas across columns unguarded.
 
 ### Next, in order
 
-The referential-grounding split (§3c) is now the campaign's main positive
-result, confirmed five times across two backbones and three interventions.
-Everything below is chosen to break it rather than to add another confirmation.
+The referential-grounding split (§3c) is the campaign's main positive result and
+it now has one failure against it (§3c-bis). Everything below is chosen to
+decide that, not to add another agreeing cell.
 
-1. **OpenVLA / Fractal depth prune 1 and 2.** The split has been seen on
-   OpenVLA only through foveation and on SpatialVLA only through depth. This
-   run crosses them. OpenVLA/Bridge is inert at every depth (+2.1, +1.0, +0.0),
-   so the aggregate may well be zero — and §3c predicts the split appears
-   anyway. Blur has already shown one aggregate null hiding a p = 0.0026 split;
-   a second, on a different axis, would make that the finding rather than a
-   curiosity.
-2. **A referential task that is not `move_near`.** Every confirmation so far
-   rests on one task, so the split could still be about `move_near`'s horizon,
-   object count, or scene rather than its referential demand. Nothing in the
-   current Fractal protocol separates those. The drawer tasks are registered
-   but single-target; the honest options are to add a Bridge task with a
-   distractor (`stack_cube` names one of two blocks) or to accept the confound
-   and say so. **This is the weakest joint in the argument.**
-3. **Finish the determinism check on `move_near_v0`.** The pick tasks are
-   settled (below); `move_near` runs a different environment class and carries
-   the largest claims in the report (−16.7, −31.7), so it is worth the 35
-   minutes to confirm rather than assume.
-4. Re-measure SpatialVLA / Bridge foveation and depth prune 1 with per-episode
-   records — three legacy cells become paired tests against a baseline already
-   on disk, and the Bridge legacy prune-1 cell (−9.4) sits opposite Fractal's
-   +8.1.
+1. **OpenVLA / Fractal depth prune with `--depth-min-layer 0.08`.** The decisive
+   run. OpenVLA's default protects the front half, so its prune-4 deleted layers
+   17-26 while SpatialVLA's deleted 8-19; the two are not the same experiment.
+   At 0.08 the eligible range becomes 2..31 and they are. If `move_near` still
+   does not break, **§3c's depth evidence is finished** and the split rests on
+   foveation alone — which we should then say in as many words.
+2. **OpenVLA / Fractal depth prune 1 and 2** *(running)*. Two jobs at once: they
+   give OpenVLA's depth curve a shape to compare against SpatialVLA's
+   +8.1 → +3.0 → −17.8, and they let the Bridge-vs-Fractal reversal be tested at
+   matching doses instead of only at 4, where it sits at p = 0.0802.
+3. **SpatialVLA / Bridge depth prune 2** *(queued)*. Retires a legacy cell —
+   Bridge's only depth number is the unpaired −9.4 against a different
+   campaign's baseline, and Fractal's prune-2 is +3.0. Paired, that becomes a
+   testable reversal instead of a footnote.
+4. **A referential task that is not `move_near`.** Still the weakest joint: every
+   confirmation *and* the one disconfirmation rest on the same task, which also
+   differs in horizon and object count. Bridge cannot supply one — we checked,
+   `stack_cube` at n=24 has no power and its one nominally significant cell
+   points the wrong way. Either add a task or state the confound and stop.
+5. **Finish the determinism check on `move_near_v0`.** The pick tasks are
+   settled; `move_near` runs a different environment class and carries the
+   largest claims.
 
 ---
 
