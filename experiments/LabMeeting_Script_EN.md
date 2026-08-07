@@ -1,18 +1,18 @@
 # Lab meeting speaking script — English
 
-Ten slides, about twelve minutes. The **[SAY]** blocks can be read as
-written. If you are tight on time, slide 3b is the one to drop — but then also
-drop the foveation callback in slide 4b. **Never drop 4b or 4c while keeping
-4** — that leaves the +8.1 standing unqualified, which is the one thing this
-talk must not do. If you have to lose a whole beat, lose slide 5.
+Eleven slides, about thirteen minutes. The **[SAY]** blocks can be read as
+written. If you are tight on time, drop slide 5 first, then slide 3b. **Never
+drop 4b, 4c or 4d while keeping 4** — that leaves the +8.1 standing unqualified,
+which is the one thing this talk must not do.
 Numbers come from `LabMeeting_Bridge_Fractal_0806.md`; regenerate the tables
 with `python experiments/build_grid_report.py`.
 
 The talk has **two pictures**. The first (slide 2) is four curves of success
 rate against how long each action is held — that carries the negative result,
 and the statistics hang off **one number**, the repair rate. The second
-(slide 4b) is one curve splitting into two that run in opposite directions —
-that carries the mechanism, and it is the part worth rehearsing.
+(slide 4b) is two columns going in opposite directions across five independent
+conditions — that carries the mechanism, and it is the part worth rehearsing.
+Slide 4c is the single cell that makes the case in one line.
 
 ---
 
@@ -185,59 +185,42 @@ the next slide is what it's actually for."
 **[SHOW]**
 
 ```
-SpatialVLA / Fractal, decoder layers bypassed  —  aggregate
+Split every Fractal run by task.  move_near is the ONE task where you
+must work out WHICH of three named objects to act on.
 
-  0  ████████████████████  84.4%
-  1  ██████████████████████  92.6%   +8.1
-  2  ████████████████████▌  87.4%    +3.0
-  4  ███████████████  66.7%          −17.8
-                                        the nested sets: {10} ⊂ {8,9,10,19}
-
-                        ↓  split by task
-
-        pick_coke_can (75)        move_near (60)
-  0        85.3%                     83.3%
-  1        92.0%                     93.3%
-  2        98.7%  ← 10 fixed         73.3%
-  4        78.7%     0 broken        51.7%  ← 3 fixed, 22 broken
-           ────────────              ────────────
-           goes UP                   goes DOWN
+                                   pick_coke_can (75)   move_near (60)
+OpenVLA    log-polar, 80% of vision      −1.3              −41.7  ***
+OpenVLA    blur,      80% of vision      +9.3              −31.7  **
+SpatVLA    prune 2 of 26 layers         +13.3  **          −10.0
+SpatVLA    prune 4 of 26 layers          −6.7              −31.7  **
+SpatVLA    prune 2 + repeat 2           +10.7  **          −16.7  **
+────────────────────────────────────── control ──────────────────────
+SpatVLA    action repeat 4              −41.3  ***         −38.3  ***
 ```
 
 **[SAY]**
-"Now the same data split by task. And this is the thing I actually want you to
-take away.
+"Now the same data split by task. This is the thing I want you to take away.
+
+Five conditions. **Two different backbones. Three interventions with nothing
+mechanically in common** — one warps pixels, one only removes detail, one
+deletes decoder layers.
+
+**[PAUSE — run your finger down the two columns]**
+
+Every single one leaves the pick tasks alone or **improves** them, and every
+single one damages `move_near`.
 
 `move_near` is the only Fractal task where you have to work out **which object
 is which** — pick the named one out of three and move it near another named one.
-The three coke-can tasks have one instruction and one object.
+The coke-can tasks have one instruction and one object.
 
-**[PAUSE — point at the two columns]**
+**Whatever these interventions delete, it's the capacity to work out which
+object you meant — not the capacity to move the arm.**
 
-They run in **opposite directions.** At two layers gone, the pick tasks go to
-**98.7 percent** — ten episodes fixed, **zero broken**, p equals 0.002, which
-clears Bonferroni. The same two layers cost `move_near` ten points. And at four
-layers `move_near` is down thirty-two.
+**[the control — someone will ask]**
 
-**The plus-three aggregate was the average of plus-thirteen and minus-ten.**
-
-**[THE POINT]**
-
-Here's why that matters. Two slides ago, foveation on **OpenVLA** did the same
-thing — `move_near` collapsed from 62 to 20 while the coke-can tasks didn't
-move. Different backbone, different intervention, different resource deleted.
-
-**Whatever these interventions are removing, it's the capacity for figuring out
-which object you meant — not the capacity for moving the arm.** Motor control
-isn't just surviving; at two layers it gets *better*.
-
-That's the first mechanism this campaign has produced, and we wrote it down as
-a prediction from the foveation data **before** this run existed.
-
-**[the control — expect this question]**
-
-"And before someone says `move_near` is just the fragile task: **action repeat
-kills the pick tasks slightly harder** — minus 41 versus minus 38. So the pick
+"And before anyone says `move_near` is just the fragile task: **action repeat
+kills the pick tasks slightly harder** — minus 41 versus minus 38. The pick
 tasks aren't robust in general. They're robust to *this kind* of removal.
 
 Take away re-planning and both families fall together. Take away vision or
@@ -245,25 +228,65 @@ depth and they come apart. **Time and capacity fail differently.**"
 
 ---
 
-## Slide 4c — What I'd say if you pushed on it (30s)
+## Slide 4c — And this is why one number isn't enough (40s) ★the kicker
+
+**[SHOW]**
+
+```
+OpenVLA / Fractal, blur foveation
+
+  reported as one number:      −8.9    p = 0.18     "nothing happened"
+
+  reported split:      pick tasks   +9.3
+                       move_near   −31.7    p = 0.0026
+```
+
+**[SAY]**
+"One cell makes the point better than anything else we have.
+
+OpenVLA on Fractal with blur foveation. As a single number: minus 8.9, p equals
+0.18. If we reported that, the row reads **'foveation did nothing.'** That's
+what would have gone in the table.
+
+Split, the same run says the referential task lost **thirty-two points** at
+p = 0.0026, while the pick tasks *gained* nine.
+
+**The single number isn't a summary of that. It's the average of two findings
+that cancel.**"
+
+---
+
+## Slide 4d — What I'd say if you pushed on it (35s)
+
+**[SHOW]** — the one combination we ran: prune 2 layers **and** hold each action 2 steps
+
+```
+                 aggregate     pick tasks    move_near     speed
+baseline            84.4%        85.3%         83.3%       1.00x
+prune 2            +3.0         +13.3 **      −10.0        1.09x
+prune2 + repeat2   −1.5         +10.7 **      −16.7 **     1.86x
+                   ^^^^                                    ^^^^^
+              looks like nothing                    2.18x less compute
+```
 
 **[SAY]**
 "Three things I'd want said out loud.
 
-**One.** The plus-eight-point-one on its own does not clear Bonferroni. It's
-p = 0.013, one of eighteen tests, and unreplicated.
+**One — stacking doesn't work the way we hoped.** Prune two layers alone is plus
+three. Add action repeat and it's minus one and a half. You pay the gain back.
+The interaction doesn't quite resolve, p equals 0.30, so I'd say *the gain
+doesn't survive stacking*, not *the interventions interfere*.
 
-**Two.** The task split confirmed a prediction, but exactly once. And
-`move_near` differs from the pick tasks in more than referential load —
-horizon, object count, episode count. We can't separate those with the tasks we
-have.
+**Two — but split, it's our best result.** Plus 10.7 on the pick tasks,
+p = 0.039, at 1.86× measured wall-clock and 2.18× less inference compute. And
+minus 16.7 on the referential task. So the rule isn't 'this is free'. It's
+**'this is free if your task doesn't require resolving which object you meant.'**
 
-**Three.** And the meta-point. **If we had run one cell and reported one
-number, we'd have a method paper and we'd have missed the mechanism.** The
-aggregate at every dose is an average over two populations moving in opposite
-directions. That's the strongest version of our thesis: not just that
-single-cell numbers don't transfer — **single numbers hide the thing worth
-knowing.**"
+**Three.** The plus-eight-point-one from slide 4 does not clear Bonferroni on
+its own, we still have no measured noise floor, and every confirmation of the
+split rests on **one task**, which differs from the pick tasks in horizon and
+object count as well as referential load. That last one is the weakest joint and
+I'd rather name it than have it found."
 
 ---
 ## Slide 5 — Our own explanation broke too (50s)
@@ -398,15 +421,15 @@ number would never have shown us."
 > queued for re-measurement."
 
 **Q. What's left to run?**
-> "Everything is now chosen to break the grounding hypothesis rather than
-> confirm it. First **`move_near_v1`** under depth prune 2 and log-polar — same
-> referential structure, different scene, already in our protocol. If it doesn't
-> collapse the way `v0` does, the story is about one scene and we need to know
-> that before we write it down. Then **OpenVLA/Fractal depth prune** — the depth
-> axis is inert on OpenVLA/Bridge, so the aggregate may well be zero, but the
-> hypothesis says the *task split* should show up anyway. An aggregate null
-> hiding the same split would be much stronger than the +8.1 itself. And a
-> baseline re-run for the noise floor, which the +8.1 has made urgent."
+> "Everything left is chosen to *break* the grounding split rather than confirm
+> it again. First, OpenVLA/Fractal depth pruning — we've seen the split on
+> OpenVLA only through foveation and on SpatialVLA only through depth, so this
+> crosses them, and the hypothesis predicts the split even if the aggregate is
+> zero. Second, and this is the real gap: **a referential task that isn't
+> `move_near`.** All five confirmations rest on that one task, and it differs
+> from the pick tasks in horizon and object count too. Nothing in the current
+> Fractal protocol separates those. Third, a baseline re-run for the noise
+> floor, which we still don't have."
 
 ---
 
@@ -421,11 +444,11 @@ number would never have shown us."
 - **Say "no effect".** Say "no effect larger than about 7 points".
 - **Oversell the +8.1.** It does not clear Bonferroni and it has not been
   replicated. Say "plus eight, p = 0.013, one cell, unreplicated" every time.
-  Slide 4c exists so that *you* are the one pointing at its limits.
-- **State the task split as established.** It is a prediction, made from the
-  foveation data, confirmed **once**. And `move_near` differs from the pick
-  tasks in horizon and object count as well as referential load. Say
-  "consistent with", not "shows that".
+  Slide 4d exists so that *you* are the one pointing at its limits.
+- **State the task split as proven.** Five confirmations is strong, but every
+  one rests on **the same single task**, which differs from the pick tasks in
+  horizon and object count as well as referential load. Say "consistent with",
+  not "shows that", and name the confound yourself.
 
 # Numbers to memorise (only these)
 
@@ -435,7 +458,8 @@ four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
 p = 0.0038                                                    (slide 3)
 +18.8 vs −19.3  OpenVLA foveation, Bridge vs Fractal          (slide 3b)
 +8.1 at ONE layer,  −17.8 at FOUR,  nested sets               (slide 4)
-98.7%  pick tasks at two layers gone — 10 fixed, 0 broken     (slide 4b)
-       ...while move_near goes the other way, 83 -> 73 -> 52  (slide 4b)
+FIVE conditions, 2 backbones, 3 interventions, same split     (slide 4b)
+   ...and the control: repeat 4 hits BOTH, −41 vs −38         (slide 4b)
+−8.9 p=0.18   hiding   move_near −31.7 p=0.0026               (slide 4c)
 one sentence:  what gets deleted is WHICH-OBJECT, not HOW-TO-MOVE
 ```

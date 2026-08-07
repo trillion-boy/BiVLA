@@ -102,6 +102,9 @@ CONDITION_ORDER = [
     ("depth_prune2",     "depth prune 2"),
     ("depth_prune4",     "depth prune 4"),
     ("depth_prune8",     "depth prune 8"),
+    # Combinations go last and are named for their parts, so a reader can find
+    # both single-axis rows above and check the sum for themselves.
+    ("prune2_repeat2",   "depth prune 2 + action repeat 2"),
 ]
 DISPLAY = dict(CONDITION_ORDER)
 # foveate / foveate_logpolar are the same condition under two harness spellings.
