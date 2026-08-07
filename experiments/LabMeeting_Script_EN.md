@@ -100,36 +100,40 @@ Asking whether those are the same coin is a Fisher exact test, and it comes out
 at **p = 0.0038**. That clears Bonferroni for the eight tests we ran."
 
 ---
-## Slide 4 — What we did learn (100s) ★highlight
+## Slide 4 — Three axes, three answers (100s) ★highlight
 
-**[SHOW]** — SpatialVLA / Fractal, one session, 135 episodes
+**[SHOW]** — SpatialVLA / Fractal, one policy, one session, full 135 episodes
 
-| intervention | what it deletes | result |
-|---|---|---|
-| hold each action 4 steps | re-planning on 3 of every 4 steps | **−40.0** |
-| foveation (log-polar) | 80% of the visual signal | +0.7 |
-| foveation (blur) | 80% of the visual signal | −1.5 |
+| what we delete | how much | Δ | p | what it buys |
+|---|---|---|---|---|
+| **time** — re-planning | 3 of every 4 steps | **−40.0** | 0.0000 | 1/4 the calls |
+| **compute** — decoder layers | 4 of 26 (15%) | **−17.8** | 0.0002 | 1.17× per call |
+| **vision** — observation | **80%** | +0.7 / −1.5 | 1.00 / 0.83 | **nothing** |
 
 **[SAY]**
-"It isn't all negative. One thing came out very cleanly.
+"It isn't all negative. This is the sharpest thing we have.
 
-One policy, one benchmark, one session — so none of the caveats from the
-previous slides apply here.
+One policy, one benchmark, one session — none of the caveats from the previous
+slides apply. We deleted three different things.
 
-**We deleted four fifths of what the policy can see.** Two different ways: one
-warps the pixels, the other only removes detail. **Neither did anything.**
+**Four fifths of what the policy can see.** Two ways: one warps the pixels, the
+other only removes detail. **Neither did anything.**
 
-But holding each action for four steps **costs forty points**.
+**Four of twenty-six decoder layers. Fifteen percent. That cost 17.8 points.**
+
+**Holding each action four steps cost forty.**
 
 **[PAUSE]**
 
-These policies are far more fragile to **slow hands than to bad eyes**.
+**Eighty percent of the vision is free. Fifteen percent of the compute costs
+eighteen points.**
 
-The practical implication is that if you want to buy efficiency, take it out of
-the visual pathway and leave the temporal one alone."
+That gives an ordering for what these policies are fragile to — time, then
+compute, then vision. And the irony is that the only free axis is the only one
+that **buys nothing**: foveation reduces sample density but resamples back to
+the same resolution, so the token count never drops."
 
 ---
-
 ## Slide 5 — Our own explanation broke too (50s)
 
 **[SHOW]**
@@ -183,8 +187,8 @@ backbone on a single benchmark, and we have a controlled counterexample."
 
 **Q. So the method is dead?**
 > "As a method claim, yes. But we got a more general claim instead. And slide 4
-> gives a design rule: there's slack in the visual pathway and none in the
-> temporal one."
+> gives a design rule: fragility orders as time, then compute, then vision, and
+> only the visual pathway has slack."
 
 **Q. Are the individual numbers significant?**
 > "OpenVLA's two cells are not — 0.057 and 0.32. But our question isn't about
@@ -216,8 +220,9 @@ backbone on a single benchmark, and we have a controlled counterexample."
 
 # Do not
 
-- **Quote a partial cell.** Two moved today when their last task landed:
-  +9.3 → +5.2 and +1.3 → −1.5.
+- **Quote a partial cell.** Three moved today when their last task landed:
+  +9.3 → +5.2, +1.3 → −1.5, and depth pruning went from −6.7 (p=0.30) to
+  **−17.8 (p=0.0002)** — the conclusion itself changed.
 - **Compare deltas across columns unguarded.** SpatialVLA sits at 84% on
   Fractal, OpenVLA at 38%. A +5 near the floor and a +5 near the ceiling are
   not the same thing. Always say the baseline alongside.
@@ -229,5 +234,5 @@ backbone on a single benchmark, and we have a controlled counterexample."
 four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
 0%  vs  48%   OpenVLA repeat 4, Bridge vs Fractal             (slide 3)
 p = 0.0038                                                    (slide 3)
-−40.0  vs  ~0  temporal vs visual                             (slide 4)
+−40.0 / −17.8 / ~0  time / compute / vision                   (slide 4)
 ```

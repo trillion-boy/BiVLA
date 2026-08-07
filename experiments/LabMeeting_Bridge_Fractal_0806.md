@@ -48,7 +48,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
 | depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | -- | -- |
-| depth prune 4 | 16.7%  +1.0 | -- | -- | -- | -- |
+| depth prune 4 | 16.7%  +1.0 | -- | -- | 66.7%  −17.8*** | -- |
 
 † legacy cells, with the baseline each was actually measured against:
 
@@ -158,19 +158,26 @@ Four cells, four qualitatively different shapes. The two OpenVLA rows are the
 same weights: on Bridge the policy loses two thirds of its success by k=4, on
 Fractal it does not move at all.
 
-### 3. Within one backbone and one benchmark, temporal ≫ visual sensitivity
+### 3. Within one backbone and one benchmark: time ≫ compute ≫ vision
 
 SpatialVLA on Fractal, same session, same protocol, full 135 episodes:
 
-| intervention | what it removes | Δ | p |
-|---|---|---|---|
-| action repeat 4 | re-planning at 3 of every 4 steps | **−40.0** | ≈ 0 |
-| foveation log-polar 20% | 80% of visual sample density | +0.7 | 1.00 |
-| foveation blur 20% | 80% of visual detail (geometry intact) | −1.5 | 0.83 |
+| axis | what it removes | Δ | p | what it buys |
+|---|---|---|---|---|
+| **time** | re-planning at 3 of every 4 steps | **−40.0** | 0.0000 | 1/4 the calls |
+| **compute** | 4 of 26 decoder layers (15%) | **−17.8** | 0.0002 | 1.17× per call |
+| **vision** | 80% of the observation, log-polar | +0.7 | 1.00 | nothing |
+| **vision** | 80% of the observation, blur | −1.5 | 0.83 | nothing |
 
-Deleting four fifths of the visual information is invisible. Holding an action
-for four steps destroys the policy. This is the only claim here that needs no
-cross-benchmark caveat — it is one policy, one benchmark, one session.
+**Four fifths of the vision is free. Fifteen percent of the compute costs 18
+points. Three quarters of the re-planning costs 40.** This is the only claim
+here that needs no cross-benchmark caveat — one policy, one benchmark, one
+session, all paired over the full protocol.
+
+And the axis that costs nothing is the only one that **buys** nothing:
+foveation reduces sample density but resamples to the same resolution, so the
+token count never drops and ms/infer is unchanged (927 → 930). Depth pruning
+is the only intervention here that reduces per-call compute at all.
 
 Detection floor: with 15 and 22 discordant pairs, effects larger than ≈ ±6-7
 points are excluded. "No effect" here means "no effect of that size", not zero.
@@ -223,8 +230,9 @@ step is to look at what is actually in those four scenes.
 | **OpenVLA** repeat {1,2,4} | complete, paired | **complete, paired** |
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
 | **OpenVLA** foveation | blur done; log-polar from July campaign | not started |
-| **SpatialVLA** foveation | **unpaired legacy only** | log-polar and blur both complete |
-| depth pruning | OpenVLA/Bridge only | not started |
+| **SpatialVLA** foveation | **unpaired legacy only** | complete |
+| **SpatialVLA** depth prune 4 | legacy (prune 1 only) | **complete** |
+| **OpenVLA** depth prune | Bridge only (1, 4, 8) | not started |
 
 ### Two liabilities
 
