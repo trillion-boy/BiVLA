@@ -43,7 +43,7 @@ baseline** 대비다. 그래서 이 열에서 다시 계산할 수 없고, 부�
 | action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | -- | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
-| foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 86.7%  +1.3 | *76.0%  −2.1†* |
+| foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
 | depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | -- | -- |
 | depth prune 4 | 16.7%  +1.0 | -- | -- | -- | -- |
 
@@ -137,15 +137,13 @@ SpatialVLA / Fractal, 같은 세션, 같은 프로토콜, 135개 전체:
 |---|---|---|---|
 | action repeat 4 | 4스텝 중 3스텝의 재계획 | **−40.0** | ≈ 0 |
 | foveation log-polar 20% | 시각 샘플 밀도의 80% | +0.7 | 1.00 |
-| foveation blur 20% | 시각 디테일의 80% (기하는 보존) | +1.3 ² | 1.00 |
+| foveation blur 20% | 시각 디테일의 80% (기하는 보존) | −1.5 | 0.83 |
 
 **시각 정보를 5분의 4 지워도 보이지 않는다. 액션을 4스텝 유지하면 정책이
 무너진다.** 여기서 유일하게 **벤치마크를 건너지 않는 주장**이다 — 정책 하나,
 벤치마크 하나, 세션 하나 안에서 성립한다.
 
-² blur는 135개 중 75개. `move_near_v0` 진행 중.
-
-검출 한계: 불일치 15쌍이면 **±7포인트보다 큰 효과는 배제**된다. 여기서
+검출 한계: 불일치 15쌍·22쌍이면 **±6~7포인트보다 큰 효과는 배제**된다. 여기서
 "효과 없음"은 "그 크기의 효과는 없음"이지 0이 아니다.
 
 ---
@@ -195,7 +193,7 @@ baseline 실패 4개를 정확히 똑같이 구제**했다 (에피소드 10, 17,
 | **OpenVLA** repeat {1,2,4} | 완료, paired | baseline + repeat 2 완료, repeat 4 남음 |
 | **SpatialVLA** repeat {1,2,4} | 완료, paired | 완료 |
 | **OpenVLA** foveation | blur 완료, log-polar은 7월 캠페인 | 미시작 |
-| **SpatialVLA** foveation | **unpaired legacy만 있음** | log-polar 완료, blur 4개 중 3개 |
+| **SpatialVLA** foveation | **unpaired legacy만 있음** | log-polar·blur 둘 다 완료 |
 | depth pruning | OpenVLA/Bridge만 | 미시작 |
 
 ### 부채 두 가지
@@ -211,14 +209,11 @@ UniVLA +8.3, RoboVLMs −19.8 / −16.7)은 에피소드별 기록을 안 남긴
 
 ### 다음 순서
 
-1. SpatialVLA blur의 `move_near_v0` — 마지막 3/4 칸. (OpenVLA repeat 2는 이
-   문서를 쓰는 중에 끝났다. 코크캔만일 때 +9.3이던 것이 전체 프로토콜에서
-   **+5.2**가 됐다. 부분 칸은 움직인다.)
-2. **OpenVLA / Fractal action repeat 4** — 두 번째 백본에서 horizon 곡선
+1. **OpenVLA / Fractal action repeat 4** — 두 번째 백본에서 horizon 곡선
    (1, 2, 4)을 닫고, 주장 2가 딛고 선 2×2를 완성한다.
-3. SpatialVLA / Bridge foveation을 에피소드 기록과 함께 재측정 — legacy 두 칸을
+2. SpatialVLA / Bridge foveation을 에피소드 기록과 함께 재측정 — legacy 두 칸을
    paired test로 바꾼다. baseline이 이미 디스크에 있어 추가 비용이 없다.
-4. baseline을 같은 세션에서 한 번 더 돌려 **에피소드별 노이즈 바닥**을 측정.
+3. baseline을 같은 세션에서 한 번 더 돌려 **에피소드별 노이즈 바닥**을 측정.
    지금 이 보고서의 모든 Δ는 알려지지 않은 바닥 위에서 읽히고 있다. log-polar은
    135개 중 15개를 뒤집으면서 순증이 0인데, 그 15개 중 몇 개가 개입 탓인지
    아직 말할 수 없다.

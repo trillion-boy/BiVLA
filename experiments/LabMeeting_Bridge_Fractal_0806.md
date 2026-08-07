@@ -46,7 +46,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | -- | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
-| foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 86.7%  +1.3 | *76.0%  −2.1†* |
+| foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
 | depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | -- | -- |
 | depth prune 4 | 16.7%  +1.0 | -- | -- | -- | -- |
 
@@ -144,16 +144,14 @@ SpatialVLA on Fractal, same session, same protocol, full 135 episodes:
 |---|---|---|---|
 | action repeat 4 | re-planning at 3 of every 4 steps | **−40.0** | ≈ 0 |
 | foveation log-polar 20% | 80% of visual sample density | +0.7 | 1.00 |
-| foveation blur 20% | 80% of visual detail (geometry intact) | +1.3 ² | 1.00 |
+| foveation blur 20% | 80% of visual detail (geometry intact) | −1.5 | 0.83 |
 
 Deleting four fifths of the visual information is invisible. Holding an action
 for four steps destroys the policy. This is the only claim here that needs no
 cross-benchmark caveat — it is one policy, one benchmark, one session.
 
-² blur covers 75 of 135 episodes; `move_near_v0` still running.
-
-Detection floor: with 15 discordant pairs, effects larger than ≈ ±7 points are
-excluded. "No effect" here means "no effect of that size", not zero.
+Detection floor: with 15 and 22 discordant pairs, effects larger than ≈ ±6-7
+points are excluded. "No effect" here means "no effect of that size", not zero.
 
 ---
 
@@ -203,7 +201,7 @@ step is to look at what is actually in those four scenes.
 | **OpenVLA** repeat {1,2,4} | complete, paired | baseline + repeat 2 complete; repeat 4 pending |
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
 | **OpenVLA** foveation | blur done; log-polar from July campaign | not started |
-| **SpatialVLA** foveation | **unpaired legacy only** | log-polar done, blur 3/4 |
+| **SpatialVLA** foveation | **unpaired legacy only** | log-polar and blur both complete |
 | depth pruning | OpenVLA/Bridge only | not started |
 
 ### Two liabilities
@@ -221,14 +219,11 @@ reader compare deltas across columns unguarded.
 
 ### Next, in order
 
-1. `move_near_v0` for SpatialVLA blur — the last 3/4 cell. (OpenVLA repeat 2
-   landed while this was being written: +9.3 on coke can became **+5.2** over the
-   full protocol. Partial cells move.)
-2. **OpenVLA / Fractal action repeat 4** — closes the horizon curve (1, 2, 4)
+1. **OpenVLA / Fractal action repeat 4** — closes the horizon curve (1, 2, 4)
    on the second backbone and completes the 2×2 that claim 2 rests on.
-3. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two
+2. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two
    legacy cells into paired tests against a baseline already on disk.
-4. Re-run one baseline a second time in the same session to measure the
+3. Re-run one baseline a second time in the same session to measure the
    per-episode noise floor. Every delta in this report is currently read against
    an unknown floor; log-polar flips 15 of 135 episodes with zero net, and we
    cannot yet say how many of those 15 are the intervention.
