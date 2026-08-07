@@ -44,14 +44,32 @@ Open the grid at the top of the report. Three things only.
 > by side — we **pair episode by episode, by ID, and count only the episodes
 > whose outcome changed.** Almost nobody in this area does that."
 
-**Do not name a statistical test here.** "We pair and count what changed" is
-enough.
+### End the statistics in one sentence
+
+Do **not** say McNemar, Fisher, or Bonferroni out loud. Do say this. Without it,
+"isn't that just luck?" takes down the whole grid in one question; with it,
+nothing takes it down.
+
+> **"Every cell pairs the same episodes and computes the probability that the
+> difference between the two benchmarks is chance. The starred cells are the
+> ones chance cannot explain even after accounting for how many comparisons we
+> ran."**
+
+That one sentence carries pairing, p-values, and multiple-comparison correction,
+and names none of them. If asked which test, answer in one line — *"McNemar
+exact and Fisher exact, Bonferroni-corrected; the arithmetic is in the
+report"* — and stop.
 
 ---
 
-## Block 3 — ① The sign flips (2:30–5:00) ★ the core
+## Block 3 — Three passes over the grid (2:30–6:30) ★ the body of the talk
 
-Point at exactly these rows.
+Put the full grid up and **point at it**. Read 50 cells in no order and you lose
+20 minutes. Three passes.
+
+### Pass 1 — across. One row = one intervention (1 min)
+
+> "Each row is one intervention. Look left to right and the sign splits."
 
 | Axis | Intervention (backbone) | Bridge | Fractal | interaction p |
 |---|---|---|---|---|
@@ -60,11 +78,9 @@ Point at exactly these rows.
 | compute | depth prune 1 (SpatialVLA) | **−10.4** | **+8.1** | 0.0018 *** |
 | time | action repeat 2 (OpenVLA) | **−8.3** | **+5.2** | 0.0266 |
 
-> "Foveation **gains 18.8 points on Bridge and loses 19.3 on Fractal.** Same
-> code, same model, same hook point. Only the benchmark differs."
->
-> "Depth pruning does the same thing in the opposite direction: −10.4 on Bridge,
-> +8.1 on Fractal."
+> "Foveation **gains 18.8 on Bridge and loses 19.3 on Fractal.** Same code, same
+> model, same hook point; only the benchmark differs. Depth pruning does exactly
+> the same thing in the opposite direction."
 >
 > "Vision and compute survive multiple-comparison correction. Time does not yet
 > — the sign flips but the interaction isn't established. What *is* established
@@ -72,12 +88,38 @@ Point at exactly these rows.
 
 That last sentence buys your credibility. Say it.
 
-> "So the sentence 'foveation helps VLAs' doesn't parse. Without naming the
-> benchmark, not even the sign is determined."
+### Pass 2 — down. Name the winner of each column (2 min) ★ strongest moment
+
+| Column | Winner | That same intervention elsewhere |
+|---|---|---|
+| OpenVLA / Bridge | foveation log-polar **+18.8** | −19.3 |
+| OpenVLA / Fractal | depth prune 4 **+15.6** | −17.8 |
+| SpatialVLA / Bridge | action repeat 2 **+12.5** | −8.3, −70.8 |
+| SpatialVLA / Fractal | depth prune 1 **+8.1** | −10.4 |
+
+> "Now read down. Each column is one backbone-benchmark pair. Take the best
+> intervention in each — **four columns, four different winners. And all four
+> winners are negative somewhere else in the table.**"
+>
+> "So to the question 'which intervention helps,' this table returns **four
+> answers.** Without naming the cell you measured in, the question doesn't
+> parse."
+
+### Pass 3 — one extreme cell (1 min)
+
+> "One last cell. On UniVLA, action repeat 2 is **−70.8** — 78.1% collapses to
+> 7.3%. On the **same Bridge benchmark**, SpatialVLA gets **+12.5** from the
+> same intervention."
+>
+> "**Hold the benchmark fixed, change only the backbone, and the sign still
+> flips.** So this isn't only a claim about benchmarks."
+
+This is stronger than the one-page summary. The summary says "change the
+benchmark"; reading the grid downward gets you "change the backbone" for free.
 
 ---
 
-## Block 4 — ② It isn't noise (5:00–6:30)
+## Block 4 — ② It isn't noise (6:30–7:30)
 
 > "The obvious question is whether this is luck. Two answers."
 >
@@ -91,15 +133,17 @@ That last sentence buys your credibility. Say it.
 > variation, which is exactly what a paired test handles.** The p-value is the
 > *complete* account of uncertainty, not a partial one."
 >
-> "Second, we ran the tests, with Bonferroni over the 15-comparison family
-> (α ≈ 0.0033). Foveation: p = 0.0000055. Depth prune 1: p = 0.0018."
+> "Second — as I said, we computed how likely those flips are by chance, and
+> they survive a threshold that already accounts for running 15 comparisons.
+> Foveation comes out at **55 in ten million**; depth prune 1 at **1.8 in a
+> thousand**."
 
-**Stop there.** Don't explain McNemar or Fisher unless asked; the report has the
-arithmetic if they do.
+**Stop there.** Still no test names. If asked, open "How the statistics work" in
+the report — the arithmetic is there.
 
 ---
 
-## Block 5 — ③ Why it flips: half an answer, and the counterexample (6:30–8:30)
+## Block 5 — ③ Why it flips: half an answer, and the counterexample (7:30–9:00)
 
 Open the task-family split.
 
@@ -146,7 +190,7 @@ Open the task-family split.
 
 ---
 
-## Block 6 — What this becomes (8:30–10:00)
+## Block 6 — What this becomes (9:00–10:00)
 
 > "So we can't make a method claim. 'Foveation helps' isn't sign-stable on one
 > benchmark. **That is the result.**"

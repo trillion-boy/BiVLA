@@ -31,6 +31,14 @@
 시각·연산 축은 Bonferroni(α ≈ 0.0033)까지 통과. 시간 축은 부호는 뒤집혔으나
 아직 미확정 — 대신 크기 차이가 확정됐다(repeat 4, p = 0.0038).
 
+**같은 그리드를 세로로 읽으면 더 강해진다.** 각 열의 1등은 OpenVLA/Bridge
+foveation log-polar **+18.8**, OpenVLA/Fractal depth prune 4 **+15.6**,
+SpatialVLA/Bridge action repeat 2 **+12.5**, SpatialVLA/Fractal depth prune 1
+**+8.1** — **네 열, 네 개의 서로 다른 1등이고, 그 넷이 전부 다른 열에서는
+마이너스다.** 그리고 벤치마크를 고정해도 뒤집힌다: 같은 Bridge에서 action
+repeat 2가 SpatialVLA는 **+12.5**, UniVLA는 **−70.8**이다. 불안정한 것은
+벤치마크 축만이 아니라 백본 축이기도 하다.
+
 **② 노이즈가 아니다.** baseline 재실행에서 두 환경 클래스 **85/85 에피소드가
 성공 플래그·스텝 수·그립 플래그까지 전부 동일**했다. greedy decoding + 시드된
 env라 재실행 변동이 0이다. 따라서 남는 불확실성은 에피소드 간 변동뿐이고,

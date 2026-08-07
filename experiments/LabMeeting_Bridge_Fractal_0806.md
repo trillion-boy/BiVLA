@@ -32,6 +32,14 @@ Vision and compute survive Bonferroni (α ≈ 0.0033). Time does not yet — the
 sign flips but the interaction is not established; what *is* established on the
 time axis is a magnitude difference (repeat 4, p = 0.0038).
 
+**Reading the same grid downward is stronger still.** The best intervention per
+column is foveation log-polar **+18.8** (OpenVLA/Bridge), depth prune 4
+**+15.6** (OpenVLA/Fractal), action repeat 2 **+12.5** (SpatialVLA/Bridge),
+depth prune 1 **+8.1** (SpatialVLA/Fractal) — **four columns, four different
+winners, and every one of the four is negative somewhere else in the table.**
+The instability is not confined to the benchmark axis either: holding Bridge
+fixed, action repeat 2 is **+12.5** on SpatialVLA and **−70.8** on UniVLA.
+
 **② It is not noise.** A from-scratch baseline re-run reproduced **85/85
 episodes across two environment classes — success flags, step counts, and grasp
 flags all identical.** Greedy decoding into a seeded environment: re-run
