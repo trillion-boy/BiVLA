@@ -99,6 +99,7 @@ CONDITION_ORDER = [
     ("foveate",          "foveation log-polar 20%"),
     ("foveate_blur",     "foveation blur 20%"),
     ("depth_prune1",     "depth prune 1"),
+    ("depth_prune2",     "depth prune 2"),
     ("depth_prune4",     "depth prune 4"),
     ("depth_prune8",     "depth prune 8"),
 ]
