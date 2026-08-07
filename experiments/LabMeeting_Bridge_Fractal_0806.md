@@ -43,7 +43,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | condition | OpenVLA<br>Bridge | OpenVLA<br>Fractal | SpatialVLA<br>Bridge | SpatialVLA<br>Fractal | UniVLA<br>Bridge |
 |---|---|---|---|---|---|
 | original policy | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
-| action repeat 2 | 7.3%  −8.3 | 29.3%  +9.3 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
+| action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | -- | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 86.7%  +1.3 | *76.0%  −2.1†* |
@@ -75,33 +75,66 @@ script verifies before borrowing the condition.
 
 ## Three things this supports
 
+### The right test for "it depends"
+
+Per-cell McNemar asks whether a condition changed anything *inside* one column.
+Our claim is that the same condition acts differently *elsewhere* — and two
+columns share no episodes, so nothing can be paired. What does compare is the
+**discordant split**: of the episodes the intervention moved, how many did it
+fix versus break. Whether that split differs is a 2×2 Fisher exact test.
+
+This is not a technicality. Both OpenVLA cells individually miss p<0.05
+(Bridge −8.3 at p=0.057, Fractal +5.2 at p=0.324) while the difference between
+them clears it. Reporting only the per-cell tests would understate precisely
+the effect this campaign is about.
+
+Seven such tests below, so Bonferroni is α = 0.05/7 ≈ 0.007.
+
 ### 1. The same intervention reverses sign across backbones
 
 Action repeat 2, identical code at an identical hook point:
 
-| backbone | Δ | discordant | p |
+| backbone | Δ | fixed / broke | per-cell p |
 |---|---|---|---|
-| UniVLA | **−70.8** | 1 fixed / 69 broke | < 1e-15 |
+| UniVLA | **−70.8** | 1 / 69 | < 1e-15 |
 | OpenVLA | −8.3 | 3 / 11 | 0.057 |
 | SpatialVLA | **+12.5** | 21 / 9 | 0.043 |
 
-An 83-point spread, with the two extremes both statistically resolved. This is
-not a difference of degree that a better default would smooth out.
+An 83-point spread. And the differences between backbones are themselves
+resolved, which is the claim:
 
-### 2. It also reverses sign across benchmarks, with the policy unchanged
+| comparison (Bridge) | condition | splits | p |
+|---|---|---|---|
+| SpatialVLA vs UniVLA | repeat 2 | 21/9 vs 1/69 | **< 0.0001** ✓Bonf |
+| OpenVLA vs SpatialVLA | repeat 2 | 3/11 vs 21/9 | **0.0037** ✓Bonf |
+| OpenVLA vs UniVLA | repeat 2 | 3/11 vs 1/69 | **0.0137** |
+| OpenVLA vs SpatialVLA | repeat 4 | 0/11 vs 10/22 | **0.0432** |
+
+Four of four tested pairs differ; two clear Bonferroni. This is not a difference
+of degree that a better default would smooth out.
+
+### 2. It also depends on the benchmark, with the policy unchanged
 
 | action repeat 2 | Bridge | Fractal |
 |---|---|---|
-| OpenVLA | −8.3 | **+9.3** (coke can only, p = 0.19) |
-| SpatialVLA | **+12.5** (p = 0.043) | **+0.0** (p = 1.00) |
+| OpenVLA | −8.3 | **+5.2** |
+| SpatialVLA | **+12.5** | +0.0 |
 
-Same checkpoint, same weights, same intervention — only the benchmark moves.
-**Neither backbone's Bridge result predicts its own Fractal result.** OpenVLA
-flips sign; SpatialVLA's gain disappears.
+Same checkpoint, same weights, same intervention — only the benchmark moves,
+and OpenVLA's sign flips. Tested directly:
 
-*Caveat:* OpenVLA/Fractal repeat 2 currently covers the three coke-can tasks
-(75 of 135 protocol episodes); `move_near_v0` is still running and can move the
-number. Do not quote +9.3 as the task average yet.
+| comparison | condition | splits | p |
+|---|---|---|---|
+| OpenVLA: Bridge vs Fractal | repeat 2 | 3/11 vs 22/15 | **0.0266** |
+| SpatialVLA: Bridge vs Fractal | repeat 4 | 10/22 vs 6/60 | **0.0085** |
+| SpatialVLA: Bridge vs Fractal | repeat 2 | 21/9 vs 11/11 | 0.1624 |
+
+**Two of three are established.** SpatialVLA's repeat-2 gain shrinking to zero
+is suggestive but not resolved at this n — say so rather than leaning on it.
+
+The honest summary of this row: *a backbone's Bridge number does not tell you
+its own Fractal number*, demonstrated for OpenVLA at repeat 2 and for SpatialVLA
+at repeat 4.
 
 ### 3. Within one backbone and one benchmark, temporal ≫ visual sensitivity
 
@@ -167,7 +200,7 @@ step is to look at what is actually in those four scenes.
 
 | | Bridge | Fractal |
 |---|---|---|
-| **OpenVLA** repeat {1,2,4} | complete, paired | baseline + repeat 2 (3/4 tasks) |
+| **OpenVLA** repeat {1,2,4} | complete, paired | baseline + repeat 2 complete; repeat 4 pending |
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
 | **OpenVLA** foveation | blur done; log-polar from July campaign | not started |
 | **SpatialVLA** foveation | **unpaired legacy only** | log-polar done, blur 3/4 |
@@ -188,8 +221,9 @@ reader compare deltas across columns unguarded.
 
 ### Next, in order
 
-1. `move_near_v0` for OpenVLA repeat 2 and SpatialVLA blur — finishes two cells
-   already 3/4 done.
+1. `move_near_v0` for SpatialVLA blur — the last 3/4 cell. (OpenVLA repeat 2
+   landed while this was being written: +9.3 on coke can became **+5.2** over the
+   full protocol. Partial cells move.)
 2. **OpenVLA / Fractal action repeat 4** — closes the horizon curve (1, 2, 4)
    on the second backbone and completes the 2×2 that claim 2 rests on.
 3. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two

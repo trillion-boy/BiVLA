@@ -40,7 +40,7 @@ baseline** 대비다. 그래서 이 열에서 다시 계산할 수 없고, 부�
 | 조건 | OpenVLA<br>Bridge | OpenVLA<br>Fractal | SpatialVLA<br>Bridge | SpatialVLA<br>Fractal | UniVLA<br>Bridge |
 |---|---|---|---|---|---|
 | 원본 정책 | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
-| action repeat 2 | 7.3%  −8.3 | 29.3%  +9.3 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
+| action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | -- | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 86.7%  +1.3 | *76.0%  −2.1†* |
@@ -71,33 +71,63 @@ baseline이 현재 baseline과 에피소드 단위로 완전히 동일하다(96/
 
 ## 이게 뒷받침하는 세 가지
 
+### "달라진다"를 검정하는 올바른 방법
+
+칸별 McNemar은 "이 조건이 **이 열 안에서** 무언가를 바꿨는가"를 묻는다.
+우리 주장은 "같은 조건이 **저쪽에서는 다르게 작동한다**"이고, 두 열은 공유하는
+에피소드가 없어 짝지을 것이 없다. 비교 가능한 것은 **불일치 분할**이다 —
+개입이 움직인 에피소드 중 몇 개를 고쳤고 몇 개를 깼는가. 그 분할이 다른지는
+2×2 Fisher exact test로 묻는다.
+
+형식적인 문제가 아니다. OpenVLA는 **두 칸 다 개별로는 p<0.05를 못 넘기는데**
+(Bridge −8.3, p=0.057 / Fractal +5.2, p=0.324) **둘의 차이는 넘긴다.**
+칸별 검정만 보고하면 이 캠페인이 다루는 바로 그 효과를 과소보고하게 된다.
+
+아래 검정이 7개이므로 Bonferroni는 α = 0.05/7 ≈ 0.007.
+
 ### 1. 같은 개입이 백본에 따라 부호가 뒤집힌다
 
 action repeat 2, 동일한 코드·동일한 hook 지점:
 
-| 백본 | Δ | 불일치 | p |
+| 백본 | Δ | 고쳐짐 / 깨짐 | 칸별 p |
 |---|---|---|---|
-| UniVLA | **−70.8** | 1 고쳐짐 / 69 깨짐 | < 1e-15 |
+| UniVLA | **−70.8** | 1 / 69 | < 1e-15 |
 | OpenVLA | −8.3 | 3 / 11 | 0.057 |
 | SpatialVLA | **+12.5** | 21 / 9 | 0.043 |
 
-83포인트 스프레드에, 양 극단 둘 다 통계적으로 확립됐다. 더 나은 기본값을
+83포인트 스프레드. 그리고 **백본 간 차이 자체가 검정을 통과한다** — 이게 주장이다:
+
+| 비교 (Bridge) | 조건 | 분할 | p |
+|---|---|---|---|
+| SpatialVLA vs UniVLA | repeat 2 | 21/9 vs 1/69 | **< 0.0001** ✓Bonf |
+| OpenVLA vs SpatialVLA | repeat 2 | 3/11 vs 21/9 | **0.0037** ✓Bonf |
+| OpenVLA vs UniVLA | repeat 2 | 3/11 vs 1/69 | **0.0137** |
+| OpenVLA vs SpatialVLA | repeat 4 | 0/11 vs 10/22 | **0.0432** |
+
+검정한 네 쌍이 전부 다르고, 둘은 Bonferroni까지 통과한다. 더 나은 기본값을
 찾으면 정리될 정도 차이가 아니다.
 
-### 2. 정책을 그대로 두고 벤치마크만 바꿔도 부호가 뒤집힌다
+### 2. 정책을 그대로 두고 벤치마크만 바꿔도 달라진다
 
 | action repeat 2 | Bridge | Fractal |
 |---|---|---|
-| OpenVLA | −8.3 | **+9.3** (코크캔만, p = 0.19) |
-| SpatialVLA | **+12.5** (p = 0.043) | **+0.0** (p = 1.00) |
+| OpenVLA | −8.3 | **+5.2** |
+| SpatialVLA | **+12.5** | +0.0 |
 
-같은 체크포인트, 같은 가중치, 같은 개입 — 벤치마크만 움직였다.
-**어느 백본도 자기 Bridge 결과로 자기 Fractal 결과를 예측하지 못한다.**
-OpenVLA는 부호가 뒤집히고, SpatialVLA는 이득이 사라진다.
+같은 체크포인트, 같은 가중치, 같은 개입 — 벤치마크만 움직였는데 OpenVLA는
+부호가 뒤집힌다. 직접 검정하면:
 
-*주의:* OpenVLA/Fractal repeat 2는 현재 코크캔 3종(135개 중 75개)만 반영돼
-있다. `move_near_v0`이 아직 돌고 있고 숫자가 움직일 수 있다. **+9.3을 태스크
-평균으로 인용하면 안 된다.**
+| 비교 | 조건 | 분할 | p |
+|---|---|---|---|
+| OpenVLA: Bridge vs Fractal | repeat 2 | 3/11 vs 22/15 | **0.0266** |
+| SpatialVLA: Bridge vs Fractal | repeat 4 | 10/22 vs 6/60 | **0.0085** |
+| SpatialVLA: Bridge vs Fractal | repeat 2 | 21/9 vs 11/11 | 0.1624 |
+
+**셋 중 둘이 확립됐다.** SpatialVLA의 repeat 2 이득이 0으로 사라지는 건
+시사적이지만 이 n에서 해결되지 않았다 — 기대지 말고 그렇게 적어야 한다.
+
+이 줄의 정직한 요약: **한 백본의 Bridge 숫자는 그 백본 자신의 Fractal 숫자를
+알려주지 않는다.** OpenVLA의 repeat 2와 SpatialVLA의 repeat 4에서 입증됐다.
 
 ### 3. 한 백본·한 벤치마크 안에서, 시간적 교란 ≫ 시각적 손실
 
@@ -162,7 +192,7 @@ baseline 실패 4개를 정확히 똑같이 구제**했다 (에피소드 10, 17,
 
 | | Bridge | Fractal |
 |---|---|---|
-| **OpenVLA** repeat {1,2,4} | 완료, paired | baseline + repeat 2 (4개 중 3개) |
+| **OpenVLA** repeat {1,2,4} | 완료, paired | baseline + repeat 2 완료, repeat 4 남음 |
 | **SpatialVLA** repeat {1,2,4} | 완료, paired | 완료 |
 | **OpenVLA** foveation | blur 완료, log-polar은 7월 캠페인 | 미시작 |
 | **SpatialVLA** foveation | **unpaired legacy만 있음** | log-polar 완료, blur 4개 중 3개 |
@@ -181,8 +211,9 @@ UniVLA +8.3, RoboVLMs −19.8 / −16.7)은 에피소드별 기록을 안 남긴
 
 ### 다음 순서
 
-1. OpenVLA repeat 2와 SpatialVLA blur의 `move_near_v0` — 4개 중 3개까지 간
-   칸 둘을 마감한다.
+1. SpatialVLA blur의 `move_near_v0` — 마지막 3/4 칸. (OpenVLA repeat 2는 이
+   문서를 쓰는 중에 끝났다. 코크캔만일 때 +9.3이던 것이 전체 프로토콜에서
+   **+5.2**가 됐다. 부분 칸은 움직인다.)
 2. **OpenVLA / Fractal action repeat 4** — 두 번째 백본에서 horizon 곡선
    (1, 2, 4)을 닫고, 주장 2가 딛고 선 2×2를 완성한다.
 3. SpatialVLA / Bridge foveation을 에피소드 기록과 함께 재측정 — legacy 두 칸을

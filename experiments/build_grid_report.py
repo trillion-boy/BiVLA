@@ -236,6 +236,43 @@ def paired(data: dict, backbone: str, bench: str, cond: str):
     return delta, fixed, broke, exact_two_sided(fixed, broke), n
 
 
+def fisher_exact_2x2(a: int, b: int, c: int, d: int) -> float:
+    """Two-sided Fisher exact p for [[a, b], [c, d]].
+
+    Hand-rolled because scipy is not a dependency of this repo and this is the
+    only test here that McNemar cannot answer.
+    """
+    n, r1, r2, c1 = a + b + c + d, a + b, c + d, a + c
+    if min(r1, r2, c1, n - c1) < 0 or n == 0:
+        return 1.0
+    def p(x):
+        return comb(r1, x) * comb(r2, c1 - x) / comb(n, c1)
+    p0 = p(a)
+    lo, hi = max(0, c1 - r2), min(r1, c1)
+    return min(1.0, sum(p(x) for x in range(lo, hi + 1) if p(x) <= p0 + 1e-12))
+
+
+def interaction(data, cond: str, left: tuple, right: tuple):
+    """Does this condition act differently on `left` than on `right`?
+
+    McNemar answers "did this condition change anything" within one column. It
+    cannot answer "is the effect different over there", which is the actual
+    claim: the two runs share no episodes, so there is nothing to pair. What
+    generalises is the DISCORDANT SPLIT -- how the intervention divides the
+    episodes it moved -- and whether that split differs is a 2x2 Fisher test.
+
+    This matters because both cells can individually fail to reach p<0.05 while
+    the difference between them clears it. Reporting only the per-cell tests
+    would understate exactly the effect the campaign is about.
+    """
+    a, b = paired(data, left[0], left[1], cond), paired(data, right[0], right[1], cond)
+    if a is None or b is None:
+        return None
+    # (fixed, broke) for each side
+    return (a[1], a[2], b[1], b[2],
+            fisher_exact_2x2(a[1], b[1], a[2], b[2]))
+
+
 def fmt_cell(c, pr, legacy=None) -> str:
     if c is None:
         if legacy is None:
@@ -306,6 +343,35 @@ def markdown(data) -> str:
             d, fixed, broke, p, n = pr
             L.append(f"| {b} | {k} | {DISPLAY.get(cond, cond)} | {n} | "
                      f"{d:+.1f} | {fixed} | {broke} | {p:.4f} |")
+
+    L.append("\n## Does the effect depend on where you measure it?\n")
+    L.append("The per-cell tests above ask whether a condition changed anything "
+             "*within* one column. The campaign's claim is different -- that the "
+             "same condition acts differently *elsewhere* -- and the two runs "
+             "share no episodes, so nothing can be paired. What compares is the "
+             "discordant split, and whether it differs is a 2x2 Fisher exact "
+             "test. Both cells can individually miss p<0.05 while the difference "
+             "between them clears it.\n")
+    L.append("| comparison | condition | left (fixed/broke) | right (fixed/broke) | p |")
+    L.append("|---|---|---|---|---|")
+    pairs = []
+    backbones = sorted({b for b, _ in cols})
+    for bb in backbones:                       # same backbone, two benchmarks
+        if (bb, "Bridge") in cols and (bb, "Fractal") in cols:
+            pairs.append((f"{bb}: Bridge vs Fractal", (bb, "Bridge"), (bb, "Fractal")))
+    for i, b1 in enumerate(backbones):         # same benchmark, two backbones
+        for b2 in backbones[i + 1:]:
+            if (b1, "Bridge") in cols and (b2, "Bridge") in cols:
+                pairs.append((f"Bridge: {b1} vs {b2}", (b1, "Bridge"), (b2, "Bridge")))
+    for title, left, right in pairs:
+        for cond in conditions_present(data):
+            r = interaction(data, cond, left, right)
+            if r is None:
+                continue
+            af, ab, bf, bb_, p = r
+            star = "***" if p < 0.003 else "**" if p < 0.05 else ""
+            L.append(f"| {title} | {DISPLAY.get(cond, cond)} | {af}/{ab} | "
+                     f"{bf}/{bb_} | {p:.4f}{star} |")
 
     L.append("\n## Per task\n")
     for b, k in cols:
