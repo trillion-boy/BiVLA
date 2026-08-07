@@ -1,0 +1,1889 @@
+{
+  "model": "openvla_foveated_blur",
+  "task": "google_robot_move_near_v0",
+  "policy_setup": "google_robot",
+  "unnorm_key": "fractal20220817_data",
+  "sticky_gripper_num_repeat": 15,
+  "n_episodes": 60,
+  "protocol_episodes": 60,
+  "success_rate": 0.3,
+  "grasp_rate": null,
+  "avg_steps": 64.48333333333333,
+  "avg_elapsed": 43.18953156868617,
+  "action_repeat": 1,
+  "predict_action_frames": 1,
+  "exec_chunk": 0,
+  "foveate": {
+    "enabled": true,
+    "mode": "blur",
+    "keep_percent": 20.0
+  },
+  "llm_prune_count": 0,
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 30,
+      "elapsed": 21.908098220825195,
+      "final_info": {
+        "elapsed_steps": 30,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 30.0,
+        "model_ms_per_infer": 574.9022722244263,
+        "model_ms_per_env_step": 574.9022722244263
+      }
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 23,
+      "elapsed": 15.405653476715088,
+      "final_info": {
+        "elapsed_steps": 23,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 23.0,
+        "model_ms_per_infer": 510.47938802967894,
+        "model_ms_per_env_step": 510.47938802967894
+      }
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 53,
+      "elapsed": 35.736435651779175,
+      "final_info": {
+        "elapsed_steps": 53,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 53.0,
+        "model_ms_per_infer": 513.6500844415629,
+        "model_ms_per_env_step": 513.6500844415629
+      }
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.7222363948822,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.6437990665436,
+        "model_ms_per_env_step": 509.6437990665436
+      }
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.9745774269104,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.68410873413086,
+        "model_ms_per_env_step": 510.68410873413086
+      }
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 29,
+      "elapsed": 19.494666576385498,
+      "final_info": {
+        "elapsed_steps": 29,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 29.0,
+        "model_ms_per_infer": 510.0441225643816,
+        "model_ms_per_env_step": 510.0441225643816
+      }
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.45846176147461,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 511.0595047473907,
+        "model_ms_per_env_step": 511.05950474739063
+      }
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.7840781211853,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.55239140987396,
+        "model_ms_per_env_step": 510.55239140987396
+      }
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.76424503326416,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.51516830921173,
+        "model_ms_per_env_step": 510.51516830921173
+      }
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 21,
+      "elapsed": 14.03913402557373,
+      "final_info": {
+        "elapsed_steps": 21,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 21.0,
+        "model_ms_per_infer": 510.41269302368164,
+        "model_ms_per_env_step": 510.41269302368164
+      }
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.89681816101074,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "False",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "False",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.8037710189819,
+        "model_ms_per_env_step": 510.8037710189818
+      }
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 12,
+      "elapsed": 8.157167434692383,
+      "final_info": {
+        "elapsed_steps": 12,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 12.0,
+        "model_ms_per_infer": 522.9673385620117,
+        "model_ms_per_env_step": 522.9673385620117
+      }
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.47097635269165,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.00318825244904,
+        "model_ms_per_env_step": 510.00318825244904
+      }
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.760451316833496,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.6002101898194,
+        "model_ms_per_env_step": 509.60021018981945
+      }
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.14797043800354,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.9124630689621,
+        "model_ms_per_env_step": 510.9124630689621
+      }
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.83958649635315,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.6027811765671,
+        "model_ms_per_env_step": 510.6027811765671
+      }
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.26347041130066,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.62381660938263,
+        "model_ms_per_env_step": 509.62381660938263
+      }
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 64,
+      "elapsed": 43.47014355659485,
+      "final_info": {
+        "elapsed_steps": 64,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 64.0,
+        "model_ms_per_infer": 510.34070178866386,
+        "model_ms_per_env_step": 510.34070178866386
+      }
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.43997287750244,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.36350429058075,
+        "model_ms_per_env_step": 510.36350429058075
+      }
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.89484667778015,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": true,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": true,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 511.4462345838546,
+        "model_ms_per_env_step": 511.44623458385456
+      }
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.19025659561157,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.29008924961096,
+        "model_ms_per_env_step": 510.290089249611
+      }
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.119656562805176,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.25721430778503,
+        "model_ms_per_env_step": 510.25721430778503
+      }
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.004374980926514,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.5137536525727,
+        "model_ms_per_env_step": 509.51375365257275
+      }
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.52876400947571,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.8341673612594,
+        "model_ms_per_env_step": 509.83416736125935
+      }
+    },
+    {
+      "ep": 24,
+      "ep_id": 24,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.57956528663635,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.5921903848648,
+        "model_ms_per_env_step": 509.5921903848648
+      }
+    },
+    {
+      "ep": 25,
+      "ep_id": 25,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.12897181510925,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.19130051136017,
+        "model_ms_per_env_step": 510.19130051136017
+      }
+    },
+    {
+      "ep": 26,
+      "ep_id": 26,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.60821056365967,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 511.59053742885584,
+        "model_ms_per_env_step": 511.5905374288558
+      }
+    },
+    {
+      "ep": 27,
+      "ep_id": 27,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.22050881385803,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.4517489671707,
+        "model_ms_per_env_step": 510.4517489671707
+      }
+    },
+    {
+      "ep": 28,
+      "ep_id": 28,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.81547236442566,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.62707006931305,
+        "model_ms_per_env_step": 510.62707006931305
+      }
+    },
+    {
+      "ep": 29,
+      "ep_id": 29,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.66902208328247,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.65147221088415,
+        "model_ms_per_env_step": 510.6514722108842
+      }
+    },
+    {
+      "ep": 30,
+      "ep_id": 30,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.849788188934326,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": false,
+        "moved_wrong_obj": true,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": false,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": false,
+          "moved_wrong_obj": true,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.6349090337753,
+        "model_ms_per_env_step": 509.6349090337752
+      }
+    },
+    {
+      "ep": 31,
+      "ep_id": 31,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.68069577217102,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.9811613559723,
+        "model_ms_per_env_step": 509.9811613559723
+      }
+    },
+    {
+      "ep": 32,
+      "ep_id": 32,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.04127049446106,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.49080288410187,
+        "model_ms_per_env_step": 509.49080288410187
+      }
+    },
+    {
+      "ep": 33,
+      "ep_id": 33,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.85507249832153,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 512.1322691440582,
+        "model_ms_per_env_step": 512.1322691440582
+      }
+    },
+    {
+      "ep": 34,
+      "ep_id": 34,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.64586091041565,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.6636444330216,
+        "model_ms_per_env_step": 509.66364443302166
+      }
+    },
+    {
+      "ep": 35,
+      "ep_id": 35,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 31,
+      "elapsed": 20.715078592300415,
+      "final_info": {
+        "elapsed_steps": 31,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 31.0,
+        "model_ms_per_infer": 510.2993749803112,
+        "model_ms_per_env_step": 510.2993749803112
+      }
+    },
+    {
+      "ep": 36,
+      "ep_id": 36,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 45,
+      "elapsed": 30.361348390579224,
+      "final_info": {
+        "elapsed_steps": 45,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 45.0,
+        "model_ms_per_infer": 510.2291372087266,
+        "model_ms_per_env_step": 510.22913720872657
+      }
+    },
+    {
+      "ep": 37,
+      "ep_id": 37,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 43,
+      "elapsed": 28.846391439437866,
+      "final_info": {
+        "elapsed_steps": 43,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 43.0,
+        "model_ms_per_infer": 509.7724670587584,
+        "model_ms_per_env_step": 509.7724670587584
+      }
+    },
+    {
+      "ep": 38,
+      "ep_id": 38,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.225197076797485,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.90950667858124,
+        "model_ms_per_env_step": 510.90950667858124
+      }
+    },
+    {
+      "ep": 39,
+      "ep_id": 39,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.88200306892395,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 511.02078258991247,
+        "model_ms_per_env_step": 511.0207825899125
+      }
+    },
+    {
+      "ep": 40,
+      "ep_id": 40,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 17,
+      "elapsed": 11.255714654922485,
+      "final_info": {
+        "elapsed_steps": 17,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 17.0,
+        "model_ms_per_infer": 509.6518572639016,
+        "model_ms_per_env_step": 509.65185726390166
+      }
+    },
+    {
+      "ep": 41,
+      "ep_id": 41,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 18,
+      "elapsed": 11.968465805053711,
+      "final_info": {
+        "elapsed_steps": 18,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 18.0,
+        "model_ms_per_infer": 510.5658769607544,
+        "model_ms_per_env_step": 510.5658769607544
+      }
+    },
+    {
+      "ep": 42,
+      "ep_id": 42,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.88488268852234,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": false,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": false,
+        "episode_stats": {
+          "all_obj_keep_height": false,
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.49889326095575,
+        "model_ms_per_env_step": 510.4988932609557
+      }
+    },
+    {
+      "ep": 43,
+      "ep_id": 43,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.87163805961609,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 511.16704046726227,
+        "model_ms_per_env_step": 511.16704046726227
+      }
+    },
+    {
+      "ep": 44,
+      "ep_id": 44,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 26,
+      "elapsed": 17.336153984069824,
+      "final_info": {
+        "elapsed_steps": 26,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 26.0,
+        "model_ms_per_infer": 510.30491865598236,
+        "model_ms_per_env_step": 510.30491865598236
+      }
+    },
+    {
+      "ep": 45,
+      "ep_id": 45,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 19,
+      "elapsed": 12.710609436035156,
+      "final_info": {
+        "elapsed_steps": 19,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 19.0,
+        "model_ms_per_infer": 510.5712664754767,
+        "model_ms_per_env_step": 510.5712664754767
+      }
+    },
+    {
+      "ep": 46,
+      "ep_id": 46,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.98151206970215,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": false,
+        "moved_correct_obj": false,
+        "moved_wrong_obj": true,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": false,
+        "episode_stats": {
+          "all_obj_keep_height": false,
+          "moved_correct_obj": false,
+          "moved_wrong_obj": true,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.6466839313507,
+        "model_ms_per_env_step": 509.6466839313507
+      }
+    },
+    {
+      "ep": 47,
+      "ep_id": 47,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.327937602996826,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 511.14629209041595,
+        "model_ms_per_env_step": 511.14629209041595
+      }
+    },
+    {
+      "ep": 48,
+      "ep_id": 48,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.0994131565094,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": true,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": true,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.86548960208887,
+        "model_ms_per_env_step": 509.8654896020888
+      }
+    },
+    {
+      "ep": 49,
+      "ep_id": 49,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.374077796936035,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.81303060054785,
+        "model_ms_per_env_step": 510.8130306005479
+      }
+    },
+    {
+      "ep": 50,
+      "ep_id": 50,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.292864084243774,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": false,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": false,
+        "episode_stats": {
+          "all_obj_keep_height": false,
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.2695822715759,
+        "model_ms_per_env_step": 510.2695822715759
+      }
+    },
+    {
+      "ep": 51,
+      "ep_id": 51,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.100621700286865,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 511.97344064712524,
+        "model_ms_per_env_step": 511.97344064712524
+      }
+    },
+    {
+      "ep": 52,
+      "ep_id": 52,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 29,
+      "elapsed": 19.203240394592285,
+      "final_info": {
+        "elapsed_steps": 29,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 29.0,
+        "model_ms_per_infer": 510.8694125866068,
+        "model_ms_per_env_step": 510.86941258660676
+      }
+    },
+    {
+      "ep": 53,
+      "ep_id": 53,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 19,
+      "elapsed": 12.578488826751709,
+      "final_info": {
+        "elapsed_steps": 19,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 19.0,
+        "model_ms_per_infer": 509.25214667069287,
+        "model_ms_per_env_step": 509.25214667069287
+      }
+    },
+    {
+      "ep": 54,
+      "ep_id": 54,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 54.448448181152344,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": false,
+        "moved_correct_obj": false,
+        "moved_wrong_obj": true,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": false,
+        "episode_stats": {
+          "all_obj_keep_height": false,
+          "moved_correct_obj": false,
+          "moved_wrong_obj": true,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.9276036024094,
+        "model_ms_per_env_step": 509.9276036024095
+      }
+    },
+    {
+      "ep": 55,
+      "ep_id": 55,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 53.74824595451355,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": false,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.1536601781845,
+        "model_ms_per_env_step": 510.1536601781845
+      }
+    },
+    {
+      "ep": 56,
+      "ep_id": 56,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.88941502571106,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 509.59255993366236,
+        "model_ms_per_env_step": 509.5925599336623
+      }
+    },
+    {
+      "ep": 57,
+      "ep_id": 57,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 52.715110063552856,
+      "final_info": {
+        "elapsed_steps": 80,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "False",
+        "is_closest_to_tgt": true,
+        "success": "False",
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "False",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 510.04209816455835,
+        "model_ms_per_env_step": 510.0420981645583
+      }
+    },
+    {
+      "ep": 58,
+      "ep_id": 58,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 18,
+      "elapsed": 12.03096628189087,
+      "final_info": {
+        "elapsed_steps": 18,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 18.0,
+        "model_ms_per_infer": 509.97702280680335,
+        "model_ms_per_env_step": 509.9770228068034
+      }
+    },
+    {
+      "ep": 59,
+      "ep_id": 59,
+      "success": true,
+      "grasped": false,
+      "terminated": true,
+      "truncated": false,
+      "steps": 12,
+      "elapsed": 7.95758843421936,
+      "final_info": {
+        "elapsed_steps": 12,
+        "all_obj_keep_height": "True",
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "near_tgt_obj": "True",
+        "is_closest_to_tgt": true,
+        "success": true,
+        "episode_stats": {
+          "all_obj_keep_height": "True",
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "near_tgt_obj": "True",
+          "is_closest_to_tgt": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 12.0,
+        "model_ms_per_infer": 509.7857515017191,
+        "model_ms_per_env_step": 509.7857515017192
+      }
+    }
+  ],
+  "model_stats": {
+    "model_calls_timed": 64.48333333333333,
+    "model_ms_per_infer": 511.6802628212521,
+    "model_ms_per_env_step": 511.6802628212521
+  }
+}
