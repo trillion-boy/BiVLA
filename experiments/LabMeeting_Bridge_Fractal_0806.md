@@ -44,7 +44,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 |---|---|---|---|---|---|
 | original policy | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
 | action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
-| action repeat 4 | 4.2%  −11.5*** | -- | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
+| action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
 | depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | -- | -- |
@@ -88,7 +88,7 @@ This is not a technicality. Both OpenVLA cells individually miss p<0.05
 them clears it. Reporting only the per-cell tests would understate precisely
 the effect this campaign is about.
 
-Seven such tests below, so Bonferroni is α = 0.05/7 ≈ 0.007.
+Eight such tests below, so Bonferroni is α = 0.05/8 ≈ 0.006.
 
 ### 1. The same intervention reverses sign across backbones
 
@@ -120,21 +120,43 @@ of degree that a better default would smooth out.
 | OpenVLA | −8.3 | **+5.2** |
 | SpatialVLA | **+12.5** | +0.0 |
 
+| action repeat 4 | Bridge | Fractal |
+|---|---|---|
+| OpenVLA | **−11.5** | **−1.5** |
+| SpatialVLA | −12.5 | **−40.0** |
+
 Same checkpoint, same weights, same intervention — only the benchmark moves,
 and OpenVLA's sign flips. Tested directly:
 
 | comparison | condition | splits | p |
 |---|---|---|---|
+| **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0/11 vs 20/22** | **0.0038** ✓Bonf |
 | OpenVLA: Bridge vs Fractal | repeat 2 | 3/11 vs 22/15 | **0.0266** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | 10/22 vs 6/60 | **0.0085** |
 | SpatialVLA: Bridge vs Fractal | repeat 2 | 21/9 vs 11/11 | 0.1624 |
 
-**Two of three are established.** SpatialVLA's repeat-2 gain shrinking to zero
-is suggestive but not resolved at this n — say so rather than leaning on it.
+**Three of four are established, and the strongest is OpenVLA at repeat 4** —
+on Bridge every one of the 11 episodes it moved was broken; on Fractal it moved
+42 and fixed 20 of them. Same weights. Only SpatialVLA's repeat-2 gain shrinking
+to zero is unresolved at this n — say so rather than leaning on it.
 
 The honest summary of this row: *a backbone's Bridge number does not tell you
-its own Fractal number*, demonstrated for OpenVLA at repeat 2 and for SpatialVLA
-at repeat 4.
+its own Fractal number.*
+
+### The horizon curve, now complete on both backbones and both benchmarks
+
+Success rate as the action is held for 1, 2 then 4 environment steps:
+
+| | k=1 | k=2 | k=4 | shape |
+|---|---|---|---|---|
+| OpenVLA / Bridge | 15.6 | 7.3 | 4.2 | **monotone collapse** |
+| OpenVLA / Fractal | 38.5 | 43.7 | 37.0 | **flat** (nothing clears p<0.05) |
+| SpatialVLA / Bridge | 30.2 | 42.7 | 17.7 | **peak at 2** |
+| SpatialVLA / Fractal | 84.4 | 84.4 | 44.4 | **flat, then a cliff** |
+
+Four cells, four qualitatively different shapes. The two OpenVLA rows are the
+same weights: on Bridge the policy loses two thirds of its success by k=4, on
+Fractal it does not move at all.
 
 ### 3. Within one backbone and one benchmark, temporal ≫ visual sensitivity
 
@@ -198,7 +220,7 @@ step is to look at what is actually in those four scenes.
 
 | | Bridge | Fractal |
 |---|---|---|
-| **OpenVLA** repeat {1,2,4} | complete, paired | baseline + repeat 2 complete; repeat 4 pending |
+| **OpenVLA** repeat {1,2,4} | complete, paired | **complete, paired** |
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
 | **OpenVLA** foveation | blur done; log-polar from July campaign | not started |
 | **SpatialVLA** foveation | **unpaired legacy only** | log-polar and blur both complete |
@@ -219,11 +241,9 @@ reader compare deltas across columns unguarded.
 
 ### Next, in order
 
-1. **OpenVLA / Fractal action repeat 4** — closes the horizon curve (1, 2, 4)
-   on the second backbone and completes the 2×2 that claim 2 rests on.
-2. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two
+1. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two
    legacy cells into paired tests against a baseline already on disk.
-3. Re-run one baseline a second time in the same session to measure the
+2. Re-run one baseline a second time in the same session to measure the
    per-episode noise floor. Every delta in this report is currently read against
    an unknown floor; log-polar flips 15 of 135 episodes with zero net, and we
    cannot yet say how many of those 15 are the intervention.

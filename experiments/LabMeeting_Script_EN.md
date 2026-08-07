@@ -4,8 +4,9 @@ Six slides, about seven minutes. The **[SAY]** blocks can be read as written.
 Numbers come from `LabMeeting_Bridge_Fractal_0806.md`; regenerate the tables
 with `python experiments/build_grid_report.py`.
 
-The whole talk turns on **one number** — the **repair rate**. Hold onto that
-and everything else follows.
+The whole talk turns on **one picture** — four curves of success rate against
+how long each action is held. The statistics then hang off **one number**, the
+repair rate.
 
 ---
 
@@ -28,43 +29,34 @@ backbones and two benchmarks."
 
 ---
 
-## Slide 2 — The whole result in one number (100s) ★core
+## Slide 2 — Four curves (100s) ★core
 
-**[SHOW]** — five horizontal bars, dashed vertical line at 50%
+**[SHOW]** — success rate when each action is held for 1, 2, then 4 steps
 
 ```
-Of the episodes the intervention CHANGED, the fraction it FIXED
-
-UniVLA     / Bridge    1/70  ▏                      1.4%
-OpenVLA    / Bridge    3/14  ████                  21.4%
-SpatialVLA / Fractal  11/22  ███████████           50.0%   ← coin flip
-OpenVLA    / Fractal  22/37  █████████████         59.5%
-SpatialVLA / Bridge   21/30  ███████████████       70.0%
-                                          ┊
-                                50% = no effect
+                  k=1     k=2     k=4
+OpenVLA  /Bridge  15.6 →  7.3 →  4.2    \___  monotone collapse
+OpenVLA  /Fractal 38.5 → 43.7 → 37.0    ────  flat
+SpatVLA  /Bridge  30.2 → 42.7 → 17.7    /\__  peak at 2
+SpatVLA  /Fractal 84.4 → 84.4 → 44.4    ‾‾\_  flat, then a cliff
 ```
 
 **[SAY]**
-"You can see this whole result in one number.
+"Let me take one intervention: how many environment steps we hold each action
+for. One is the original policy; two and four mean calling the model that much
+less often.
 
-We run the same episode twice — once with the original policy, once with the
-intervention. Most episodes come out the same either way: both succeed, or both
-fail. Those tell us nothing, so we drop them.
-
-We keep only the episodes where **the outcome changed**. Either the
-intervention fixed a failure, or it broke a success. Then we ask: what fraction
-did it fix?
-
-If the intervention does nothing, that's a coin flip — **50 percent**. Above
-50, it helped. Below 50, it hurt.
+Two backbones, two benchmarks, four cells.
 
 **[PAUSE — point at the screen]**
 
-Same intervention. Same code. UniVLA is at 1 percent. SpatialVLA is at 70.
+**All four are different shapes.** One collapses monotonically, one is flat, one
+peaks at two, one is flat and then falls off a cliff.
 
-And look at the two middle rows. **That's one backbone, OpenVLA, sitting at 21
-percent and 59 percent at the same time.** Same checkpoint, same weights, same
-code. **Only the benchmark changed.**"
+The top two rows are **the same weights**. That's one policy, OpenVLA. On Bridge
+it loses two thirds of its success by k=4. On Fractal it doesn't move at all.
+
+**Only the benchmark changed.**"
 
 ---
 
@@ -72,36 +64,42 @@ code. **Only the benchmark changed.**"
 
 **[SHOW]**
 
-| comparison | repair rates | p |
+```
+Of the episodes the intervention CHANGED, the fraction it FIXED
+                                          (50% = coin flip = no effect)
+
+OpenVLA / Bridge  repeat 4    0/11  ▏                  0%
+OpenVLA / Fractal repeat 4   20/42  ███████████       48%
+                                         ┊
+```
+
+| comparison | condition | p |
 |---|---|---|
-| SpatialVLA vs UniVLA (Bridge) | 70% vs 1% | **< 0.0001** |
-| OpenVLA vs SpatialVLA (Bridge) | 21% vs 70% | **0.0037** |
-| **OpenVLA: Bridge vs Fractal** | **21% vs 59%** | **0.027** |
-| SpatialVLA: Bridge vs Fractal (repeat 4) | 31.2% vs 9.1% | **0.0085** |
+| **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0.0038** ✓Bonferroni |
+| OpenVLA: Bridge vs Fractal | repeat 2 | **0.027** |
+| SpatialVLA: Bridge vs Fractal | repeat 4 | **0.0085** |
+| SpatialVLA vs UniVLA (Bridge) | repeat 2 | **< 0.0001** ✓Bonferroni |
 
 **[SAY]**
-"The obvious question is whether this is chance. We test two things.
+"We tested whether that's chance.
 
-First, **is one bar different from 50 percent?** If the intervention were
-harmless, it would be a coin flip. On OpenVLA/Bridge, eleven episodes changed
-and all eleven were broken. The chance of eleven coin flips all landing the
-same way is 0.1 percent. That's the p-value.
-
-Second — and this is our actual question — **are two bars different from each
-other?** Bridge and Fractal share no episodes, so there is nothing to pair up.
-We compare the rates instead. That's a Fisher exact test.
+We look only at episodes whose outcome changed — the intervention either fixed a
+failure or broke a success. Then: what fraction did it fix? If the intervention
+does nothing, that's a coin flip, **50 percent**.
 
 **[EMPHASISE]**
 
-Here's the part that matters. OpenVLA's two cells are **not individually
-significant** — 0.057 and 0.32. But **the difference between them is**, at
-0.027.
+OpenVLA on Bridge with action repeat 4: eleven episodes changed, and **all
+eleven were broken.** Zero percent. The chance of eleven coin flips landing the
+same way is 0.1 percent.
 
-If we had only reported the per-cell tests, we would have missed the exact
-effect we set out to measure."
+The same weights on Fractal: forty-two episodes changed and it **fixed twenty**
+of them. Forty-eight percent — essentially a coin.
+
+Asking whether those are the same coin is a Fisher exact test, and it comes out
+at **p = 0.0038**. That clears Bonferroni for the eight tests we ran."
 
 ---
-
 ## Slide 4 — What we did learn (100s) ★highlight
 
 **[SHOW]** — SpatialVLA / Fractal, one session, 135 episodes
@@ -210,8 +208,9 @@ backbone on a single benchmark, and we have a controlled counterexample."
 > queued for re-measurement."
 
 **Q. What's left to run?**
-> "One cell: OpenVLA on Fractal with action repeat 4. That closes the two-by-two
-> grid across both backbones and both benchmarks. About 35 minutes."
+> "The action-repeat axis is complete across both backbones and both benchmarks.
+> What remains is re-measuring the legacy cells and running one baseline twice in
+> a session to establish the per-episode noise floor."
 
 ---
 
@@ -227,7 +226,8 @@ backbone on a single benchmark, and we have a controlled counterexample."
 # Numbers to memorise (only these)
 
 ```
-1.4%  /  21%  /  50%  /  59%  /  70%     repair rates (slide 2)
-p = 0.027                                 benchmark difference (slide 3)
-−40.0  vs  ~0                             temporal vs visual (slide 4)
+four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
+0%  vs  48%   OpenVLA repeat 4, Bridge vs Fractal             (slide 3)
+p = 0.0038                                                    (slide 3)
+−40.0  vs  ~0  temporal vs visual                             (slide 4)
 ```
