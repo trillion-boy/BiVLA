@@ -835,6 +835,20 @@ The referential-grounding split (§3c) is the campaign's main positive result an
 it now has one failure against it (§3c-bis). Everything below is chosen to
 decide that, not to add another agreeing cell.
 
+0. **SpatialVLA / Fractal `move_near_v1` — baseline done, intervention pending.**
+   Everything §3c claims rests on the single task `move_near_v0`, so it has to
+   reappear in another version demanding the same capability. The baseline
+   landed first: **52/60 = 86.7%** against v0's 50/60 = 83.3% — **4 discordant
+   episodes (1 broke, 3 fixed), McNemar p = 0.6250.** The two versions are
+   **indistinguishable in difficulty** for SpatialVLA. The reason v0 was chosen
+   — its baseline sits close to SpatialVLA's — holds for v1 as well, so "v1 is
+   simply a different task" is no longer available as an objection.
+   **What remains is `--depth-prune 4` on v1.** It cost −31.7 on v0; if it
+   breaks v1 too, §3c is not a property of one task, and if it doesn't, §3c
+   shrinks to an observation about `move_near_v0`. Either way the result is
+   **not merged into this table** — the protocol rule against mixing v0 and v1
+   in one table (`simpler_fractal_protocol.py`) stands.
+
 1. **OpenVLA / Fractal depth prune with `--depth-min-layer 0.08`.** The decisive
    run. OpenVLA's default protects the front half, so its prune-4 deleted layers
    17-26 while SpatialVLA's deleted 8-19; the two are not the same experiment.
