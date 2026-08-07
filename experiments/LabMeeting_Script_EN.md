@@ -1,16 +1,18 @@
 # Lab meeting speaking script — English
 
-Eight slides, about nine and a half minutes. The **[SAY]** blocks can be read as
+Ten slides, about twelve minutes. The **[SAY]** blocks can be read as
 written. If you are tight on time, slide 3b is the one to drop — but then also
-drop the "apply our own thesis" line in slide 4b, because it refers back to it.
-Never drop 4b while keeping 4: that leaves the +8.1 standing unqualified, which
-is the one thing this talk must not do.
+drop the foveation callback in slide 4b. **Never drop 4b or 4c while keeping
+4** — that leaves the +8.1 standing unqualified, which is the one thing this
+talk must not do. If you have to lose a whole beat, lose slide 5.
 Numbers come from `LabMeeting_Bridge_Fractal_0806.md`; regenerate the tables
 with `python experiments/build_grid_report.py`.
 
-The whole talk turns on **one picture** — four curves of success rate against
-how long each action is held. The statistics then hang off **one number**, the
-repair rate.
+The talk has **two pictures**. The first (slide 2) is four curves of success
+rate against how long each action is held — that carries the negative result,
+and the statistics hang off **one number**, the repair rate. The second
+(slide 4b) is one curve splitting into two that run in opposite directions —
+that carries the mechanism, and it is the part worth rehearsing.
 
 ---
 
@@ -146,8 +148,8 @@ So the reversal is not a quirk of one axis."
 | what we delete | how much | Δ | p | speed |
 |---|---|---|---|---|
 | **time** — re-planning | 3 of every 4 steps | **−40.0** | 0.0000 | 1/4 the calls |
-| **compute** — decoder layers | 4 of 26 (15%) | **−17.8** | 0.0002 | 1.18× |
 | **compute** — decoder layers | **1 of 26 (4%)** | **+8.1** | **0.013** | **1.08×** |
+| **compute** — decoder layers | 4 of 26 (15%) | **−17.8** | 0.0002 | 1.18× |
 | **vision** — observation | **80%** | +0.7 / −1.5 | 1.00 / 0.83 | **1.00×** |
 
 **[SAY]**
@@ -167,59 +169,101 @@ count never drops.
 
 **[PAUSE — point at the two compute rows]**
 
-**Four of twenty-six layers: minus eighteen points. One of twenty-six: plus
-eight.** Same code, same redundancy criterion, same session. Fourteen episodes
-fixed, three broken, p equals 0.013. And it runs eight percent faster.
+**One of twenty-six layers: plus eight points. Four of twenty-six: minus
+eighteen.** Same code, same redundancy criterion, same session, and the four-layer
+set **contains** the one-layer set. Fourteen episodes fixed, three broken, and
+it runs eight percent faster.
 
 That is a genuine free lunch — the only intervention in this entire campaign
-that makes the policy both **better and cheaper**."
+that makes the policy both **better and cheaper**. Hold that thought, because
+the next slide is what it's actually for."
 
 ---
 
-## Slide 4b — ...and that is exactly the problem (45s) ★the turn
+## Slide 4b — The average was hiding two opposite curves (90s) ★the payoff
 
 **[SHOW]**
 
 ```
-SpatialVLA / Fractal, decoder layers bypassed
+SpatialVLA / Fractal, decoder layers bypassed  —  aggregate
 
-  0 layers  ████████████████████  84.4%
-  1 layer   ██████████████████████  92.6%   +8.1   8% faster
-  4 layers  ███████████████  66.7%          −17.8  18% faster
-                     ↑
-            the sign crosses somewhere in here
-            and we have no measurement in between
+  0  ████████████████████  84.4%
+  1  ██████████████████████  92.6%   +8.1
+  2  ████████████████████▌  87.4%    +3.0
+  4  ███████████████  66.7%          −17.8
+                                        the nested sets: {10} ⊂ {8,9,10,19}
 
-  the pruned sets are NESTED:  {10}  ⊂  {8, 9, 10, 19}
+                        ↓  split by task
+
+        pick_coke_can (75)        move_near (60)
+  0        85.3%                     83.3%
+  1        92.0%                     93.3%
+  2        98.7%  ← 10 fixed         73.3%
+  4        78.7%     0 broken        51.7%  ← 3 fixed, 22 broken
+           ────────────              ────────────
+           goes UP                   goes DOWN
 ```
 
 **[SAY]**
-"Now look at what that free lunch is sitting next to.
+"Now the same data split by task. And this is the thing I actually want you to
+take away.
 
-The four-layer set **contains** the one-layer set. We added three more layers
-that the *same* redundancy metric ranked as *most redundant* — and it didn't
-degrade gradually. It crossed zero and kept going. Comparing the two directly:
-**minus twenty-six points, five fixed, forty broken.**
+`move_near` is the only Fractal task where you have to work out **which object
+is which** — pick the named one out of three and move it near another named one.
+The three coke-can tasks have one instruction and one object.
 
-**[PAUSE]**
+**[PAUSE — point at the two columns]**
 
-So here's my honest position on that plus-eight.
+They run in **opposite directions.** At two layers gone, the pick tasks go to
+**98.7 percent** — ten episodes fixed, **zero broken**, p equals 0.002, which
+clears Bonferroni. The same two layers cost `move_near` ten points. And at four
+layers `move_near` is down thirty-two.
 
-Paired, full protocol, significant, eight percent faster. **If we had run that
-one cell and stopped, we would have a method paper.** That is what an efficiency
-paper is built on.
+**The plus-three aggregate was the average of plus-thirteen and minus-ten.**
 
-We ran the neighbours. One step further along the same axis is minus eighteen.
-And the whole depth axis is **completely inert on OpenVLA** — plus 2, plus 1,
-zero, at one, four and eight layers.
+**[THE POINT]**
 
-**[if you kept slide 3b]** "Same for the other axis. Vision was the *free* one
-on this slide, and two slides ago the identical foveation cost OpenVLA nineteen
-points. So *time, compute, vision* isn't a fact about VLA policies — it's a fact
-about this cell."
+Here's why that matters. Two slides ago, foveation on **OpenVLA** did the same
+thing — `move_near` collapsed from 62 to 20 while the coke-can tasks didn't
+move. Different backbone, different intervention, different resource deleted.
 
-**The free lunch is real. It's also local.** And you can only find that out by
-running the grid."
+**Whatever these interventions are removing, it's the capacity for figuring out
+which object you meant — not the capacity for moving the arm.** Motor control
+isn't just surviving; at two layers it gets *better*.
+
+That's the first mechanism this campaign has produced, and we wrote it down as
+a prediction from the foveation data **before** this run existed.
+
+**[the control — expect this question]**
+
+"And before someone says `move_near` is just the fragile task: **action repeat
+kills the pick tasks slightly harder** — minus 41 versus minus 38. So the pick
+tasks aren't robust in general. They're robust to *this kind* of removal.
+
+Take away re-planning and both families fall together. Take away vision or
+depth and they come apart. **Time and capacity fail differently.**"
+
+---
+
+## Slide 4c — What I'd say if you pushed on it (30s)
+
+**[SAY]**
+"Three things I'd want said out loud.
+
+**One.** The plus-eight-point-one on its own does not clear Bonferroni. It's
+p = 0.013, one of eighteen tests, and unreplicated.
+
+**Two.** The task split confirmed a prediction, but exactly once. And
+`move_near` differs from the pick tasks in more than referential load —
+horizon, object count, episode count. We can't separate those with the tasks we
+have.
+
+**Three.** And the meta-point. **If we had run one cell and reported one
+number, we'd have a method paper and we'd have missed the mechanism.** The
+aggregate at every dose is an average over two populations moving in opposite
+directions. That's the strongest version of our thesis: not just that
+single-cell numbers don't transfer — **single numbers hide the thing worth
+knowing.**"
 
 ---
 ## Slide 5 — Our own explanation broke too (50s)
@@ -254,9 +298,11 @@ explanation would have been."
 **[SHOW]**
 
 > **The effect of the intervention was not a property of the intervention.**
-> It was a property of which backbone and which benchmark you measured on.
+> It was a property of which backbone, which benchmark, and **which task** you
+> measured on.
 >
 > → not a method paper, but a paper about **how this work is evaluated**
+> → and one mechanism out of it: **what gets deleted is WHICH-OBJECT**
 
 **[SAY]**
 "To close.
@@ -267,7 +313,12 @@ you measure on.
 
 So this isn't a method paper — it's a paper about how this class of work gets
 evaluated. Efficiency papers routinely claim a free speedup from a single
-backbone on a single benchmark, and we have a controlled counterexample."
+backbone on a single benchmark, and we have a controlled counterexample.
+
+And running the whole grid bought us one thing more. **What these interventions
+delete is the capacity to work out which object you meant — not the capacity to
+move the arm.** It's confirmed once so far. But it is the kind of thing a single
+number would never have shown us."
 
 ---
 
@@ -290,12 +341,24 @@ backbone on a single benchmark, and we have a controlled counterexample."
 > real and unreplicated, and re-running the baseline is now my top priority."
 
 **Q. Why would deleting a layer *help*?**
-> "I don't know, and I'd rather say that than invent a story. The candidate
-> explanations are that L10 is actively harmful on this distribution, or that
-> it's some kind of regularisation. What I can tell you is that the redundancy
-> metric that picked L10 clearly measures *something* real — it found a layer
-> that's safe to drop — and equally clearly does not predict *how many* you can
-> drop, because its own next three picks flip the sign."
+> "Slide 4b is my best answer: it helps the tasks that are pure motor control
+> and hurts the one that needs referential grounding. If those layers were
+> contributing to object disambiguation and adding noise to the action head,
+> you'd get exactly this. But I'd call that consistent-with, not shown. What I
+> can say firmly is that the redundancy metric measures *something* real — it
+> found a layer that's safe to drop — and does not predict *how many*, because
+> its own next picks flip the sign."
+
+**Q. Isn't the task split just post-hoc? You had four tasks and picked a line.**
+> "Fair, and here's the one thing that makes it not that. We wrote the split
+> down as a hypothesis when we saw the **foveation** result — different
+> backbone, different intervention — and said in the report that one task on one
+> intervention made it a hypothesis. The depth-prune-2 run happened after that.
+> So it's a confirmed prediction rather than a discovered pattern. Confirmed
+> once, on one benchmark. The falsification test is `move_near_v1`, which is a
+> different scene with the same referential structure and is already in our
+> protocol — if it doesn't collapse, the story is about `v0`'s scene, not about
+> grounding."
 
 **Q. OpenVLA on Bridge is at 15.6% — isn't it just broken, so anything helps?**
 > "That's the right objection and we can't fully rule it out. But it predicts
@@ -335,16 +398,15 @@ backbone on a single benchmark, and we have a controlled counterexample."
 > queued for re-measurement."
 
 **Q. What's left to run?**
-> "The action-repeat axis is complete across both backbones and both benchmarks.
-> Top of the list now is **depth prune 2 on SpatialVLA/Fractal** — we have +8.1
-> at one layer and −17.8 at four and nothing in between, so we can't say where
-> the sign crosses. That one run turns 'it depends on the dose' into a curve
-> with a knee, which is the only number a practitioner would actually want.
-> Then OpenVLA/Fractal **blur** — on Bridge, blur and log-polar agree to within
-> a point, so if Fractal blur also lands near −19 the loss is about *how much*
-> we removed, and if it stays flat it's about log-polar's geometry specifically.
-> And then re-running one baseline twice in a session for the noise floor, which
-> the +8.1 has made urgent."
+> "Everything is now chosen to break the grounding hypothesis rather than
+> confirm it. First **`move_near_v1`** under depth prune 2 and log-polar — same
+> referential structure, different scene, already in our protocol. If it doesn't
+> collapse the way `v0` does, the story is about one scene and we need to know
+> that before we write it down. Then **OpenVLA/Fractal depth prune** — the depth
+> axis is inert on OpenVLA/Bridge, so the aggregate may well be zero, but the
+> hypothesis says the *task split* should show up anyway. An aggregate null
+> hiding the same split would be much stronger than the +8.1 itself. And a
+> baseline re-run for the noise floor, which the +8.1 has made urgent."
 
 ---
 
@@ -359,7 +421,11 @@ backbone on a single benchmark, and we have a controlled counterexample."
 - **Say "no effect".** Say "no effect larger than about 7 points".
 - **Oversell the +8.1.** It does not clear Bonferroni and it has not been
   replicated. Say "plus eight, p = 0.013, one cell, unreplicated" every time.
-  Slide 4b exists so that *you* are the one pointing at its limits.
+  Slide 4c exists so that *you* are the one pointing at its limits.
+- **State the task split as established.** It is a prediction, made from the
+  foveation data, confirmed **once**. And `move_near` differs from the pick
+  tasks in horizon and object count as well as referential load. Say
+  "consistent with", not "shows that".
 
 # Numbers to memorise (only these)
 
@@ -368,7 +434,8 @@ four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
 0%  vs  48%   OpenVLA repeat 4, Bridge vs Fractal             (slide 3)
 p = 0.0038                                                    (slide 3)
 +18.8 vs −19.3  OpenVLA foveation, Bridge vs Fractal          (slide 3b)
-−40.0 / −17.8 / ~0  time / compute / vision                   (slide 4)
-+8.1 at ONE layer,  −17.8 at FOUR,  nested sets               (slide 4b)
-     ...and the whole depth axis is flat on OpenVLA           (slide 4b)
++8.1 at ONE layer,  −17.8 at FOUR,  nested sets               (slide 4)
+98.7%  pick tasks at two layers gone — 10 fixed, 0 broken     (slide 4b)
+       ...while move_near goes the other way, 83 -> 73 -> 52  (slide 4b)
+one sentence:  what gets deleted is WHICH-OBJECT, not HOW-TO-MOVE
 ```

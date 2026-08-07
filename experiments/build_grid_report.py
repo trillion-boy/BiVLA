@@ -204,13 +204,18 @@ def cell(data: dict, backbone: str, bench: str, cond: str):
     return ok, n
 
 
-def paired(data: dict, backbone: str, bench: str, cond: str):
+def paired(data: dict, backbone: str, bench: str, cond: str, task_filter=None):
     """-> (delta_points, fixed, broke, p) against this cell's own baseline.
 
     Only episodes present in BOTH runs are paired. A condition that has run
     three of four tasks is therefore compared against the same three tasks of
     the baseline, not against the baseline's full protocol -- otherwise a
     partial run would read as a collapse.
+
+    task_filter restricts the pairing to a subset of tasks. The whole point of
+    the task-family split is that a cell's aggregate can be the average of two
+    subsets moving in opposite directions, so that split has to be computed
+    from the records here rather than transcribed into the report by hand.
     """
     base = data.get((backbone, bench, "baseline"))
     cur = data.get((backbone, bench, cond))
@@ -219,7 +224,7 @@ def paired(data: dict, backbone: str, bench: str, cond: str):
     fixed = broke = same = 0
     for task, eps in cur.items():
         b = base.get(task)
-        if not b:
+        if not b or (task_filter is not None and not task_filter(task)):
             continue
         for ep, ok in eps.items():
             if ep not in b:
@@ -289,6 +294,62 @@ def fmt_cell(c, pr, legacy=None) -> str:
     d, fixed, broke, p, npair = pr
     star = "***" if p < 0.003 else "**" if p < 0.05 else ""
     return f"{s}  {d:+.1f}{star}"
+
+
+# Fractal splits cleanly into one task that requires resolving *which* of
+# several named objects to act on, and three that name a single target in a
+# fixed instruction. Two unrelated interventions (log-polar foveation on
+# OpenVLA, depth pruning on SpatialVLA) both spare the second group and damage
+# the first, which is the campaign's only mechanism -- so the split is reported
+# rather than left for a reader to reconstruct from the per-task table.
+TASK_FAMILIES = {
+    "Fractal": [
+        ("referential (move_near)", lambda t: t.startswith("google_robot_move_near")),
+        ("single-target (pick_coke_can)", lambda t: "coke_can" in t),
+    ],
+}
+
+
+def task_family_section(data, cols) -> list:
+    L = []
+    body = []
+    for b, k in cols:
+        fams = TASK_FAMILIES.get(k)
+        if not fams:
+            continue
+        rows = []
+        for cond in conditions_present(data):
+            if cond == "baseline" or not data.get((b, k, cond)):
+                continue
+            cells = [paired(data, b, k, cond, f) for _, f in fams]
+            if any(c is None for c in cells):
+                continue
+            rows.append((cond, cells))
+        # One row cannot show a divergence, so there is nothing to report.
+        if len(rows) < 2:
+            continue
+        body.append(f"\n**{b} / {k}**\n")
+        body.append("| condition | " + " | ".join(
+            f"{name} (n={cells[i][4]})" for i, (name, _) in enumerate(fams)
+            for cond, cells in [rows[0]]) + " |")
+        body.append("|---|" + "---|" * len(fams))
+        for cond, cells in rows:
+            cs = []
+            for d, fixed, broke, p, _n in cells:
+                star = "***" if p < 0.003 else "**" if p < 0.05 else ""
+                cs.append(f"{d:+.1f}{star} ({fixed} fixed / {broke} broke, p={p:.4f})")
+            body.append(f"| {DISPLAY.get(cond, cond)} | " + " | ".join(cs) + " |")
+    if not body:
+        return L
+    L.append("\n## By task family\n")
+    L.append("A cell's aggregate delta is an average over its tasks, and on "
+             "Fractal those tasks do not agree. `move_near` is the only task "
+             "requiring you to resolve *which* of three named objects to act "
+             "on; the three `pick_coke_can` variants share one instruction and "
+             "one target. Deltas below are paired within each family against "
+             "the same family of the baseline.\n")
+    L.extend(body)
+    return L
 
 
 def conditions_present(data) -> list:
@@ -382,6 +443,8 @@ def markdown(data) -> str:
         star = "***" if p < alpha else "**" if p < 0.05 else ""
         L.append(f"| {title} | {DISPLAY.get(cond, cond)} | {af}/{ab} | "
                  f"{bf}/{bb_} | {p:.4f}{star} |")
+
+    L.extend(task_family_section(data, cols))
 
     L.append("\n## Per task\n")
     for b, k in cols:

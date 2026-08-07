@@ -48,6 +48,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
 | depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | 92.6%  +8.1** | -- |
+| depth prune 2 | -- | -- | -- | 87.4%  +3.0 | -- |
 | depth prune 4 | 16.7%  +1.0 | -- | -- | 66.7%  −17.8*** | -- |
 | depth prune 8 | 15.6%  +0.0 | -- | -- | -- | -- |
 
@@ -244,52 +245,128 @@ own best-looking result. Present it as: *within a cell you can rank the axes and
 the ranking is sharp; across cells the ranking is not stable* — which is exactly
 why single-cell efficiency claims are the problem.
 
-### 3b. The free lunch exists — in one cell, at one dose
+### 3b. The depth curve, and why the aggregate number was a lie
 
-Pruning **one** decoder layer is the only intervention in this campaign that
-both improves success and reduces real compute:
+The full dose-response on SpatialVLA / Fractal, four points, all paired over
+the full 135 episodes:
 
-| SpatialVLA / Fractal | rate | Δ vs baseline | fixed / broke | p | ms/infer |
+| layers bypassed | rate | Δ vs baseline | fixed / broke | p | ms/infer |
 |---|---|---|---|---|---|
-| baseline (26 layers) | 84.4% | — | — | — | 933 |
-| **prune 1 (bypass L10)** | **92.6%** | **+8.1** | **14 / 3** | **0.0127** | **866** |
-| prune 4 (bypass L8,9,10,19) | 66.7% | −17.8 | 8 / 32 | 0.0002 | 790 |
+| 0 (baseline) | 84.4% | — | — | — | 933 |
+| **1** (L10) | **92.6%** | **+8.1** | 14 / 3 | **0.0127** | 866 |
+| **2** (L9,10 or L8,10) | 87.4% | +3.0 | 14 / 10 | 0.5413 | 845 |
+| **4** (L8,9,10,19) | 66.7% | **−17.8** | 8 / 32 | **0.0002** | 790 |
 
-Compared **directly to each other** rather than each to baseline, prune 1 and
-prune 4 differ by **−25.9 points, 5 fixed / 40 broke, p < 0.0001.**
+The pruned sets are nested and chosen by the same redundancy criterion each
+time. Read as an aggregate it is a rise, a dip, and a collapse, and the obvious
+summary is "one layer is safe, four is not."
 
-The pruned sets are nested — prune 4 bypasses the same L10 plus L8, L9 and L19.
-So adding three more of the *most redundant* layers, by the same redundancy
-criterion that selected the first one, does not degrade the gain gradually; it
-crosses zero and keeps going. **The redundancy metric ranks layers correctly
-enough to find one that is safe to drop, and does not predict how many.**
+**That summary is wrong.** Split by task family — the three `pick_coke_can`
+variants against `move_near_v0` — and the aggregate resolves into two curves
+running in **opposite directions**:
 
-Per task, the gain is broad rather than one task carrying it:
+| layers bypassed | `pick_coke_can` (n=75) | `move_near_v0` (n=60) |
+|---|---|---|
+| 0 | 85.3% | 83.3% |
+| 1 | 92.0% | **93.3%** |
+| 2 | **98.7%** | 73.3% |
+| 4 | 78.7% | **51.7%** |
 
-| | baseline | prune 1 | Δ |
+Each against its own baseline, paired:
+
+| | Δ | fixed / broke | p |
 |---|---|---|---|
-| `move_near_v0` | 83.3% | 93.3% | +10.0 |
-| `pick_standing_coke_can` | 84.0% | **100.0%** | +16.0 |
-| `pick_vertical_coke_can` | 88.0% | 92.0% | +4.0 |
-| `pick_horizontal_coke_can` | 84.0% | 84.0% | +0.0 |
+| coke-can, prune 2 | **+13.3** | **10 / 0** | **0.0020** ✓Bonf |
+| coke-can, prune 4 | −6.7 | 5 / 10 | 0.3018 |
+| move_near, prune 1 | +10.0 | 6 / 0 | **0.0312** |
+| move_near, prune 4 | **−31.7** | 3 / 22 | **0.0002** ✓Bonf |
+
+**Two layers gone takes the pick tasks to 98.7% and breaks nothing — ten
+episodes fixed, zero broken.** That is the strongest single cell in the
+campaign, and it clears Bonferroni. The same two layers cost `move_near` ten
+points. The +3.0 aggregate is the average of +13.3 and −10.0.
+
+### 3c. What the two curves have in common with the foveation result
+
+`move_near_v0` is the only Fractal task that requires **resolving which object
+is which**: pick the named object out of three on the table and move it near
+another named object. The three coke-can tasks share one instruction ("pick coke
+can") with a single target present.
+
+We wrote that distinction down as a hypothesis in §2b, when log-polar foveation
+on **OpenVLA** collapsed `move_near` from 61.7% to 20.0% while leaving the
+coke-can tasks flat (15/75 → 14/75) — and said explicitly that one task on one
+intervention made it a hypothesis, not a result.
+
+**A different backbone, a different intervention, and a different resource
+removed now reproduce it.** Two interventions that have nothing mechanically in
+common — one deletes the visual periphery, the other deletes decoder layers —
+both leave motor execution intact or improve it, and both specifically destroy
+referential grounding:
+
+| | intervention | `pick_coke_can` | `move_near_v0` |
+|---|---|---|---|
+| OpenVLA / Fractal | log-polar, keep 20% | 20.0% → 18.7% | 61.7% → **20.0%** |
+| SpatialVLA / Fractal | prune 4 of 26 layers | 85.3% → 78.7% | 83.3% → **51.7%** |
+| SpatialVLA / Fractal | prune 2 of 26 layers | 85.3% → **98.7%** | 83.3% → 73.3% |
+
+The reading: **the capacity these interventions remove is capacity spent on
+language-conditioned object selection, not on motor control.** Motor control is
+not merely robust to its removal — at two layers it gets *better*, which is what
+you would expect if the removed layers were contributing noise to the action
+head rather than signal.
+
+**The obvious objection is that `move_near` is simply the fragile task** — the
+one that breaks first under any pressure — and the split says nothing about
+grounding. The action-repeat rows are the control for that, and they refute it:
+
+| SpatialVLA / Fractal, action repeat 4 | Δ | fixed / broke | p |
+|---|---|---|---|
+| referential (`move_near`) | −38.3 | 3 / 26 | 0.0000 |
+| single-target (`pick_coke_can`) | **−41.3** | 3 / 34 | 0.0000 |
+
+Action repeat destroys the pick tasks *slightly harder* than it destroys
+`move_near`. So the pick tasks are not robust in general — they are robust to
+**this particular kind** of removal. What separates the two groups is not
+difficulty but **which resource you take away**: delete re-planning frequency
+and both families fall together; delete visual periphery or decoder depth and
+they come apart.
+
+That dissociation is what makes the reading a mechanism rather than a
+restatement of "one task is harder". It also says the three axes are not one
+phenomenon at different strengths: **time removal and capacity removal fail
+differently.**
+
+If it holds it is a positive, mechanistic finding rather than a negative
+result, and it makes a testable prediction: any Fractal task requiring
+referential disambiguation should degrade under the *capacity* interventions,
+any single-target pick task should not, and the *time* intervention should
+ignore the distinction.
 
 **Three caveats, and they matter more than the result.**
 
-1. p = 0.0127 does **not** clear this family's Bonferroni threshold (≈0.003).
-   14-vs-3 is a strong split, but it is one test among eighteen.
-2. We still have no measured noise floor. The one thing resembling one — two
-   measurements of the same SpatialVLA/Bridge baseline in different campaigns —
-   differed by 2.1 points. 8.1 is comfortably above that, but "comfortably
-   above a single unreplicated estimate" is not a floor.
-3. `pick_standing_coke_can` at 25/25 is a ceiling. The cell as a whole is at
-   92.6%, so there is not much room left to measure in.
+1. **The task split is post-hoc for this run.** We formed it while looking at
+   the foveation data — but we formed it *before* seeing the depth-prune-2 data
+   and wrote it into this document then, which is the only thing that makes the
+   agreement meaningful. It is a confirmed prediction, not a discovered pattern,
+   and it is confirmed exactly once.
+2. **`move_near` and `pick_coke_can` differ in more than referential load** —
+   episode count (60 vs 75), horizon, number of objects on the table, and the
+   pick tasks share their instruction string. Any of those could carry the
+   effect. Distinguishing them needs a task that is referential but short, or
+   single-target but long; neither is in the current protocol.
+3. **Still no measured noise floor**, and the coke-can cell is now at 98.7%,
+   hard against the ceiling. p = 0.0020 with 10/0 is strong, but a 10-vs-0 split
+   is also the easiest kind of split to produce by luck at these rates.
 
-**And this is the point to make about it.** A +8.1 gain, paired, over the full
-protocol, with a measured 7.8% latency reduction, is *exactly* the result an
-efficiency paper is built on. Had we run this cell and stopped, we would have a
-method. We ran the neighbours: four layers instead of one on the same policy is
-−17.8, and the whole depth axis is inert on OpenVLA. The free lunch is real and
-it is local, which is the paper.
+**And this is the point to make about the whole section.** A +8.1 gain, paired,
+over the full protocol, with a measured 7.8% latency reduction, is *exactly*
+the result an efficiency paper is built on. Had we run one cell and stopped, we
+would have a method. We ran the neighbours: the dose two steps along is +3.0,
+four steps is −17.8, the whole depth axis is inert on OpenVLA, and the
+aggregate number at every dose is an average over two populations moving in
+opposite directions. **The free lunch is real, it is local, and reporting it as
+a single number would have concealed the only mechanism we have.**
 
 And the axis that costs nothing is the only one that **buys** nothing:
 foveation reduces sample density but resamples to the same resolution, so the
@@ -348,7 +425,7 @@ step is to look at what is actually in those four scenes.
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
 | **OpenVLA** foveation | blur done; log-polar from July campaign | **log-polar done, paired**; blur running |
 | **SpatialVLA** foveation | **unpaired legacy only** | complete |
-| **SpatialVLA** depth prune | legacy (prune 1 only, unpaired) | **1 and 4 complete, paired** |
+| **SpatialVLA** depth prune | legacy (prune 1 only, unpaired) | **1, 2 and 4 complete, paired** |
 | **OpenVLA** depth prune | Bridge only (1, 4, 8) | not started |
 
 ### Two liabilities
@@ -366,20 +443,27 @@ reader compare deltas across columns unguarded.
 
 ### Next, in order
 
-1. **SpatialVLA / Fractal depth prune 2.** We have +8.1 at one layer and −17.8
-   at four. The sign crosses somewhere in between and we have no point in the
-   middle. Two runs (2, and ideally 3) turn "the sign depends on the dose" into
-   an actual curve, and locate the knee — which is the only number a
-   practitioner would need. Highest information per GPU-hour left on the board.
-2. **OpenVLA / Fractal blur.** The Bridge column shows log-polar and blur
+The referential-grounding hypothesis (§3c) now sets the order — it is the only
+mechanism the campaign has, and everything below is chosen to break it.
+
+1. **`move_near_v1` under depth prune 2 and log-polar.** `v1` is the same
+   referential task with a different object arrangement, and it is in the shared
+   protocol already. If it collapses the way `v0` does under both interventions,
+   the hypothesis survives a test it could have failed. If it doesn't, the
+   effect belongs to `v0`'s specific scene rather than to referential load, and
+   we should know that before we write any of §3c down as a finding. Cheapest
+   possible falsification test and it uses code that already runs.
+2. **OpenVLA / Fractal depth prune 1 and 2.** Two predictions at once. The
+   depth axis is inert on OpenVLA/Bridge, so if it is also inert on
+   OpenVLA/Fractal the free lunch is SpatialVLA-specific. But §3c predicts the
+   *task split* should appear anyway — `move_near` down, coke-cans flat or up —
+   even if the aggregate is zero. An aggregate null hiding the same split would
+   be much stronger evidence than the +8.1 itself.
+3. **OpenVLA / Fractal blur.** The Bridge column shows log-polar and blur
    agreeing to within a point (+18.8 / +17.7). If Fractal blur also lands near
    −19, the loss is about *how much* is removed; if it stays flat, it is about
    log-polar's specific geometry — i.e. the periphery. One run separates two
-   mechanisms.
-3. **OpenVLA / Fractal depth prune 1.** The +8.1 is currently a single cell.
-   OpenVLA/Bridge is flat at every depth, so if OpenVLA/Fractal is also flat,
-   the free lunch is SpatialVLA-specific; if it gains too, we have something
-   that survives one hop and is worth a section of its own.
+   mechanisms, and §3c predicts it should hit `move_near` either way.
 4. **Re-run one baseline a second time in the same session** to measure the
    per-episode noise floor. This has been on the list all week and the +8.1 is
    what makes it urgent: it is the first result we would actually want to
