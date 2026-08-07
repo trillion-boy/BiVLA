@@ -125,22 +125,122 @@ script verifies before borrowing the condition.
 
 ## Three things this supports
 
-### The right test for "it depends"
+### How the statistics work — two tests, two questions
 
-Per-cell McNemar asks whether a condition changed anything *inside* one column.
-Our claim is that the same condition acts differently *elsewhere* — and two
-columns share no episodes, so nothing can be paired. What does compare is the
-**discordant split**: of the episodes the intervention moved, how many did it
-fix versus break. Whether that split differs is a 2×2 Fisher exact test.
+This campaign uses exactly two tests. They answer **different questions**, and
+that difference is what produces the report's central finding.
 
-This is not a technicality. Both OpenVLA cells individually miss p<0.05
-(Bridge −8.3 at p=0.057, Fractal +5.2 at p=0.324) while the difference between
-them clears it. Reporting only the per-cell tests would understate precisely
-the effect this campaign is about.
+#### Step 1 — why comparing success rates directly is wrong
 
-Eleven such tests below, so Bonferroni for that family is α = 0.05/11 ≈ 0.0045.
-The generator derives that threshold from the number of rows actually in the
-table, so it tightens on its own as the grid fills.
+On SpatialVLA / Fractal, bypassing one decoder layer takes 84.4% to 92.6%.
+**+8.1 points.** How do we know that is real?
+
+The key fact is that **both runs use the same 135 episodes**. The protocol is
+fixed, so episode 7 is the same initial state in both. That means we should not
+compare two rates — we should **pair the episodes**.
+
+Paired, most episodes **do not change**: a success stays a success, a failure
+stays a failure. Those episodes tell us nothing about the intervention.
+**All the information is in the episodes whose outcome changed** — the
+**discordant pairs**.
+
+| | succeeds after | fails after |
+|---|---|---|
+| **succeeded before** | unchanged (no information) | **broken** ← 3 |
+| **failed before** | **fixed** ← 14 | unchanged (no information) |
+
+Of 135 episodes, **17 changed**: 14 fixed, 3 broken.
+
+#### Step 2 — McNemar: is this a fair coin?
+
+**Suppose the intervention does nothing.** Then whether a changed episode gets
+fixed or broken is a **coin flip**. Half should be fixed, half broken.
+
+We flipped 17 times and got **14 against 3**. How likely is a fair coin to be
+that lopsided?
+
+That is just the binomial, and it can be done by hand:
+
+```
+2 × (C(17,0) + C(17,1) + C(17,2) + C(17,3)) / 2^17
+= 2 × (1 + 17 + 136 + 680) / 131,072
+= 1,668 / 131,072
+= 0.0127
+```
+
+**p = 0.0127.** That is the **McNemar exact test**. The name is grander than
+the thing: count the discordant pairs, run a coin test.
+
+**What the p-value means:** *if the intervention truly had no effect*, a split
+this lopsided would come up by chance about **once in 80 times**. It is **not**
+"the probability the intervention works" — a p-value never says that.
+
+#### Step 3 — Fisher: are these two the same coin?
+
+Here is where our claim stops being answerable by McNemar.
+
+The campaign's claim is not "the intervention had an effect in this cell" but
+**"the same intervention behaves differently elsewhere"**. And Bridge and
+Fractal **share no episodes at all**. There is nothing to pair, so McNemar
+cannot be run across them.
+
+What *can* be compared is the **two discordant splits**:
+
+| OpenVLA, log-polar foveation | fixed | broken |
+|---|---|---|
+| **Bridge** | 28 | 10 |
+| **Fractal** | 13 | 39 |
+
+On Bridge it repaired 74% of what it moved; on Fractal, 25%. **Are those the
+same coin?** That is a 2×2 table, and the test for it is **Fisher's exact
+test**.
+
+**p = 0.0000055.** They are not the same coin. Same weights, same code — only
+the benchmark changed.
+
+#### Step 4 — why this distinction is decisive
+
+**Reporting only the per-cell tests would have found nothing.**
+
+Take OpenVLA's action repeat 2:
+
+| | split | per-cell McNemar p |
+|---|---|---|
+| Bridge | 3 fixed / 11 broken | **0.0574** — misses |
+| Fractal | 22 fixed / 15 broken | **0.3240** — misses |
+| **the difference (Fisher)** | 3/11 vs 22/15 | **0.0266** — **clears** |
+
+**Neither cell is individually significant.** Read off the table alone, both
+say "nothing happened". But **that they differ from each other** does clear.
+
+That is because our question is not "is there an effect in each cell" but
+**"is it different between cells"**. A different question needs a different
+test.
+
+#### Step 5 — Bonferroni: when you run many tests
+
+We run **11** interaction tests. Even if every one were a true null, at α=0.05
+we would expect **0.55 of them to pass by chance**. So the threshold tightens:
+
+**α = 0.05 / 11 ≈ 0.0045**
+
+In the tables `***` marks rows clearing that, `**` marks p<0.05 only. The
+generator derives the threshold from the number of rows actually in the table,
+so it tightens on its own as the grid fills and the prose cannot quote a stale
+number.
+
+#### Why exact tests rather than z-tests
+
+n is small — 17, 21, 30 discordant pairs. The normal approximation is
+unreliable in that range. An exact test enumerates every possible outcome and
+counts, with no approximation. Slower, and irrelevant at this size.
+
+#### One-paragraph summary
+
+> **McNemar asks "is this coin fair?" Fisher asks "are these two the same
+> coin?"** Our claim is the second one. That is why two cells can each be
+> non-significant while **the difference between them is significant** — and
+> this report contains exactly that case.
 
 ### 1. The same intervention reverses sign across backbones
 
