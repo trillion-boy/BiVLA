@@ -64,11 +64,30 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | UniVLA / Bridge | foveation blur | 76.0% | −2.1 | 78.1% | `ChunkExecFoveation_univla.md` |
 
 Note the SpatialVLA/Bridge legacy baseline is **32.3%**, not the 30.2% in the
-first row. Same policy, same protocol, different campaign, 2.1 points apart —
-and we now know that gap **cannot be run-to-run noise** (see below), so it is a
-difference in code or configuration between the two campaigns. That is worse
-than noise, not better: those cells measure a *different setup*, and the gap is
-the size of the blur effect they report.
+first row. Broken down by task, the two campaigns agree almost everywhere:
+
+| | eggplant | carrot | stack | spoon | avg |
+|---|---|---|---|---|---|
+| baseline, legacy campaign | **66.7** | 25.0 | 29.2 | 8.3 | 32.3 |
+| baseline, this campaign | **58.3** | 25.0 | 29.2 | 8.3 | 30.2 |
+| action repeat 2, legacy | 70.8 | 25.0 | 37.5 | 37.5 | 42.7 |
+| action repeat 2, this campaign | 70.8 | 25.0 | 37.5 | 37.5 | 42.7 |
+
+**The entire 2.1-point gap is two episodes of one task in the baseline**
+(16/24 vs 14/24 on eggplant). Three of four baseline tasks match to the
+decimal, and the action-repeat-2 condition reproduces exactly across all four.
+
+So the two campaigns are *not* different systems, and an earlier draft of this
+report saying so was wrong. What changed touched the baseline's eggplant run
+and nothing else we can see; on the evidence available the most likely
+explanation is a transcription or tallying error in the older document, since
+everything measured alongside it reproduces.
+
+**The reason the legacy cells cannot be used is unchanged and has nothing to do
+with that gap: they are unpaired.** With no per-episode records we cannot run
+McNemar on them, cannot split them by task family — which is where §3c lives —
+and cannot recompute their Δ against this table's baseline. That was always the
+argument for re-measuring them, and it stands on its own.
 
 ### The pipeline is deterministic, so the p-values are the whole story
 
@@ -88,10 +107,10 @@ should give, and it settles a question the rest of this report depended on:
 - **The remaining uncertainty is purely which episodes are in the protocol** —
   which is exactly what the paired McNemar test measures. So the reported
   p-values are the complete account of uncertainty, not a partial one.
-- **The 2.1-point SpatialVLA/Bridge baseline gap is therefore not noise.** It
-  has to be a code or configuration difference between campaigns. The legacy
-  cells are not noisy measurements of the same setup; they are measurements of
-  a different one.
+- **The 2.1-point SpatialVLA/Bridge baseline gap is therefore not noise
+  either** — but it is two episodes of one task, and everything measured
+  beside it reproduces exactly, so it is a localised discrepancy rather than a
+  different system. See the grid notes above.
 
 `move_near_v0` is the one that matters most: a different environment class, and
 it carries the report's largest claims (−16.7, −31.7, −41.7). It reproduced

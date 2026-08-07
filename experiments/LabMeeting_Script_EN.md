@@ -442,11 +442,16 @@ number would never have shown us."
 > Fractal. We don't have the mechanism yet. That's the next piece of work."
 
 **Q. What are the italic cells?**
-> "An earlier campaign that kept no per-episode records. They're unpaired, and
-> their baseline is 32.3 percent rather than the 30.2 in this table. Two
-> measurements of the same thing differ by 2.1 points, which happens to be the
-> size of the effect those cells report — so we don't build on them. They're
-> queued for re-measurement."
+> "An earlier campaign that kept **no per-episode records**. That's the whole
+> problem: we can't run the paired test on them, and we can't split them by task
+> — which is where slide 4b lives. So we don't build on them, and they're queued
+> for re-measurement.
+>
+> Their baseline also reads 32.3 percent against our 30.2. I checked that: the
+> entire gap is **two episodes of one task**, and the action-repeat condition
+> measured alongside it reproduces exactly across all four tasks. So it's a
+> localised discrepancy in the old write-up, not two different systems. It
+> doesn't change the answer — unpaired is reason enough.
 
 **Q. What's left to run?**
 > "Everything left is chosen to *break* the grounding split rather than confirm
