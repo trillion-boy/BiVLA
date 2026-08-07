@@ -307,11 +307,12 @@ differs from the pick tasks in horizon and object count as well as referential
 load. That last one is the weakest joint and I'd rather name it than have it
 found.
 
-**One thing that is now settled**, though. We re-ran the baseline unchanged:
-twenty-five episodes, identical successes **and identical step counts**. Greedy
-decoding over a seeded environment — there's no run-to-run variance at all. So
-every delta here is a real behavioural difference, and the p-values are the
-*complete* account of the uncertainty, not part of it."
+**One thing that is now settled**, though. We re-ran the baseline unchanged on
+two tasks from different environment classes: **eighty-five episodes, identical
+successes, identical step counts, identical grasp flags.** Greedy decoding over
+a seeded environment — there's no run-to-run variance at all. So every delta
+here is a real behavioural difference, and the p-values are the *complete*
+account of the uncertainty, not part of it."
 
 ---
 ## Slide 5 — Our own explanation broke too (50s)
@@ -382,9 +383,10 @@ number would never have shown us."
 > "It's the right thing to be suspicious of, so here's everything against it.
 > It's p = 0.013, which does *not* clear our Bonferroni threshold — it's one of
 > eighteen tests. And one of the four tasks is at 25 out of 25, so we're near a
-> ceiling. What it is *not* is run-to-run noise — we re-ran the baseline and got
-> the same 25 episodes with the same step counts, so the pipeline is
-> deterministic and the p-value is the whole uncertainty story.
+> ceiling. What it is *not* is run-to-run noise — we re-ran the baseline on two
+> different environment classes and got all 85 episodes back identical, step
+> counts included. The pipeline is deterministic, so the p-value is the whole
+> uncertainty story.
 > What's in its favour is that the split is 14 fixed to 3 broken, and the gain
 > is spread across three of four tasks rather than carried by one. I'd call it
 > real and unreplicated, and re-running the baseline is now my top priority."

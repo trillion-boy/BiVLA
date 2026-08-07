@@ -73,10 +73,12 @@ the size of the blur effect they report.
 ### The pipeline is deterministic, so the p-values are the whole story
 
 We re-ran the SpatialVLA / Fractal baseline a second time, unchanged, into a
-separate directory. On `pick_horizontal_coke_can` the two runs are **identical
-across all 25 episodes — every success/failure and every step count**, including
-the unusual ones (69, 56, 32 steps). Grasp rate matches at 88.0%. Only
-`ms/infer` moved (927 → 914), which is a clock, not a computation.
+separate directory, on two tasks drawn from **different environment classes** —
+`pick_horizontal_coke_can` (`GraspSingleOpenedCokeCanInScene`) and
+`move_near_v0` (`MoveNearGoogleBakedTexInScene`). Across all **85 episodes** the
+two runs are **identical in every success/failure, every step count, and every
+grasp flag**, including the unusual ones (69, 56, 53, 41, 32 steps). Only
+`ms/infer` moved (927 → 914, 915), which is a clock, not a computation.
 
 That is what greedy decoding (`do_sample=False`) over a seeded environment
 should give, and it settles a question the rest of this report depended on:
@@ -91,8 +93,9 @@ should give, and it settles a question the rest of this report depended on:
   cells are not noisy measurements of the same setup; they are measurements of
   a different one.
 
-Confirmed on one task so far. `move_near_v0` uses a different environment class
-and carries the report's largest claims, so it is still pending.
+`move_near_v0` is the one that matters most: a different environment class, and
+it carries the report's largest claims (−16.7, −31.7, −41.7). It reproduced
+60 for 60.
 
 OpenVLA/Bridge log-polar **is** paired: its per-episode records survive in
 `RetinaBased/GoogleColab/results_reproduction_eager/`, and that campaign's
@@ -609,10 +612,6 @@ decide that, not to add another agreeing cell.
    differs in horizon and object count. Bridge cannot supply one — we checked,
    `stack_cube` at n=24 has no power and its one nominally significant cell
    points the wrong way. Either add a task or state the confound and stop.
-5. **Finish the determinism check on `move_near_v0`.** The pick tasks are
-   settled; `move_near` runs a different environment class and carries the
-   largest claims.
-
 ---
 
 ## Reproduce

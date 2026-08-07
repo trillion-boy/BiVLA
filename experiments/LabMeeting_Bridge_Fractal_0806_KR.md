@@ -69,10 +69,12 @@ SpatialVLA/Bridge legacy의 baseline은 첫 줄의 30.2%가 아니라 **32.3%**�
 ### 파이프라인은 결정론적이다 — 그래서 p값이 불확실성의 전부다
 
 SpatialVLA / Fractal baseline을 아무것도 안 바꾸고 별도 폴더로 한 번 더
-돌렸다. `pick_horizontal_coke_can`에서 두 실행은 **25개 에피소드 전부,
-성공/실패도 스텝 수도 완전히 동일**하다. 69·56·32처럼 특이한 값까지.
-파지율도 88.0%로 같다. 움직인 건 `ms/infer`(927 → 914)뿐인데 그건 계산이
-아니라 시계다.
+돌렸다. **환경 클래스가 서로 다른** 두 태스크로 —
+`pick_horizontal_coke_can`(`GraspSingleOpenedCokeCanInScene`)과
+`move_near_v0`(`MoveNearGoogleBakedTexInScene`). **85개 에피소드 전부,
+성공/실패도 스텝 수도 파지 여부도 완전히 동일**하다. 69·56·53·41·32처럼
+특이한 값까지. 움직인 건 `ms/infer`(927 → 914, 915)뿐인데 그건 계산이 아니라
+시계다.
 
 greedy 디코딩(`do_sample=False`)에 시드된 env면 나와야 하는 결과이고,
 이 보고서 전체가 기대고 있던 질문 하나를 닫는다:
@@ -86,8 +88,8 @@ greedy 디코딩(`do_sample=False`)에 시드된 env면 나와야 하는 결과�
   사이에 코드나 설정이 달랐던 것이다. legacy 칸은 같은 구성을 대충 잰 값이
   아니라 **다른 구성을 잰 값**이다.
 
-지금까지 태스크 하나에서 확인됐다. `move_near_v0`는 환경 클래스가 다르고
-보고서에서 가장 큰 주장을 지고 있어서 아직 미확인이다.
+여기서 중요한 건 `move_near_v0`다. 환경 클래스가 다르고, 보고서에서 가장 큰
+주장(−16.7, −31.7, −41.7)을 지고 있다. **60개 중 60개가 그대로 재현됐다.**
 
 OpenVLA/Bridge log-polar은 **paired다.** 에피소드 기록이
 `RetinaBased/GoogleColab/results_reproduction_eager/`에 남아 있고, 그 캠페인의
@@ -576,9 +578,6 @@ UniVLA +8.3, RoboVLMs −19.8 / −16.7)은 에피소드별 기록을 안 남긴
    호라이즌·물체 수도 다르다. Bridge로는 안 된다 — 확인해봤고 `stack_cube`는
    n=24라 검정력이 없으며 유일하게 유의한 칸이 반대 방향을 가리킨다.
    태스크를 추가하거나, 교란을 명시하고 멈추거나 둘 중 하나다.
-5. **`move_near_v0` 결정론 확인 마무리.** pick 태스크는 정리됐다. `move_near`는
-   환경 클래스가 다르고 가장 큰 주장을 지고 있다.
-
 ---
 
 ## 재현
