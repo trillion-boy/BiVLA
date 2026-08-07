@@ -1,12 +1,27 @@
 /content/venv310/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
   import pkg_resources
 [load] model=openvla_chunk policy_setup=google_robot unnorm_key=(derived)
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- processing_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
 Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- configuration_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- modeling_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]
+Fetching 3 files:  33%|███▎      | 1/3 [00:08<00:17,  8.54s/it]
+Fetching 3 files:  67%|██████▋   | 2/3 [00:41<00:20, 20.58s/it]
+Fetching 3 files: 100%|██████████| 3/3 [00:41<00:00, 13.83s/it]
+Fetching 3 files: 100%|██████████| 3/3 [00:41<00:00, 13.83s/it]
 Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.53.3` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
 
 Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]
 Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  7.58it/s]
-Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 18.41it/s]
+Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 18.46it/s]
 [ok] model loaded  unnorm_key=fractal20220817_data sticky_gripper=15
 
 -- episode 00 (env_id=0) --
@@ -17,165 +32,315 @@ Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00
 instruction: move blue plastic bottle near pepsi can
 /content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
   logger.warn(
-result: FAIL grasped=False steps=80 time=31.5s
+result: FAIL grasped=False steps=80 time=31.9s
 
 -- episode 01 (env_id=1) --
 /content/venv310/lib/python3.10/site-packages/gymnasium/envs/registration.py:513: DeprecationWarning: [33mWARN: The environment MoveNearGoogleBakedTexInScene-v0 is out of date. You should consider upgrading to version `v1`.[0m
   logger.deprecation(
-[2026-08-06 14:58:14.187] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:37:09.307] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move blue plastic bottle near orange
-result: SUCCESS grasped=False steps=65 time=24.6s
+result: SUCCESS grasped=False steps=65 time=24.0s
 
 -- episode 02 (env_id=2) --
-[2026-08-06 14:58:39.878] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:37:34.370] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move pepsi can near blue plastic bottle
-result: SUCCESS grasped=False steps=28 time=10.6s
+result: SUCCESS grasped=False steps=28 time=10.4s
 
 -- episode 03 (env_id=3) --
-[2026-08-06 14:58:51.541] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:37:45.764] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move pepsi can near orange
 result: SUCCESS grasped=False steps=24 time=9.1s
 
 -- episode 04 (env_id=4) --
-[2026-08-06 14:59:02.001] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:37:55.990] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move orange near blue plastic bottle
-result: FAIL grasped=False steps=80 time=30.3s
+result: FAIL grasped=False steps=80 time=29.7s
 
 -- episode 05 (env_id=5) --
-[2026-08-06 14:59:33.304] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:38:26.716] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move orange near pepsi can
-result: SUCCESS grasped=False steps=21 time=8.2s
+result: SUCCESS grasped=False steps=21 time=8.0s
 
 -- episode 06 (env_id=6) --
-[2026-08-06 14:59:42.645] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:38:35.917] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move blue plastic bottle near pepsi can
-result: SUCCESS grasped=False steps=49 time=18.4s
+result: SUCCESS grasped=False steps=49 time=18.1s
 
 -- episode 07 (env_id=7) --
-[2026-08-06 15:00:02.126] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:38:55.033] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move blue plastic bottle near orange
-result: SUCCESS grasped=False steps=71 time=26.6s
+result: SUCCESS grasped=False steps=71 time=26.2s
 
 -- episode 08 (env_id=8) --
-[2026-08-06 15:00:29.797] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:39:22.208] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move pepsi can near blue plastic bottle
-result: FAIL grasped=False steps=80 time=29.5s
+result: FAIL grasped=False steps=80 time=29.0s
 
 -- episode 09 (env_id=9) --
-[2026-08-06 15:01:00.325] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:39:52.237] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move pepsi can near orange
-result: SUCCESS grasped=False steps=25 time=9.6s
+result: SUCCESS grasped=False steps=25 time=9.5s
 
 -- episode 10 (env_id=10) --
-[2026-08-06 15:01:11.006] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:40:02.727] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move orange near blue plastic bottle
-result: SUCCESS grasped=False steps=80 time=30.0s
+result: SUCCESS grasped=False steps=80 time=29.5s
 
 -- episode 11 (env_id=11) --
-[2026-08-06 15:01:42.067] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:40:33.246] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move orange near pepsi can
-result: SUCCESS grasped=False steps=18 time=6.8s
+result: SUCCESS grasped=False steps=18 time=6.7s
 
 -- episode 12 (env_id=12) --
-[2026-08-06 15:01:49.904] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:40:40.963] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move 7up can near apple
-result: FAIL grasped=False steps=80 time=30.2s
+result: FAIL grasped=False steps=80 time=29.8s
 
 -- episode 13 (env_id=13) --
-[2026-08-06 15:02:21.219] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:41:11.837] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move 7up can near sponge
-result: SUCCESS grasped=False steps=48 time=18.0s
+result: SUCCESS grasped=False steps=48 time=17.6s
 
 -- episode 14 (env_id=14) --
-[2026-08-06 15:02:40.212] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:41:30.505] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move apple near 7up can
-result: FAIL grasped=False steps=80 time=31.0s
+result: FAIL grasped=False steps=80 time=30.4s
 
 -- episode 15 (env_id=15) --
-[2026-08-06 15:03:12.259] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:42:01.953] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move apple near sponge
-result: FAIL grasped=False steps=80 time=31.2s
+result: FAIL grasped=False steps=80 time=30.7s
 
 -- episode 16 (env_id=16) --
-[2026-08-06 15:03:44.488] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+[2026-08-07 00:42:33.734] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move sponge near 7up can
+result: FAIL grasped=False steps=80 time=29.1s
+
+-- episode 17 (env_id=17) --
+[2026-08-07 00:43:03.876] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move sponge near apple
+result: FAIL grasped=False steps=80 time=30.2s
+
+-- episode 18 (env_id=18) --
+[2026-08-07 00:43:35.134] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move 7up can near apple
+result: FAIL grasped=False steps=80 time=30.0s
+
+-- episode 19 (env_id=19) --
+[2026-08-07 00:44:06.168] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move 7up can near sponge
+result: FAIL grasped=False steps=80 time=30.8s
+
+-- episode 20 (env_id=20) --
+[2026-08-07 00:44:37.954] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move apple near 7up can
+result: SUCCESS grasped=False steps=23 time=8.9s
+
+-- episode 21 (env_id=21) --
+[2026-08-07 00:44:47.846] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move apple near sponge
+result: SUCCESS grasped=False steps=28 time=10.5s
+
+-- episode 22 (env_id=22) --
+[2026-08-07 00:44:59.348] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move sponge near 7up can
+result: SUCCESS grasped=False steps=43 time=16.8s
+
+-- episode 23 (env_id=23) --
+[2026-08-07 00:45:17.182] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move sponge near apple
+result: SUCCESS grasped=False steps=18 time=6.8s
+
+-- episode 24 (env_id=24) --
+[2026-08-07 00:45:24.987] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move coke can near redbull can
+result: FAIL grasped=False steps=80 time=29.0s
+
+-- episode 25 (env_id=25) --
+[2026-08-07 00:45:55.054] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move coke can near apple
+result: FAIL grasped=False steps=80 time=29.8s
+
+-- episode 26 (env_id=26) --
+[2026-08-07 00:46:25.930] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near coke can
+result: SUCCESS grasped=False steps=28 time=10.3s
+
+-- episode 27 (env_id=27) --
+[2026-08-07 00:46:37.160] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near apple
+result: SUCCESS grasped=False steps=22 time=8.1s
+
+-- episode 28 (env_id=28) --
+[2026-08-07 00:46:46.283] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move apple near coke can
+result: SUCCESS grasped=False steps=28 time=10.3s
+
+-- episode 29 (env_id=29) --
+[2026-08-07 00:46:57.540] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move apple near redbull can
+result: SUCCESS grasped=False steps=28 time=10.4s
+
+-- episode 30 (env_id=30) --
+[2026-08-07 00:47:08.857] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move coke can near redbull can
+result: SUCCESS grasped=False steps=47 time=18.3s
+
+-- episode 31 (env_id=31) --
+[2026-08-07 00:47:27.987] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move coke can near apple
+result: FAIL grasped=False steps=80 time=30.0s
+
+-- episode 32 (env_id=32) --
+[2026-08-07 00:47:59.055] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near coke can
+result: FAIL grasped=False steps=80 time=29.0s
+
+-- episode 33 (env_id=33) --
+[2026-08-07 00:48:29.121] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near apple
+result: SUCCESS grasped=False steps=28 time=10.4s
+
+-- episode 34 (env_id=34) --
+[2026-08-07 00:48:40.533] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move apple near coke can
+result: SUCCESS grasped=False steps=43 time=16.7s
+
+-- episode 35 (env_id=35) --
+[2026-08-07 00:48:57.967] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move apple near redbull can
+result: SUCCESS grasped=False steps=17 time=6.6s
+
+-- episode 36 (env_id=36) --
+[2026-08-07 00:49:05.353] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move sponge near blue plastic bottle
+result: FAIL grasped=False steps=80 time=30.7s
+
+-- episode 37 (env_id=37) --
+[2026-08-07 00:49:37.058] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move sponge near 7up can
+result: FAIL grasped=False steps=80 time=29.3s
+
+-- episode 38 (env_id=38) --
+[2026-08-07 00:50:07.364] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move blue plastic bottle near sponge
+result: SUCCESS grasped=False steps=25 time=9.5s
+
+-- episode 39 (env_id=39) --
+[2026-08-07 00:50:17.870] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move blue plastic bottle near 7up can
+result: SUCCESS grasped=False steps=24 time=8.9s
+
+-- episode 40 (env_id=40) --
+[2026-08-07 00:50:27.767] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move 7up can near sponge
+result: FAIL grasped=False steps=80 time=29.0s
+
+-- episode 41 (env_id=41) --
+[2026-08-07 00:50:57.750] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move 7up can near blue plastic bottle
+result: FAIL grasped=False steps=80 time=29.9s
+
+-- episode 42 (env_id=42) --
+[2026-08-07 00:51:28.660] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move sponge near blue plastic bottle
+result: FAIL grasped=False steps=80 time=29.0s
+
+-- episode 43 (env_id=43) --
+[2026-08-07 00:51:58.726] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move sponge near 7up can
 result: FAIL grasped=False steps=80 time=29.7s
 
--- episode 17 (env_id=17) --
-[2026-08-06 15:04:15.245] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move sponge near apple
-result: FAIL grasped=False steps=80 time=30.9s
+-- episode 44 (env_id=44) --
+[2026-08-07 00:52:29.412] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move blue plastic bottle near sponge
+result: FAIL grasped=False steps=80 time=29.2s
 
--- episode 18 (env_id=18) --
-[2026-08-06 15:04:47.182] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move 7up can near apple
-result: FAIL grasped=False steps=80 time=30.6s
+-- episode 45 (env_id=45) --
+[2026-08-07 00:52:59.681] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move blue plastic bottle near 7up can
+result: SUCCESS grasped=False steps=23 time=8.7s
 
--- episode 19 (env_id=19) --
-[2026-08-06 15:05:18.850] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+-- episode 46 (env_id=46) --
+[2026-08-07 00:53:09.411] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
 instruction: move 7up can near sponge
-result: FAIL grasped=False steps=80 time=31.3s
+result: SUCCESS grasped=False steps=17 time=6.6s
 
--- episode 20 (env_id=20) --
-[2026-08-06 15:05:51.167] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move apple near 7up can
-result: SUCCESS grasped=False steps=23 time=9.1s
+-- episode 47 (env_id=47) --
+[2026-08-07 00:53:17.013] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move 7up can near blue plastic bottle
+result: SUCCESS grasped=False steps=12 time=4.4s
 
--- episode 21 (env_id=21) --
-[2026-08-06 15:06:01.280] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move apple near sponge
-result: SUCCESS grasped=False steps=28 time=10.7s
+-- episode 48 (env_id=48) --
+[2026-08-07 00:53:22.503] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move orange near pepsi can
+result: FAIL grasped=False steps=80 time=30.0s
 
--- episode 22 (env_id=22) --
-[2026-08-06 15:06:13.020] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move sponge near 7up can
-result: SUCCESS grasped=False steps=43 time=17.2s
+-- episode 49 (env_id=49) --
+[2026-08-07 00:53:53.489] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move orange near redbull can
+result: SUCCESS grasped=False steps=36 time=13.6s
 
--- episode 23 (env_id=23) --
-[2026-08-06 15:06:31.284] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move sponge near apple
-result: SUCCESS grasped=False steps=18 time=6.9s
+-- episode 50 (env_id=50) --
+[2026-08-07 00:54:08.099] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move pepsi can near orange
+result: SUCCESS grasped=False steps=25 time=9.7s
 
--- episode 24 (env_id=24) --
-[2026-08-06 15:06:39.295] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move coke can near redbull can
+-- episode 51 (env_id=51) --
+[2026-08-07 00:54:18.854] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move pepsi can near redbull can
+result: SUCCESS grasped=False steps=25 time=9.6s
+
+-- episode 52 (env_id=52) --
+[2026-08-07 00:54:29.489] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near orange
+result: SUCCESS grasped=False steps=19 time=7.2s
+
+-- episode 53 (env_id=53) --
+[2026-08-07 00:54:37.742] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near pepsi can
+result: SUCCESS grasped=False steps=35 time=13.1s
+
+-- episode 54 (env_id=54) --
+[2026-08-07 00:54:51.834] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move orange near pepsi can
+result: SUCCESS grasped=False steps=49 time=19.0s
+
+-- episode 55 (env_id=55) --
+[2026-08-07 00:55:11.794] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move orange near redbull can
 result: FAIL grasped=False steps=80 time=29.8s
 
--- episode 25 (env_id=25) --
-[2026-08-06 15:07:10.110] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move coke can near apple
-result: FAIL grasped=False steps=80 time=30.6s
+-- episode 56 (env_id=56) --
+[2026-08-07 00:55:42.653] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move pepsi can near orange
+result: SUCCESS grasped=False steps=36 time=13.4s
 
--- episode 26 (env_id=26) --
-[2026-08-06 15:07:41.740] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move redbull can near coke can
-result: SUCCESS grasped=False steps=28 time=10.5s
+-- episode 57 (env_id=57) --
+[2026-08-07 00:55:57.085] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move pepsi can near redbull can
+result: SUCCESS grasped=False steps=28 time=10.4s
 
--- episode 27 (env_id=27) --
-[2026-08-06 15:07:53.142] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move redbull can near apple
-result: SUCCESS grasped=False steps=22 time=8.3s
+-- episode 58 (env_id=58) --
+[2026-08-07 00:56:08.524] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near orange
+result: SUCCESS grasped=False steps=30 time=11.2s
 
--- episode 28 (env_id=28) --
-[2026-08-06 15:08:02.462] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move apple near coke can
-result: SUCCESS grasped=False steps=28 time=10.5s
+-- episode 59 (env_id=59) --
+[2026-08-07 00:56:20.725] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: move redbull can near pepsi can
+result: SUCCESS grasped=False steps=18 time=6.6s
 
--- episode 29 (env_id=29) --
-[2026-08-06 15:08:13.965] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move apple near redbull can
-result: SUCCESS grasped=False steps=28 time=10.5s
-
--- episode 30 (env_id=30) --
-[2026-08-06 15:08:25.448] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move coke can near redbull can
-result: SUCCESS grasped=False steps=47 time=18.7s
-
--- episode 31 (env_id=31) --
-[2026-08-06 15:08:44.888] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move coke can near apple
-result: FAIL grasped=False steps=80 time=30.5s
-
--- episode 32 (env_id=32) --
-[2026-08-06 15:09:16.400] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
-instruction: move redbull can near coke can
+==================================================
+task:         google_robot_move_near_v0
+model:        openvla_chunk
+setup:        google_robot (unnorm=fractal20220817_data, sticky=15)
+success_rate: 37/60 = 61.7%
+grasp_rate:   n/a (this env does not report a grasp signal)
+avg_steps:    50
+avg_elapsed:  18.9s
+model_ms_per_infer: 506.1ms  (pure model forward pass, CUDA-synced)
+model_ms_per_env_step: 255.7ms  (amortized over executed actions)
+action-repeat: each prediction executed for 2 env steps
+==================================================
+saved: /content/BiVLA_full/results/openvla_fractal_0806_action_repeat2/openvla_chunk/google_robot_move_near_v0/results_google_robot_move_near_v0.json
