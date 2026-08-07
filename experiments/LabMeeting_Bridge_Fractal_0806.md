@@ -10,6 +10,58 @@ condition finishes and the tables update themselves.
 
 ---
 
+## One page, for the talk
+
+*(A 10-minute talk uses only this page. Everything below it exists to answer
+questions. Script: `LabMeeting_Script_EN.md`)*
+
+**One sentence.** Take the same intervention, the same model, and change only
+the benchmark — and the **sign** of the effect flips. So a number measured on
+one benchmark is not evidence that the method works.
+
+**① The sign flips.**
+
+| Axis | Intervention (backbone) | Bridge | Fractal | interaction p |
+|---|---|---|---|---|
+| vision | foveation log-polar (OpenVLA) | **+18.8** | **−19.3** | 0.0000055 *** |
+| vision | foveation blur (OpenVLA) | **+17.7** | −8.9 | 0.0017 *** |
+| compute | depth prune 1 (SpatialVLA) | **−10.4** | **+8.1** | 0.0018 *** |
+| time | action repeat 2 (OpenVLA) | **−8.3** | **+5.2** | 0.0266 |
+
+Vision and compute survive Bonferroni (α ≈ 0.0033). Time does not yet — the
+sign flips but the interaction is not established; what *is* established on the
+time axis is a magnitude difference (repeat 4, p = 0.0038).
+
+**② It is not noise.** A from-scratch baseline re-run reproduced **85/85
+episodes across two environment classes — success flags, step counts, and grasp
+flags all identical.** Greedy decoding into a seeded environment: re-run
+variance is zero. The only uncertainty left is between-episode variation, which
+is exactly what a paired test addresses — **the p-value is the complete account
+of uncertainty, not a partial one.**
+
+**③ Why it flips — half an answer.** The split isn't the benchmark, it's the
+capability the task demands. Remove capacity and **the ability to resolve which
+object was named dies first**, while the ability to grasp is untouched or
+improves (5 cells agree). Control: action repeat 4 damages the *pick* tasks
+harder (−41.3), so this isn't "move_near is simply the weak task."
+
+**The counterexample to ③ (lead with it).** In OpenVLA, pruning depth at 1/2/4
+moves `move_near` by +8.3 / +0.0 / +8.3 — it does not budge — and the campaign's
+single best number (Fractal +15.6, p<0.001) comes from there. Leading suspect:
+`--depth-min-layer` is a **fraction** in OpenVLA and a **count** in SpatialVLA,
+so one name covered two different layer ranges. Details in §3c-bis; the
+range-matched run is in progress.
+
+**Paper framing.** This is an evaluation-methodology paper, not a method paper.
+Three contributions: (1) a per-episode paired protocol with verified determinism
+for VLA evaluation, (2) systematic evidence that single-benchmark deltas are
+sign-unstable, (3) a partial mechanism. Remaining: the range-matched depth run
+(decides today) and a **third benchmark** — with two, a reviewer says those two
+are peculiar; with three, it's a pattern. Target: a robot-learning evaluation
+workshop at CoRL or NeurIPS.
+
+---
+
 ## What we set out to do, and what happened
 
 We set out to show that a cheap inference-time intervention — hold each action
@@ -609,6 +661,17 @@ then say in as many words. There is a risk the ranking picks the back half
 anyway even when allowed to roam; that outcome is not a test of §3c but does
 tell us OpenVLA's early-middle layers are not redundant, which is itself a
 structural difference from SpatialVLA worth recording.
+
+**In progress — the first task has already answered half of it.** With
+`--depth-min-layer 0.08` the eligible range came out as advertised
+(`eligible 2..31 of 32`) and the ranking did reach forward: it bypassed
+**L2, L4, L23, L26**, two of them early. So the run is a real test of §3c and
+not a repeat of the back-half experiment. The first completed task,
+`pick_vertical_coke_can`, scored **4/25 = 16.0%** — against **54.1%** for the
+whole Fractal protocol when only the back half was removed. Deleting early
+layers is not survivable the way deleting late ones was, which is already
+evidence that the two campaigns' "depth prune 4" were different operations.
+`move_near_v0` is the cell that decides §3c, and it is still running.
 
 **Where the split stands, as a score:** five confirmations (two foveation
 variants on OpenVLA, three depth conditions on SpatialVLA), one disconfirmation
