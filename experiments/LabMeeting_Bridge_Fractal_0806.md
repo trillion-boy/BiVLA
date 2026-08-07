@@ -45,7 +45,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | original policy | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
 | action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
-| foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
+| foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
 | depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | -- | -- |
 | depth prune 4 | 16.7%  +1.0 | -- | -- | 66.7%  −17.8*** | -- |
@@ -88,7 +88,9 @@ This is not a technicality. Both OpenVLA cells individually miss p<0.05
 them clears it. Reporting only the per-cell tests would understate precisely
 the effect this campaign is about.
 
-Eight such tests below, so Bonferroni is α = 0.05/8 ≈ 0.006.
+Nine such tests below, so Bonferroni for that family is α = 0.05/9 ≈ 0.0056.
+The generator derives that threshold from the number of rows actually in the
+table, so it tightens on its own as the grid fills.
 
 ### 1. The same intervention reverses sign across backbones
 
@@ -130,18 +132,69 @@ and OpenVLA's sign flips. Tested directly:
 
 | comparison | condition | splits | p |
 |---|---|---|---|
+| **OpenVLA: Bridge vs Fractal** | **foveation log-polar** | **28/10 vs 13/39** | **0.0000055** ✓Bonf |
 | **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0/11 vs 20/22** | **0.0038** ✓Bonf |
 | OpenVLA: Bridge vs Fractal | repeat 2 | 3/11 vs 22/15 | **0.0266** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | 10/22 vs 6/60 | **0.0085** |
 | SpatialVLA: Bridge vs Fractal | repeat 2 | 21/9 vs 11/11 | 0.1624 |
 
-**Three of four are established, and the strongest is OpenVLA at repeat 4** —
-on Bridge every one of the 11 episodes it moved was broken; on Fractal it moved
-42 and fixed 20 of them. Same weights. Only SpatialVLA's repeat-2 gain shrinking
-to zero is unresolved at this n — say so rather than leaning on it.
+**Four of five are established.** Only SpatialVLA's repeat-2 gain shrinking to
+zero is unresolved at this n — say so rather than leaning on it.
+
+At repeat 4, on Bridge every one of the 11 episodes OpenVLA moved was broken;
+on Fractal it moved 42 and fixed 20 of them. Same weights.
 
 The honest summary of this row: *a backbone's Bridge number does not tell you
 its own Fractal number.*
+
+### 2b. The reversal is not confined to the time axis
+
+Until this run, every established sign flip involved action repeat, which left
+open the reading that only the *temporal* intervention is benchmark-sensitive.
+Foveation closes that off — and it is the largest reversal in the campaign:
+
+| OpenVLA, log-polar foveation at keep 20% | Bridge | Fractal |
+|---|---|---|
+| baseline | 15.6% | 38.5% |
+| foveated | **34.4%** | **19.3%** |
+| Δ (paired) | **+18.8** (p = 0.0051) | **−19.3** (p = 0.0004) |
+| fixed / broke | 28 / 10 | 13 / 39 |
+
+A **38-point swing**, and unlike the repeat-4 case *both* cells clear p<0.05 on
+their own — this is not a case of two null results whose difference happens to
+resolve. The interaction is p = 5.5 × 10⁻⁶, the strongest test in the grid.
+
+The Fractal loss is concentrated almost entirely in one task:
+
+| OpenVLA / Fractal | baseline | log-polar | Δ |
+|---|---|---|---|
+| `move_near_v0` (n=60) | 61.7% | **20.0%** | **−41.7** |
+| `pick_horizontal_coke_can` (n=25) | 28.0% | 12.0% | −16.0 |
+| `pick_standing_coke_can` (n=25) | 20.0% | 28.0% | +8.0 |
+| `pick_vertical_coke_can` (n=25) | 12.0% | 16.0% | +4.0 |
+
+Across the three coke-can tasks the intervention is flat (15/75 → 14/75).
+`move_near` is the one task that requires resolving *which* of three objects
+laid out across the table to move near *which other one*, and it is the one that
+collapses. Log-polar sampling keeps the fovea and throws away the periphery, so
+that is a mechanistically sensible place for it to fail — but it is one task,
+and we should call it a hypothesis.
+
+The grasp telemetry says the failure is in reaching, not in the gripper policy:
+horizontal coke can drops from 68% to 12% grasped, standing from 56% to 28%.
+The policy is not fumbling objects it reached; it is not getting to them.
+
+**The competing explanation, which we should raise before someone else does.**
+OpenVLA sits at 15.6% on Bridge — close enough to broken that almost any
+perturbation could shake it into different, occasionally better behaviour, and
+the blur variant giving nearly the same +17.7 is consistent with "the specific
+degradation does not matter". If that were the whole story, though, the effect
+should track the baseline: worst policy helped most, best policy hurt most.
+It does not. SpatialVLA sits at 84.4% on Fractal — the highest baseline in the
+grid — and log-polar does *nothing* there (+0.7, p = 1.00), while OpenVLA at a
+middling 38.5% loses 19 points. A floor effect alone does not produce that
+ordering. Report both readings; the honest position is that the reversal is
+established and its mechanism is not.
 
 ### The horizon curve, now complete on both backbones and both benchmarks
 
@@ -170,9 +223,22 @@ SpatialVLA on Fractal, same session, same protocol, full 135 episodes:
 | **vision** | 80% of the observation, blur | −1.5 | 0.83 | nothing |
 
 **Four fifths of the vision is free. Fifteen percent of the compute costs 18
-points. Three quarters of the re-planning costs 40.** This is the only claim
-here that needs no cross-benchmark caveat — one policy, one benchmark, one
-session, all paired over the full protocol.
+points. Three quarters of the re-planning costs 40.** Internally this needs no
+cross-benchmark caveat — one policy, one benchmark, one session, all paired over
+the full protocol.
+
+**But the ordering itself does not transfer, and we now know that.** The
+"vision is free" row is a statement about *this* cell. Move to OpenVLA on the
+same benchmark and the same log-polar foveation costs **19.3 points**
+(p = 0.0004) — the vision axis stops being the cheap one and becomes the
+expensive one, while depth pruning on OpenVLA/Bridge is the flat axis (+1.0,
+p = 1.00). So `time ≫ compute ≫ vision` is a SpatialVLA/Fractal result, not a
+finding about VLA policies.
+
+That is not a retraction of the ordering; it is the campaign's thesis applied to
+the campaign's own best-looking result. Present it as: *within a cell you can
+rank the axes and the ranking is sharp; across cells the ranking is not stable* —
+which is exactly why single-cell efficiency claims are the problem.
 
 And the axis that costs nothing is the only one that **buys** nothing:
 foveation reduces sample density but resamples to the same resolution, so the
@@ -229,7 +295,7 @@ step is to look at what is actually in those four scenes.
 |---|---|---|
 | **OpenVLA** repeat {1,2,4} | complete, paired | **complete, paired** |
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
-| **OpenVLA** foveation | blur done; log-polar from July campaign | not started |
+| **OpenVLA** foveation | blur done; log-polar from July campaign | **log-polar done, paired**; blur running |
 | **SpatialVLA** foveation | **unpaired legacy only** | complete |
 | **SpatialVLA** depth prune 4 | legacy (prune 1 only) | **complete** |
 | **OpenVLA** depth prune | Bridge only (1, 4, 8) | not started |
@@ -249,12 +315,21 @@ reader compare deltas across columns unguarded.
 
 ### Next, in order
 
-1. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two
-   legacy cells into paired tests against a baseline already on disk.
-2. Re-run one baseline a second time in the same session to measure the
+1. **OpenVLA / Fractal blur.** The Bridge column shows log-polar and blur
+   agreeing to within a point (+18.8 / +17.7). If Fractal blur also lands near
+   −19, the loss is about *how much* is removed; if it stays flat, it is about
+   log-polar's specific geometry — i.e. the periphery. One run separates two
+   mechanisms, and it is the cheapest thing left on the board.
+2. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two
+   legacy cells into paired tests against a baseline already on disk, and would
+   complete the foveation row the way the repeat row is already complete.
+3. Re-run one baseline a second time in the same session to measure the
    per-episode noise floor. Every delta in this report is currently read against
-   an unknown floor; log-polar flips 15 of 135 episodes with zero net, and we
-   cannot yet say how many of those 15 are the intervention.
+   an unknown floor; log-polar flips 15 of 135 episodes on SpatialVLA with zero
+   net, and we cannot yet say how many of those 15 are the intervention.
+4. Look at the `move_near_v0` failures under log-polar. −41.7 on one task,
+   with grasp rates halving, is a concrete and inspectable failure — far more
+   tractable than the repeat-axis reversals.
 
 ---
 

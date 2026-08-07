@@ -353,8 +353,6 @@ def markdown(data) -> str:
              "discordant split, and whether it differs is a 2x2 Fisher exact "
              "test. Both cells can individually miss p<0.05 while the difference "
              "between them clears it.\n")
-    L.append("| comparison | condition | left (fixed/broke) | right (fixed/broke) | p |")
-    L.append("|---|---|---|---|---|")
     pairs = []
     backbones = sorted({b for b, _ in cols})
     for bb in backbones:                       # same backbone, two benchmarks
@@ -364,15 +362,26 @@ def markdown(data) -> str:
         for b2 in backbones[i + 1:]:
             if (b1, "Bridge") in cols and (b2, "Bridge") in cols:
                 pairs.append((f"Bridge: {b1} vs {b2}", (b1, "Bridge"), (b2, "Bridge")))
+    rows = []
     for title, left, right in pairs:
         for cond in conditions_present(data):
             r = interaction(data, cond, left, right)
-            if r is None:
-                continue
-            af, ab, bf, bb_, p = r
-            star = "***" if p < 0.003 else "**" if p < 0.05 else ""
-            L.append(f"| {title} | {DISPLAY.get(cond, cond)} | {af}/{ab} | "
-                     f"{bf}/{bb_} | {p:.4f}{star} |")
+            if r is not None:
+                rows.append((title, cond, r))
+    # This family is its own multiple-comparison family, so the threshold is
+    # 0.05 / (number of tests actually in this table) -- which grows as the
+    # grid fills. Deriving it here is what stops a prose document from
+    # quoting a threshold the table no longer uses.
+    alpha = 0.05 / max(1, len(rows))
+    L.append(f"{len(rows)} tests, so Bonferroni for this family is "
+             f"a = 0.05/{len(rows)} ~ {alpha:.4f}; `***` marks the rows that "
+             f"clear it, `**` marks p<0.05.\n")
+    L.append("| comparison | condition | left (fixed/broke) | right (fixed/broke) | p |")
+    L.append("|---|---|---|---|---|")
+    for title, cond, (af, ab, bf, bb_, p) in rows:
+        star = "***" if p < alpha else "**" if p < 0.05 else ""
+        L.append(f"| {title} | {DISPLAY.get(cond, cond)} | {af}/{ab} | "
+                 f"{bf}/{bb_} | {p:.4f}{star} |")
 
     L.append("\n## Per task\n")
     for b, k in cols:

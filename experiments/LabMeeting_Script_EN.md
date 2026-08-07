@@ -1,6 +1,8 @@
 # Lab meeting speaking script — English
 
-Six slides, about seven minutes. The **[SAY]** blocks can be read as written.
+Seven slides, about eight minutes. The **[SAY]** blocks can be read as written.
+If you are tight on time, slide 3b is the one to drop — but then also drop the
+second half of slide 4, because it refers back to it.
 Numbers come from `LabMeeting_Bridge_Fractal_0806.md`; regenerate the tables
 with `python experiments/build_grid_report.py`.
 
@@ -75,6 +77,7 @@ OpenVLA / Fractal repeat 4   20/42  ███████████       48%
 
 | comparison | condition | p |
 |---|---|---|
+| **OpenVLA: Bridge vs Fractal** | **foveation** | **0.0000055** ✓Bonferroni |
 | **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0.0038** ✓Bonferroni |
 | OpenVLA: Bridge vs Fractal | repeat 2 | **0.027** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | **0.0085** |
@@ -97,7 +100,41 @@ The same weights on Fractal: forty-two episodes changed and it **fixed twenty**
 of them. Forty-eight percent — essentially a coin.
 
 Asking whether those are the same coin is a Fisher exact test, and it comes out
-at **p = 0.0038**. That clears Bonferroni for the eight tests we ran."
+at **p = 0.0038**. That clears Bonferroni for the nine tests we ran."
+
+---
+
+## Slide 3b — And it isn't only about time (40s)
+
+**[SHOW]**
+
+```
+OpenVLA, foveation — throw away 80% of the observation
+
+           baseline   foveated      Δ
+Bridge       15.6%  →  34.4%     +18.8   (p = 0.005)
+Fractal      38.5%  →  19.3%     −19.3   (p = 0.0004)
+                                  ─────
+                              38-point swing,  interaction p = 0.0000055
+```
+
+**[SAY]**
+"One thing I should flag, because it landed this morning.
+
+Everything so far was about holding actions — the *time* axis. So you could
+still say: fine, only the temporal intervention is benchmark-sensitive.
+
+This is a different intervention. We throw away eighty percent of what the
+policy can see. On Bridge that **helps** by nineteen points. On Fractal, same
+weights, it **hurts** by nineteen points.
+
+**[PAUSE]**
+
+And unlike the repeat case, **both of those are significant on their own.**
+This isn't two null results whose difference happens to resolve. It's the
+strongest test in the whole grid.
+
+So the reversal is not a quirk of one axis."
 
 ---
 ## Slide 4 — Three axes, three answers (100s) ★highlight
@@ -131,7 +168,17 @@ eighteen points.**
 That gives an ordering for what these policies are fragile to — time, then
 compute, then vision. And the irony is that the only free axis is the only one
 that **buys nothing**: foveation reduces sample density but resamples back to
-the same resolution, so the token count never drops."
+the same resolution, so the token count never drops.
+
+**[THEN — say this, don't let someone else say it]**
+
+"And I have to apply our own thesis to this slide. That ordering is a statement
+about *this cell*. You saw two slides ago that the same foveation on OpenVLA,
+same benchmark, costs nineteen points. So *time, compute, vision* is a
+SpatialVLA-on-Fractal result, not a fact about VLA policies.
+
+Which is the point. **Inside a cell you can rank the axes and the ranking is
+sharp. Across cells it doesn't hold.**"
 
 ---
 ## Slide 5 — Our own explanation broke too (50s)
@@ -190,6 +237,22 @@ backbone on a single benchmark, and we have a controlled counterexample."
 > gives a design rule: fragility orders as time, then compute, then vision, and
 > only the visual pathway has slack."
 
+**Q. OpenVLA on Bridge is at 15.6% — isn't it just broken, so anything helps?**
+> "That's the right objection and we can't fully rule it out. But it predicts
+> the effect should track the baseline — worst policy helped most, best policy
+> hurt most. It doesn't. SpatialVLA has the *highest* baseline in the grid, 84%
+> on Fractal, and foveation does nothing there at all. OpenVLA at a middling 38%
+> loses nineteen points. A floor effect doesn't produce that ordering. So the
+> reversal is established; the mechanism isn't, and I'd say that plainly."
+
+**Q. Where exactly does foveation fail on Fractal?**
+> "Almost entirely in one task. The three coke-can tasks are flat — 15 of 75
+> versus 14 of 75. `move_near` goes 61.7 to 20.0. That's the one task where you
+> have to pick which of three objects on the table to move near which other one,
+> and log-polar keeps the fovea and throws away the periphery. Grasp rate halves
+> too — 68% to 12% — so it's failing to reach, not failing to grip. It's one
+> task, so I'd call it a hypothesis, not a result."
+
 **Q. Are the individual numbers significant?**
 > "OpenVLA's two cells are not — 0.057 and 0.32. But our question isn't about
 > either cell, it's about **the difference between them**, and that clears at
@@ -213,8 +276,12 @@ backbone on a single benchmark, and we have a controlled counterexample."
 
 **Q. What's left to run?**
 > "The action-repeat axis is complete across both backbones and both benchmarks.
-> What remains is re-measuring the legacy cells and running one baseline twice in
-> a session to establish the per-episode noise floor."
+> The next single most informative run is OpenVLA/Fractal **blur** — on Bridge,
+> blur and log-polar agree to within a point, so if Fractal blur also lands near
+> −19 the loss is about *how much* we removed, and if it stays flat it's about
+> log-polar's geometry specifically. One run separates two mechanisms. After
+> that, re-measuring the legacy cells and running one baseline twice in a session
+> to establish the per-episode noise floor."
 
 ---
 
@@ -234,5 +301,7 @@ backbone on a single benchmark, and we have a controlled counterexample."
 four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
 0%  vs  48%   OpenVLA repeat 4, Bridge vs Fractal             (slide 3)
 p = 0.0038                                                    (slide 3)
++18.8 vs −19.3  OpenVLA foveation, Bridge vs Fractal          (slide 3b)
 −40.0 / −17.8 / ~0  time / compute / vision                   (slide 4)
+     ...and that ordering is SpatialVLA/Fractal only           (slide 4)
 ```
