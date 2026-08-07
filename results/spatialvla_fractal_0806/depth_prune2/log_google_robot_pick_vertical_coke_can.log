@@ -1,0 +1,188 @@
+/content/vsim/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Some kwargs in processor config are unused and will not have any effect: num_obs_steps, bin_policy, statistics, action_chunk_size, intrinsic_config, action_config, obs_delta. 
+*** policy_setup: google_robot, unnorm_key: fractal20220817_data/0.1.0 ***
+Add 0 TRANSLATION TOKENS, tokenizer vocab size 257152 / 265347
+Add 0 ROTATION TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+Add 0 GRIPPER TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  2.93it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.86it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.87it/s]
+[OK] official SpatialVLAInference loaded (no wrapper, no DINO)
+[DepthPrune] Gemma2 has 26 decoder layers; will bypass 2 most-redundant (calibrate on step 0).
+
+── ep 00 (env_id=0) ──
+[2026-08-07 04:42:43.719] [svulkan2] [error] GLFW error: X11: The DISPLAY environment variable is missing
+[2026-08-07 04:42:43.719] [svulkan2] [warning] Continue without GLFW.
+/content/vsim/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+   instruction: pick coke can
+The 'batch_size' attribute of HybridCache is deprecated and will be removed in v4.49. Use the more precisely named 'self.max_batch_size' attribute instead.
+[ChunkProbe] raw_action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['rotation_delta']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['open_gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] action['rot_axangle']: shape=(3,) type=ndarray
+[ChunkProbe] action['gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['terminate_episode']: shape=(1,) type=ndarray
+[DepthPrune] mode=redundant calibrated; bypassing layers [9, 10] (ranking top: [9, 10, 8, 19, 20, 12])
+[DepthPrune] per-layer redundancy (cos in/out): L0=0.1066, L1=0.6021, L2=0.5786, L3=0.7860, L4=0.7758, L5=0.9209, L6=0.8554, L7=0.9008, L8=0.9421, L9=0.9498, L10=0.9451, L11=0.9140, L12=0.9297, L13=0.9097, L14=0.9100, L15=0.8949, L16=0.9157, L17=0.9173, L18=0.9130, L19=0.9337, L20=0.9308, L21=0.9196, L22=0.9008, L23=0.9085, L24=0.8686, L25=0.6397
+   → G+ SUCCESS  (25 steps, 894 ms/infer)
+
+── ep 01 (env_id=1) ──
+[2026-08-07 04:43:11.465] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (23 steps, 832 ms/infer)
+
+── ep 02 (env_id=2) ──
+[2026-08-07 04:43:34.124] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (24 steps, 836 ms/infer)
+
+── ep 03 (env_id=3) ──
+[2026-08-07 04:43:57.905] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (32 steps, 831 ms/infer)
+
+── ep 04 (env_id=4) ──
+[2026-08-07 04:44:29.239] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (26 steps, 839 ms/infer)
+
+── ep 05 (env_id=5) ──
+[2026-08-07 04:44:55.064] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (24 steps, 837 ms/infer)
+
+── ep 06 (env_id=6) ──
+[2026-08-07 04:45:18.942] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (48 steps, 835 ms/infer)
+
+── ep 07 (env_id=7) ──
+[2026-08-07 04:46:05.600] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (20 steps, 858 ms/infer)
+
+── ep 08 (env_id=8) ──
+[2026-08-07 04:46:26.136] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (19 steps, 869 ms/infer)
+
+── ep 09 (env_id=9) ──
+[2026-08-07 04:46:45.974] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (19 steps, 849 ms/infer)
+
+── ep 10 (env_id=10) ──
+[2026-08-07 04:47:05.372] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (32 steps, 855 ms/infer)
+
+── ep 11 (env_id=11) ──
+[2026-08-07 04:47:37.405] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (21 steps, 858 ms/infer)
+
+── ep 12 (env_id=12) ──
+[2026-08-07 04:47:58.760] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (18 steps, 840 ms/infer)
+
+── ep 13 (env_id=13) ──
+[2026-08-07 04:48:16.959] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (19 steps, 863 ms/infer)
+
+── ep 14 (env_id=14) ──
+[2026-08-07 04:48:36.610] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (17 steps, 857 ms/infer)
+
+── ep 15 (env_id=15) ──
+[2026-08-07 04:48:54.295] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (25 steps, 847 ms/infer)
+
+── ep 16 (env_id=16) ──
+[2026-08-07 04:49:19.410] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (22 steps, 841 ms/infer)
+
+── ep 17 (env_id=17) ──
+[2026-08-07 04:49:41.360] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (21 steps, 855 ms/infer)
+
+── ep 18 (env_id=18) ──
+[2026-08-07 04:50:02.765] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (17 steps, 845 ms/infer)
+
+── ep 19 (env_id=19) ──
+[2026-08-07 04:50:20.152] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (32 steps, 853 ms/infer)
+
+── ep 20 (env_id=20) ──
+[2026-08-07 04:50:52.468] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (25 steps, 849 ms/infer)
+
+── ep 21 (env_id=21) ──
+[2026-08-07 04:51:17.584] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (20 steps, 847 ms/infer)
+
+── ep 22 (env_id=22) ──
+[2026-08-07 04:51:37.710] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (20 steps, 841 ms/infer)
+
+── ep 23 (env_id=23) ──
+[2026-08-07 04:51:57.740] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (19 steps, 848 ms/infer)
+
+── ep 24 (env_id=24) ──
+[2026-08-07 04:52:17.081] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+   instruction: pick coke can
+   → G+ SUCCESS  (18 steps, 848 ms/infer)
+
+==================================================
+  SpatialVLA (official) | depth-prune=2 mode=redundant (layers [9, 10])
+  task:    google_robot_pick_vertical_coke_can
+  파지율:  25/25 = 100.0%
+  성공률:  25/25 = 100.0%
+  평균스텝: 23
+  ms/infer: 849  (latency; lower=faster)
+==================================================
+  OKG+ ep00 (id=0): 25 steps
+  OKG+ ep01 (id=1): 23 steps
+  OKG+ ep02 (id=2): 24 steps
+  OKG+ ep03 (id=3): 32 steps
+  OKG+ ep04 (id=4): 26 steps
+  OKG+ ep05 (id=5): 24 steps
+  OKG+ ep06 (id=6): 48 steps
+  OKG+ ep07 (id=7): 20 steps
+  OKG+ ep08 (id=8): 19 steps
+  OKG+ ep09 (id=9): 19 steps
+  OKG+ ep10 (id=10): 32 steps
+  OKG+ ep11 (id=11): 21 steps
+  OKG+ ep12 (id=12): 18 steps
+  OKG+ ep13 (id=13): 19 steps
+  OKG+ ep14 (id=14): 17 steps
+  OKG+ ep15 (id=15): 25 steps
+  OKG+ ep16 (id=16): 22 steps
+  OKG+ ep17 (id=17): 21 steps
+  OKG+ ep18 (id=18): 17 steps
+  OKG+ ep19 (id=19): 32 steps
+  OKG+ ep20 (id=20): 25 steps
+  OKG+ ep21 (id=21): 20 steps
+  OKG+ ep22 (id=22): 20 steps
+  OKG+ ep23 (id=23): 19 steps
+  OKG+ ep24 (id=24): 18 steps
+
+saved: /content/BiVLA/results/spatialvla_fractal_0806/depth_prune2/google_robot_pick_vertical_coke_can/results_google_robot_pick_vertical_coke_can.json
