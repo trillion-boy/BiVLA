@@ -1,0 +1,206 @@
+/content/vsim/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Some kwargs in processor config are unused and will not have any effect: statistics, bin_policy, obs_delta, num_obs_steps, intrinsic_config, action_chunk_size, action_config. 
+*** policy_setup: widowx_bridge, unnorm_key: bridge_orig/1.0.0 ***
+Add 0 TRANSLATION TOKENS, tokenizer vocab size 257152 / 265347
+Add 0 ROTATION TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+Add 0 GRIPPER TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  2.70it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.64it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.65it/s]
+[OK] official SpatialVLAInference loaded (no wrapper, no DINO)
+[DepthPrune] Gemma2 has 26 decoder layers; will bypass 1 most-redundant (calibrate on step 0).
+
+── ep 00 (env_id=0) ──
+[2026-08-07 10:58:27.984] [svulkan2] [error] GLFW error: X11: The DISPLAY environment variable is missing
+[2026-08-07 10:58:27.984] [svulkan2] [warning] Continue without GLFW.
+/content/vsim/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+The 'batch_size' attribute of HybridCache is deprecated and will be removed in v4.49. Use the more precisely named 'self.max_batch_size' attribute instead.
+[ChunkProbe] raw_action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['rotation_delta']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['open_gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] action['rot_axangle']: shape=(3,) type=ndarray
+[ChunkProbe] action['gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['terminate_episode']: shape=(1,) type=ndarray
+[DepthPrune] mode=redundant calibrated; bypassing layers [10] (ranking top: [10, 8, 9, 20, 19, 17])
+[DepthPrune] per-layer redundancy (cos in/out): L0=0.1049, L1=0.6338, L2=0.6024, L3=0.7707, L4=0.7480, L5=0.9004, L6=0.8334, L7=0.8852, L8=0.9217, L9=0.9214, L10=0.9254, L11=0.9009, L12=0.9174, L13=0.9159, L14=0.9002, L15=0.8847, L16=0.9145, L17=0.9183, L18=0.9051, L19=0.9193, L20=0.9201, L21=0.9132, L22=0.9021, L23=0.9137, L24=0.8596, L25=0.6767
+   → G+ FAIL  (120 steps, 897 ms/infer)
+
+── ep 01 (env_id=1) ──
+[2026-08-07 11:00:27.931] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 882 ms/infer)
+
+── ep 02 (env_id=2) ──
+[2026-08-07 11:02:25.762] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ FAIL  (120 steps, 875 ms/infer)
+
+── ep 03 (env_id=3) ──
+[2026-08-07 11:04:21.052] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 875 ms/infer)
+
+── ep 04 (env_id=4) ──
+[2026-08-07 11:06:16.888] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 875 ms/infer)
+
+── ep 05 (env_id=5) ──
+[2026-08-07 11:08:13.579] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 875 ms/infer)
+
+── ep 06 (env_id=6) ──
+[2026-08-07 11:10:10.607] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ FAIL  (120 steps, 874 ms/infer)
+
+── ep 07 (env_id=7) ──
+[2026-08-07 11:12:07.671] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 871 ms/infer)
+
+── ep 08 (env_id=8) ──
+[2026-08-07 11:14:02.667] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 873 ms/infer)
+
+── ep 09 (env_id=9) ──
+[2026-08-07 11:15:58.939] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ SUCCESS  (29 steps, 874 ms/infer)
+
+── ep 10 (env_id=10) ──
+[2026-08-07 11:16:27.446] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 871 ms/infer)
+
+── ep 11 (env_id=11) ──
+[2026-08-07 11:18:23.699] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ FAIL  (120 steps, 874 ms/infer)
+
+── ep 12 (env_id=12) ──
+[2026-08-07 11:20:19.674] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ FAIL  (120 steps, 878 ms/infer)
+
+── ep 13 (env_id=13) ──
+[2026-08-07 11:22:17.295] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ SUCCESS  (35 steps, 871 ms/infer)
+
+── ep 14 (env_id=14) ──
+[2026-08-07 11:22:51.486] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 871 ms/infer)
+
+── ep 15 (env_id=15) ──
+[2026-08-07 11:24:48.255] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 874 ms/infer)
+
+── ep 16 (env_id=16) ──
+[2026-08-07 11:26:44.036] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ SUCCESS  (35 steps, 875 ms/infer)
+
+── ep 17 (env_id=17) ──
+[2026-08-07 11:27:18.353] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 875 ms/infer)
+
+── ep 18 (env_id=18) ──
+[2026-08-07 11:29:15.596] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ SUCCESS  (27 steps, 872 ms/infer)
+
+── ep 19 (env_id=19) ──
+[2026-08-07 11:29:42.240] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ SUCCESS  (34 steps, 881 ms/infer)
+
+── ep 20 (env_id=20) ──
+[2026-08-07 11:30:15.868] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 876 ms/infer)
+
+── ep 21 (env_id=21) ──
+[2026-08-07 11:32:12.728] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ SUCCESS  (35 steps, 870 ms/infer)
+
+── ep 22 (env_id=22) ──
+[2026-08-07 11:32:46.911] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G+ FAIL  (120 steps, 876 ms/infer)
+
+── ep 23 (env_id=23) ──
+[2026-08-07 11:34:43.344] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: put eggplant into yellow basket
+   → G- FAIL  (120 steps, 869 ms/infer)
+
+==================================================
+  SpatialVLA (official) | depth-prune=1 mode=redundant (layers [10])
+  task:    widowx_put_eggplant_in_basket
+  파지율:  12/24 = 50.0%
+  성공률:  6/24 = 25.0%
+  평균스텝: 98
+  ms/infer: 875  (latency; lower=faster)
+==================================================
+  --G+ ep00 (id=0): 120 steps
+  --G- ep01 (id=1): 120 steps
+  --G+ ep02 (id=2): 120 steps
+  --G- ep03 (id=3): 120 steps
+  --G- ep04 (id=4): 120 steps
+  --G- ep05 (id=5): 120 steps
+  --G+ ep06 (id=6): 120 steps
+  --G- ep07 (id=7): 120 steps
+  --G- ep08 (id=8): 120 steps
+  OKG+ ep09 (id=9): 29 steps
+  --G- ep10 (id=10): 120 steps
+  --G+ ep11 (id=11): 120 steps
+  --G+ ep12 (id=12): 120 steps
+  OKG+ ep13 (id=13): 35 steps
+  --G- ep14 (id=14): 120 steps
+  --G- ep15 (id=15): 120 steps
+  OKG+ ep16 (id=16): 35 steps
+  --G- ep17 (id=17): 120 steps
+  OKG+ ep18 (id=18): 27 steps
+  OKG+ ep19 (id=19): 34 steps
+  --G- ep20 (id=20): 120 steps
+  OKG+ ep21 (id=21): 35 steps
+  --G+ ep22 (id=22): 120 steps
+  --G- ep23 (id=23): 120 steps
+
+saved: /content/BiVLA/results/spatialvla_bridge_0805/depth_prune1/widowx_put_eggplant_in_basket/results_widowx_put_eggplant_in_basket.json

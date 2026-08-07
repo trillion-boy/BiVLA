@@ -1,0 +1,206 @@
+/content/vsim/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Some kwargs in processor config are unused and will not have any effect: bin_policy, num_obs_steps, action_chunk_size, intrinsic_config, obs_delta, statistics, action_config. 
+*** policy_setup: widowx_bridge, unnorm_key: bridge_orig/1.0.0 ***
+Add 0 TRANSLATION TOKENS, tokenizer vocab size 257152 / 265347
+Add 0 ROTATION TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+Add 0 GRIPPER TOKENS to tokenizer, tokenizer vocab size 257152 / 265347
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  2.80it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.74it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  2.75it/s]
+[OK] official SpatialVLAInference loaded (no wrapper, no DINO)
+[DepthPrune] Gemma2 has 26 decoder layers; will bypass 1 most-redundant (calibrate on step 0).
+
+── ep 00 (env_id=0) ──
+[2026-08-07 10:36:22.617] [svulkan2] [error] GLFW error: X11: The DISPLAY environment variable is missing
+[2026-08-07 10:36:22.617] [svulkan2] [warning] Continue without GLFW.
+/content/vsim/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+The 'batch_size' attribute of HybridCache is deprecated and will be removed in v4.49. Use the more precisely named 'self.max_batch_size' attribute instead.
+[ChunkProbe] raw_action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['rotation_delta']: shape=(3,) type=ndarray
+[ChunkProbe] raw_action['open_gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['world_vector']: shape=(3,) type=ndarray
+[ChunkProbe] action['rot_axangle']: shape=(3,) type=ndarray
+[ChunkProbe] action['gripper']: shape=(1,) type=ndarray
+[ChunkProbe] action['terminate_episode']: shape=(1,) type=ndarray
+[DepthPrune] mode=redundant calibrated; bypassing layers [9] (ranking top: [9, 10, 12, 19, 17, 13])
+[DepthPrune] per-layer redundancy (cos in/out): L0=0.0960, L1=0.6438, L2=0.5850, L3=0.7790, L4=0.7575, L5=0.8971, L6=0.8463, L7=0.8759, L8=0.9244, L9=0.9336, L10=0.9312, L11=0.9082, L12=0.9303, L13=0.9258, L14=0.9172, L15=0.9008, L16=0.9146, L17=0.9261, L18=0.9153, L19=0.9295, L20=0.9256, L21=0.9142, L22=0.8938, L23=0.9136, L24=0.8437, L25=0.6694
+   → G+ SUCCESS  (33 steps, 922 ms/infer)
+
+── ep 01 (env_id=1) ──
+[2026-08-07 10:36:56.983] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 886 ms/infer)
+
+── ep 02 (env_id=2) ──
+[2026-08-07 10:37:55.238] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 880 ms/infer)
+
+── ep 03 (env_id=3) ──
+[2026-08-07 10:38:53.034] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ SUCCESS  (59 steps, 884 ms/infer)
+
+── ep 04 (env_id=4) ──
+[2026-08-07 10:39:50.240] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 889 ms/infer)
+
+── ep 05 (env_id=5) ──
+[2026-08-07 10:40:48.524] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ SUCCESS  (29 steps, 890 ms/infer)
+
+── ep 06 (env_id=6) ──
+[2026-08-07 10:41:17.047] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 887 ms/infer)
+
+── ep 07 (env_id=7) ──
+[2026-08-07 10:42:15.079] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 885 ms/infer)
+
+── ep 08 (env_id=8) ──
+[2026-08-07 10:43:13.137] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ SUCCESS  (39 steps, 889 ms/infer)
+
+── ep 09 (env_id=9) ──
+[2026-08-07 10:43:51.210] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ SUCCESS  (54 steps, 884 ms/infer)
+
+── ep 10 (env_id=10) ──
+[2026-08-07 10:44:43.589] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ SUCCESS  (53 steps, 893 ms/infer)
+
+── ep 11 (env_id=11) ──
+[2026-08-07 10:45:35.435] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 892 ms/infer)
+
+── ep 12 (env_id=12) ──
+[2026-08-07 10:46:33.959] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 889 ms/infer)
+
+── ep 13 (env_id=13) ──
+[2026-08-07 10:47:32.351] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 896 ms/infer)
+
+── ep 14 (env_id=14) ──
+[2026-08-07 10:48:31.059] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 887 ms/infer)
+
+── ep 15 (env_id=15) ──
+[2026-08-07 10:49:29.257] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 889 ms/infer)
+
+── ep 16 (env_id=16) ──
+[2026-08-07 10:50:27.622] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 880 ms/infer)
+
+── ep 17 (env_id=17) ──
+[2026-08-07 10:51:25.233] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 885 ms/infer)
+
+── ep 18 (env_id=18) ──
+[2026-08-07 10:52:23.324] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 888 ms/infer)
+
+── ep 19 (env_id=19) ──
+[2026-08-07 10:53:21.302] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G+ FAIL  (60 steps, 885 ms/infer)
+
+── ep 20 (env_id=20) ──
+[2026-08-07 10:54:19.182] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 888 ms/infer)
+
+── ep 21 (env_id=21) ──
+[2026-08-07 10:55:17.417] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 872 ms/infer)
+
+── ep 22 (env_id=22) ──
+[2026-08-07 10:56:14.470] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 878 ms/infer)
+
+── ep 23 (env_id=23) ──
+[2026-08-07 10:57:11.975] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+   instruction: stack the green block on the yellow block
+   → G- FAIL  (60 steps, 913 ms/infer)
+
+==================================================
+  SpatialVLA (official) | depth-prune=1 mode=redundant (layers [9])
+  task:    widowx_stack_cube
+  파지율:  14/24 = 58.3%
+  성공률:  6/24 = 25.0%
+  평균스텝: 56
+  ms/infer: 889  (latency; lower=faster)
+==================================================
+  OKG+ ep00 (id=0): 33 steps
+  --G+ ep01 (id=1): 60 steps
+  --G+ ep02 (id=2): 60 steps
+  OKG+ ep03 (id=3): 59 steps
+  --G- ep04 (id=4): 60 steps
+  OKG+ ep05 (id=5): 29 steps
+  --G+ ep06 (id=6): 60 steps
+  --G+ ep07 (id=7): 60 steps
+  OKG+ ep08 (id=8): 39 steps
+  OKG+ ep09 (id=9): 54 steps
+  OKG+ ep10 (id=10): 53 steps
+  --G- ep11 (id=11): 60 steps
+  --G+ ep12 (id=12): 60 steps
+  --G+ ep13 (id=13): 60 steps
+  --G+ ep14 (id=14): 60 steps
+  --G- ep15 (id=15): 60 steps
+  --G- ep16 (id=16): 60 steps
+  --G- ep17 (id=17): 60 steps
+  --G- ep18 (id=18): 60 steps
+  --G+ ep19 (id=19): 60 steps
+  --G- ep20 (id=20): 60 steps
+  --G- ep21 (id=21): 60 steps
+  --G- ep22 (id=22): 60 steps
+  --G- ep23 (id=23): 60 steps
+
+saved: /content/BiVLA/results/spatialvla_bridge_0805/depth_prune1/widowx_stack_cube/results_widowx_stack_cube.json
