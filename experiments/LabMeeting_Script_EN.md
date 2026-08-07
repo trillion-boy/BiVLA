@@ -85,25 +85,32 @@ mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
 > on the original.** The two baselines aren't even distinguishable. So it isn't
 > the environment.
 
-**Produce the counterexample yourself** ← non-removable
+**Produce the counterexample yourself — and then resolve it** ← non-removable
 
-> "There's a result that breaks this. **On OpenVLA, pruning depth at 1, 2, or 4
-> doesn't move `move_near` at all** — and the campaign's best number comes from
+> "There was a result that broke this. **On OpenVLA, pruning depth at 1, 2, or 4
+> didn't move `move_near` at all** — and the campaign's best number came from
 > there."
 >
-> "We think we found the cause. **The option that decides how early a layer may
-> be bypassed is read differently by the two codebases, so OpenVLA only ever
-> deleted the back half of the stack while SpatialVLA deleted the middle.** Same
-> name, different region — and the region our hypothesis is about was never
-> touched in OpenVLA."
+> "We found the cause. **The option deciding how early a layer may be bypassed is
+> read differently by the two codebases, so OpenVLA only ever deleted the back
+> half of the stack while SpatialVLA deleted the middle.** Same name, different
+> region — and the region our hypothesis is about was never touched in OpenVLA."
 >
-> "The range-matched run is going now. The ranking does reach the early layers,
-> so **the test is valid**, but the tasks are disagreeing so far — **no result
-> yet.** We'll know today."
+> "So we re-ran it with the range matched. **Same model, same benchmark, same
+> episodes, still four layers removed. The only thing that changed is which
+> region.**"
+>
+> "The pick tasks go **41.3 to 40.0** — they don't notice. `move_near` goes
+> **70.0 to 50.0. Twenty points.**"
+>
+> "**It wasn't a counterexample.** OpenVLA's referential task does break. It had
+> simply never had the relevant region removed."
 
-> ⚠️ **Do not say "success collapsed to 16%."** Per task it is 20.0 → 16.0
-> (−4.0), while another task went 12.0 → 56.0. The directions still disagree.
-> Presenting with the answer still open is normal; say it that way.
+> ⚠️ **Stay inside the claim.** What is established is the within-`move_near`
+> comparison, **−20.0 (p = 0.0169)**. The −11.7 against baseline is not
+> (p = 0.1435), and the test for the two families responding differently is
+> p = 0.0829. If pressed: "60 episodes on one task is the limit — the direction
+> is clear, the magnitude isn't yet."
 
 ---
 

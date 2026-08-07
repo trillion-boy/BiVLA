@@ -54,14 +54,17 @@ either: re-run on a different version of the task with a different object set,
 depth prune 4 costs **−28.3 (p = 0.0002)** against **−31.7 (p = 0.0002)** on the
 original.
 
-**The counterexample (lead with it).** On OpenVLA, pruning depth at 1/2/4 does
-not move `move_near` at all (+8.3 / +0.0 / +8.3) — and the campaign's best
-number (+15.6) comes from there. Leading suspect: the option setting how early a
-layer may be bypassed is read as a **fraction** in OpenVLA and a **count** in
+**The counterexample, and how it resolved.** On OpenVLA, pruning depth at
+1/2/4 did not move `move_near` at all (+8.3 / +0.0 / +8.3) — and the campaign's
+best number (+15.6) came from there. Cause: the option setting how early a layer
+may be bypassed is read as a **fraction** in OpenVLA and a **count** in
 SpatialVLA, so OpenVLA only ever deleted the **back half** of the stack while
-SpatialVLA deleted the **middle**. Same name, different region — and the region
-this hypothesis is about was never touched in OpenVLA (§3c-bis). The
-range-matched run is in progress.
+SpatialVLA deleted the **middle**. Same name, different region. Re-running with
+the range matched — same backbone, same benchmark, same episodes, still four
+layers, only the region changed — the pick tasks do not move (41.3% → 40.0%,
+p = 1.0000) while `move_near` drops twenty points (70.0% → **50.0%**,
+p = **0.0169**). The disconfirmation was a range artefact; OpenVLA's referential
+task does break, it had simply never had the relevant region removed (§3c-bis).
 
 **Framing.** This is an evaluation-methodology result, not a method result.
 Three contributions: a per-episode paired protocol with verified determinism;
@@ -671,51 +674,46 @@ anyway even when allowed to roam; that outcome is not a test of §3c but does
 tell us OpenVLA's early-middle layers are not redundant, which is itself a
 structural difference from SpatialVLA worth recording.
 
-**In progress — the test is valid, the outcome is not yet in.** With
-`--depth-min-layer 0.08` the eligible range came out as advertised
-(`eligible 2..31 of 32`) and the ranking did reach forward: it bypassed
-**L2, L4, L23, L26**, two of them early. So this is a real test of §3c rather
-than a repeat of the back-half experiment. The two finished pick tasks
-disagree with each other:
+**Resolved — the disconfirmation was the layer range.** With
+`--depth-min-layer 0.08` the eligible range opened to `2..31 of 32` and the
+ranking reached forward, bypassing **L2, L4, L23, L26** on the pick tasks and
+**L2, L4, L6, L23** on `move_near`. Against baseline:
 
 | task | baseline | prune 4, back half | prune 4, range-matched |
 |---|---|---|---|
-| `pick_horizontal_coke_can` | 12.0% | 44.0% | **56.0%** |
-| `pick_vertical_coke_can` | 20.0% | 28.0% | **16.0%** |
+| `pick_horizontal_coke_can` | 28.0% | 44.0% | 56.0% |
+| `pick_vertical_coke_can` | 12.0% | 28.0% | 16.0% |
+| `pick_standing_coke_can` | 20.0% | 52.0% | 48.0% |
+| `move_near_v0` | 61.7% | 70.0% | **50.0%** |
+| *pick family* | 20.0% | +21.3 (p=0.0015) | +20.0 (p=0.0081) |
+| *referential* | 61.7% | +8.3 (p=0.3018) | **−11.7** (p=0.1435) |
 
-One is the best result that task has produced; the other is four points below
-its own baseline. Nothing follows from a pair that points both ways, and an
-earlier draft of this paragraph read the 16.0% as a collapse by comparing it
-against 54.1% — a whole-protocol average, not that task's number. It is a
-−4.0 delta, not a collapse. `move_near_v0` is the cell that decides §3c and it
-is still running.
+The cleanest form of this is the direct comparison, which holds the dose fixed
+at four layers and varies **only which region is removed** — same backbone, same
+benchmark, same episodes:
 
-**The version check — §3c does not depend on the environment version.**
-Everything §3c claims rested on one task, `move_near_v0`, which left it open to
-"that particular environment has a quirk." It does not. Re-running the whole
-comparison on `move_near_v1` — a different version with a different object set
-(blue plastic bottle, pepsi, orange, 7up, apple, sponge, redbull) — reproduces
-the effect almost exactly:
+| | back half → range-matched | broke / fixed | p |
+|---|---|---|---|
+| pick family (n=75) | 41.3% → 40.0% (**−1.3**) | 15 / 14 | 1.0000 |
+| `move_near_v0` (n=60) | 70.0% → 50.0% (**−20.0**) | 17 / 5 | **0.0169** |
 
-| | baseline | depth prune 4 | Δ | broke / fixed | p |
-|---|---|---|---|---|---|
-| `move_near_v0` | 83.3% | 51.7% | **−31.7** | 22 / 3 | 0.0002 |
-| `move_near_v1` | 86.7% | 58.3% | **−28.3** | 19 / 2 | 0.0002 |
+Move the deletion forward and the pick tasks do not notice, while the task that
+has to work out *which* object was named loses twenty points. That is §3c's
+prediction under the tightest control in the campaign, and it explains the
+disconfirmation rather than explaining it away: OpenVLA's `move_near` does
+break — it just never had the relevant region removed.
 
-The two baselines are themselves indistinguishable (86.7 vs 83.3, McNemar
-p = 0.6250 over the paired episodes), so neither version is the easier task and
-the reproduction is not an artefact of difficulty. Note the scope: v0 and v1 are
-two versions of the same task, not two different tasks. This retires "the v0
-environment is peculiar"; it does not yet establish the split across referential
-tasks in general. Kept in its own results directory, never merged into the grid.
+**What is and is not established.** The −20.0 within-`move_near` comparison is
+significant (p = 0.0169). The −11.7 against baseline is not (p = 0.1435), and
+the Fisher test for the two families responding differently to the same shift
+is p = 0.0829 — suggestive, not established. n = 60 on one task is the limit
+here, not the direction.
 
-**Where the split stands, as a score:** five confirmations, plus a version
-check that reproduces the largest of them on an independent environment version; (two foveation
-variants on OpenVLA, three depth conditions on SpatialVLA), one disconfirmation
-now spanning a whole curve (depth on OpenVLA), one control behaving as
-predicted (action repeat hits both families equally). The disconfirmation has a
-concrete, testable confound. This is not "confirmed", and we should stop
-writing it as if it were.
+**Where the split stands, as a score:** five confirmations, a version check
+reproducing the largest of them on an independent environment version, one
+control behaving as predicted — and the disconfirmation resolved: it was a
+layer-range artefact, and with the range matched OpenVLA's referential task
+moves in the predicted direction while its pick tasks do not.
 
 ### 3d. Stacking two interventions: the gain does not survive, the split does
 
