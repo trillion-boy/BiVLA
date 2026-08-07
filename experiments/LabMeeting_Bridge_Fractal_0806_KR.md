@@ -32,19 +32,40 @@
 에피소드만** 짝짓는다. 그래서 4개 중 3개만 끝난 조건은 baseline의 그 3개와
 비교되지, 전체 프로토콜과 비교되지 않는다.
 
+*기울임 +* `†` = **에피소드별 기록을 안 남긴** 이전 캠페인에서 측정된 칸.
+unpaired이고, Δ가 이 표 첫 줄의 baseline이 아니라 **그 캠페인 자신의
+baseline** 대비다. 그래서 이 열에서 다시 계산할 수 없고, 부호에 기대는
+주장을 실어줄 수 없다.
+
 | 조건 | OpenVLA<br>Bridge | OpenVLA<br>Fractal | SpatialVLA<br>Bridge | SpatialVLA<br>Fractal | UniVLA<br>Bridge |
 |---|---|---|---|---|---|
 | 원본 정책 | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
 | action repeat 2 | 7.3%  −8.3 | 29.3%  +9.3 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | -- | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
-| foveation log-polar 20% | -- ¹ | -- | -- | 85.2%  +0.7 | -- |
-| foveation blur 20% | 33.3%  +17.7** | -- | -- | 86.7%  +1.3 | -- |
+| foveation log-polar 20% | 34.4%  +18.8** | -- | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
+| foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 86.7%  +1.3 | *76.0%  −2.1†* |
+| depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | -- | -- |
 | depth prune 4 | 16.7%  +1.0 | -- | -- | -- | -- |
 
-¹ OpenVLA/Bridge log-polar은 2026-07-20 `reproduction_eager` 캠페인의
-**+18.8 (p = 0.0051)**이다. 그 캠페인의 baseline을 이번 실행이 태스크별로
-정확히 재현하므로 직접 비교 가능하지만, 에피소드 기록이 `results/` 밖에 있어
-스크립트가 생성하지 못해 표에서 빠져 있다.
+† legacy 칸과, 각각이 실제로 대비한 baseline:
+
+| 백본 / 벤치마크 | 조건 | 성공률 | Δ | 자기 baseline | 출처 |
+|---|---|---|---|---|---|
+| SpatialVLA / Bridge | foveation log-polar | 25.0% | −7.3 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
+| SpatialVLA / Bridge | foveation blur | 30.2% | −2.1 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
+| SpatialVLA / Bridge | depth prune 1 (26개 중) | 22.9% | −9.4 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
+| UniVLA / Bridge | foveation log-polar | 86.5% | +8.3 | 78.1% | `ChunkExecFoveation_univla.md` |
+| UniVLA / Bridge | foveation blur | 76.0% | −2.1 | 78.1% | `ChunkExecFoveation_univla.md` |
+
+SpatialVLA/Bridge legacy의 baseline은 첫 줄의 30.2%가 아니라 **32.3%**다.
+같은 정책, 같은 프로토콜, 다른 캠페인 — 같은 것을 두 번 잰 값이 2.1포인트
+차이 난다. 그게 이 열에서 우리가 가진 노이즈 바닥에 가장 가까운 값이고,
+**하필 그 칸들이 보고하는 blur 효과의 크기와 같다.**
+
+OpenVLA/Bridge log-polar은 **paired다.** 에피소드 기록이
+`RetinaBased/GoogleColab/results_reproduction_eager/`에 남아 있고, 그 캠페인의
+baseline이 현재 baseline과 에피소드 단위로 완전히 동일하다(96/96). 스크립트가
+빌려오기 전에 그 동일성을 검증한다.
 
 ---
 

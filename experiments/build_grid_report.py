@@ -56,6 +56,39 @@ CAMPAIGNS = [
     ("OpenVLA",    "Fractal", "openvla_fractal_0806",     "suffixed"),
 ]
 
+# Per-episode records that live outside results/ because they predate it.
+# Each is (backbone, benchmark, condition, records_dir, verify_baseline_dir):
+# the last field is that campaign's OWN baseline, which must be episode-for-
+# episode identical to the current one or the borrowed condition cannot be
+# paired against it. Checked at load time, not assumed -- borrowing a condition
+# from a campaign whose baseline drifted would silently mix two experiments.
+IMPORTED = [
+    ("OpenVLA", "Bridge", "foveate_logpolar",
+     "RetinaBased/GoogleColab/results_reproduction_eager/openvla_foveated",
+     "RetinaBased/GoogleColab/results_reproduction_eager/openvla"),
+]
+
+# Cells that were measured but whose per-episode records were not kept. They
+# are reported because leaving them blank invites the reader to assume they
+# were never run -- but they are UNPAIRED, and their delta is against their own
+# campaign's baseline, which is not the baseline in this table's top row. That
+# is why they carry their own baseline here and are typeset differently: you
+# cannot subtract them from this column's baseline and get the same number.
+#
+# (rate, delta, own_baseline, source_document)
+LEGACY = {
+    ("SpatialVLA", "Bridge", "foveate_logpolar"):
+        (25.0, -7.3, 32.3, "SpatialVLA_Bridge_Grid.md"),
+    ("SpatialVLA", "Bridge", "foveate_blur"):
+        (30.2, -2.1, 32.3, "SpatialVLA_Bridge_Grid.md"),
+    ("SpatialVLA", "Bridge", "depth_prune1"):
+        (22.9, -9.4, 32.3, "SpatialVLA_Bridge_Grid.md (1 of 26 layers)"),
+    ("UniVLA", "Bridge", "foveate_logpolar"):
+        (86.5, +8.3, 78.1, "ChunkExecFoveation_univla.md"),
+    ("UniVLA", "Bridge", "foveate_blur"):
+        (76.0, -2.1, 78.1, "ChunkExecFoveation_univla.md"),
+}
+
 # Display order and display names. Anything found but not listed still appears,
 # appended, so a new condition is never silently dropped from the report.
 CONDITION_ORDER = [
@@ -118,7 +151,46 @@ def discover() -> dict:
                 key = (backbone, benchmark_of(task), cond)
                 out[key][task] = {int(e["ep_id"]): bool(e["success"])
                                   for e in summary["episodes"]}
+
+    for backbone, bench, cond, rec_dir, base_dir in IMPORTED:
+        rec = _load_dir(os.path.join(_ROOT, rec_dir))
+        if not rec:
+            continue
+        theirs = _load_dir(os.path.join(_ROOT, base_dir))
+        ours = out.get((backbone, bench, "baseline"))
+        if not _same_episodes(theirs, ours):
+            print(f"# skipped {backbone}/{bench} {cond}: its campaign baseline "
+                  f"is not episode-identical to the current one, so it cannot "
+                  f"be paired against it", file=sys.stderr)
+            continue
+        out[(backbone, bench, cond)] = rec
     return out
+
+
+def _load_dir(base: str) -> dict:
+    """-> {task: {ep_id: success}} for a <dir>/<task>/results_<task>.json tree."""
+    got: dict = {}
+    if not os.path.isdir(base):
+        return got
+    for task in sorted(os.listdir(base)):
+        path = os.path.join(base, task, f"results_{task}.json")
+        if not os.path.isfile(path):
+            continue
+        with open(path) as fh:
+            summary = json.load(fh)
+        got[summary.get("task", task)] = {int(e["ep_id"]): bool(e["success"])
+                                          for e in summary["episodes"]}
+    return got
+
+
+def _same_episodes(a: dict | None, b: dict | None) -> bool:
+    """Do two runs agree on every episode they share, and cover the same set?"""
+    if not a or not b or set(a) != set(b):
+        return False
+    for task in a:
+        if a[task] != b[task]:
+            return False
+    return True
 
 
 def cell(data: dict, backbone: str, bench: str, cond: str):
@@ -164,9 +236,14 @@ def paired(data: dict, backbone: str, bench: str, cond: str):
     return delta, fixed, broke, exact_two_sided(fixed, broke), n
 
 
-def fmt_cell(c, pr) -> str:
+def fmt_cell(c, pr, legacy=None) -> str:
     if c is None:
-        return "--"
+        if legacy is None:
+            return "--"
+        # Italic + dagger, never bold: a legacy cell must not read like a
+        # measured-and-paired one at a glance.
+        rate, delta, base, _src = legacy
+        return f"*{rate:.1f}%  {delta:+.1f}†*"
     ok, n = c
     s = f"{100.0*ok/n:.1f}%"
     if pr is None:
@@ -177,7 +254,7 @@ def fmt_cell(c, pr) -> str:
 
 
 def conditions_present(data) -> list:
-    seen = {k[2] for k in data}
+    seen = {k[2] for k in data} | {k[2] for k in LEGACY}
     ordered = [c for c, _ in CONDITION_ORDER if c in seen]
     return ordered + sorted(seen - set(ordered))
 
@@ -194,13 +271,29 @@ def markdown(data) -> str:
              "baseline. `**` clears p<0.05, `***` clears the Bonferroni "
              "threshold for this campaign (a~0.003). Deltas use only episodes "
              "present in both runs.\n")
+    L.append("*Italic with `†`* = measured in an earlier campaign that kept no "
+             "per-episode records. Unpaired, and its delta is against that "
+             "campaign's own baseline, not the one in this table's first row -- "
+             "so it cannot be recomputed from this column and cannot carry a "
+             "claim that turns on its sign. Listed under the table.\n")
     L.append("| condition | " + " | ".join(f"{b}<br>{k}" for b, k in cols) + " |")
     L.append("|---|" + "---|" * len(cols))
     for cond in conditions_present(data):
         row = [DISPLAY.get(cond, cond)]
         for b, k in cols:
-            row.append(fmt_cell(cell(data, b, k, cond), paired(data, b, k, cond)))
+            row.append(fmt_cell(cell(data, b, k, cond), paired(data, b, k, cond),
+                                LEGACY.get((b, k, cond))))
         L.append("| " + " | ".join(row) + " |")
+
+    if LEGACY:
+        L.append("\n† legacy cells, with the baseline each was measured against:\n")
+        L.append("| backbone / benchmark | condition | rate | delta | own baseline | source |")
+        L.append("|---|---|---|---|---|---|")
+        for (b, k, cond), (rate, d, base, src) in sorted(LEGACY.items()):
+            if cell(data, b, k, cond):      # superseded by a real run
+                continue
+            L.append(f"| {b} / {k} | {DISPLAY.get(cond, cond)} | {rate:.1f}% | "
+                     f"{d:+.1f} | {base:.1f}% | `{src}` |")
 
     L.append("\n## Paired detail\n")
     L.append("| backbone | benchmark | condition | n | delta | fixed | broke | p |")
@@ -238,7 +331,9 @@ def markdown(data) -> str:
     missing = []
     for b, k in cols:
         for cond in conditions_present(data):
-            if not data.get((b, k, cond)):
+            # A legacy cell was run; it just has no records. Listing it as
+            # "not run" would say the opposite of what is true.
+            if not data.get((b, k, cond)) and (b, k, cond) not in LEGACY:
                 missing.append(f"{b}/{k}: {DISPLAY.get(cond, cond)}")
     if missing:
         L.append("\n## Not run\n")
