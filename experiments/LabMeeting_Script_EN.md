@@ -1,8 +1,10 @@
 # Lab meeting speaking script — English
 
-Seven slides, about eight minutes. The **[SAY]** blocks can be read as written.
-If you are tight on time, slide 3b is the one to drop — but then also drop the
-second half of slide 4, because it refers back to it.
+Eight slides, about nine and a half minutes. The **[SAY]** blocks can be read as
+written. If you are tight on time, slide 3b is the one to drop — but then also
+drop the "apply our own thesis" line in slide 4b, because it refers back to it.
+Never drop 4b while keeping 4: that leaves the +8.1 standing unqualified, which
+is the one thing this talk must not do.
 Numbers come from `LabMeeting_Bridge_Fractal_0806.md`; regenerate the tables
 with `python experiments/build_grid_report.py`.
 
@@ -137,15 +139,16 @@ strongest test in the whole grid.
 So the reversal is not a quirk of one axis."
 
 ---
-## Slide 4 — Three axes, three answers (100s) ★highlight
+## Slide 4 — Three axes, and one free lunch (110s) ★highlight
 
 **[SHOW]** — SpatialVLA / Fractal, one policy, one session, full 135 episodes
 
-| what we delete | how much | Δ | p | what it buys |
+| what we delete | how much | Δ | p | speed |
 |---|---|---|---|---|
 | **time** — re-planning | 3 of every 4 steps | **−40.0** | 0.0000 | 1/4 the calls |
-| **compute** — decoder layers | 4 of 26 (15%) | **−17.8** | 0.0002 | 1.17× per call |
-| **vision** — observation | **80%** | +0.7 / −1.5 | 1.00 / 0.83 | **nothing** |
+| **compute** — decoder layers | 4 of 26 (15%) | **−17.8** | 0.0002 | 1.18× |
+| **compute** — decoder layers | **1 of 26 (4%)** | **+8.1** | **0.013** | **1.08×** |
+| **vision** — observation | **80%** | +0.7 / −1.5 | 1.00 / 0.83 | **1.00×** |
 
 **[SAY]**
 "It isn't all negative. This is the sharpest thing we have.
@@ -154,31 +157,69 @@ One policy, one benchmark, one session — none of the caveats from the previous
 slides apply. We deleted three different things.
 
 **Four fifths of what the policy can see.** Two ways: one warps the pixels, the
-other only removes detail. **Neither did anything.**
+other only removes detail. **Neither did anything** — and neither made it any
+faster, because foveation resamples back to the same resolution, so the token
+count never drops.
 
-**Four of twenty-six decoder layers. Fifteen percent. That cost 17.8 points.**
+**Holding each action four steps cost forty points.**
 
-**Holding each action four steps cost forty.**
+**And then the compute axis did something we did not expect.**
+
+**[PAUSE — point at the two compute rows]**
+
+**Four of twenty-six layers: minus eighteen points. One of twenty-six: plus
+eight.** Same code, same redundancy criterion, same session. Fourteen episodes
+fixed, three broken, p equals 0.013. And it runs eight percent faster.
+
+That is a genuine free lunch — the only intervention in this entire campaign
+that makes the policy both **better and cheaper**."
+
+---
+
+## Slide 4b — ...and that is exactly the problem (45s) ★the turn
+
+**[SHOW]**
+
+```
+SpatialVLA / Fractal, decoder layers bypassed
+
+  0 layers  ████████████████████  84.4%
+  1 layer   ██████████████████████  92.6%   +8.1   8% faster
+  4 layers  ███████████████  66.7%          −17.8  18% faster
+                     ↑
+            the sign crosses somewhere in here
+            and we have no measurement in between
+
+  the pruned sets are NESTED:  {10}  ⊂  {8, 9, 10, 19}
+```
+
+**[SAY]**
+"Now look at what that free lunch is sitting next to.
+
+The four-layer set **contains** the one-layer set. We added three more layers
+that the *same* redundancy metric ranked as *most redundant* — and it didn't
+degrade gradually. It crossed zero and kept going. Comparing the two directly:
+**minus twenty-six points, five fixed, forty broken.**
 
 **[PAUSE]**
 
-**Eighty percent of the vision is free. Fifteen percent of the compute costs
-eighteen points.**
+So here's my honest position on that plus-eight.
 
-That gives an ordering for what these policies are fragile to — time, then
-compute, then vision. And the irony is that the only free axis is the only one
-that **buys nothing**: foveation reduces sample density but resamples back to
-the same resolution, so the token count never drops.
+Paired, full protocol, significant, eight percent faster. **If we had run that
+one cell and stopped, we would have a method paper.** That is what an efficiency
+paper is built on.
 
-**[THEN — say this, don't let someone else say it]**
+We ran the neighbours. One step further along the same axis is minus eighteen.
+And the whole depth axis is **completely inert on OpenVLA** — plus 2, plus 1,
+zero, at one, four and eight layers.
 
-"And I have to apply our own thesis to this slide. That ordering is a statement
-about *this cell*. You saw two slides ago that the same foveation on OpenVLA,
-same benchmark, costs nineteen points. So *time, compute, vision* is a
-SpatialVLA-on-Fractal result, not a fact about VLA policies.
+**[if you kept slide 3b]** "Same for the other axis. Vision was the *free* one
+on this slide, and two slides ago the identical foveation cost OpenVLA nineteen
+points. So *time, compute, vision* isn't a fact about VLA policies — it's a fact
+about this cell."
 
-Which is the point. **Inside a cell you can rank the axes and the ranking is
-sharp. Across cells it doesn't hold.**"
+**The free lunch is real. It's also local.** And you can only find that out by
+running the grid."
 
 ---
 ## Slide 5 — Our own explanation broke too (50s)
@@ -233,9 +274,28 @@ backbone on a single benchmark, and we have a controlled counterexample."
 # Expected questions
 
 **Q. So the method is dead?**
-> "As a method claim, yes. But we got a more general claim instead. And slide 4
-> gives a design rule: fragility orders as time, then compute, then vision, and
-> only the visual pathway has slack."
+> "As a general method claim, yes. But we got a more general *finding* instead,
+> and slide 4 has one thing that actually works: on SpatialVLA/Fractal, bypass
+> one decoder layer and you get eight percent faster and eight points *better*.
+> I'd just never state it without the cell it came from."
+
+**Q. Isn't the +8.1 too good to be true? A pruned model beating the full one?**
+> "It's the right thing to be suspicious of, so here's everything against it.
+> It's p = 0.013, which does *not* clear our Bonferroni threshold — it's one of
+> eighteen tests. We have no measured noise floor; the closest thing we have is
+> two measurements of the same baseline in different campaigns differing by 2.1
+> points. And one of the four tasks is at 25 out of 25, so we're near a ceiling.
+> What's in its favour is that the split is 14 fixed to 3 broken, and the gain
+> is spread across three of four tasks rather than carried by one. I'd call it
+> real and unreplicated, and re-running the baseline is now my top priority."
+
+**Q. Why would deleting a layer *help*?**
+> "I don't know, and I'd rather say that than invent a story. The candidate
+> explanations are that L10 is actively harmful on this distribution, or that
+> it's some kind of regularisation. What I can tell you is that the redundancy
+> metric that picked L10 clearly measures *something* real — it found a layer
+> that's safe to drop — and equally clearly does not predict *how many* you can
+> drop, because its own next three picks flip the sign."
 
 **Q. OpenVLA on Bridge is at 15.6% — isn't it just broken, so anything helps?**
 > "That's the right objection and we can't fully rule it out. But it predicts
@@ -276,12 +336,15 @@ backbone on a single benchmark, and we have a controlled counterexample."
 
 **Q. What's left to run?**
 > "The action-repeat axis is complete across both backbones and both benchmarks.
-> The next single most informative run is OpenVLA/Fractal **blur** — on Bridge,
-> blur and log-polar agree to within a point, so if Fractal blur also lands near
-> −19 the loss is about *how much* we removed, and if it stays flat it's about
-> log-polar's geometry specifically. One run separates two mechanisms. After
-> that, re-measuring the legacy cells and running one baseline twice in a session
-> to establish the per-episode noise floor."
+> Top of the list now is **depth prune 2 on SpatialVLA/Fractal** — we have +8.1
+> at one layer and −17.8 at four and nothing in between, so we can't say where
+> the sign crosses. That one run turns 'it depends on the dose' into a curve
+> with a knee, which is the only number a practitioner would actually want.
+> Then OpenVLA/Fractal **blur** — on Bridge, blur and log-polar agree to within
+> a point, so if Fractal blur also lands near −19 the loss is about *how much*
+> we removed, and if it stays flat it's about log-polar's geometry specifically.
+> And then re-running one baseline twice in a session for the noise floor, which
+> the +8.1 has made urgent."
 
 ---
 
@@ -294,6 +357,9 @@ backbone on a single benchmark, and we have a controlled counterexample."
   Fractal, OpenVLA at 38%. A +5 near the floor and a +5 near the ceiling are
   not the same thing. Always say the baseline alongside.
 - **Say "no effect".** Say "no effect larger than about 7 points".
+- **Oversell the +8.1.** It does not clear Bonferroni and it has not been
+  replicated. Say "plus eight, p = 0.013, one cell, unreplicated" every time.
+  Slide 4b exists so that *you* are the one pointing at its limits.
 
 # Numbers to memorise (only these)
 
@@ -303,5 +369,6 @@ four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
 p = 0.0038                                                    (slide 3)
 +18.8 vs −19.3  OpenVLA foveation, Bridge vs Fractal          (slide 3b)
 −40.0 / −17.8 / ~0  time / compute / vision                   (slide 4)
-     ...and that ordering is SpatialVLA/Fractal only           (slide 4)
++8.1 at ONE layer,  −17.8 at FOUR,  nested sets               (slide 4b)
+     ...and the whole depth axis is flat on OpenVLA           (slide 4b)
 ```

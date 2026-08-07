@@ -47,8 +47,9 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | -- | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
-| depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | -- | -- |
+| depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | 92.6%  +8.1** | -- |
 | depth prune 4 | 16.7%  +1.0 | -- | -- | 66.7%  −17.8*** | -- |
+| depth prune 8 | 15.6%  +0.0 | -- | -- | -- | -- |
 
 † legacy cells, with the baseline each was actually measured against:
 
@@ -211,34 +212,84 @@ Four cells, four qualitatively different shapes. The two OpenVLA rows are the
 same weights: on Bridge the policy loses two thirds of its success by k=4, on
 Fractal it does not move at all.
 
-### 3. Within one backbone and one benchmark: time ≫ compute ≫ vision
+### 3. Within one backbone and one benchmark, the three axes are not alike
 
-SpatialVLA on Fractal, same session, same protocol, full 135 episodes:
+SpatialVLA on Fractal, same session, same protocol, full 135 episodes.
+Latency is the measured ms/infer against the baseline's 933 ms:
 
 | axis | what it removes | Δ | p | what it buys |
 |---|---|---|---|---|
 | **time** | re-planning at 3 of every 4 steps | **−40.0** | 0.0000 | 1/4 the calls |
-| **compute** | 4 of 26 decoder layers (15%) | **−17.8** | 0.0002 | 1.17× per call |
-| **vision** | 80% of the observation, log-polar | +0.7 | 1.00 | nothing |
+| **compute** | 4 of 26 decoder layers (15%) | **−17.8** | 0.0002 | 1.18× (790 ms) |
+| **compute** | **1 of 26 decoder layers (4%)** | **+8.1** | **0.0127** | **1.08× (866 ms)** |
+| **vision** | 80% of the observation, log-polar | +0.7 | 1.00 | nothing (933 ms) |
 | **vision** | 80% of the observation, blur | −1.5 | 0.83 | nothing |
 
-**Four fifths of the vision is free. Fifteen percent of the compute costs 18
-points. Three quarters of the re-planning costs 40.** Internally this needs no
-cross-benchmark caveat — one policy, one benchmark, one session, all paired over
-the full protocol.
+**Four fifths of the vision is free but buys nothing. Three quarters of the
+re-planning costs 40 points. And on the compute axis the sign depends on the
+dose.** Internally none of this needs a cross-benchmark caveat — one policy, one
+benchmark, one session, all paired over the full protocol.
 
-**But the ordering itself does not transfer, and we now know that.** The
-"vision is free" row is a statement about *this* cell. Move to OpenVLA on the
-same benchmark and the same log-polar foveation costs **19.3 points**
-(p = 0.0004) — the vision axis stops being the cheap one and becomes the
-expensive one, while depth pruning on OpenVLA/Bridge is the flat axis (+1.0,
-p = 1.00). So `time ≫ compute ≫ vision` is a SpatialVLA/Fractal result, not a
-finding about VLA policies.
+**The ordering does not transfer, and we now know that.** The "vision is free"
+row is a statement about *this* cell. Move to OpenVLA on the same benchmark and
+the same log-polar foveation costs **19.3 points** (p = 0.0004) — the vision
+axis stops being the cheap one and becomes the expensive one. Meanwhile the
+compute axis, which swings from +8.1 to −17.8 here, is *flat at every depth* on
+OpenVLA/Bridge (+2.1, +1.0, +0.0 at 1, 4 and 8 layers; every p ≥ 0.80). So
+`time ≫ compute ≫ vision` is a SpatialVLA/Fractal result, not a finding about
+VLA policies.
 
-That is not a retraction of the ordering; it is the campaign's thesis applied to
-the campaign's own best-looking result. Present it as: *within a cell you can
-rank the axes and the ranking is sharp; across cells the ranking is not stable* —
-which is exactly why single-cell efficiency claims are the problem.
+That is not a retraction; it is the campaign's thesis applied to the campaign's
+own best-looking result. Present it as: *within a cell you can rank the axes and
+the ranking is sharp; across cells the ranking is not stable* — which is exactly
+why single-cell efficiency claims are the problem.
+
+### 3b. The free lunch exists — in one cell, at one dose
+
+Pruning **one** decoder layer is the only intervention in this campaign that
+both improves success and reduces real compute:
+
+| SpatialVLA / Fractal | rate | Δ vs baseline | fixed / broke | p | ms/infer |
+|---|---|---|---|---|---|
+| baseline (26 layers) | 84.4% | — | — | — | 933 |
+| **prune 1 (bypass L10)** | **92.6%** | **+8.1** | **14 / 3** | **0.0127** | **866** |
+| prune 4 (bypass L8,9,10,19) | 66.7% | −17.8 | 8 / 32 | 0.0002 | 790 |
+
+Compared **directly to each other** rather than each to baseline, prune 1 and
+prune 4 differ by **−25.9 points, 5 fixed / 40 broke, p < 0.0001.**
+
+The pruned sets are nested — prune 4 bypasses the same L10 plus L8, L9 and L19.
+So adding three more of the *most redundant* layers, by the same redundancy
+criterion that selected the first one, does not degrade the gain gradually; it
+crosses zero and keeps going. **The redundancy metric ranks layers correctly
+enough to find one that is safe to drop, and does not predict how many.**
+
+Per task, the gain is broad rather than one task carrying it:
+
+| | baseline | prune 1 | Δ |
+|---|---|---|---|
+| `move_near_v0` | 83.3% | 93.3% | +10.0 |
+| `pick_standing_coke_can` | 84.0% | **100.0%** | +16.0 |
+| `pick_vertical_coke_can` | 88.0% | 92.0% | +4.0 |
+| `pick_horizontal_coke_can` | 84.0% | 84.0% | +0.0 |
+
+**Three caveats, and they matter more than the result.**
+
+1. p = 0.0127 does **not** clear this family's Bonferroni threshold (≈0.003).
+   14-vs-3 is a strong split, but it is one test among eighteen.
+2. We still have no measured noise floor. The one thing resembling one — two
+   measurements of the same SpatialVLA/Bridge baseline in different campaigns —
+   differed by 2.1 points. 8.1 is comfortably above that, but "comfortably
+   above a single unreplicated estimate" is not a floor.
+3. `pick_standing_coke_can` at 25/25 is a ceiling. The cell as a whole is at
+   92.6%, so there is not much room left to measure in.
+
+**And this is the point to make about it.** A +8.1 gain, paired, over the full
+protocol, with a measured 7.8% latency reduction, is *exactly* the result an
+efficiency paper is built on. Had we run this cell and stopped, we would have a
+method. We ran the neighbours: four layers instead of one on the same policy is
+−17.8, and the whole depth axis is inert on OpenVLA. The free lunch is real and
+it is local, which is the paper.
 
 And the axis that costs nothing is the only one that **buys** nothing:
 foveation reduces sample density but resamples to the same resolution, so the
@@ -297,7 +348,7 @@ step is to look at what is actually in those four scenes.
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
 | **OpenVLA** foveation | blur done; log-polar from July campaign | **log-polar done, paired**; blur running |
 | **SpatialVLA** foveation | **unpaired legacy only** | complete |
-| **SpatialVLA** depth prune 4 | legacy (prune 1 only) | **complete** |
+| **SpatialVLA** depth prune | legacy (prune 1 only, unpaired) | **1 and 4 complete, paired** |
 | **OpenVLA** depth prune | Bridge only (1, 4, 8) | not started |
 
 ### Two liabilities
@@ -315,19 +366,32 @@ reader compare deltas across columns unguarded.
 
 ### Next, in order
 
-1. **OpenVLA / Fractal blur.** The Bridge column shows log-polar and blur
+1. **SpatialVLA / Fractal depth prune 2.** We have +8.1 at one layer and −17.8
+   at four. The sign crosses somewhere in between and we have no point in the
+   middle. Two runs (2, and ideally 3) turn "the sign depends on the dose" into
+   an actual curve, and locate the knee — which is the only number a
+   practitioner would need. Highest information per GPU-hour left on the board.
+2. **OpenVLA / Fractal blur.** The Bridge column shows log-polar and blur
    agreeing to within a point (+18.8 / +17.7). If Fractal blur also lands near
    −19, the loss is about *how much* is removed; if it stays flat, it is about
    log-polar's specific geometry — i.e. the periphery. One run separates two
-   mechanisms, and it is the cheapest thing left on the board.
-2. Re-measure SpatialVLA / Bridge foveation with per-episode records — turns two
-   legacy cells into paired tests against a baseline already on disk, and would
-   complete the foveation row the way the repeat row is already complete.
-3. Re-run one baseline a second time in the same session to measure the
-   per-episode noise floor. Every delta in this report is currently read against
-   an unknown floor; log-polar flips 15 of 135 episodes on SpatialVLA with zero
-   net, and we cannot yet say how many of those 15 are the intervention.
-4. Look at the `move_near_v0` failures under log-polar. −41.7 on one task,
+   mechanisms.
+3. **OpenVLA / Fractal depth prune 1.** The +8.1 is currently a single cell.
+   OpenVLA/Bridge is flat at every depth, so if OpenVLA/Fractal is also flat,
+   the free lunch is SpatialVLA-specific; if it gains too, we have something
+   that survives one hop and is worth a section of its own.
+4. **Re-run one baseline a second time in the same session** to measure the
+   per-episode noise floor. This has been on the list all week and the +8.1 is
+   what makes it urgent: it is the first result we would actually want to
+   *claim*, and we cannot presently say how much of any 8-point move is the
+   intervention. Cheapest possible experiment, and it prices every other number
+   in the report.
+5. Re-measure SpatialVLA / Bridge foveation and depth prune 1 with per-episode
+   records — turns three legacy cells into paired tests against a baseline
+   already on disk. The Bridge legacy prune-1 cell reads −9.4 against Fractal's
+   +8.1; if that survives re-measurement it is a fourth sign reversal, but it
+   cannot be quoted as one while it is unpaired.
+6. Look at the `move_near_v0` failures under log-polar. −41.7 on one task,
    with grasp rates halving, is a concrete and inspectable failure — far more
    tractable than the repeat-axis reversals.
 
