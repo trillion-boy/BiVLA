@@ -44,7 +44,7 @@ baseline** 대비다. 그래서 이 열에서 다시 계산할 수 없고, 부�
 | action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
-| depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | *22.9%  −9.4†* | 92.6%  +8.1** | -- |
+| depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | 19.8%  −10.4 | 92.6%  +8.1** | -- |
 | depth prune 2 | -- | 38.5%  +0.0 | 20.8%  −9.4 | 87.4%  +3.0 | -- |
 | depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | -- | 66.7%  −17.8*** | -- |
 | depth prune 8 | 15.6%  +0.0 | -- | -- | -- | -- |
@@ -56,7 +56,6 @@ baseline** 대비다. 그래서 이 열에서 다시 계산할 수 없고, 부�
 |---|---|---|---|---|---|
 | SpatialVLA / Bridge | foveation log-polar | 25.0% | −7.3 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 | SpatialVLA / Bridge | foveation blur | 30.2% | −2.1 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
-| SpatialVLA / Bridge | depth prune 1 (26개 중) | 22.9% | −9.4 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 | UniVLA / Bridge | foveation log-polar | 86.5% | +8.3 | 78.1% | `ChunkExecFoveation_univla.md` |
 | UniVLA / Bridge | foveation blur | 76.0% | −2.1 | 78.1% | `ChunkExecFoveation_univla.md` |
 
@@ -209,10 +208,10 @@ OpenVLA의 action repeat 2를 보자:
 
 #### 5단계 — Bonferroni: 검정을 많이 하면
 
-상호작용 검정을 **11개** 돌린다. 전부 효과가 없더라도 α=0.05면 그중
-**0.55개가 우연히 통과**할 것으로 기대된다. 그래서 기준을 조인다:
+상호작용 검정을 **15개** 돌린다. 전부 효과가 없더라도 α=0.05면 그중
+**0.75개가 우연히 통과**할 것으로 기대된다. 그래서 기준을 조인다:
 
-**α = 0.05 / 11 ≈ 0.0045**
+**α = 0.05 / 15 ≈ 0.0033**
 
 표에서 `***`는 이 기준을 넘은 것, `**`는 0.05만 넘은 것이다. 이 임계값은
 스크립트가 **표에 실제로 들어간 행 수에서 직접 계산**하므로, 그리드가
@@ -271,17 +270,41 @@ action repeat 2, 동일한 코드·동일한 hook 지점:
 |---|---|---|---|
 | **OpenVLA: Bridge vs Fractal** | **foveation log-polar** | **28/10 vs 13/39** | **0.0000055** ✓Bonf |
 | **OpenVLA: Bridge vs Fractal** | **foveation blur** | **26/9 vs 27/39** | **0.0017** ✓Bonf |
-| **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0/11 vs 20/22** | **0.0038** ✓Bonf |
+| **SpatialVLA: Bridge vs Fractal** | **depth prune 1** | **9/19 vs 14/3** | **0.0018** ✓Bonf |
+| OpenVLA: Bridge vs Fractal | repeat 4 | 0/11 vs 20/22 | **0.0038** |
 | OpenVLA: Bridge vs Fractal | repeat 2 | 3/11 vs 22/15 | **0.0266** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | 10/22 vs 6/60 | **0.0085** |
+| SpatialVLA: Bridge vs Fractal | depth prune 2 | 6/15 vs 14/10 | 0.0715 |
 | OpenVLA: Bridge vs Fractal | depth prune 4 | 11/10 vs 30/9 | 0.0802 |
 | SpatialVLA: Bridge vs Fractal | repeat 2 | 21/9 vs 11/11 | 0.1624 |
+| OpenVLA: Bridge vs Fractal | depth prune 1 | 9/7 vs 12/11 | 1.0000 |
 
-**일곱 중 다섯이 확립됐고, 그중 셋은 Bonferroni까지 넘는다.** 미해결이 둘 —
-SpatialVLA의 repeat 2 이득이 사라지는 것, 그리고 **반전처럼 보이지만 아닌 것
-하나를 짚어둔다: depth prune.** OpenVLA가 Bridge에서 무반응(+1.0)인데
-Fractal에서 +15.6이라 눈에는 반전으로 보이는데, 불일치 분할로 검정하면
-**p = 0.0802**다. **이 쌍을 반전이라고 인용하면 안 된다.**
+**열 중 여섯이 확립됐고, 그중 셋이 Bonferroni를 넘는다**(검정이 늘어 기준이
+α ≈ 0.0033으로 조여졌다 — `repeat 4`는 숫자가 안 바뀌었는데 별 셋에서 별 둘로
+내려갔다).
+
+**이제 세 축 전부에 확립된 반전이 있다.** 오늘 전까지 깊이 축만 없었다.
+prune 2가 p = 0.0715, prune 4가 p = 0.0802로 둘 다 아깝게 못 넘었었다.
+prune 1이 넘는 이유는 **거기서 Fractal 효과가 제일 크기 때문**이다 — 14개를
+고치고 3개만 깼다 — 그리고 Bridge는 반대로 간다:
+
+| SpatialVLA, 26개 중 1개 우회 | Bridge | Fractal |
+|---|---|---|
+| baseline | 30.2% | 84.4% |
+| pruned | **19.8%** | **92.6%** |
+| Δ (paired) | **−10.4** (p = 0.087) | **+8.1** (p = 0.013) |
+| 고쳐짐 / 깨짐 | 9 / 19 | 14 / 3 |
+
+**18.5포인트 스윙.** 같은 체크포인트, 같은 개입, 같은 레이어 개수다. 그리고
+이건 **마지막 남은 legacy depth 칸을 은퇴시킨다**. 그 칸은 unpaired로 −9.4를
+보고했고, paired 측정값은 −10.4다. 옛 숫자가 대충 맞았던 셈인데, **이제는
+검정이 가능하다**는 게 다르다.
+
+**질문받기 전에 말할 단서 둘.** Bridge 쪽 손실은 몰려 있다 — eggplant가
+58.3 → 25.0으로 떨어지고 나머지 셋은 4~8점 움직인다. **−10.4의 대부분을 한
+태스크가 끌고 있다.** 그리고 OpenVLA의 깊이 축은 여전히 반전 **안 한다** —
+prune 4가 p = 0.0802, prune 1이 p = 1.0000이다. **깊이 반전은 SpatialVLA의
+결과이지 depth pruning의 속성이 아니다.**
 
 repeat 4에서 OpenVLA는 Bridge에서 움직인 11개가 **전부** 깨졌는데, Fractal에서는
 42개를 움직여 20개를 고쳤다. 같은 가중치다.
@@ -674,7 +697,7 @@ baseline 실패 4개를 정확히 똑같이 구제**했다 (에피소드 10, 17,
 | **SpatialVLA** repeat {1,2,4} | 완료, paired | 완료 |
 | **OpenVLA** foveation | blur 완료, log-polar은 7월 캠페인 | **log-polar·blur 완료, paired** |
 | **SpatialVLA** foveation | **unpaired legacy만 있음** | 완료 |
-| **SpatialVLA** depth prune | legacy (prune 1만, unpaired) | **1·2·4 완료, paired** |
+| **SpatialVLA** depth prune | **1·2 완료, paired** (legacy 은퇴) | **1·2·4 완료, paired** |
 | **SpatialVLA** 조합 | 미시작 | **prune 2 + repeat 2 완료, paired** |
 | **OpenVLA** depth prune | Bridge만 (1, 4, 8) | **4 완료, paired**; 1·2 진행 중 |
 

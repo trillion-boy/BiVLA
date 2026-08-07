@@ -81,11 +81,14 @@ OpenVLA / Fractal repeat 4   20/42  ███████████       48%
 
 | comparison | condition | p |
 |---|---|---|
-| **OpenVLA: Bridge vs Fractal** | **foveation** | **0.0000055** ✓Bonferroni |
-| **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0.0038** ✓Bonferroni |
+| **OpenVLA: Bridge vs Fractal** | **foveation log-polar** | **0.0000055** ✓Bonf |
+| **OpenVLA: Bridge vs Fractal** | **foveation blur** | **0.0017** ✓Bonf |
+| **SpatialVLA: Bridge vs Fractal** | **depth prune 1** | **0.0018** ✓Bonf |
+| OpenVLA: Bridge vs Fractal | repeat 4 | **0.0038** |
 | OpenVLA: Bridge vs Fractal | repeat 2 | **0.027** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | **0.0085** |
-| SpatialVLA vs UniVLA (Bridge) | repeat 2 | **< 0.0001** ✓Bonferroni |
+
+**Time, vision and compute — all three axes now reverse.**
 
 **[SAY]**
 "We tested whether that's chance.
@@ -104,7 +107,8 @@ The same weights on Fractal: forty-two episodes changed and it **fixed twenty**
 of them. Forty-eight percent — essentially a coin.
 
 Asking whether those are the same coin is a Fisher exact test, and it comes out
-at **p = 0.0038**. That clears Bonferroni for the nine tests we ran."
+at **p = 0.0038**. Bonferroni for our fifteen tests is 0.0033, so that one is
+nominal rather than corrected — the three above it clear outright."
 
 ---
 
@@ -490,6 +494,8 @@ four shapes:  collapse / flat / peak-at-2 / flat-then-cliff   (slide 2)
 0%  vs  48%   OpenVLA repeat 4, Bridge vs Fractal             (slide 3)
 p = 0.0038                                                    (slide 3)
 +18.8 vs −19.3  OpenVLA foveation, Bridge vs Fractal          (slide 3b)
+−10.4 vs +8.1   SpatialVLA depth prune 1, p = 0.0018           (slide 3)
+   ...all THREE axes reverse: time, vision, compute
 +8.1 at ONE layer,  −17.8 at FOUR,  nested sets               (slide 4)
 FIVE agree, ONE fails (OpenVLA depth, move_near +8.3)         (slide 4b)
    ...control: repeat 4 hits BOTH, −41 vs −38                 (slide 4b)

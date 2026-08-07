@@ -47,7 +47,7 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
-| depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | *22.9%  −9.4†* | 92.6%  +8.1** | -- |
+| depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | 19.8%  −10.4 | 92.6%  +8.1** | -- |
 | depth prune 2 | -- | 38.5%  +0.0 | 20.8%  −9.4 | 87.4%  +3.0 | -- |
 | depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | -- | 66.7%  −17.8*** | -- |
 | depth prune 8 | 15.6%  +0.0 | -- | -- | -- | -- |
@@ -59,7 +59,6 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 |---|---|---|---|---|---|
 | SpatialVLA / Bridge | foveation log-polar | 25.0% | −7.3 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 | SpatialVLA / Bridge | foveation blur | 30.2% | −2.1 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
-| SpatialVLA / Bridge | depth prune 1 (of 26) | 22.9% | −9.4 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 | UniVLA / Bridge | foveation log-polar | 86.5% | +8.3 | 78.1% | `ChunkExecFoveation_univla.md` |
 | UniVLA / Bridge | foveation blur | 76.0% | −2.1 | 78.1% | `ChunkExecFoveation_univla.md` |
 
@@ -219,10 +218,10 @@ test.
 
 #### Step 5 — Bonferroni: when you run many tests
 
-We run **11** interaction tests. Even if every one were a true null, at α=0.05
-we would expect **0.55 of them to pass by chance**. So the threshold tightens:
+We run **15** interaction tests. Even if every one were a true null, at α=0.05
+we would expect **0.75 of them to pass by chance**. So the threshold tightens:
 
-**α = 0.05 / 11 ≈ 0.0045**
+**α = 0.05 / 15 ≈ 0.0033**
 
 In the tables `***` marks rows clearing that, `**` marks p<0.05 only. The
 generator derives the threshold from the number of rows actually in the table,
@@ -284,17 +283,41 @@ and OpenVLA's sign flips. Tested directly:
 |---|---|---|---|
 | **OpenVLA: Bridge vs Fractal** | **foveation log-polar** | **28/10 vs 13/39** | **0.0000055** ✓Bonf |
 | **OpenVLA: Bridge vs Fractal** | **foveation blur** | **26/9 vs 27/39** | **0.0017** ✓Bonf |
-| **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0/11 vs 20/22** | **0.0038** ✓Bonf |
+| **SpatialVLA: Bridge vs Fractal** | **depth prune 1** | **9/19 vs 14/3** | **0.0018** ✓Bonf |
+| OpenVLA: Bridge vs Fractal | repeat 4 | 0/11 vs 20/22 | **0.0038** |
 | OpenVLA: Bridge vs Fractal | repeat 2 | 3/11 vs 22/15 | **0.0266** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | 10/22 vs 6/60 | **0.0085** |
+| SpatialVLA: Bridge vs Fractal | depth prune 2 | 6/15 vs 14/10 | 0.0715 |
 | OpenVLA: Bridge vs Fractal | depth prune 4 | 11/10 vs 30/9 | 0.0802 |
 | SpatialVLA: Bridge vs Fractal | repeat 2 | 21/9 vs 11/11 | 0.1624 |
+| OpenVLA: Bridge vs Fractal | depth prune 1 | 9/7 vs 12/11 | 1.0000 |
 
-**Five of seven are established, three of them clearing Bonferroni.** Two are
-not: SpatialVLA's repeat-2 gain shrinking to zero, and — worth naming because
-it looks like a reversal and is not one — **depth pruning, where OpenVLA is
-inert on Bridge (+1.0) and gains 15.6 on Fractal, but the discordant splits
-give p = 0.0802.** Do not quote that pair as a reversal.
+**Six of ten are established, three clearing Bonferroni** (which is now
+α ≈ 0.0033, since adding tests tightens it — `repeat 4` at 0.0038 dropped from
+three stars to two without its number changing).
+
+**All three axes now have an established reversal.** Until today the depth axis
+did not: prune 2 sat at p = 0.0715 and prune 4 at p = 0.0802, both near misses.
+Prune 1 clears because that is where Fractal's effect is largest — 14 fixed
+against only 3 broken — while Bridge moves the other way:
+
+| SpatialVLA, bypass 1 of 26 layers | Bridge | Fractal |
+|---|---|---|
+| baseline | 30.2% | 84.4% |
+| pruned | **19.8%** | **92.6%** |
+| Δ (paired) | **−10.4** (p = 0.087) | **+8.1** (p = 0.013) |
+| fixed / broke | 9 / 19 | 14 / 3 |
+
+An 18.5-point swing on the same checkpoint, the same intervention, the same
+layer count. It also **retires the last legacy depth cell**: that cell reported
+−9.4 unpaired, and the paired measurement is −10.4, so the old number was about
+right — but it is now testable, which the old one never was.
+
+**Two caveats to state rather than be asked.** The Bridge loss is concentrated:
+eggplant falls 58.3 → 25.0 while the other three move by 4 to 8 points, so one
+task carries most of the −10.4. And OpenVLA's depth axis still does **not**
+reverse — prune 4 gives p = 0.0802 and prune 1 gives p = 1.0000. **The depth
+reversal is a SpatialVLA result, not a property of depth pruning.**
 
 At repeat 4, on Bridge every one of the 11 episodes OpenVLA moved was broken;
 on Fractal it moved 42 and fixed 20 of them. Same weights.
@@ -713,7 +736,7 @@ step is to look at what is actually in those four scenes.
 | **SpatialVLA** repeat {1,2,4} | complete, paired | complete |
 | **OpenVLA** foveation | blur done; log-polar from July campaign | **log-polar and blur done, paired** |
 | **SpatialVLA** foveation | **unpaired legacy only** | complete |
-| **SpatialVLA** depth prune | legacy (prune 1 only, unpaired) | **1, 2 and 4 complete, paired** |
+| **SpatialVLA** depth prune | **1 and 2 complete, paired** (legacy retired) | **1, 2 and 4 complete, paired** |
 | **SpatialVLA** combination | not started | **prune 2 + repeat 2 done, paired** |
 | **OpenVLA** depth prune | Bridge only (1, 4, 8) | **4 done, paired**; 1 and 2 running |
 

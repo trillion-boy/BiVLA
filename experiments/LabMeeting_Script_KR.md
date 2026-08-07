@@ -76,11 +76,14 @@ OpenVLA / Fractal repeat 4   20/42  ███████████       48%
 
 | 비교 | 조건 | p |
 |---|---|---|
-| **OpenVLA: Bridge vs Fractal** | **foveation** | **0.0000055** ✓Bonferroni |
-| **OpenVLA: Bridge vs Fractal** | **repeat 4** | **0.0038** ✓Bonferroni |
+| **OpenVLA: Bridge vs Fractal** | **foveation log-polar** | **0.0000055** ✓Bonf |
+| **OpenVLA: Bridge vs Fractal** | **foveation blur** | **0.0017** ✓Bonf |
+| **SpatialVLA: Bridge vs Fractal** | **depth prune 1** | **0.0018** ✓Bonf |
+| OpenVLA: Bridge vs Fractal | repeat 4 | **0.0038** |
 | OpenVLA: Bridge vs Fractal | repeat 2 | **0.027** |
 | SpatialVLA: Bridge vs Fractal | repeat 4 | **0.0085** |
-| SpatialVLA vs UniVLA (Bridge) | repeat 2 | **< 0.0001** ✓Bonferroni |
+
+**시간·시각·계산 — 세 축 전부에서 반전이 확립됐습니다.**
 
 **[말]**
 "우연인지 검정했습니다.
@@ -97,8 +100,9 @@ OpenVLA를 Bridge에서 액션 4스텝으로 돌리면 11개가 바뀌는데 **1
 같은 가중치로 Fractal에 가면 42개가 바뀌고 그중 20개를 **고칩니다.** 48%,
 동전이랑 거의 같습니다.
 
-같은 동전인지 묻는 게 Fisher 검정이고, **p = 0.0038**입니다. 검정 9개에 대한
-Bonferroni 기준까지 통과합니다."
+같은 동전인지 묻는 게 Fisher 검정이고, **p = 0.0038**입니다. 검정 15개에 대한
+Bonferroni 기준이 0.0033이라 이건 보정 전 기준만 넘습니다 — 위의 셋은 보정
+후에도 넘고요."
 
 ---
 
@@ -469,6 +473,8 @@ p=0.039, 실측 1.86배 빠르고 추론 연산 2.18배 절감. 지시 대상 �
 0%  vs  48%       OpenVLA repeat 4, Bridge vs Fractal          (슬라이드 3)
 p = 0.0038                                                     (슬라이드 3)
 +18.8 vs −19.3    OpenVLA foveation, Bridge vs Fractal         (슬라이드 3b)
+−10.4 vs +8.1     SpatialVLA depth prune 1, p = 0.0018          (슬라이드 3)
+     ...세 축 전부 반전: 시간·시각·계산
 1개에서 +8.1,  4개에서 −17.8,  집합은 포함 관계                (슬라이드 4)
 5개 일치, 1개 실패 (OpenVLA depth, move_near +8.3)         (슬라이드 4b)
         ...대조군: repeat 4는 둘 다 때림, −41 대 −38          (슬라이드 4b)
