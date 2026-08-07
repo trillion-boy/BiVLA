@@ -1,0 +1,739 @@
+{
+  "model": "openvla_depth",
+  "task": "google_robot_pick_vertical_coke_can",
+  "policy_setup": "google_robot",
+  "unnorm_key": "fractal20220817_data",
+  "sticky_gripper_num_repeat": 15,
+  "n_episodes": 25,
+  "protocol_episodes": 25,
+  "success_rate": 0.12,
+  "grasp_rate": 0.32,
+  "avg_steps": 75.72,
+  "avg_elapsed": 46.53852699279785,
+  "action_repeat": 1,
+  "predict_action_frames": 1,
+  "exec_chunk": 0,
+  "foveate": {
+    "enabled": false,
+    "mode": null,
+    "keep_percent": 20.0
+  },
+  "llm_prune_count": 2,
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "success": false,
+      "grasped": true,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 51.36094379425049,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": true,
+        "consecutive_grasp": true,
+        "lifted_object": "False",
+        "lifted_object_significantly": "False",
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": true,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 508.7745517492295,
+        "model_ms_per_env_step": 508.77455174922954
+      }
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.7422149181366,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 484.4644099473953,
+        "model_ms_per_env_step": 484.4644099473953
+      }
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": false,
+      "grasped": true,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.56356239318848,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": true,
+        "consecutive_grasp": true,
+        "lifted_object": "False",
+        "lifted_object_significantly": "False",
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": true,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.271187543869,
+        "model_ms_per_env_step": 483.271187543869
+      }
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 50.196324586868286,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 482.96272456645966,
+        "model_ms_per_env_step": 482.96272456645966
+      }
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.20344543457031,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 482.805335521698,
+        "model_ms_per_env_step": 482.805335521698
+      }
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": false,
+      "grasped": true,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.6595344543457,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": true,
+        "consecutive_grasp": true,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": true,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.19114446640015,
+        "model_ms_per_env_step": 483.19114446640015
+      }
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.08457708358765,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 482.9167038202286,
+        "model_ms_per_env_step": 482.9167038202286
+      }
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 50.23373579978943,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.03370773792267,
+        "model_ms_per_env_step": 483.03370773792267
+      }
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 40,
+      "elapsed": 24.365601539611816,
+      "final_info": {
+        "elapsed_steps": 40,
+        "is_grasped": true,
+        "consecutive_grasp": false,
+        "lifted_object": "True",
+        "lifted_object_significantly": "True",
+        "success": "True",
+        "episode_stats": {
+          "n_lift_significant": 1,
+          "consec_grasp": false,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 40.0,
+        "model_ms_per_infer": 487.35256791114807,
+        "model_ms_per_env_step": 487.35256791114807
+      }
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.835472106933594,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 482.8762501478195,
+        "model_ms_per_env_step": 482.8762501478195
+      }
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.102261781692505,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.3702474832535,
+        "model_ms_per_env_step": 483.3702474832535
+      }
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.45015573501587,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 482.64819383621216,
+        "model_ms_per_env_step": 482.64819383621216
+      }
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.822593688964844,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 482.9746723175049,
+        "model_ms_per_env_step": 482.9746723175049
+      }
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "success": false,
+      "grasped": true,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.58540153503418,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 482.76253044605255,
+        "model_ms_per_env_step": 482.76253044605255
+      }
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.1954460144043,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.1369161605835,
+        "model_ms_per_env_step": 483.1369161605835
+      }
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.285067319869995,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 485.1166784763336,
+        "model_ms_per_env_step": 485.1166784763336
+      }
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.092864751815796,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.0402880907059,
+        "model_ms_per_env_step": 483.0402880907059
+      }
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "success": false,
+      "grasped": true,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.630735874176025,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": true,
+        "consecutive_grasp": true,
+        "lifted_object": "False",
+        "lifted_object_significantly": "False",
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": true,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.6316406726837,
+        "model_ms_per_env_step": 483.6316406726837
+      }
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 65,
+      "elapsed": 40.34420156478882,
+      "final_info": {
+        "elapsed_steps": 65,
+        "is_grasped": true,
+        "consecutive_grasp": true,
+        "lifted_object": "True",
+        "lifted_object_significantly": "False",
+        "success": "True",
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": true,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 65.0,
+        "model_ms_per_infer": 483.4665555220384,
+        "model_ms_per_env_step": 483.4665555220384
+      }
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.6706862449646,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.18707048892975,
+        "model_ms_per_env_step": 483.18707048892975
+      }
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.19626975059509,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.7056189775467,
+        "model_ms_per_env_step": 483.7056189775467
+      }
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.28441834449768,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.1655025482178,
+        "model_ms_per_env_step": 483.1655025482178
+      }
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 49.47460603713989,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.28149020671844,
+        "model_ms_per_env_step": 483.28149020671844
+      }
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 28,
+      "elapsed": 17.370201349258423,
+      "final_info": {
+        "elapsed_steps": 28,
+        "is_grasped": true,
+        "consecutive_grasp": true,
+        "lifted_object": "True",
+        "lifted_object_significantly": "False",
+        "success": "True",
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": true,
+          "grasped": true
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 28.0,
+        "model_ms_per_infer": 489.6650399480547,
+        "model_ms_per_env_step": 489.6650399480547
+      }
+    },
+    {
+      "ep": 24,
+      "ep_id": 24,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 80,
+      "elapsed": 48.71285271644592,
+      "final_info": {
+        "elapsed_steps": 80,
+        "is_grasped": false,
+        "consecutive_grasp": false,
+        "lifted_object": false,
+        "lifted_object_significantly": false,
+        "success": false,
+        "episode_stats": {
+          "n_lift_significant": 0,
+          "consec_grasp": false,
+          "grasped": false
+        }
+      },
+      "model_stats": {
+        "model_calls_timed": 80.0,
+        "model_ms_per_infer": 483.95571410655975,
+        "model_ms_per_env_step": 483.95571410655975
+      }
+    }
+  ],
+  "depth": {
+    "depth_prune": 2,
+    "depth_ctrl": false,
+    "bypassed_layers": [
+      23,
+      26
+    ],
+    "n_bypassed": 2,
+    "n_layers": 32
+  },
+  "model_stats": {
+    "model_calls_timed": 75.72,
+    "model_ms_per_infer": 484.75026970774263,
+    "model_ms_per_env_step": 484.75026970774263
+  }
+}
