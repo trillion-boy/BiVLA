@@ -16,8 +16,8 @@ condition finishes and the tables update themselves.
 questions. Script: `LabMeeting_Script_EN.md`)*
 
 **One sentence.** Take the same intervention, the same model, and change only
-the benchmark — and the **sign** of the effect flips. So a number measured on
-one benchmark is not evidence that the method works.
+the benchmark — and the **sign** of the effect flips. A number measured on one
+benchmark is not evidence that the method works.
 
 **① The sign flips.**
 
@@ -28,50 +28,40 @@ one benchmark is not evidence that the method works.
 | compute | depth prune 1 (SpatialVLA) | **−10.4** | **+8.1** | 0.0018 *** |
 | time | action repeat 2 (OpenVLA) | **−8.3** | **+5.2** | 0.0266 |
 
-**`p` is the probability of a difference this large if the intervention did
-nothing at all.** Smaller means harder to write off as chance — *more certain*,
-not *larger*; size is the delta beside it. Correcting for the 15 comparisons in
-this family puts the bar at α ≈ 0.0033, which is what `***` marks.
+`p` is the probability of a difference this large if the intervention did
+nothing. Smaller means *more certain*, not *larger* — size is the delta beside
+it. Correcting for the 15 comparisons puts the bar at α ≈ 0.0033, which `***`
+marks. Vision and compute clear it; time does not yet, though its magnitude
+difference does (repeat 4, p = 0.0038).
 
-Vision and compute clear that bar. Time does not yet — the sign flips but the
-interaction is not established; what *is* established on the time axis is a
-magnitude difference (repeat 4, p = 0.0038).
-
-**Reading the same grid downward is stronger still.** The best intervention per
-column is foveation log-polar **+18.8** (OpenVLA/Bridge), depth prune 4
-**+15.6** (OpenVLA/Fractal), action repeat 2 **+12.5** (SpatialVLA/Bridge),
-depth prune 1 **+8.1** (SpatialVLA/Fractal) — **four columns, four different
-winners, and every one of the four is negative somewhere else in the table.**
-The instability is not confined to the benchmark axis either: holding Bridge
-fixed, action repeat 2 is **+12.5** on SpatialVLA and **−70.8** on UniVLA.
+**Read the grid downward and it gets stronger.** Each column's best
+intervention is a *different* one — log-polar +18.8, depth prune 4 +15.6,
+action repeat 2 +12.5, depth prune 1 +8.1 — and all four are negative somewhere
+else in the table. Nor is it only the benchmark axis: holding Bridge fixed,
+action repeat 2 is **+12.5** on SpatialVLA and **−70.8** on UniVLA.
 
 **② It is not noise.** A from-scratch baseline re-run reproduced **85/85
-episodes across two environment classes — success flags, step counts, and grasp
-flags all identical.** Greedy decoding into a seeded environment: re-run
-variance is zero. The only uncertainty left is between-episode variation, which
-is exactly what a paired test addresses — **the p-value is the complete account
-of uncertainty, not a partial one.**
+episodes** — success flags, step counts, and grasp flags all identical. Re-run
+variance is zero, so the only uncertainty left is which episodes the protocol
+drew, and that is exactly what the paired test measures.
 
-**③ Why it flips — half an answer.** The split isn't the benchmark, it's the
+**③ Why it flips — half an answer.** The divide is not the benchmark but the
 capability the task demands. Remove capacity and **the ability to resolve which
-object was named dies first**, while the ability to grasp is untouched or
-improves (5 cells agree). Control: action repeat 4 damages the *pick* tasks
-harder (−41.3), so this isn't "move_near is simply the weak task."
+object was named dies first**, while grasping is untouched or improves (5
+cells). Control: action repeat 4 damages the *pick* tasks harder (−41.3), so
+this is not "move_near is simply the weak task."
 
-**The counterexample to ③ (lead with it).** In OpenVLA, pruning depth at 1/2/4
-moves `move_near` by +8.3 / +0.0 / +8.3 — it does not budge — and the campaign's
-single best number (Fractal +15.6, p<0.001) comes from there. Leading suspect:
-`--depth-min-layer` is a **fraction** in OpenVLA and a **count** in SpatialVLA,
-so one name covered two different layer ranges. Details in §3c-bis; the
-range-matched run is in progress.
+**The counterexample (lead with it).** On OpenVLA, pruning depth at 1/2/4 does
+not move `move_near` at all (+8.3 / +0.0 / +8.3) — and the campaign's best
+number (+15.6) comes from there. Leading suspect: `--depth-min-layer` is a
+**fraction** in OpenVLA and a **count** in SpatialVLA, so one name covered two
+different layer ranges (§3c-bis). The range-matched run is in progress.
 
-**Paper framing.** This is an evaluation-methodology paper, not a method paper.
-Three contributions: (1) a per-episode paired protocol with verified determinism
-for VLA evaluation, (2) systematic evidence that single-benchmark deltas are
-sign-unstable, (3) a partial mechanism. Remaining: the range-matched depth run
-(decides today) and a **third benchmark** — with two, a reviewer says those two
-are peculiar; with three, it's a pattern. Target: a robot-learning evaluation
-workshop at CoRL or NeurIPS.
+**Framing.** This is an evaluation-methodology result, not a method result.
+Three contributions: a per-episode paired protocol with verified determinism;
+systematic evidence that single-benchmark deltas are sign-unstable; a partial
+mechanism. Remaining: the range-matched depth run, and a third benchmark — with
+two, a reader says those two are peculiar; with three, it is a pattern.
 
 ---
 
