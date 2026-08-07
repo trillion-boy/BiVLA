@@ -47,8 +47,8 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
 | foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
 | foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
-| depth prune 1 | 17.7%  +2.1 | -- | *22.9%  −9.4†* | 92.6%  +8.1** | -- |
-| depth prune 2 | -- | -- | -- | 87.4%  +3.0 | -- |
+| depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | *22.9%  −9.4†* | 92.6%  +8.1** | -- |
+| depth prune 2 | -- | 38.5%  +0.0 | 20.8%  −9.4 | 87.4%  +3.0 | -- |
 | depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | -- | 66.7%  −17.8*** | -- |
 | depth prune 8 | 15.6%  +0.0 | -- | -- | -- | -- |
 | depth prune 2 + action repeat 2 | -- | -- | -- | 83.0%  −1.5 | -- |
@@ -420,55 +420,79 @@ referential disambiguation should degrade under the *capacity* interventions,
 any single-target pick task should not, and the *time* intervention should
 ignore the distinction.
 
-### 3c-bis. The prediction failed on OpenVLA, and here is the honest version
+### 3c-bis. The prediction failed on OpenVLA — now across the whole depth axis
 
 §3c predicts that removing decoder capacity damages `move_near` and spares the
-pick tasks. We ran depth prune 4 on OpenVLA / Fractal. **It did not.**
+pick tasks. OpenVLA / Fractal now has all three doses, and **`move_near` never
+moves at any of them.**
 
-| OpenVLA / Fractal, prune 4 of 32 | rate | Δ | fixed / broke | p |
+| OpenVLA / Fractal | all 135 | `pick_coke_can` (75) | `move_near` (60) |
+|---|---|---|---|
+| prune 1 | +0.7 (p=1.00) | −5.3 (p=0.22) | **+8.3** (p=0.33) |
+| prune 2 | +0.0 (p=1.00) | +0.0 (p=1.00) | **+0.0** (p=1.00) |
+| prune 4 | **+15.6** (p=0.0011) | **+21.3** (p=0.0015) | **+8.3** (p=0.30) |
+
+The referential task sits at +0.0, +8.3, +8.3 — flat or slightly *up*, never
+down. Only the pick tasks move, and only at dose 4. That is a cleaner
+disconfirmation than the single cell we had this morning: it is a whole curve,
+not a point.
+
+**Taken alone, prune 4 is the campaign's largest positive result.** +15.6
+points, p = 0.0011, full protocol, at 454 ms/infer against the baseline's 511 —
+**11% faster and 15.6 points better** by deleting 4 of 32 decoder layers.
+Nearly double SpatialVLA's +8.1, and it clears Bonferroni where SpatialVLA's
+did not.
+
+**And the two depth curves are qualitatively opposite:**
+
+| layers bypassed | 0 | 1 | 2 | 4 |
 |---|---|---|---|---|
-| all 135 | 54.1% | **+15.6** | 30 / 9 | **0.0011** |
-| `pick_coke_can` (75) | 41.3% | **+21.3** | 20 / 4 | **0.0015** |
-| `move_near_v0` (60) | 70.0% | **+8.3** | 10 / 5 | 0.3018 |
+| SpatialVLA / Fractal | 84.4% | **92.6%** | 87.4% | **66.7%** |
+| OpenVLA / Fractal | 38.5% | 39.3% | 38.5% | **54.1%** |
 
-Both families improved. The *ordering* survives — the pick tasks gain 2.5× more
-than the referential one — but the **sign does not**, and the sign is what §3c
-claims. Written plainly: **this is a failed prediction, and it is the sixth
-test of the split, five of which agreed.**
+SpatialVLA peaks at one layer and falls off a cliff at four. OpenVLA is inert
+at one and two, then climbs 15.6 points at four. At dose 4 the two differ by 33
+points with opposite signs.
 
-Two further things are true and both need saying.
+**The Bridge-vs-Fractal reversal still does not clear**, and it is worth being
+explicit about that because the table above looks like one: OpenVLA/Bridge is
+flat at every depth (+2.1, +1.0, +0.0). Tested on the discordant splits,
+prune 4 gives p = 0.0802 and prune 1 gives p = 1.0000. **Do not quote the depth
+axis as a benchmark reversal.**
 
-**First, taken on its own this is the campaign's largest positive result.**
-+15.6 points, p = 0.0011, over the full protocol, at 454 ms/infer against the
-baseline's 511 — **11% faster and 15.6 points better** by deleting 4 of 32
-decoder layers. That is nearly double SpatialVLA's +8.1, and it clears
-Bonferroni where SpatialVLA's did not.
-
-**Second, the two depth-prune runs are not the same intervention.** The two
-harnesses protect different parts of the stack:
+**The two harnesses did not delete the same thing.** This is the reason the
+disconfirmation is not yet decisive:
 
 | | eligible range | layers actually bypassed |
 |---|---|---|
-| SpatialVLA (26 layers) | `min-layer 2` → **2..25** | **8, 9, 10, 19** — early-middle |
-| OpenVLA (32 layers) | `min-layer 0.5` → **16..31** | **17, 20, 23, 26** — back half only |
+| SpatialVLA (26 layers) | `min-layer 2` → **2..25** | 1: L10 · 2: L9,10 · 4: **L8,9,10,19** |
+| OpenVLA (32 layers) | `min-layer 0.5` → **16..31** | 1: L23 · 2: L23,26 · 4: **L17,20,23,26** |
 
-They carry the same name in our tables and delete different regions of the
-network. If referential grounding is built in the early-middle blocks — where
-vision and language are still being bound — and the back half is closer to
-action decoding, then OpenVLA's run never touched the thing §3c is about.
+Both are perfectly nested within their own backbone, so each curve is
+internally consistent. But OpenVLA's ranking **never once touched an
+early-middle layer** — its eligible range forbids it. SpatialVLA deleted L8, 9
+and 10; OpenVLA has never deleted anything below L17.
 
-**That reads as a rescue, so it has to be run rather than argued.** Setting
-OpenVLA's `--depth-min-layer 0.08` makes its eligible range 2..31, matching
-SpatialVLA's regime. If `move_near` still refuses to break there, **§3c's depth
-evidence is finished** and the split rests on foveation alone. That run is
-queued below, and we should report §3c with this failure attached either way.
+So the accurate statement is not "§3c was disconfirmed on OpenVLA" but
+**"OpenVLA has never had the region §3c is about removed."** If grounding is
+built where vision and language are still being bound, the back half was never
+the place to look.
 
-**Where the split stands, stated as a score:** five confirmations (two
-foveation variants on OpenVLA, three depth conditions on SpatialVLA), one
-disconfirmation (depth on OpenVLA), one control that behaves as predicted
-(action repeat hits both families equally). The disconfirmation has a concrete,
-testable confound. That is not "confirmed", and we should stop writing it as if
-it were.
+**That reads as a rescue, so it is queued as a run rather than argued.**
+Setting `--depth-min-layer 0.08` makes OpenVLA's eligible range 2..31, matching
+SpatialVLA's. If `move_near` still refuses to break there, **§3c's depth
+evidence is finished** and the split rests on foveation alone — which we should
+then say in as many words. There is a risk the ranking picks the back half
+anyway even when allowed to roam; that outcome is not a test of §3c but does
+tell us OpenVLA's early-middle layers are not redundant, which is itself a
+structural difference from SpatialVLA worth recording.
+
+**Where the split stands, as a score:** five confirmations (two foveation
+variants on OpenVLA, three depth conditions on SpatialVLA), one disconfirmation
+now spanning a whole curve (depth on OpenVLA), one control behaving as
+predicted (action repeat hits both families equally). The disconfirmation has a
+concrete, testable confound. This is not "confirmed", and we should stop
+writing it as if it were.
 
 ### 3d. Stacking two interventions: the gain does not survive, the split does
 
