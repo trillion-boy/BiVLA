@@ -668,16 +668,24 @@ anyway even when allowed to roam; that outcome is not a test of §3c but does
 tell us OpenVLA's early-middle layers are not redundant, which is itself a
 structural difference from SpatialVLA worth recording.
 
-**In progress — the first task has already answered half of it.** With
+**In progress — the test is valid, the outcome is not yet in.** With
 `--depth-min-layer 0.08` the eligible range came out as advertised
 (`eligible 2..31 of 32`) and the ranking did reach forward: it bypassed
-**L2, L4, L23, L26**, two of them early. So the run is a real test of §3c and
-not a repeat of the back-half experiment. The first completed task,
-`pick_vertical_coke_can`, scored **4/25 = 16.0%** — against **54.1%** for the
-whole Fractal protocol when only the back half was removed. Deleting early
-layers is not survivable the way deleting late ones was, which is already
-evidence that the two campaigns' "depth prune 4" were different operations.
-`move_near_v0` is the cell that decides §3c, and it is still running.
+**L2, L4, L23, L26**, two of them early. So this is a real test of §3c rather
+than a repeat of the back-half experiment. The two finished pick tasks
+disagree with each other:
+
+| task | baseline | prune 4, back half | prune 4, range-matched |
+|---|---|---|---|
+| `pick_horizontal_coke_can` | 12.0% | 44.0% | **56.0%** |
+| `pick_vertical_coke_can` | 20.0% | 28.0% | **16.0%** |
+
+One is the best result that task has produced; the other is four points below
+its own baseline. Nothing follows from a pair that points both ways, and an
+earlier draft of this paragraph read the 16.0% as a collapse by comparing it
+against 54.1% — a whole-protocol average, not that task's number. It is a
+−4.0 delta, not a collapse. `move_near_v0` is the cell that decides §3c and it
+is still running.
 
 **Where the split stands, as a score:** five confirmations (two foveation
 variants on OpenVLA, three depth conditions on SpatialVLA), one disconfirmation
