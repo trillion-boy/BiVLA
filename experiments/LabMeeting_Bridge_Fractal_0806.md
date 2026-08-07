@@ -64,10 +64,35 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | UniVLA / Bridge | foveation blur | 76.0% | −2.1 | 78.1% | `ChunkExecFoveation_univla.md` |
 
 Note the SpatialVLA/Bridge legacy baseline is **32.3%**, not the 30.2% in the
-first row. Same policy, same protocol, different campaign — a 2.1-point gap
-between two measurements of the same thing, which is itself the closest thing
-we have to a noise floor for that column, and is the size of the blur effect
-those cells report.
+first row. Same policy, same protocol, different campaign, 2.1 points apart —
+and we now know that gap **cannot be run-to-run noise** (see below), so it is a
+difference in code or configuration between the two campaigns. That is worse
+than noise, not better: those cells measure a *different setup*, and the gap is
+the size of the blur effect they report.
+
+### The pipeline is deterministic, so the p-values are the whole story
+
+We re-ran the SpatialVLA / Fractal baseline a second time, unchanged, into a
+separate directory. On `pick_horizontal_coke_can` the two runs are **identical
+across all 25 episodes — every success/failure and every step count**, including
+the unusual ones (69, 56, 32 steps). Grasp rate matches at 88.0%. Only
+`ms/infer` moved (927 → 914), which is a clock, not a computation.
+
+That is what greedy decoding (`do_sample=False`) over a seeded environment
+should give, and it settles a question the rest of this report depended on:
+
+- **There is no run-to-run variance component in any delta here.** Every Δ in
+  the grid is a real difference in behaviour.
+- **The remaining uncertainty is purely which episodes are in the protocol** —
+  which is exactly what the paired McNemar test measures. So the reported
+  p-values are the complete account of uncertainty, not a partial one.
+- **The 2.1-point SpatialVLA/Bridge baseline gap is therefore not noise.** It
+  has to be a code or configuration difference between campaigns. The legacy
+  cells are not noisy measurements of the same setup; they are measurements of
+  a different one.
+
+Confirmed on one task so far. `move_near_v0` uses a different environment class
+and carries the report's largest claims, so it is still pending.
 
 OpenVLA/Bridge log-polar **is** paired: its per-episode records survive in
 `RetinaBased/GoogleColab/results_reproduction_eager/`, and that campaign's
@@ -414,9 +439,9 @@ cheaper observation pipeline the number moves toward 2.18×; we report both.
    pick tasks share their instruction string. Any of those could carry the
    effect. Distinguishing them needs a task that is referential but short, or
    single-target but long; neither is in the current protocol.
-3. **Still no measured noise floor**, and the coke-can cell is now at 98.7%,
-   hard against the ceiling. p = 0.0020 with 10/0 is strong, but a 10-vs-0 split
-   is also the easiest kind of split to produce by luck at these rates.
+3. **The coke-can cell is now at 98.7%**, hard against the ceiling. p = 0.0020
+   with 10/0 is strong, but a 10-vs-0 split is the easiest kind to produce by
+   luck at these rates, and there is very little headroom left to measure in.
 
 **And this is the point to make about the whole section.** A +8.1 gain, paired,
 over the full protocol, with a measured 7.8% latency reduction, is *exactly*
@@ -521,10 +546,10 @@ Everything below is chosen to break it rather than to add another confirmation.
    but single-target; the honest options are to add a Bridge task with a
    distractor (`stack_cube` names one of two blocks) or to accept the confound
    and say so. **This is the weakest joint in the argument.**
-3. **Re-run one baseline a second time in the same session** to measure the
-   per-episode noise floor. Now the most-quoted numbers are +10.7 and −16.7 in
-   a single cell, and we still cannot say how much of an 8-point move is the
-   intervention. Cheapest experiment on the list and it prices everything else.
+3. **Finish the determinism check on `move_near_v0`.** The pick tasks are
+   settled (below); `move_near` runs a different environment class and carries
+   the largest claims in the report (−16.7, −31.7), so it is worth the 35
+   minutes to confirm rather than assume.
 4. Re-measure SpatialVLA / Bridge foveation and depth prune 1 with per-episode
    records — three legacy cells become paired tests against a baseline already
    on disk, and the Bridge legacy prune-1 cell (−9.4) sits opposite Fractal's

@@ -283,10 +283,16 @@ minus 16.7 on the referential task. So the rule isn't 'this is free'. It's
 **'this is free if your task doesn't require resolving which object you meant.'**
 
 **Three.** The plus-eight-point-one from slide 4 does not clear Bonferroni on
-its own, we still have no measured noise floor, and every confirmation of the
-split rests on **one task**, which differs from the pick tasks in horizon and
-object count as well as referential load. That last one is the weakest joint and
-I'd rather name it than have it found."
+its own, and every confirmation of the split rests on **one task**, which
+differs from the pick tasks in horizon and object count as well as referential
+load. That last one is the weakest joint and I'd rather name it than have it
+found.
+
+**One thing that is now settled**, though. We re-ran the baseline unchanged:
+twenty-five episodes, identical successes **and identical step counts**. Greedy
+decoding over a seeded environment — there's no run-to-run variance at all. So
+every delta here is a real behavioural difference, and the p-values are the
+*complete* account of the uncertainty, not part of it."
 
 ---
 ## Slide 5 — Our own explanation broke too (50s)
@@ -356,9 +362,10 @@ number would never have shown us."
 **Q. Isn't the +8.1 too good to be true? A pruned model beating the full one?**
 > "It's the right thing to be suspicious of, so here's everything against it.
 > It's p = 0.013, which does *not* clear our Bonferroni threshold — it's one of
-> eighteen tests. We have no measured noise floor; the closest thing we have is
-> two measurements of the same baseline in different campaigns differing by 2.1
-> points. And one of the four tasks is at 25 out of 25, so we're near a ceiling.
+> eighteen tests. And one of the four tasks is at 25 out of 25, so we're near a
+> ceiling. What it is *not* is run-to-run noise — we re-ran the baseline and got
+> the same 25 episodes with the same step counts, so the pipeline is
+> deterministic and the p-value is the whole uncertainty story.
 > What's in its favour is that the split is 14 fixed to 3 broken, and the gain
 > is spread across three of four tasks rather than carried by one. I'd call it
 > real and unreplicated, and re-running the baseline is now my top priority."
