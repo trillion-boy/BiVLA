@@ -53,9 +53,12 @@ this is not "move_near is simply the weak task."
 
 **The counterexample (lead with it).** On OpenVLA, pruning depth at 1/2/4 does
 not move `move_near` at all (+8.3 / +0.0 / +8.3) — and the campaign's best
-number (+15.6) comes from there. Leading suspect: `--depth-min-layer` is a
-**fraction** in OpenVLA and a **count** in SpatialVLA, so one name covered two
-different layer ranges (§3c-bis). The range-matched run is in progress.
+number (+15.6) comes from there. Leading suspect: the option setting how early a
+layer may be bypassed is read as a **fraction** in OpenVLA and a **count** in
+SpatialVLA, so OpenVLA only ever deleted the **back half** of the stack while
+SpatialVLA deleted the **middle**. Same name, different region — and the region
+this hypothesis is about was never touched in OpenVLA (§3c-bis). The
+range-matched run is in progress.
 
 **Framing.** This is an evaluation-methodology result, not a method result.
 Three contributions: a per-episode paired protocol with verified determinism;

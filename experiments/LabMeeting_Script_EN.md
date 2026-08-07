@@ -86,9 +86,12 @@ mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
 > doesn't move `move_near` at all** — and the campaign's best number comes from
 > there."
 >
-> "We think we found the cause. One option is read as a fraction in OpenVLA and
-> a count in SpatialVLA, so **under one name we were deleting different layer
-> ranges.** The range-matched run is going now; we'll know today."
+> "We think we found the cause. **The option that decides how early a layer may
+> be bypassed is read differently by the two codebases, so OpenVLA only ever
+> deleted the back half of the stack while SpatialVLA deleted the middle.** Same
+> name, different region — and the region our hypothesis is about was never
+> touched in OpenVLA. We're running the range-matched version now; we'll know
+> today."
 
 ---
 
