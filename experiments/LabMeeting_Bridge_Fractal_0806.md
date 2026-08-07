@@ -28,9 +28,14 @@ one benchmark is not evidence that the method works.
 | compute | depth prune 1 (SpatialVLA) | **−10.4** | **+8.1** | 0.0018 *** |
 | time | action repeat 2 (OpenVLA) | **−8.3** | **+5.2** | 0.0266 |
 
-Vision and compute survive Bonferroni (α ≈ 0.0033). Time does not yet — the
-sign flips but the interaction is not established; what *is* established on the
-time axis is a magnitude difference (repeat 4, p = 0.0038).
+**`p` is the probability of a difference this large if the intervention did
+nothing at all.** Smaller means harder to write off as chance — *more certain*,
+not *larger*; size is the delta beside it. Correcting for the 15 comparisons in
+this family puts the bar at α ≈ 0.0033, which is what `***` marks.
+
+Vision and compute clear that bar. Time does not yet — the sign flips but the
+interaction is not established; what *is* established on the time axis is a
+magnitude difference (repeat 4, p = 0.0038).
 
 **Reading the same grid downward is stronger still.** The best intervention per
 column is foveation log-polar **+18.8** (OpenVLA/Bridge), depth prune 4

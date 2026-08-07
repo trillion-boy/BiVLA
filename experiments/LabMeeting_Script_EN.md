@@ -34,10 +34,20 @@ grid below it.** Say what is written here and stop.
 **Statistics — this sentence only. Do not name a test**
 
 > "We don't put two success rates side by side. We **pair the same episodes and
-> count only the ones whose outcome changed**, then compute how likely the
-> difference between the two benchmarks is by chance. **The starred cells are
-> the ones chance can't explain, even after accounting for how many comparisons
-> we ran.**"
+> count only the ones whose outcome changed.**"
+>
+> (point at the `p` column)
+> "This **p** is **the probability of seeing a difference this large if the
+> intervention did nothing at all.** Smaller means harder to write off as
+> chance; accounting for the 15 comparisons we ran, we fixed the bar at
+> **0.0033** in advance. That's what the stars mark."
+
+**Don't say "smaller is better."** Small p means *not chance* — it does **not**
+mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
+
+> "Not better so much as **more certain**. The **size** of the effect is the
+> delta next to it; p only says whether you can trust that delta. Foveation has
+> both — deltas of +18.8 and −19.3, and a small p."
 
 **① The sign flips** — point at the four rows
 
@@ -54,9 +64,9 @@ grid below it.** Say what is written here and stop.
 > "We re-ran a baseline from scratch and compared **all 85 episodes — success,
 > failure, even step counts, all identical.** Re-run variance is zero."
 >
-> "So we don't need the usual 'mean ± std over 3 seeds.' The only uncertainty
-> left is between-episode variation, and that is exactly the probability we
-> computed."
+> "So we don't need the usual 'mean ± std over 3 seeds.' **There is no
+> run-to-run component inside that p at all.** All that's left is which episodes
+> the protocol drew — and that is exactly what p measures."
 
 **③ Why it flips — half an answer**
 
