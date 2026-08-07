@@ -39,8 +39,8 @@ grid below it.** Say what is written here and stop.
 > (point at the `p` column)
 > "This **p** is **the probability of seeing a difference this large if the
 > intervention did nothing at all.** Smaller means harder to write off as
-> chance; accounting for the 15 comparisons we ran, we fixed the bar at
-> **0.0033** in advance. That's what the stars mark."
+> chance. Accounting for the 15 comparisons we ran, we fixed the bar at
+> **0.0033** in advance."
 
 **Don't say "smaller is better."** Small p means *not chance* — it does **not**
 mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
@@ -90,12 +90,28 @@ mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
 > be bypassed is read differently by the two codebases, so OpenVLA only ever
 > deleted the back half of the stack while SpatialVLA deleted the middle.** Same
 > name, different region — and the region our hypothesis is about was never
-> touched in OpenVLA. We're running the range-matched version now; we'll know
-> today."
+> touched in OpenVLA."
+>
+> "The range-matched run is going now. The ranking does reach the early layers,
+> so **the test is valid**, but the tasks are disagreeing so far — **no result
+> yet.** We'll know today."
+
+> ⚠️ **Do not say "success collapsed to 16%."** Per task it is 20.0 → 16.0
+> (−4.0), while another task went 12.0 → 56.0. The directions still disagree.
+> Presenting with the answer still open is normal; say it that way.
 
 ---
 
 # PART 2 — on the full grid (5:00–9:00)
+
+**Hand off the stars in one line**
+
+> "The stars in the table mark cells **chance cannot explain.** Two stars for
+> that; three for the ones that survive a stricter bar accounting for how many
+> comparisons we ran."
+
+That is all. Nothing more. **A cell without stars is one we are not claiming,
+so there is nothing there to attack.**
 
 **Pass 1 — across**
 
@@ -150,8 +166,8 @@ mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
 ## If asked (not before)
 
 **"Which test?"**
-> McNemar exact and Fisher exact, Bonferroni-corrected. The arithmetic is at the
-> back of the report.
+> McNemar exact on the paired episodes, Fisher exact for the difference between
+> benchmarks, Bonferroni-corrected. The arithmetic is in the full report.
 
 **"The benchmarks differ anyway — isn't this expected?"**
 > Not a different magnitude, an **opposite sign**. The opposite of +18.8 isn't
@@ -161,6 +177,10 @@ mean *large effect*. Conflate them and you'll be pulled up on it. If asked:
 > It's deterministic; re-runs are 85/85 identical. Seeds aren't the axis — the
 > variation is between episodes.
 
-**"What are the italic `†` cells?"**
-> Old-campaign numbers with no per-episode records. They can't be paired, so we
-> don't rest sign claims on them.
+**"What about the cells with no stars?"**
+> Those are the ones we are not claiming yet. The number is in, but not far
+> enough from chance.
+
+**"And the blank cells (`--`)?"**
+> Either not run yet, or old-campaign numbers with no per-episode records. If we
+> can't pair it, it doesn't go in this table.
