@@ -106,6 +106,14 @@ CONDITION_ORDER = [
     # both single-axis rows above and check the sum for themselves.
     ("prune2_repeat2",   "depth prune 2 + action repeat 2"),
 ]
+# Runs that are controls for a specific question rather than cells of the grid.
+# `baseline_rerun` is the determinism check; listing it as a condition would
+# report "no change against baseline" as though that were a finding.
+# `depth_prune4_early` removes the same four layers as `depth_prune4` from a
+# different region -- putting the two in one column under adjacent names is the
+# exact confusion that produced 3c-bis in the first place. Both are analysed in
+# the report where their question lives.
+EXCLUDE = {"baseline_rerun", "depth_prune4_early"}
 DISPLAY = dict(CONDITION_ORDER)
 # foveate / foveate_logpolar are the same condition under two harness spellings.
 CANON = {"foveate": "foveate_logpolar"}
@@ -115,9 +123,12 @@ def benchmark_of(task: str) -> str:
     return "Fractal" if task.startswith("google_robot") else "Bridge"
 
 
-def discover() -> dict:
-    """-> {(backbone, benchmark, condition): {task: {ep_id: success}}}"""
-    out: dict = defaultdict(lambda: defaultdict(dict))
+def _walk_campaigns():
+    """Yield (backbone, condition, task, summary) for every committed record.
+
+    Shared by the success grid and the cost table so the two can never end up
+    reading different files and disagreeing about which cells exist.
+    """
     for backbone, bench, campaign, layout in CAMPAIGNS:
         base = os.path.join(RESULTS, campaign)
         if layout == "nested":
@@ -142,8 +153,7 @@ def discover() -> dict:
         for cond, cdir in conditions:
             cond = CANON.get(cond, cond)
             for task in sorted(os.listdir(cdir)):
-                tdir = os.path.join(cdir, task)
-                path = os.path.join(tdir, f"results_{task}.json")
+                path = os.path.join(cdir, task, f"results_{task}.json")
                 if not os.path.isfile(path):
                     continue
                 with open(path) as fh:
@@ -151,10 +161,15 @@ def discover() -> dict:
                 # Trust the record's own task name over the directory, and the
                 # task name over the campaign, so a file filed in the wrong
                 # place lands in the right cell instead of corrupting one.
-                task = summary.get("task", task)
-                key = (backbone, benchmark_of(task), cond)
-                out[key][task] = {int(e["ep_id"]): bool(e["success"])
-                                  for e in summary["episodes"]}
+                yield backbone, cond, summary.get("task", task), summary
+
+
+def discover() -> dict:
+    """-> {(backbone, benchmark, condition): {task: {ep_id: success}}}"""
+    out: dict = defaultdict(lambda: defaultdict(dict))
+    for backbone, cond, task, summary in _walk_campaigns():
+        out[(backbone, benchmark_of(task), cond)][task] = {
+            int(e["ep_id"]): bool(e["success"]) for e in summary["episodes"]}
 
     for backbone, bench, cond, rec_dir, base_dir in IMPORTED:
         rec = _load_dir(os.path.join(_ROOT, rec_dir))
@@ -355,8 +370,115 @@ def task_family_section(data, cols) -> list:
     return L
 
 
+def discover_cost() -> dict:
+    """-> {(backbone, benchmark, condition): {"infer": [...], "step": [...], "sec": [...]}}
+
+    Three different quantities, because picking the wrong one reverses the
+    conclusion for a whole axis:
+
+    * `infer`  -- ms per model call. Action repeat does not change this at all;
+      it changes how OFTEN the model is called. Reading the cost of action
+      repeat off this column says it is free, which is wrong in the direction
+      that flatters it.
+    * `step`   -- ms of model time per environment step, i.e. `infer` amortised
+      over the calls actually made. This is the compute number. Harnesses that
+      do not record it get it derived as `infer / action_repeat`, which is
+      exact: repeat k queries the policy once every k steps.
+    * `sec`    -- wall-clock seconds per episode. NOT a clean cost metric: a
+      condition that fails more runs to the step cap more often, so this column
+      mixes speed with success. Reported because it is what a user feels, and
+      flagged wherever it disagrees with `step`.
+    """
+    out: dict = defaultdict(lambda: {"infer": [], "step": [], "sec": []})
+    for backbone, cond, task, summary in _walk_campaigns():
+        key = (backbone, benchmark_of(task), cond)
+        repeat = summary.get("action_repeat") or 1
+        for e in summary["episodes"]:
+            stats = e.get("model_stats") or {}
+            inf = e.get("model_ms_per_infer") or stats.get("model_ms_per_infer")
+            if inf:
+                out[key]["infer"].append(inf)
+                step = (e.get("model_ms_per_env_step")
+                        or stats.get("model_ms_per_env_step") or inf / repeat)
+                out[key]["step"].append(step)
+            if e.get("elapsed"):
+                out[key]["sec"].append(e["elapsed"])
+    return out
+
+
+def _mean(v):
+    return sum(v) / len(v) if v else None
+
+
+def cost_section(cost, cols) -> list:
+    """Compute saved by each condition, beside what the grid says it costs."""
+    L: list[str] = []
+    rows = []
+    for c in conditions_present({k: 1 for k in cost}):
+        if c == "baseline":
+            continue
+        cells = []
+        for b, k in cols:
+            base, this = cost.get((b, k, "baseline")), cost.get((b, k, c))
+            if not base or not this or not base["step"] or not this["step"]:
+                cells.append("--")
+                continue
+            d = 100.0 * (_mean(this["step"]) - _mean(base["step"])) / _mean(base["step"])
+            cells.append(f"{d:+.1f}%")
+        if any(x != "--" for x in cells):
+            rows.append((DISPLAY.get(c, c), cells))
+    if not rows:
+        return L
+
+    L.append("\n## What the interventions cost, and what they buy\n")
+    L.append("Change in **model time per environment step** against the same "
+             "column's baseline. Negative is faster. This is the quantity the "
+             "whole premise rests on -- an intervention that does not move it "
+             "is not an efficiency intervention, whatever it does to success.\n")
+    L.append("| condition | " + " | ".join(f"{b}<br>{k}" for b, k in cols) + " |")
+    L.append("|---|" + "---|" * len(cols))
+    for name, cells in rows:
+        L.append(f"| {name} | " + " | ".join(cells) + " |")
+
+    L.append("\nBaselines, for scale:\n")
+    L.append("| | " + " | ".join(f"{b}<br>{k}" for b, k in cols) + " |")
+    L.append("|---|" + "---|" * len(cols))
+    base_ms, base_sec = [], []
+    for b, k in cols:
+        d = cost.get((b, k, "baseline"))
+        base_ms.append(f"{_mean(d['step']):.0f} ms" if d and d["step"] else "--")
+        base_sec.append(f"{_mean(d['sec']):.1f} s" if d and d["sec"] else "--")
+    L.append("| ms / env step | " + " | ".join(base_ms) + " |")
+    L.append("| sec / episode | " + " | ".join(base_sec) + " |")
+
+    # Wall-clock, where the harness recorded it. Kept separate from the table
+    # above because it is not a cost number: it moves with success too.
+    wall = []
+    for b, k in cols:
+        base = cost.get((b, k, "baseline"))
+        if not base or not base["sec"]:
+            continue
+        for c in conditions_present({key: 1 for key in cost}):
+            this = cost.get((b, k, c))
+            if c == "baseline" or not this or not this["sec"]:
+                continue
+            d = 100.0 * (_mean(this["sec"]) - _mean(base["sec"])) / _mean(base["sec"])
+            s = 100.0 * (_mean(this["step"]) - _mean(base["step"])) / _mean(base["step"])
+            wall.append((b, k, DISPLAY.get(c, c), s, d))
+    if wall:
+        L.append("\nWall-clock per episode, where the harness recorded it. It "
+                 "tracks the compute column except where a condition fails more "
+                 "often -- a failed episode runs to the step cap, so its "
+                 "seconds go up while its compute per step goes down.\n")
+        L.append("| backbone / benchmark | condition | ms/env-step | sec/episode |")
+        L.append("|---|---|---|---|")
+        for b, k, name, s, d in wall:
+            L.append(f"| {b} / {k} | {name} | {s:+.1f}% | {d:+.1f}% |")
+    return L
+
+
 def conditions_present(data) -> list:
-    seen = {k[2] for k in data} | {k[2] for k in LEGACY}
+    seen = ({k[2] for k in data} | {k[2] for k in LEGACY}) - EXCLUDE
     ordered = [c for c, _ in CONDITION_ORDER if c in seen]
     return ordered + sorted(seen - set(ordered))
 
@@ -408,6 +530,8 @@ def markdown(data) -> str:
             d, fixed, broke, p, n = pr
             L.append(f"| {b} | {k} | {DISPLAY.get(cond, cond)} | {n} | "
                      f"{d:+.1f} | {fixed} | {broke} | {p:.4f} |")
+
+    L.extend(cost_section(discover_cost(), cols))
 
     L.append("\n## Does the effect depend on where you measure it?\n")
     L.append("The per-cell tests above ask whether a condition changed anything "

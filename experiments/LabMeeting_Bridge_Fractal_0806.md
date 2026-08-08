@@ -66,6 +66,17 @@ p = 1.0000) while `move_near` drops twenty points (70.0% → **50.0%**,
 p = **0.0169**). The disconfirmation was a range artefact; OpenVLA's referential
 task does break, it had simply never had the relevant region removed (§3c-bis).
 
+**④ What they cost.** The efficiency premise is now measured, from timing
+already in the records. Action repeat halves or quarters compute exactly as
+designed (**−50% / −75%** per environment step). Depth pruning delivers its
+layer fraction (**−11 to −16%** at four layers). **Foveation delivers nothing** —
+−1.7%, +0.1%, −0.8%, −3.1%, +0.0% across five cells — because the
+implementation resamples pixels but leaves the language model's token budget
+untouched. So the axis that saves the most is also the one with the worst
+failure (−70.8 on UniVLA), and the axis that saves nothing still has to be
+defended on accuracy it cannot supply. No cell here buys meaningful compute
+*and* holds its sign.
+
 **Framing.** This is an evaluation-methodology result, not a method result.
 Three contributions: a per-episode paired protocol with verified determinism;
 systematic evidence that single-benchmark deltas are sign-unstable; a partial
@@ -183,6 +194,89 @@ OpenVLA/Bridge log-polar **is** paired: its per-episode records survive in
 `RetinaBased/GoogleColab/results_reproduction_eager/`, and that campaign's
 baseline is episode-for-episode identical to the current one (96/96), which the
 script verifies before borrowing the condition.
+
+---
+
+## What the interventions cost
+
+Every number so far has been about success. The premise underneath the campaign
+was efficiency — these interventions were supposed to buy wall-clock without
+costing accuracy — and that half has not been measured until now. It needed no
+new runs: `model_ms_per_infer` is recorded per episode in every result file, and
+`build_grid_report.py` now reports it.
+
+The right quantity is **model time per environment step**, not per model call.
+Action repeat does not make a call cheaper; it makes fewer calls. Read off
+per-call time it looks free, which is wrong in the direction that flatters it.
+Where a harness records only per-call time the per-step figure is derived as
+`infer / k`, which is exact — repeat k queries the policy once every k steps.
+
+| condition | OpenVLA<br>Bridge | OpenVLA<br>Fractal | SpatialVLA<br>Bridge | SpatialVLA<br>Fractal | UniVLA<br>Bridge |
+|---|---|---|---|---|---|
+| action repeat 2 | −49.8% | −49.9% | −50.6% | −52.3% | −52.4% |
+| action repeat 4 | −74.8% | −75.0% | −75.1% | −75.9% | -- |
+| foveation log-polar 20% | -- | **−1.7%** | -- | **+0.0%** | -- |
+| foveation blur 20% | **+0.1%** | **−0.8%** | -- | **−3.1%** | -- |
+| depth prune 1 | −2.6% | −3.3% | −1.9% | −7.6% | -- |
+| depth prune 2 | -- | −6.0% | −5.3% | −9.6% | -- |
+| depth prune 4 | −11.2% | −11.9% | -- | −15.9% | -- |
+| depth prune 8 | −22.6% | -- | -- | -- | -- |
+| depth prune 2 + action repeat 2 | -- | -- | -- | −54.5% | -- |
+
+Baselines: 518 / 515 ms per env step on OpenVLA, 902 / 937 on SpatialVLA, 598 on
+UniVLA.
+
+**Three things come out of this table.**
+
+**Depth pruning delivers almost exactly its layer fraction.** Four of OpenVLA's
+32 layers is 12.5% of the stack and costs 11.2–11.9%; eight is 25% and costs
+22.6%. Four of SpatialVLA's 26 is 15.4% and costs 15.9%. The intervention does
+what it says on the tin, and the agreement across two architectures is a
+sanity check on the measurement itself. The exception is SpatialVLA at small
+doses — one layer of 26 is 3.8% of the stack but costs 7.6% — which
+over-delivers by roughly a factor of two and we do not have an explanation for
+it.
+
+**Action repeat is by far the largest saving, and the only one that is large.**
+Halving or quartering the call count halves or quarters the compute, exactly as
+designed. Every other intervention on this table is in the single or low double
+digits.
+
+**Foveation buys nothing.** Keeping 20% of the pixels moves per-step compute by
+−1.7%, +0.1%, −0.8%, −3.1%, +0.0% — five cells, none of them distinguishable
+from zero. The reason is almost certainly that the implementation resamples the
+image but leaves the token budget entering the language model unchanged, so
+there is nothing downstream to save. **The efficiency premise does not hold for
+the visual axis at all**, and that has to be said plainly: whatever foveation is
+doing to success — and on OpenVLA/Bridge it does +18.8 — it is not an efficiency
+intervention as implemented.
+
+**Wall-clock is not the same question.** Seconds per episode moves with success
+as well as with speed, because a failed episode runs to the step cap. The clean
+illustration is UniVLA under action repeat 2: compute per step drops **52.4%**
+while wall-clock per episode rises **22.0%**, because success collapses from
+78.1% to 7.3% and nearly every episode now runs the full horizon. On
+OpenVLA/Fractal foveation shows the same thing more mildly — −1.7% compute,
+**+13.9%** seconds. Reporting seconds alone would credit an intervention for
+being fast when it is merely failing quickly, or condemn one for being slow when
+it is succeeding faster.
+
+**What this does to the framing.** Set the success grid beside this one and the
+three axes stop being interchangeable:
+
+| axis | compute saved | what the grid says about success |
+|---|---|---|
+| action repeat 2 | **−50%** | sign-unstable: −8.3 Bridge / +5.2 Fractal, and −70.8 on UniVLA |
+| depth prune 4 | −11 to −16% | sign-unstable: +15.6 OpenVLA / −17.8 SpatialVLA on Fractal |
+| foveation 20% | **≈0%** | sign-unstable: +18.8 Bridge / −19.3 Fractal |
+
+Only one intervention buys a large amount of compute, only one buys a moderate
+amount, one buys none — and all three are sign-unstable in success. So the
+conclusion is not that some tricks are better than others: it is that the axis
+with the real saving is also the one with the worst failure (−70.8), and the
+axis with no saving at all still has to be defended on accuracy grounds it
+cannot supply. There is no cell in this campaign where an intervention buys
+meaningful compute and holds its sign across the places we measured.
 
 ---
 
