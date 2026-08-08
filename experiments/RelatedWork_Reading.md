@@ -1,451 +1,422 @@
-# 선행연구 정독 결과 — 우리 세 개입은 VLA에 실제로 도움이 되는가
+# 선행연구 정독 — 원문 5편
 
-> **⚠️ 접근 제한을 먼저 밝힌다.** 이 세션의 egress 정책이 `arxiv.org`,
-> `openreview.net`, `semanticscholar.org`, `alphaxiv.org`, `huggingface.co`를
-> 전부 차단한다. **PDF 원문을 열지 못했다.** 아래 내용은 전부 **검색 엔진이
-> 반환한 논문 요약과 인용 스니펫**에서 나왔다. 수치는 그 스니펫이 명시한
-> 값이고, 문맥(어떤 조건에서 잰 값인지)은 확인하지 못한 경우가 있다.
-> **논문에 인용하기 전에 원문 대조가 반드시 필요하다.** 특히 아래 굵은
-> 숫자들이 그렇다.
+**읽은 것 (PDF 원문, 직접 대조):**
 
----
-
-## 요약 — 세 줄
-
-1. **시각 축(foveation): 문헌은 "VLA에 해롭다"로 수렴한다.** 독립된 그룹이
-   다른 백본·다른 벤치마크에서 **−7.4**를 보고했고, 토큰 가지치기 계열도
-   VLA로 옮기면 깨진다고 반복 보고된다. **우리 Fractal 결과(−19.3)는 문헌과
-   일치하고, 우리 Bridge 결과(+18.8)는 문헌이 예측하지 못한다.** 후자가 우리
-   논문의 진짜 자산이다.
-2. **연산 축(depth pruning): 문헌은 "도움이 된다"고 한다 — 단 한 벤치마크에서.**
-   MoLe-VLA가 RLBench 10태스크에서 **+9.7% 성공률 + 36.8% 가속**을 보고한다.
-   우리 OpenVLA 결과(+15.6, prune 8에서 ±0)는 이와 일치하지만, **SpatialVLA에서
-   같은 조작이 −17.8이다.** 문헌은 백본을 하나만 봤다.
-3. **시간 축(action repeat): 문헌은 "처리량은 벌지만 오차가 누적된다"고 한다.**
-   우리와 일치한다. 우리가 더한 것은 **그 트레이드오프의 부호가 백본마다
-   뒤집힌다**는 것이다(SpatialVLA +12.5 vs UniVLA −70.8, 같은 Bridge).
-
----
-
-## 1. 시각 축 — foveation은 VLA에 도움이 되는가?
-
-### 1.1 [핵심] Gaze-Regularized Vision-Language-Action Models for Robotic Manipulation
-
-**출처:** arXiv 2603.23202 · **CVPR 2026 Workshop (GRAIL-V)**
-(`openaccess.thecvf.com/content/CVPR2026W/GRAIL-V/papers/Pani_...`)
-
-**무슨 내용인가 (검색 유래)**
-시선 분포를 VLA 학습에 정규화 항으로 넣는다. 그리고 **별도의 변형으로, 시선
-분포의 peak를 중심으로 foveated RGB 이미지를 만들어 입력으로 쓴다** — 중심은
-고해상도, 주변은 다운샘플/블러. 즉 **우리 blur 변형과 사실상 같은 조작이다.**
-
-**핵심 수치 (검색 유래, 원문 확인 필요)**
-
-| 조건 | LIBERO-Spatial 성공률 |
-|---|---|
-| baseline | **85.9%** |
-| gaze **정규화**(학습 신호로 사용) | **95.5%** (+9.6) |
-| **foveated RGB 입력**(주변부 제거) | **78.5%** (**−7.4**) |
-
-**저자들의 해석 (검색 유래):** 다시점 조작 환경에서 주변부 디테일을 공격적으로
-줄이면 **정책이 정밀한 공간 추론에 쓰던 맥락 단서**(테이블 기하, 지지면, 대안
-grasp)가 사라진다.
-
-**우리와의 연결 — 이게 제일 중요하다**
-
-- **구분해야 할 것:** 시선을 *학습 신호*로 쓰는 것(+9.6)과 주변 픽셀을 *추론
-  시점에 제거*하는 것(−7.4)은 완전히 다른 개입이다. **우리 것은 후자다.**
-  이 구분을 안 하면 "foveation은 좋다"는 잘못된 인용이 된다.
-- **독립 재현:** 다른 백본, 다른 벤치마크(LIBERO), 다른 그룹이
-  **foveation이 VLA를 해친다**는 우리 Fractal 결과와 같은 방향을 얻었다.
-  크기도 비슷한 수준이다(그들 −7.4 / 우리 blur −8.9, log-polar −19.3).
-- **그런데 우리에겐 반대 부호가 있다.** OpenVLA/Bridge에서 log-polar **+18.8**,
-  blur **+17.7**. **문헌 어디에도 이 방향의 보고가 없다.**
-
-> **Related Work에 그대로 들어갈 문단 (초안)**
->
-> Recent work reports that foveating a VLA's observation is harmful: [Gaze-Reg]
-> builds a foveated RGB input around a gaze peak and measures 78.5% against an
-> 85.9% baseline on LIBERO-Spatial, attributing the 7.4-point cost to the loss
-> of peripheral context that the policy uses for spatial reasoning. We reproduce
-> that cost — −8.9 with blur and −19.3 with log-polar on Fractal — **and also
-> its opposite: on Bridge the same operation gains 18.8 points.** Neither
-> measurement is wrong. They are measurements of different benchmarks, and
-> reporting either alone licenses a conclusion the other refutes.
-
-### 1.2 [핵심] VLA-Cache — 그리고 "픽셀을 줄여도 연산은 안 준다"의 선례
-
-**출처:** arXiv 2502.02175 · `vla-cache.github.io`
-
-**핵심 주장 (검색 유래)**
-- VLA-Cache는 프레임 간 정적 토큰을 캐시 재사용. **FLOPs −27.31%, 1.63× 속도,
-  성공률 하락 0.3%**.
-- **FastV와 SparseVLM은 "추론 속도를 개선하지 못하고 태스크 성능을 자주
-  떨어뜨린다."**
-- **FastV는 attention 계산에서 토큰을 마스킹할 뿐 GPU 작업량을 줄이지 않고,
-  오히려 마스킹 오버헤드를 더한다.** SparseVLM은 pruning/merging/recycling에서
-  추가 비용이 든다.
-- 이들의 전략은 **단일 프레임 내에서 작동하며, 정밀 조작에 결정적인 spatial
-  fidelity를 깬다.**
-- 정적 토큰을 전부 재사용하면 성공률이 **74.2%**로 떨어진다 — 시각적 유사성만으로는
-  로봇 제어에서 재사용 판단이 불충분하다.
-
-**우리와의 연결 — 우리 비용 결과의 직계 선례다**
-
-우리 측정에서 foveation은 스텝당 연산을 **0%** 줄였다(−1.7, +0.1, −0.8, −3.1,
-+0.0). 우리는 이걸 *"픽셀은 줄였지만 언어 모델에 들어가는 토큰 예산은 그대로라
-아낄 것이 없다"*로 설명했다. **VLA-Cache가 FastV에 대해 같은 종류의 실패를
-보고한다** — 마스킹은 이론적 FLOPs를 줄이지만 실제 GPU 작업은 안 줄인다.
-
-> **공통 교훈, 그리고 우리가 더하는 것:** 시각 개입은 **"무엇을 제거했는가"와
-> "무엇이 비용인가"가 어긋나기 쉽다.** [VLA-Cache]는 attention 마스킹에서 이를
-> 보였고, 우리는 **픽셀 공간**에서 같은 어긋남을 측정한다 — 그리고 우리 쪽이
-> 더 극단적이다. 픽셀의 80%를 버려도 스텝당 연산은 통계적으로 0이다.
-
-### 1.3 [핵심] VLA-Pruner / Bridging the Semantic-Action Gap
-
-**출처:** arXiv 2511.16449 (v1 제목 *VLA-Pruner*, v4 제목 *Bridging the
-Semantic-Action Gap…*) · 코드 `github.com/MINT-SJTU/VLA-Pruner`
-
-**핵심 주장 (검색 유래)**
-- VLM용 토큰 가지치기는 **prefill attention** 같은 semantic salience만으로
-  토큰을 고른다. 그런데 VLA는 **고수준 semantic 이해 + 저수준 action 실행**의
-  이중 체계다.
-- 그래서 기존 방법은 **semantic 단서 쪽으로 토큰 보존이 편향되고, action 생성에
-  결정적인 정보를 버린다.**
-- prefill attention과 action-decode attention의 패턴이 **뚜렷하게 다르다.**
-- 두 신호를 결합해 1.99× 가속, 조작 품질 유지.
-
-**우리와의 연결 — 겹치지 않는다. 오히려 방향이 반대다**
-
-| | 무엇을 제거하나 | 무엇이 살아남나 | 무엇이 죽나 |
+| # | 논문 | 출처 | 상태 |
 |---|---|---|---|
-| **VLA-Pruner가 지적하는 기존 방법** | 시각 **토큰**(semantic salience 기준) | semantic 이해 | **action 생성** |
-| **우리 §3c** | 디코더 **용량**(층) 또는 픽셀 | **파지(motor)** — 멀쩡하거나 향상 | **지시 대상 해석(referential)** |
-
-**정반대다.** 그들은 *"semantic은 지키고 action을 깬다"*, 우리는 *"motor는
-지키고 semantic(어떤 물체인지)을 깬다"*.
-
-이건 novelty 위협이 아니라 **더 강한 주장의 재료**다: **무엇이 먼저 죽는지는
-무엇을 제거했는지에 달려 있다.** 토큰을 attention으로 자르면 action이 죽고,
-디코더 용량을 자르면 grounding이 죽는다. 두 결과를 나란히 놓으면 *"효율 개입은
-단일 스칼라 '성능'을 깎는 게 아니라 특정 능력을 선택적으로 제거한다"*가 된다.
-
-### 1.4 [인용] 그 밖의 수렴 증거
-
-- **일반화 관찰 (검색 유래):** *"visual token pruning 방법들은 VLA로 옮기면
-  성능이 불만족스럽다. VLM은 global semantics에 집중하지만 로봇 태스크는 local
-  semantics에 더 의존하기 때문이다."*
-- LAC(arXiv 2602.00686): 성공률 **75.0 → 76.9 (+1.9)**, 1.76× 속도, FLOPs −25.3%
-- SAFE-Pruner(2605.29662): **74.5% vs vanilla CogACT 74.8%** (−0.3), FLOPs 37.4%, 1.73×
-- SpecPrune-VLA(2509.05614): 1.46–1.57× 속도, "성공률 저하 미미"
-
-**주의해서 읽을 것:** 위 세 편은 전부 **LIBERO 한 벤치마크**이고, 보고 형식이
-*"성공률은 거의 유지하면서 속도를 벌었다"*이다. **신뢰구간도 paired 검정도
-없다.** 이게 정확히 PhAIL이 지적하는 관행이고, 우리 §5.1(부호 불안정)이 왜
-필요한지의 근거다.
-
-### 1.5 시각 축 결론 — 우리 질문에 대한 답
-
-> **foveation은 VLA에 도움이 되는가?**
-> **문헌의 답: 아니다.** 독립 그룹이 −7.4를 보고했고, 토큰 가지치기 계열도
-> VLA에서 반복적으로 깨진다. 그리고 **비용도 안 아낀다** — 우리 측정 0%,
-> VLA-Cache가 FastV에 대해 같은 관찰.
->
-> **우리의 답: 대개 아니지만, 항상은 아니다.** OpenVLA/Bridge에서 **+18.8**은
-> 문헌이 설명하지 못하는 결과다. 이건 이 논문에서 **버리면 안 되는 이상치**다.
-
-**⚠️ 아직 설명 못 한 것.** "baseline이 낮으면 도움이 되는가"를 우리 데이터로
-확인해보면 단조롭지 않다:
-
-| 칸 | baseline | log-polar Δ | blur Δ |
-|---|---|---|---|
-| OpenVLA / Bridge | 15.6% | **+18.8** | **+17.7** |
-| OpenVLA / Fractal | 38.5% | **−19.3** | −8.9 |
-| SpatialVLA / Fractal | 84.4% | +0.7 | −1.5 |
-| *(참고)* Gaze-Reg / LIBERO-Spatial | 85.9% | — | **−7.4** |
-
-15.6%에서 크게 오르고, 38.5%에서 크게 떨어지고, 84.4%에서는 아무 일도 안
-일어난다. **단조롭지 않으므로 "약한 정책일수록 도움된다"는 설명은 성립하지
-않는다.** 정직하게 열어두고, Discussion에 열린 질문으로 적어야 한다.
+| A | **ShortGPT: Layers in LLMs are More Redundant Than You Expect** | arXiv 2403.03853v3 (2024-10-11) | ✅ 정독 |
+| B | **EfficientVLA: Training-Free Acceleration and Compression for VLA** | arXiv 2506.10100v1 (2025-06-11) | ✅ 정독 |
+| C | **VLA-Cache: Efficient VLA Manipulation via Adaptive Token Caching** | Univ. of Sydney / SJTU | ✅ 정독 |
+| D | **MoLe-VLA: Dynamic Layer-skipping VLA via Mixture-of-Layers** | Nanjing/PKU, AAAI'26 | ✅ 정독 |
+| E | **Gaze-Regularized VLA Models for Robotic Manipulation** | HKU (Pani & Yang) | ✅ 정독 |
 
 ---
 
-## 2. 연산 축 — depth pruning은 VLA에 도움이 되는가?
+# ★ 가장 중요한 발견 — §3c가 이미 문헌에 있다, 다만 아무도 이름 붙이지 않았다
 
-### 2.1 [핵심] MoLe-VLA — 문헌에서 가장 강한 긍정 사례
+**B와 C가 우리와 같은 벤치마크(SIMPLER, Google Robot)에서 같은 네 태스크를
+쓴다.** 그들의 표를 태스크별로 펼치면 다음이 나온다.
 
-**출처:** arXiv 2503.20384 · **AAAI 2026** (`ojs.aaai.org/.../38945`) ·
-코드 `github.com/RoyZry98/MoLe-VLA-Pytorch`
+### SIMPLER Visual Matching, 백본 = CogACT
 
-**핵심 수치 (검색 유래, 원문 확인 필요)**
-- **RLBench 10개 시뮬레이션 태스크**에서 평균 성공률 **+9.7%**, OpenVLA 대비
-  추론 **36.8% 가속**. (다른 스니펫은 "10개 태스크 평균 +8%, 연산 최대 5.6×
-  절감"이라고 함 — **두 수치가 다르므로 원문에서 확정할 것**)
-- **층 스킵 내성:** *"상당한 층 스킵에도 대부분의 태스크에서 성능이 안정적이고,
-  24층까지는 성공률 저하가 미미하다. 30층을 스킵할 때(FLOPs 약 95% 감소) 비로소
-  큰 저하가 온다."*
+| 방법 | 제거하는 것 | **PickCan** | **MoveNear** | Drawer | DrawerApple | Avg |
+|---|---|---|---|---|---|---|
+| CogACT (baseline) | — | 91.3 | 85.0 | 71.8 | 50.9 | **74.8** |
+| FastV | 시각 토큰(attention) | **92.6** `+1.3` | **81.4** `−3.6` | 69.8 | 52.4 | 74.1 |
+| VLA-Cache | 시각 토큰(캐시) | **92.0** `+0.7` | **83.3** `−1.7` | 70.5 | 51.6 | 74.4 |
+| EfficientVLA L28 T112 | 층 + 토큰 | **95.3** `+4.0` | **83.3** `−1.7` | 70.3 | 56.5 | 76.4 |
+| EfficientVLA L28 T56 | 층 + 토큰 | **94.7** `+3.4` | **82.4** `−2.6` | 69.8 | 55.4 | 75.5 |
+| EfficientVLA L22 T112 | 층 + 토큰 | **94.0** `+2.7` | **82.1** `−2.9` | 69.2 | 54.6 | 75.0 |
+| EfficientVLA L22 T56 | 층 + 토큰 | **93.3** `+2.0` | **81.3** `−3.7` | 68.2 | 53.8 | 74.2 |
 
-**우리와의 연결**
+### SIMPLER Variant Aggregation, 같은 백본
 
-- **우리 OpenVLA 결과와 정확히 일치한다.** OpenVLA/Bridge에서 `depth prune 8`
-  (32층 중 8층)이 **+0.0** — 아무 일도 안 일어난다. OpenVLA/Fractal에서
-  `depth prune 4`가 **+15.6**. 즉 **OpenVLA는 층 제거를 매우 잘 견딘다**는
-  MoLe-VLA의 관찰을 독립적으로 재현한 셈이다.
-- **그런데 SpatialVLA에서는 반대다.** `depth prune 1`(26층 중 1층!)이 Bridge에서
-  **−10.4**, `depth prune 4`가 Fractal에서 **−17.8**. **한 층을 지워도 깨진다.**
-- **중요한 차이:** MoLe-VLA는 라우터(STAR)를 **학습**하고 인지 능력 손실을
-  distillation(CogKD)으로 보상한다. 즉 **training-free가 아니다.** 우리는
-  training-free fixed pruning이다. 우리 결과는 *"학습 없이 층을 지우면 백본에
-  따라 결과가 갈린다"*이고, 이는 MoLe-VLA를 반박하지 않고 **그 라우터와
-  distillation이 왜 필요한지를 설명해준다.**
+| 방법 | **PickCan** | **MoveNear** | Avg |
+|---|---|---|---|
+| CogACT (baseline) | 89.6 | 80.8 | **61.3** |
+| FastV | **91.4** `+1.8` | **78.6** `−2.2` | 62.1 |
+| VLA-Cache | **91.7** `+2.1` | **79.3** `−1.5` | 62.3 |
+| EfficientVLA L28 T112 | **94.8** `+5.2` | **77.6** `−3.2` | 63.2 |
+| EfficientVLA L28 T56 | **94.4** `+4.8` | **77.2** `−3.6` | 62.6 |
+| EfficientVLA L22 T112 | **93.9** `+4.3` | **76.4** `−4.4` | 62.1 |
+| EfficientVLA L22 T56 | **93.2** `+3.6` | **75.8** `−5.0` | 61.2 |
 
-> **Related Work 문장 (초안)**
->
-> Layer skipping has been brought into VLA policies with strong results:
-> [MoLe-VLA] reports +9.7% mean success and 36.8% faster inference on ten
-> RLBench tasks, and finds performance stable up to 24 of the decoder's layers
-> skipped. **Two properties of that result bound what it establishes.** It uses
-> a learned router and a distillation objective to recover the capability that
-> skipping removes, so it is not training-free; and it is measured on one
-> benchmark and one policy family. **Training-free, fixed-schedule pruning on a
-> second backbone behaves differently in our measurements** — removing a single
-> layer of SpatialVLA's 26 costs 10.4 points on Bridge — which suggests the
-> router and the distillation are not incidental to the reported gain.
+## 여기서 나오는 것 세 가지
 
-### 2.2 [핵심] ShortGPT — 우리 랭킹 기준의 출처
+**① 12개 구성 전부에서 `PickCan`은 오르고 `MoveNear`는 내린다.**
+서로 다른 세 논문, 서로 다른 네 방법(attention 마스킹 / 토큰 캐싱 / 층 가지치기
+/ 층+토큰), 두 평가 설정. **예외가 없다.** 이것이 정확히 우리 §3c다 — 대상이
+하나뿐이라 고를 필요가 없는 태스크는 살아남고, **지시된 물체를 골라내야 하는
+태스크가 먼저 죽는다.**
 
-**출처:** Men et al., 2024 · OpenReview `JMNht3SmcG`
+**② 용량을 더 깎을수록 격차가 벌어진다 — 단조롭다.**
+EfficientVLA의 네 구성을 용량 순으로 늘어놓으면
+(L28 T112 → L28 T56 → L22 T112 → L22 T56):
 
-**정의 (검색 유래, 여러 출처가 일치)**
-> ShortGPT assigns each layer a **Block Influence (BI)** score defined as
-> **one minus the cosine similarity between its input and output hidden
-> states**, averaged over a calibration set. Layers with low BI (high
-> input-output similarity) are considered redundant and removed.
-
-**우리 코드 대조 (`SpatialVLA/experiments/tome/depth_prune_gemma2.py`)**
 ```
+PickCan   +4.0 → +3.4 → +2.7 → +2.0     이득이 줄고
+MoveNear  −1.7 → −2.6 → −2.9 → −3.7     손실이 커진다
+```
+Variant Aggregation에서도 `+5.2 → +4.8 → +4.3 → +3.6` / `−3.2 → −3.6 → −4.4 →
+−5.0`으로 같다. **우리 §3b의 "깊이 곡선 두 개가 반대로 간다"가 남의 데이터에
+그대로 있다.**
+
+**③ 그런데 세 논문 모두 평균만 보고한다.** EfficientVLA는 74.8 → 74.2를 두고
+*"merely a 0.6% drop"*이라고 쓴다. **두 반대 곡선이 평균에서 상쇄된다.** 우리
+§3b가 "aggregate가 두 곡선을 숨긴다"고 주장한 것의 **문헌 내 실물 증거**다.
+
+> ### 논문에 쓸 문장 (초안)
+>
+> The split is not peculiar to our runs. Re-reading the per-task tables of three
+> published SIMPLER results — token masking [FastV, as reported in
+> EfficientVLA], token caching [VLA-Cache], and layer-plus-token pruning
+> [EfficientVLA] — **`pick coke can` improves and `move near` degrades in all
+> twelve reported configurations**, and in EfficientVLA the gap widens
+> monotonically with the amount removed (+4.0 → +2.0 on pick, −1.7 → −3.7 on
+> move near). None of these papers comments on the pattern, because each reports
+> the four-task mean, in which the two movements cancel: EfficientVLA describes
+> its largest configuration as *"merely a 0.6% drop."* **The convention of
+> reporting one aggregate number is what has kept this invisible.**
+
+**⚠️ 범위 주의.** Drawer 계열은 깨끗하지 않다. `Drawer`(open/close drawer)는
+Visual Matching에서 6/6 하락하지만 Variant Aggregation에서는 섞이고,
+`DrawerApple`은 대부분 상승한다. **단조롭게 갈리는 것은 `PickCan`(상승)과
+`MoveNear`(하락) 두 개다.** 우리 주장을 이 두 개로 좁혀서 쓰는 것이 정확하다.
+
+---
+
+# A. ShortGPT — 우리 depth 랭킹의 출처, 완전 일치 확인
+
+### 정의 (원문 식 1, p.4)
+
+```
+BI_i = 1 − E_{X,t} [ (X_i,t · X_{i+1,t}) / (||X_i,t||₂ ||X_{i+1,t}||₂) ]
+```
+> *"Lower BI score imply that X_i and X_{i+1} exhibit high cosine similarity,
+> suggesting that the layer makes minimal transformations to the hidden states
+> and is therefore less important."*
+
+절차(3.2): calibration set으로 **PG19(라벨 없는 텍스트)**를 쓰고, 그 위에서
+추론하며 각 층의 hidden state를 모으고, BI를 계산해 **오름차순 정렬 후 낮은
+BI부터 삭제**한다.
+
+### 우리 코드와 대조 (`SpatialVLA/experiments/tome/depth_prune_gemma2.py`)
+
+```python
 cs = cosine_similarity(layer_input, layer_output).mean()
 # higher cos = more redundant = safer to drop; rank descending
 ```
-**동일하다.** 우리는 BI를 그대로 쓰되 `1 −`를 생략하고 내림차순으로 정렬한
-것이므로, 랭킹은 ShortGPT와 **같은 순서**다.
 
-**→ 논문에 반드시 이렇게 쓸 것:**
-> We rank layers by the Block Influence criterion of [ShortGPT] — the cosine
-> similarity between a layer's input and output hidden states — calibrated once
-> on the first step of an episode.
+**동일하다.** `높은 cos 내림차순` = `낮은 BI 오름차순`. 순서가 같다.
 
-이 한 문장이 없으면 "임의 휴리스틱"으로 읽히고, 있으면 "기존 기준의 폐루프
-전이 검정"이 된다. **논문의 성격이 바뀐다.**
+### ⚠️ 그런데 우리와 다른 점이 하나 있고, 이건 반드시 밝혀야 한다
 
-### 2.3 [핵심] Rethinking Layer Redundancy: Calibration Matters More Than Search
-
-**출처:** arXiv 2604.24938 (v1/v3 제목이 다름)
-
-**핵심 주장 (검색 유래):** 깊이 가지치기에서 **어떤 calibration 목적함수를
-쓰느냐가, 어떤 탐색 알고리즘을 쓰느냐보다 중요하다.**
-
-**우리와의 연결 — §3c-bis가 이 문헌의 사례다**
-
-우리는 `--depth-min-layer`가 **후보 구간**을 정하는 것만으로 같은 이름의 실험이
-다른 실험이 된다는 것을 측정했다. 층 개수를 4로 고정하고 **부위만** 바꿨더니:
-
-| | 뒷절반만 제거 → 앞쪽 포함 제거 | p |
+| | ShortGPT | 본 연구 |
 |---|---|---|
-| pick 계열 (n=75) | 41.3% → 40.0% (**−1.3**) | 1.0000 |
-| `move_near` (n=60) | 70.0% → 50.0% (**−20.0**) | **0.0169** |
+| calibration 데이터 | **PG19 — 도메인 밖 영어 텍스트** | **에피소드 첫 스텝의 실제 로봇 관측** |
+| calibration 시점 | 배포 전 1회 | 에피소드마다 1회 |
+| 평가 | perplexity + 13개 NLP 벤치마크 | 폐루프 성공률 |
 
-**"calibration/후보 설정이 결과를 지배한다"의 폐루프 판본**이다. 이 논문과
-[Locality-Aware Redundancy Pruning](arXiv 2605.27786)을 함께 인용하면 우리
-§3c-bis가 고립된 버그 수기가 아니라 **문헌이 이미 지목한 현상의 로봇 사례**가
-된다.
+우리는 **in-domain 보정**을 한다. 이건 개선일 수도 있고 교란일 수도 있다 —
+에피소드마다 랭킹이 달라질 수 있기 때문이다(실제로 `move_near`에서
+`[2,4,6,23]`, pick에서 `[2,4,23,26]`으로 달랐다). **논문에 이 차이를 명시하고,
+가능하면 고정 랭킹 대조군을 한 번 돌리는 것이 안전하다.**
 
-### 2.4 연산 축 결론
+### 그들의 검증 범위 (= 우리가 채우는 공백)
 
-> **depth pruning은 VLA에 도움이 되는가?**
-> **문헌의 답: 그렇다 — OpenVLA 계열에서, 학습된 라우터와 함께, 한 벤치마크에서.**
-> **우리의 답: 백본에 따라 갈린다.** OpenVLA는 8층을 지워도 무사하고 4층에서
-> +15.6까지 간다. SpatialVLA는 1층에서 −10.4다. **그리고 이건 연산을 실제로
-> 아끼는 유일한 "정직한" 축이다** — 지운 층 비율만큼 정확히 준다(12.5% → −11.9%,
-> 25% → −22.6%).
+- 모델: Llama2-7B/13B, Baichuan2-7B/13B — **전부 순수 LLM**
+- 지표: perplexity, MMLU, CMNLI, HellaSwag, PIQA, CHID, WSC, CoQA, BoolQ,
+  Race-H/M, XSum, C3, CMMLU — **전부 단일 forward pass**
+- 대표 수치: Llama2-13B에서 40층 중 10층(25%) 제거 → MMLU **55.0 → 52.2**
+- **폐루프 제어 실험 0건. 로봇 0건.**
+
+> **Related Work 문장:** We rank layers by the Block Influence criterion of
+> ShortGPT — one minus the cosine similarity between a layer's input and output
+> hidden states — differing only in the calibration set, which for us is the
+> first observation of the episode rather than out-of-domain text. **ShortGPT
+> validates the criterion on perplexity and thirteen single-forward-pass NLP
+> benchmarks; it does not touch a closed loop.**
 
 ---
 
-## 3. 시간 축 — action repeat은 VLA에 도움이 되는가?
+# B. EfficientVLA — 우리와 가장 가까운 논문. 같은 기준, 같은 벤치마크, 그런데 결론이 다르다
 
-### 3.1 문헌의 진단 (검색 유래)
+### 무엇을 하는가
 
-- **핵심 결함:** *"action chunking은 낡은 관측(stale observations)에 기반해
-  행동하고 chunk 실행 중 새로 관측된 피드백을 반영하지 못해, 오차가 누적되고
-  제어 성능이 저하된다."*
-- **트레이드오프의 형태:** [Mixture of Horizons, arXiv 2511.19433]가
-  *"장기 예측력(long-term foresight)과 단기 정밀도(short-term precision) 사이의
-  트레이드오프"*를 체계적으로 보고하고, 지평을 섞어서 완화한다.
-- **처방들:** 반응형 chunk 재계획([DREAM-Chunk] 2606.18589), 투기적 검증
-  ([Speculative Verification] 2604.02965), 적응형 지평
-  ([VLA-Corrector] 2607.01804), 스트리밍 실행([StreamingVLA] 2603.28565).
-  **2026년에 이 문제를 고치려는 논문이 최소 4편 나왔다** — 문제가 실재한다는
-  방증이다.
+**Training-free**로 세 가지를 동시에: ① 언어 모듈의 잉여 층 제거 ② 시각 토큰
+선별(task-critical + diversity) ③ diffusion action head의 시간축 캐싱.
 
-### 3.2 우리와의 연결
+**층 중요도 기준이 ShortGPT와 같다:**
+> *"We define the importance score I(ℓ) … as one minus the average cosine
+> similarity between its input and output … These scores are then sorted in
+> ascending order … Subsequently, the first n layers are pruned."*
 
-- **일치:** 우리 repeat 4가 SpatialVLA/Fractal에서 **−40.0**, OpenVLA/Bridge에서
-  **−11.5**. "오차 누적"이 정확히 이 모양이다.
-- **우리가 더하는 것:** 문헌은 트레이드오프의 **크기**를 다루고, 우리는 그
-  **부호가 백본마다 뒤집힌다**는 것을 보인다. 같은 Bridge, 같은 repeat 2에서
-  SpatialVLA **+12.5**, OpenVLA **−8.3**, UniVLA **−70.8**. 셋이 한 화면에 있다.
-- **⚠️ 반드시 밝힐 것:** 우리는 action **repeat**(1개 예측 → k스텝 유지)이고
-  문헌의 action **chunking**(k개 예측 → k스텝 실행)이 아니다. repeat은
-  chunking의 퇴화형(H=1, s=k)이고, **chunking이 줄 수 있는 이득의 하한**이다.
-  이 문장을 안 넣으면 리뷰어가 즉시 짚는다.
+즉 **우리와 EfficientVLA와 ShortGPT가 전부 같은 기준을 쓴다.**
 
-### 3.3 시간 축 결론
+### 핵심 수치
 
-> **action repeat은 VLA에 도움이 되는가?**
-> **문헌의 답: 처리량은 확실히 벌지만, 낡은 관측 때문에 제어가 나빠진다.
-> 2026년에 이를 고치려는 논문이 여럿이다.**
-> **우리의 답: 일치한다. 그리고 우리가 재는 세 축 중 연산을 압도적으로 가장
-> 많이 아끼는 축이면서(−50% / −75%), 동시에 캠페인 최악의 실패(−70.8)를
-> 만드는 축이다.**
+- 백본 **CogACT** (DINOv2+SigLIP, Llama2-7B, DiT action head), **28층**
+- 벤치마크 **SIMPLER** — 우리와 같은 환경, Google Robot 4태스크
+- 최대 구성(L=22, T=56): **FLOPs 28.9%, 1.93× 속도, 평균 −0.6%p**
+- 모듈별 (Table 1): 언어 모듈이 **134.5 ms / 3726 GFLOPs**로 지배적.
+  가지치기 후 **58.9 ms (−56%)**
 
----
+### ★ 그들이 "역설"이라고 부른 것 — 우리에겐 역설이 아니다
 
-## 4. 평가 방법론 — 우리 두 번째 기여의 자리
+> *"Remarkably, on the pick coke can task, pruning 36% of parameters
+> **paradoxically improved** the success rate from 91.3% to 94.0%, highlighting
+> significant parameter redundancy in the VLA model."*
 
-### 4.1 [핵심] PhAIL: A Real-Robot VLA Benchmark and Distributional Methodology
+**우리 OpenVLA/Fractal `depth prune 4` = +15.6 (p<0.001)과 같은 현상이다.**
+그들은 "파라미터 잉여성"으로 설명하고 넘어간다. **우리는 같은 표의 MoveNear가
+동시에 내려간다는 것을 보고 다른 설명을 준다** — 잉여가 아니라 **선택적 제거**다.
 
-**출처:** arXiv 2605.29710 (2026)
+### ★ foveation이 연산을 못 아끼는 이유가 여기 있다
 
-**핵심 주장 (검색 유래)**
-> Real-world evaluation of VLA policies **still relies on binary success rate at
-> a fixed timeout with N < 25 rollouts per condition, almost always without
-> confidence intervals or paired statistical comparison.**
-
-**그들의 처방:** time-to-success CDF를 기본 단위로 삼고, 점수(Human-Relative
-Throughput + 부트스트랩 신뢰구간)와 유의성 검정(Kolmogorov–Smirnov, 객체별
-계산 후 macro 평균)을 **분리**한다. N ≤ 30에서 이진 지표가 못 가르는 두 비교를
-가른다.
-
-**우리와의 관계 — 경쟁이 아니라 상보다**
-
-| | PhAIL | 본 연구 |
-|---|---|---|
-| 대상 | 실제 로봇 (확률적) | real-to-sim (결정론적) |
-| 짝짓기 | 불가 — 에피소드가 재현되지 않음 | **가능** — 85/85 비트 단위 재현 |
-| 검정 | KS (분포 비교, unpaired) | **McNemar exact (paired)** + Fisher |
-| 불확실성 | 부트스트랩 CI | **p값이 전부** (재실행 분산 = 0) |
-
-> **Related Work 문장 (초안)**
+Figure 1(a)와 본문:
+> *"while visual token pruning initially reduces inference time in
+> computation-bound scenarios, **its efficacy quickly diminishes as the system
+> becomes memory-bound by the LLM**."*
 >
-> [PhAIL] surveys real-robot VLA evaluation and finds it rests on binary success
-> at a fixed timeout, N < 25 per condition, almost never with a confidence
-> interval or a paired comparison; it proposes a distributional remedy for the
-> stochastic real-robot setting. **Our setting admits a stronger one.** Greedy
-> decoding into a seeded simulator is deterministic — we verify that 85 of 85
-> episodes reproduce exactly, including step counts and grasp flags — so
-> re-run variance is zero and the only remaining uncertainty is which episodes
-> the protocol drew. A paired exact test on discordant pairs measures precisely
-> that, which makes the reported p-value the complete account of uncertainty
-> rather than a partial one.
+> *"approaches like FastV (T = 56) show that solely optimizing visual tokens
+> yields **only a 1.21× speedup due to unaddressed memory bottlenecks**."*
 
-### 4.2 [핵심] Encoder Winners Do Not Reliably Transfer Across VLA Backbone Scale
+**우리 측정(foveation → 스텝당 연산 −1.7% ~ +0.1%)의 원리적 설명이다.**
+시각 쪽을 건드려서는 벽에 부딪힌다. 우리는 그 벽을 **픽셀 공간에서** 확인했고,
+그들은 **토큰 공간에서** 확인했다. 같은 벽이다.
 
-**출처:** arXiv 2606.14153 (2026)
+### 또 하나 — 무엇을 남기느냐가 전부다
 
-**핵심 주장 (검색 유래)**
-- 작은 백본에서 이긴 인코더가 큰 백본의 상위권을 고르지 못한다. SmolVLA-450M
-  에서 최저 MSE는 SigLIP, π₀.₅-3.3B의 libero_spatial에서는 DINOv2-small.
-- π₀.₅-libero_object에서는 상위 3개가 **근사 동률**이고 **top-1 정체성이 시드
-  섭동에 안정적이지 않다.**
-- **평가 지표: offline action-MSE**. 이유가 명시돼 있다 — *"공개된 VLA 체크포인트와
-  대상 시뮬레이터 사이의 embodiment mismatch 때문에 closed-loop rollout 성공률이
-  붕괴하기 때문."*
+**Random Dropping**(112토큰 무작위 유지): 74.8% → **20.9%**. 붕괴한다.
+같은 개수를 유도된 기준으로 남기면 76.4%. **"픽셀/토큰을 얼마나 줄이나"보다
+"무엇을 남기나"가 지배적이다.** 우리 foveation은 *중심 고정*이라 task-agnostic
+하다 — Bridge에서 +18.8이 나온 이유와 Fractal에서 −19.3이 나온 이유가 모두
+여기 있을 수 있다. **Discussion에 반드시 넣을 것.**
 
-**novelty 판정: 겹치지 않는다. 그리고 우리에게 유리하다**
+---
 
-| | 그들 | 우리 |
+# C. VLA-Cache — "FLOPs를 줄여도 빨라지지 않는다"의 실측
+
+### 핵심 표 (LIBERO, OpenVLA)
+
+| 방법 | Avg SR | **FLOPs (T)** | **Latency (ms)** | 제어 주파수 |
+|---|---|---|---|---|
+| OpenVLA | 75.0% | 1.864 | 51.91 | 4.23 Hz |
+| + SparseVLM | 64.7% | 1.407 | **83.39** ← 60% 느려짐 | 3.72 |
+| + FastV | 73.3% | **1.864** ← 그대로 | **53.28** ← 더 느려짐 | 4.19 |
+| + VLA-Cache | 74.7% | 1.355 | 31.83 | 4.59 |
+
+**FastV는 FLOPs가 한 자리도 안 줄었고 지연은 늘었다.** SparseVLM은 FLOPs를
+25% 줄이고도 **60% 느려졌다.**
+
+### 저자들이 밝힌 원인 — 우리 §비용 절에 그대로 인용할 것
+
+> *"Their token pruning and merging strategies operate within a **single frame**
+> and disrupt **spatial fidelity**, which is critical for precise manipulation.
+> Moreover, these methods **target long output sequences, whereas VLA models
+> generate short action outputs (e.g., 7 tokens), rendering the speedups
+> marginal**."*
+
+**VLM 토큰 가지치기의 이득은 긴 디코딩에서 나온다. VLA는 7토큰을 뱉는다.
+그래서 아낄 것이 없다.** 우리 foveation이 픽셀의 80%를 버리고도 연산을 0%
+아낀 것과 정확히 같은 구조다.
+
+### 그리고 여기서도 같은 태스크 분할
+
+SIMPLER/CogACT: PickCan **91.3 → 92.0 (+0.7)**, MoveNear **85.0 → 83.3 (−1.7)**.
+Variant: PickCan **89.6 → 91.7 (+2.1)**, MoveNear **80.8 → 79.3 (−1.5)**.
+
+---
+
+# D. MoLe-VLA — 문헌에서 가장 강한 긍정 사례, 그리고 그 조건
+
+### 핵심 수치 (RLBench, 10 태스크, Franka Panda, 전면 카메라)
+
+| 방법 | Mean Acc. | FLOPs (G) |
 |---|---|---|
-| 바꾸는 변수 | **비전 인코더** 선택 | **추론 시점 개입** |
-| 가로지르는 축 | 백본 **규모** | **벤치마크** + 백본 **계열** |
-| 지표 | offline action-**MSE** | **closed-loop 성공률**, paired |
-| closed-loop | **회피함** (붕괴한다고 명시) | **이것이 측정 대상** |
+| OpenVLA | 45.4% | 1930.0 |
+| CogAct | 57.2% | 1935.8 |
+| **Random-skip-CogAct** | **51.2% (−6.0)** | 984.3 |
+| MoD-CogAct | 56.4% (−0.8) | 985.8 |
+| DeeR-CogAct | 59.2% (+2.0) | 997.4 |
+| **MoLe-OpenVLA (제안)** | **55.6% (+10.2)** | 981.5 |
+| **MoLe-CogAct (제안)** | **60.8% (+3.6)** | 985.8 |
 
-**우리는 그들이 못 한 것을 한다.** 그러니 위협이 아니라 **같은 현상의 독립
-사례**로 인용해서 우리 주장을 넓히는 데 쓴다:
+*"The five efficiency methods operate with only 50% LLM layers."* — 절반을
+건너뛴다.
 
-> The instability we report is not confined to inference-time interventions.
-> [Encoder Winners] finds the same in a different variable — the best vision
-> encoder at one backbone scale is not the best at another, and at one suite
-> the top-1 identity is not even stable under seed perturbation. **That study
-> reports offline action-MSE explicitly because closed-loop success collapses
-> under embodiment mismatch; ours is a closed-loop paired measurement, which is
-> what makes the sign of the effect observable at all.**
+### 조건 셋 — 이걸 안 밝히면 잘못 인용하게 된다
 
----
+1. **Training-free가 아니다.** STAR 라우터를 학습하고, 잃은 인지 능력을
+   **CogKD(self-knowledge distillation, EMA teacher)**로 복구한다. 최종 목적함수는
+   `L = L_task + 0.5·L_cog + 0.1·L_lb`. **우리 것은 학습이 전혀 없다.**
+2. **벤치마크 하나, 백본 하나 계열.** RLBench + 실로봇. SIMPLER 없음.
+3. **Random-skip이 −6.0**이라는 것은, **이득이 "층을 지우는 것"에서 오는 게
+   아니라 "어느 층을 언제 지울지 고르는 라우터"에서 온다**는 뜻이다.
 
-## 5. 그래서 우리 논문이 무엇을 주장할 수 있는가
+### 통계
 
-### 5.1 문헌이 이미 아는 것 (= 우리 기여가 아닌 것)
+성공률이 전부 **4%의 배수**다(8.0, 72.0, 64.0, 28.0 …) → **태스크당 n = 25**.
+신뢰구간 없음, paired 검정 없음. **PhAIL이 지적한 관행 그대로다.**
 
-- 시각 감축은 VLA 조작을 해친다 — **이미 보고됨** (−7.4, LIBERO)
-- 토큰 가지치기는 이론 FLOPs와 실제 속도가 어긋난다 — **이미 보고됨** (FastV)
-- action chunking은 낡은 관측 때문에 오차가 누적된다 — **이미 보고됨**, 2026년
-  처방 논문 4편+
-- 층 제거는 OpenVLA에서 놀랍도록 잘 버틴다 — **이미 보고됨** (24/32층)
-- VLA 평가는 통계적으로 빈약하다 — **이미 보고됨** (PhAIL)
+### 우리와의 관계
 
-**우리 논문이 위 다섯 개를 "발견"이라고 쓰면 안 된다.** 각각을 인용하고, 우리
-데이터가 **독립 재현**임을 밝히는 것이 정직하고 또 유리하다(재현은 그 자체로
-가치가 있다).
-
-### 5.2 문헌이 모르는 것 (= 진짜 기여)
-
-1. **같은 개입의 부호가 벤치마크를 바꾸면 뒤집힌다.** foveation +18.8 / −19.3,
-   상호작용 p = 0.0000055. **어떤 선행 연구도 두 벤치마크로 재지 않았으므로
-   관측될 수 없었다.**
-2. **부호가 백본을 바꿔도 뒤집힌다.** 같은 Bridge에서 repeat 2가 SpatialVLA
-   +12.5, UniVLA −70.8.
-3. **OpenVLA/Bridge foveation +18.8 — 문헌이 예측하지 못하는 유일한 방향.**
-   Gaze-Reg는 −7.4, 토큰 가지치기 계열도 전부 하락. 우리만 상승을 가진다.
-   **이건 이상치가 아니라 논문의 중심에 놓아야 할 결과다.**
-4. **픽셀 공간 foveation은 연산을 0% 아낀다.** VLA-Cache가 attention 마스킹에서
-   같은 종류를 보였지만, 픽셀 예산과 토큰 예산의 분리를 **측정으로** 보인 것은
-   우리가 처음으로 보인다(문헌 검색 범위 내).
-5. **무엇이 먼저 죽는지는 무엇을 제거했는지에 달려 있다.** VLA-Pruner는
-   "토큰을 semantic으로 자르면 action이 죽는다", 우리는 "용량을 자르면
-   referential grounding이 죽고 motor는 산다". **반대 방향의 두 결과를 나란히
-   놓는 것이 각각보다 강하다.**
-6. **결정론적 폐루프에서의 paired 프로토콜.** PhAIL이 확률적 실로봇용 처방을
-   냈고, 우리는 결정론 조건에서 더 강한 보장을 낸다.
-
-### 5.3 논문 프레이밍 수정 제안
-
-지금 우리 한 페이지는 *"부호가 뒤집힌다"*를 1번으로 놓고 있다. 문헌을 읽고 나면
-**순서를 바꾸는 게 낫다:**
-
-> **기존 연구는 각 개입을 하나의 벤치마크·하나의 백본에서 측정하고, 대개
-> "성공률은 유지하면서 속도를 벌었다"로 보고한다. 우리는 같은 개입을 두
-> 벤치마크 × 세 백본에서 에피소드 단위로 짝지어 재고, 그 결과 세 축 모두에서
-> 효과의 부호가 측정 장소에 따라 뒤집힌다는 것을 보인다 — 그리고 시각 축에서는
-> 아낀다고 알려진 연산이 실제로는 0이다.**
-
-즉 **"기존 관행 → 우리 측정 → 뒤집힘"**의 순서다. 이러면 Related Work가
-Introduction의 논거를 그대로 이어받는다.
+> MoLe-VLA reports +10.2 points on OpenVLA at half the decoder layers, but it
+> learns a router and distills the removed capability back; its own
+> random-skipping control loses 6.0 points. **What its gain establishes is the
+> value of the router, not the harmlessness of removing layers.** Our setting is
+> training-free and fixed-schedule, which is where the backbone dependence
+> shows: removing a single layer of SpatialVLA's 26 costs 10.4 points on Bridge,
+> while removing eight of OpenVLA's 32 costs nothing at all.
 
 ---
 
-## 6. 남은 확인 사항 (원문 접근이 되는 곳에서)
+# E. Gaze-Regularized VLA — foveation은 10개 태스크 전부에서 해롭다
 
-| 확인할 것 | 왜 중요한가 |
+### 논문의 본체는 우리와 다르다
+
+시선 히트맵을 패치 수준 분포로 바꿔 **트랜스포머 attention을 KL divergence로
+정규화**한다. 아키텍처 변경도, **추론 시점 오버헤드도 없다.** 벤치마크 전반에서
+**4–12% 향상.**
+
+**→ 이건 우리 개입이 아니다.** 혼동하면 안 된다.
+
+### 우리와 같은 것은 부록 D.2 "Foveated Vision during Training"
+
+시선 peak를 중심으로 **foveated RGB**를 만들어(중심 고해상도, 주변 다운샘플/블러)
+비전 인코더에 그대로 먹인다. **우리 blur 변형과 같은 조작이다.**
+
+### Table 11 — LIBERO-Spatial, 30k steps, 태스크별
+
+| 물체 위치 | baseline | +gaze | **foveated** | Δ |
+|---|---|---|---|---|
+| Between plate and ramekin | 83.3 | 100 | 80.0 | **−3.3** |
+| Next to ramekin | 85.7 | 100 | 81.3 | **−4.4** |
+| Table center | 100 | 100 | 95.7 | **−4.3** |
+| On cookie box | 100 | 91.3 | 90.0 | **−10.0** |
+| In cabinet drawer | 80 | 73.3 | 65.3 | **−14.7** |
+| On ramekin | 100 | 100 | 90.0 | **−10.0** |
+| Next to cookie box | 100 | 100 | 94.0 | **−6.0** |
+| On stove | 90 | 90 | 80.7 | **−9.3** |
+| Next to plate | 50 | 100 | 44.7 | **−5.3** |
+| On wooden cabinet | 70.3 | 100 | 63.3 | **−7.0** |
+| **평균** | **85.9** | **95.5** | **78.5** | **−7.4** |
+
+**10개 태스크 전부 하락. 예외 없음.**
+
+저자 가설:
+> *"aggressively reducing peripheral detail removes useful contextual cues
+> (e.g., table geometry, supporting surfaces, or alternative grasps) that the
+> policy relies on for precise spatial reasoning."*
+
+### ⚠️ 우리와 다른 점 두 가지 — 인용할 때 반드시 밝힐 것
+
+1. **그들은 학습 중에 foveated 입력을 쓴다**("Foveated Vision **during
+   Training**"). 우리는 사전학습된 정책에 **추론 시점에만** 건다.
+2. **다시점(multi-view)** 세팅이고, foveation 중심이 **시선 추정치**다. 우리는
+   단일 시점에 **이미지 중심 고정**이다.
+
+### 그래도 우리에게 주는 것
+
+- **foveation이 VLA를 해친다는 독립 증거**, 그것도 10/10.
+- LIBERO-Spatial은 **"어느 위치의 그릇을 집어라"** 계열이다. 즉 **공간 참조**
+  태스크이고, 우리 `move_near`의 **지시 대상 참조**와 사촌이다. 두 결과를
+  나란히 놓으면 *"참조를 요구하는 태스크가 시각 감축에 특히 약하다"*가 된다.
+- 그리고 **우리 Bridge +18.8은 여전히 설명되지 않는다.**
+
+---
+
+# 종합 — 우리 세 개입은 VLA에 도움이 되는가
+
+## 연산 축(depth pruning) — **문헌은 강하게 "된다"고 한다**
+
+| 근거 | 조건 |
 |---|---|
-| **MoLe-VLA의 +9.7% vs +8%, 36.8% vs 5.6×** | 검색 스니펫끼리 수치가 다르다. 인용 전 확정 필수 |
-| **Gaze-Reg의 78.5% / 85.9%의 정확한 조건** | foveation 강도(우리 keep 20%와 비교 가능한가), 백본, 시점 수 |
-| **ShortGPT BI 정의의 정확한 수식과 calibration set** | 우리 "에피소드 첫 스텝 1회 보정"이 그들 절차와 얼마나 다른가 |
-| **VLA-Cache가 FastV를 잰 하드웨어·구현** | "속도가 안 는다"가 구현 문제인지 원리 문제인지 |
-| **PhAIL이 조사한 13편의 목록** | 우리 Related Work의 "N/검정 유무" 표를 그 목록으로 채울 수 있다 |
-| **EfficientVLA(OpenReview SELYlDHZk2)** | 층 + 시각을 동시에 다루는 유일한 논문. 우리와 가장 가까운 설계 |
+| EfficientVLA: SIMPLER에서 FLOPs 28.9%, 평균 **−0.6%p** | **training-free**, 우리와 **같은 기준**, 우리와 **같은 벤치마크** |
+| EfficientVLA: pick coke can이 **91.3 → 94.0** | 우리 +15.6과 같은 현상 |
+| MoLe-VLA: 층 절반에서 **+10.2%p** | 라우터 **학습** 필요, 벤치마크 1개 |
+| ShortGPT: Llama2-13B 25% 제거에 MMLU 55.0 → 52.2 | LLM 전용, 폐루프 없음 |
 
-**접근 방법:** 이 세션은 egress 정책으로 논문 호스트가 전부 막혀 있다. 로컬
-환경이나 다른 네트워크에서 PDF를 받아 `experiments/papers/`에 넣어주면 그때
-직접 읽고 이 문서를 갱신하겠다.
+**우리 OpenVLA 결과는 문헌과 완전히 일치한다.** 문헌이 데이터를 갖고 있지 않은
+곳은 **두 번째 백본**이다 — SpatialVLA에서 1층에 −10.4, 4층에 −17.8.
+**여기가 우리 기여다.**
+
+## 시각 축(foveation) — **문헌은 "아니다"로 수렴한다. 게다가 공짜도 아니다**
+
+| 근거 | 수치 |
+|---|---|
+| Gaze-Reg: foveated 입력, LIBERO-Spatial | **10/10 태스크 하락, −7.4** |
+| VLA-Cache: FastV의 FLOPs | **1.864 → 1.864 (변화 없음)**, 지연은 **증가** |
+| VLA-Cache: SparseVLM | FLOPs −25%인데 지연 **+60%** |
+| EfficientVLA: 시각만 최적화 | *"memory-bound라 1.21×에 그친다"* |
+| EfficientVLA: 무작위 토큰 유지 | 74.8 → **20.9** |
+
+**성능도 안 오르고 속도도 안 는다.** 우리 측정(연산 −1.7% ~ +0.1%)이
+독립적으로 같은 결론에 도달했다.
+
+**→ 그런데 OpenVLA/Bridge에서 +18.8 / +17.7이다. 문헌 어디에도 이 방향이 없다.**
+이건 **논문의 중심에 놓아야 할 이상치**다. EfficientVLA의 Random Dropping
+결과(무엇을 남기냐가 지배적)와 함께 보면, 가설은 *"Bridge/OpenVLA에서는
+주변부가 도움이 아니라 방해였다"*이다 — 15.6%라는 낮은 baseline이 그 방증일 수
+있다. **검증 실험이 필요하다**(아래 §다음).
+
+## 시간 축(action repeat) — **처리량은 확실히 벌고, 제어는 나빠진다**
+
+이번에 읽은 5편에는 직접 근거가 없다. 이전 검색에서 확인한 대로 chunking의
+"낡은 관측" 문제와 2026년 처방 논문들이 여기 붙는다. **우리 측정에서 유일하게
+연산을 크게 아끼는 축(−50% / −75%)이면서 캠페인 최악의 실패(−70.8)를 만드는
+축이다.**
+
+---
+
+# 이 정독이 우리 논문에 하는 일
+
+## 잃은 것 (더 이상 "발견"이라 못 쓰는 것)
+
+1. ~~"층을 지워도 VLA가 버틴다"~~ → EfficientVLA·MoLe-VLA가 이미 보고
+2. ~~"가지치기가 성공률을 올리기도 한다"~~ → EfficientVLA가 "paradoxically" 보고
+3. ~~"시각 감축은 VLA를 해친다"~~ → Gaze-Reg 10/10
+4. ~~"시각 감축은 속도를 안 벌어준다"~~ → VLA-Cache가 FastV로 실측
+
+**전부 인용하고 "독립 재현"으로 쓰는 것이 정직하며, 재현 자체가 값어치가 있다.**
+
+## 얻은 것 (훨씬 크다)
+
+1. **★ §3c가 우리 가설이 아니라 문헌의 미관측 패턴이다.** 3편 × 4방법 × 12구성에서
+   PickCan↑ / MoveNear↓, 예외 없음, 용량에 따라 단조. **우리가 최초로 이름을
+   붙이고 검정한다.**
+2. **★ §3b(평균이 두 곡선을 숨긴다)가 문헌 내 실증을 얻었다.** EfficientVLA가
+   자기 표의 반대 곡선 두 개를 평균 내어 *"merely a 0.6% drop"*이라고 쓴다.
+   **우리 주장의 가장 좋은 예시가 남의 논문이다.**
+3. **우리 depth 기준이 정통이라는 확증.** ShortGPT·EfficientVLA와 동일. 우리는
+   그 기준의 **폐루프·교차벤치마크 전이**를 검정하는 것이 된다.
+4. **foveation 0% 절감의 원리적 설명 확보.** memory-bound 벽(EfficientVLA) +
+   짧은 출력 시퀀스(VLA-Cache). **우리 negative result가 분석이 된다.**
+5. **Bridge +18.8이 문헌 전체에 대한 유일한 반례로 확정.**
+
+## 프레이밍 최종안
+
+> Efficiency interventions for VLA policies are evaluated one benchmark and one
+> backbone at a time, and reported as a single mean success rate. We re-measure
+> three of them — temporal, visual, and depth — across two benchmarks and up to
+> four backbones with per-episode pairing, and find that **(i)** the sign of the
+> effect is not stable across either axis, **(ii)** the mean hides a consistent
+> split between tasks that must resolve which object was named and tasks that
+> need not — a split already present, unremarked, in the published tables of
+> three prior methods — and **(iii)** on the visual axis the compute the
+> intervention is supposed to save is, measurably, zero.
+
+---
+
+# 다음 실험 — 정독이 만들어낸 것
+
+| # | 실험 | 왜 |
+|---|---|---|
+| 1 | **Bridge에서 foveation 중심 위치 바꾸기** (중심 고정 vs 그리퍼 근처 vs 무작위) | +18.8이 "정보 감소" 때문인지 "무엇을 남겼나" 때문인지 가른다. EfficientVLA의 Random Dropping 붕괴가 이 실험을 요구한다 |
+| 2 | **depth 랭킹 고정 vs 에피소드별 재보정** | ShortGPT는 1회 보정, 우리는 에피소드마다. 랭킹이 실제로 달랐으므로(`[2,4,6,23]` vs `[2,4,23,26]`) 교란일 수 있다 |
+| 3 | **CogACT를 우리 그리드에 추가** | EfficientVLA·VLA-Cache와 **직접 비교 가능한 유일한 백본**. 추가하면 우리 표가 그들 표와 같은 좌표계에 놓인다 |
+| 4 | SpatialVLA 뒷절반만 제거 (부위 교체의 거울상) | §3c-bis를 2×2로 완성 |
+
+**3번이 제일 값어치 있다.** CogACT를 넣으면 *"같은 벤치마크·같은 백본에서
+그들이 보고한 평균과 우리가 보고하는 태스크별 분할을 나란히"* 놓을 수 있고,
+그게 논문의 그림 1이 된다.
