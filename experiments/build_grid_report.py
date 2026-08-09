@@ -83,10 +83,13 @@ LEGACY = {
         (30.2, -2.1, 32.3, "SpatialVLA_Bridge_Grid.md"),
     ("SpatialVLA", "Bridge", "depth_prune1"):
         (22.9, -9.4, 32.3, "SpatialVLA_Bridge_Grid.md (1 of 26 layers)"),
-    ("UniVLA", "Bridge", "foveate_logpolar"):
-        (86.5, +8.3, 78.1, "ChunkExecFoveation_univla.md"),
-    ("UniVLA", "Bridge", "foveate_blur"):
-        (76.0, -2.1, 78.1, "ChunkExecFoveation_univla.md"),
+    # The two UniVLA/Bridge foveation cells used to live here. They were
+    # re-measured with per-episode records on 2026-08-09 and now come out of
+    # `results/`, so they are gone from this table. What the old numbers are
+    # still good for is written up in LabMeeting_Bridge_Fractal_0806*.md: the
+    # log-polar cell landed on the identical pooled rate (86.5%) while three of
+    # its four task rates had moved, and the blur cell missed its old pooled
+    # rate by 3.1 points. Keep them out of the grid; keep the comparison.
 }
 
 # Display order and display names. Anything found but not listed still appears,

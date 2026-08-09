@@ -92,7 +92,7 @@ for k environment steps, foveate the observation, skip redundant decoder layers
 — buys wall-clock without costing success. That is a method claim, and it needs
 the effect to be a property of the *method*.
 
-It is not. Running the same code through the same hook points across four
+It is not. Running the same code through the same hook points across three
 backbones and two benchmarks, **the sign of the effect changes**. Not the
 magnitude — the sign. So the finding is not "our method works" and it is not
 "our method fails"; it is that a single-backbone, single-benchmark measurement
@@ -120,8 +120,8 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | original policy | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
 | action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
-| foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
-| foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
+| foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | 86.5%  +8.3 |
+| foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | 72.9%  −5.2 |
 | depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | 19.8%  −10.4 | 92.6%  +8.1** | -- |
 | depth prune 2 | -- | 38.5%  +0.0 | 20.8%  −9.4 | 87.4%  +3.0 | -- |
 | depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | -- | 66.7%  −17.8*** | -- |
@@ -134,8 +134,6 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 |---|---|---|---|---|---|
 | SpatialVLA / Bridge | foveation log-polar | 25.0% | −7.3 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 | SpatialVLA / Bridge | foveation blur | 30.2% | −2.1 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
-| UniVLA / Bridge | foveation log-polar | 86.5% | +8.3 | 78.1% | `ChunkExecFoveation_univla.md` |
-| UniVLA / Bridge | foveation blur | 76.0% | −2.1 | 78.1% | `ChunkExecFoveation_univla.md` |
 
 Note the SpatialVLA/Bridge legacy baseline is **32.3%**, not the 30.2% in the
 first row. Broken down by task, the two campaigns agree almost everywhere:
@@ -194,6 +192,38 @@ OpenVLA/Bridge log-polar **is** paired: its per-episode records survive in
 `RetinaBased/GoogleColab/results_reproduction_eager/`, and that campaign's
 baseline is episode-for-episode identical to the current one (96/96), which the
 script verifies before borrowing the condition.
+
+### That determinism is with the hardware held fixed
+
+The re-run above was the same session on the same card. On 2026-08-09 we
+re-measured the two UniVLA/Bridge foveation cells to give them per-episode
+records. The code is unchanged (`foveation.py` has not moved since 086e916) and
+the flags are identical, as the result JSONs record (logpolar/blur,
+center=image, phase=always, keep 20%) — but **the card was different (L4 this
+time).**
+
+| task | baseline | log-polar old / new | blur old / new |
+|---|---|---|---|
+| carrot | 66.7 | 75.0 → **70.8** | 70.8 → **75.0** |
+| stack | 75.0 | 83.3 → **87.5** | 66.7 → **66.7** |
+| spoon | 70.8 | 87.5 → **95.8** | 87.5 → **66.7** |
+| eggplant | 100.0 | 100.0 → **91.7** | 79.2 → **83.3** |
+| **mean** | **78.1** | **86.5 → 86.5** | **76.0 → 72.9** |
+
+**Log-polar landed on the identical pooled rate to the decimal (83/96) while
+three of its four task rates had moved.** Blur, same protocol, missed its old
+pooled rate by 3.1 points, with one task moving 20.8. So **an aggregate that
+agrees is not evidence that a run reproduced** — the failure mode we charge
+EfficientVLA, VLA-Cache and FastV with, that a 4-task mean hides the
+PickCan↑/MoveNear↓ split, has now appeared once in our own data. This is why
+`experiments/compare_runs.py` compares episode vectors and not success rates.
+
+Two causes remain: a different card changing the floating-point arithmetic, or
+UniVLA being nondeterministic to begin with. **Re-running one task (blur /
+spoon, ten minutes) on the same L4 separates them.** If all 24 episodes match,
+it is the former and the determinism claim only needs qualifying with "at fixed
+hardware". If they do not, it is the latter, and **the whole UniVLA column needs
+a run-to-run variance component the other columns do not.** Open.
 
 ---
 
@@ -421,6 +451,39 @@ resolved, which is the claim:
 
 Four of four tested pairs differ; two clear Bonferroni. This is not a difference
 of degree that a better default would smooth out.
+
+### 1b. Which *variant* wins is backbone-dependent too
+
+The two UniVLA/Bridge foveation cells became paired on 2026-08-09, which makes
+foveation testable across all three backbones on Bridge. Against baseline first:
+
+| backbone (Bridge) | log-polar | blur |
+|---|---|---|
+| OpenVLA | **+18.8** (28/10, p=0.0051) | **+17.7** (26/9, p=0.0060) |
+| UniVLA | +8.3 (15/7, p=0.1338) | −5.2 (8/13, p=0.3833) |
+| SpatialVLA | −7.3† (unpaired) | −2.1† (unpaired) |
+
+**On UniVLA neither variant separates from baseline.** The earlier campaign had
+written this cell up as "log-polar improves or holds on all four tasks"; pairing
+the episodes gives 15 fixed against 7 broken, and +8.3 does not separate from
+chance. **What reversed is the confidence, not the direction** — the mean is
+still up.
+
+Pairing the two variants against *each other* is a different story:
+
+| comparison (Bridge, paired n=96) | split | p |
+|---|---|---|
+| UniVLA: log-polar vs blur | 19 / 6 | **0.0146** |
+| OpenVLA: log-polar vs blur | +18.8 vs +17.7 | effectively tied |
+| SpatialVLA: log-polar vs blur | −7.3 vs −2.1† | blur ahead (unpaired) |
+
+So **log-polar beats blur on UniVLA** (nominally — it does not clear the
+campaign-wide Bonferroni bar of 0.0033), **the two are indistinguishable on
+OpenVLA**, and on SpatialVLA the order is reversed, though that cell is legacy
+and cannot carry the claim. It is not only *whether* an intervention helps that
+tracks the backbone: **which setting of the same intervention to pick tracks the
+backbone as well.** Tuning a configuration on one backbone and carrying it to
+the next breaks exactly here.
 
 ### 2. It also depends on the benchmark, with the policy unchanged
 
@@ -931,14 +994,17 @@ step is to look at what is actually in those four scenes.
 | **SpatialVLA** depth prune | **1 and 2 complete, paired** (legacy retired) | **1, 2 and 4 complete, paired** |
 | **SpatialVLA** combination | not started | **prune 2 + repeat 2 done, paired** |
 | **OpenVLA** depth prune | Bridge only (1, 4, 8) | **4 done, paired**; 1 and 2 running |
+| **UniVLA** foveation | **log-polar and blur done, paired** (legacy retired) | not started |
+| **UniVLA** repeat / depth prune | repeat 2 done, paired; repeat 4 and depth queued | not started |
 
 ### Two liabilities
 
-**Legacy cells.** Four foveation/depth cells in the older figure (SpatialVLA
-−7.3 / −2.1, UniVLA +8.3, RoboVLMs −19.8 / −16.7) come from a campaign that kept
-no per-episode records. They are unpaired at n = 96, where nothing below ~15
-points is resolvable. They cannot carry a sign-reversal claim and should be
-re-measured or dropped.
+**Legacy cells.** The foveation/depth cells in the older figure come from a
+campaign that kept no per-episode records. They are unpaired at n = 96, where
+nothing below ~15 points is resolvable. They cannot carry a sign-reversal claim
+and should be re-measured or dropped. The two UniVLA cells were re-measured on
+2026-08-09 and are retired — see "That determinism is with the hardware held
+fixed" above. What remains is the two SpatialVLA/Bridge foveation cells.
 
 **Floor and ceiling.** SpatialVLA sits at 84% on Fractal, OpenVLA at 38%.
 A +9 gain near the floor and a +9 gain near the ceiling are not the same
@@ -973,6 +1039,12 @@ decide that, not to add another agreeing cell.
    differs in horizon and object count. Bridge cannot supply one — we checked,
    `stack_cube` at n=24 has no power and its one nominally significant cell
    points the wrong way. Either add a task or state the confound and stop.
+5. **UniVLA blur / `spoon_on_towel` once more on the same L4** (ten minutes).
+   The question left open above: 24 of 24 matching means UniVLA is deterministic
+   too and the divergence from the legacy run is hardware; any mismatch means
+   the UniVLA column carries a run-to-run component the others do not. Check the
+   card with `nvidia-smi` first — on anything but an L4 the test does not hold.
+   Compare with `compare_runs.py`, per episode, not by success rate.
 ---
 
 ## Reproduce
@@ -980,6 +1052,11 @@ decide that, not to add another agreeing cell.
 ```bash
 python experiments/build_grid_report.py           # every table above
 python experiments/build_grid_report.py --json    # machine-readable
+
+# did a re-run actually reproduce, episode by episode?
+python experiments/compare_runs.py \
+  results/univla_bridge_0805/foveate_blur \
+  /content/BiVLA/results/univla_recheck/foveate_blur
 
 # any single comparison, with the 2x2 agreement table and per-task detail
 python adaptive_sparse_vla/paired_test.py \

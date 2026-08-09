@@ -83,7 +83,7 @@ referential 태스크도 **깨진다.** 해당 부위를 제거당한 적이 없
 레이어 우회 — 이 성공률을 안 깎으면서 wall-clock을 벌어준다는 걸 보이려 했다.
 이건 method 주장이고, 성립하려면 그 효과가 **method의 속성**이어야 한다.
 
-아니었다. 같은 코드를 같은 hook 지점에 넣고 네 백본 × 두 벤치마크로 돌리면
+아니었다. 같은 코드를 같은 hook 지점에 넣고 세 백본 × 두 벤치마크로 돌리면
 **효과의 부호가 바뀐다.** 크기가 아니라 부호다. 그래서 결론은 "우리 방법이
 된다"도 아니고 "안 된다"도 아니다. **효율 개입을 백본 하나·벤치마크 하나에서
 측정한 값은 다른 어디에서도 무엇이 일어날지 예측하지 못한다** — 이건 이 부류의
@@ -109,8 +109,8 @@ baseline** 대비다. 그래서 이 열에서 다시 계산할 수 없고, 부�
 | 원본 정책 | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
 | action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
 | action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
-| foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | *86.5%  +8.3†* |
-| foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | *76.0%  −2.1†* |
+| foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | 86.5%  +8.3 |
+| foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | 72.9%  −5.2 |
 | depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | 19.8%  −10.4 | 92.6%  +8.1** | -- |
 | depth prune 2 | -- | 38.5%  +0.0 | 20.8%  −9.4 | 87.4%  +3.0 | -- |
 | depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | -- | 66.7%  −17.8*** | -- |
@@ -123,8 +123,6 @@ baseline** 대비다. 그래서 이 열에서 다시 계산할 수 없고, 부�
 |---|---|---|---|---|---|
 | SpatialVLA / Bridge | foveation log-polar | 25.0% | −7.3 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 | SpatialVLA / Bridge | foveation blur | 30.2% | −2.1 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
-| UniVLA / Bridge | foveation log-polar | 86.5% | +8.3 | 78.1% | `ChunkExecFoveation_univla.md` |
-| UniVLA / Bridge | foveation blur | 76.0% | −2.1 | 78.1% | `ChunkExecFoveation_univla.md` |
 
 SpatialVLA/Bridge legacy의 baseline은 첫 줄의 30.2%가 아니라 **32.3%**다.
 태스크별로 쪼개면 두 캠페인은 거의 전부 일치한다:
@@ -179,6 +177,36 @@ OpenVLA/Bridge log-polar은 **paired다.** 에피소드 기록이
 `RetinaBased/GoogleColab/results_reproduction_eager/`에 남아 있고, 그 캠페인의
 baseline이 현재 baseline과 에피소드 단위로 완전히 동일하다(96/96). 스크립트가
 빌려오기 전에 그 동일성을 검증한다.
+
+### 그런데 그 결정론은 하드웨어를 고정했을 때의 얘기다
+
+위 재실행은 **같은 세션, 같은 카드**였다. 2026-08-09에 UniVLA/Bridge의
+foveation 두 셀을 에피소드 기록을 남기려고 다시 측정했는데 — 코드는 그대로고
+(`foveation.py`는 086e916 이후 변경 없음), 플래그도 결과 JSON에 박혀 있는 대로
+동일하다(logpolar/blur, center=image, phase=always, keep 20%) — **카드가 달랐다
+(이번은 L4).** 결과:
+
+| task | baseline | log-polar 구 / 신 | blur 구 / 신 |
+|---|---|---|---|
+| carrot | 66.7 | 75.0 → **70.8** | 70.8 → **75.0** |
+| stack | 75.0 | 83.3 → **87.5** | 66.7 → **66.7** |
+| spoon | 70.8 | 87.5 → **95.8** | 87.5 → **66.7** |
+| eggplant | 100.0 | 100.0 → **91.7** | 79.2 → **83.3** |
+| **평균** | **78.1** | **86.5 → 86.5** | **76.0 → 72.9** |
+
+**log-polar의 평균은 소수점까지 같은데(83/96) 네 태스크 중 셋이 움직였다.**
+같은 프로토콜의 blur는 평균조차 3.1포인트 어긋났고, spoon 하나가 20.8포인트
+움직였다. 그러니 **평균이 맞았다는 건 재현됐다는 증거가 아니다** — 우리가
+EfficientVLA·VLA-Cache·FastV를 두고 "4-태스크 평균이 PickCan↑/MoveNear↓ 분할을
+가린다"고 지적한 것과 똑같은 실패 모드가, 우리 자신의 데이터에서 한 번 더
+나온 셈이다. 그래서 `experiments/compare_runs.py`는 성공률이 아니라 에피소드
+벡터를 비교한다.
+
+두 원인이 남는다: 카드가 바뀌어서 부동소수점이 달라졌거나, UniVLA가 애초에
+비결정론적이거나. 이건 **같은 L4에서 blur/spoon 한 태스크(10분)를 다시
+돌리면** 갈린다. 24/24가 그대로면 전자이고 결정론 주장은 "하드웨어 고정 시"로
+한정만 하면 된다. 어긋나면 후자이고, **UniVLA 열 전체는 다른 열들과 달리 실행
+간 변동 성분을 따로 가져야 한다.** 미결.
 
 ---
 
@@ -390,6 +418,37 @@ action repeat 2, 동일한 코드·동일한 hook 지점:
 
 검정한 네 쌍이 전부 다르고, 둘은 Bonferroni까지 통과한다. 더 나은 기본값을
 찾으면 정리될 정도 차이가 아니다.
+
+### 1b. 어느 *변형*이 이기는지도 백본을 따라간다
+
+UniVLA/Bridge foveation 두 칸이 2026-08-09에 paired가 되면서, Bridge에서
+foveation을 세 백본에 다 걸어볼 수 있게 됐다. 먼저 baseline 대비:
+
+| 백본 (Bridge) | log-polar | blur |
+|---|---|---|
+| OpenVLA | **+18.8** (28/10, p=0.0051) | **+17.7** (26/9, p=0.0060) |
+| UniVLA | +8.3 (15/7, p=0.1338) | −5.2 (8/13, p=0.3833) |
+| SpatialVLA | −7.3† (unpaired) | −2.1† (unpaired) |
+
+**UniVLA에서는 두 변형 다 baseline과 구별되지 않는다.** 이전 캠페인이
+"log-polar는 4개 태스크 전부 개선/유지"라고 적어둔 칸인데, 에피소드를 짝지어
+보니 15개 고쳐지고 7개 깨져서 +8.3이 우연과 갈리지 않는다. **방향이 아니라
+확신이 뒤집힌 경우다** — 평균은 여전히 올라가 있다.
+
+그런데 두 변형을 **서로** 짝지으면 다르다:
+
+| 비교 (Bridge, paired n=96) | 분할 | p |
+|---|---|---|
+| UniVLA: log-polar vs blur | 19 / 6 | **0.0146** |
+| OpenVLA: log-polar vs blur | +18.8 vs +17.7 | 사실상 동률 |
+| SpatialVLA: log-polar vs blur | −7.3 vs −2.1† | blur가 앞섬 (unpaired) |
+
+즉 **UniVLA에서는 log-polar이 blur를 이기고**(캠페인 전체 Bonferroni 기준
+0.0033은 못 넘으므로 명목상), **OpenVLA에서는 둘이 구별되지 않으며**,
+SpatialVLA에서는 순서가 반대다(다만 legacy라 주장 불가). 개입이 도움이 되냐만
+백본을 타는 게 아니라, **같은 개입의 어느 하이퍼파라미터를 고르느냐도 백본을
+탄다.** 한 백본에서 튜닝한 설정을 다른 백본으로 옮기는 관행이 정확히 이
+지점에서 깨진다.
 
 ### 2. 정책을 그대로 두고 벤치마크만 바꿔도 달라진다
 
@@ -873,13 +932,16 @@ baseline 실패 4개를 정확히 똑같이 구제**했다 (에피소드 10, 17,
 | **SpatialVLA** depth prune | **1·2 완료, paired** (legacy 은퇴) | **1·2·4 완료, paired** |
 | **SpatialVLA** 조합 | 미시작 | **prune 2 + repeat 2 완료, paired** |
 | **OpenVLA** depth prune | Bridge만 (1, 4, 8) | **4 완료, paired**; 1·2 진행 중 |
+| **UniVLA** foveation | **log-polar·blur 완료, paired** (legacy 은퇴) | 미시작 |
+| **UniVLA** repeat / depth prune | repeat 2 완료, paired; repeat 4·depth 대기 | 미시작 |
 
 ### 부채 두 가지
 
-**legacy 칸.** 기존 figure의 foveation/depth 네 칸(SpatialVLA −7.3 / −2.1,
-UniVLA +8.3, RoboVLMs −19.8 / −16.7)은 에피소드별 기록을 안 남긴 캠페인에서
-나왔다. n=96 unpaired이면 약 15포인트 이하는 해상도가 없다. **부호 반전 주장을
-실어줄 수 없고**, 재측정하거나 빼야 한다.
+**legacy 칸.** 기존 figure의 foveation/depth 칸은 에피소드별 기록을 안 남긴
+캠페인에서 나왔다. n=96 unpaired이면 약 15포인트 이하는 해상도가 없다. **부호
+반전 주장을 실어줄 수 없고**, 재측정하거나 빼야 한다. UniVLA 두 칸은
+2026-08-09에 재측정해서 은퇴시켰다 — 위 "하드웨어를 고정했을 때" 참조. 남은 건
+SpatialVLA/Bridge foveation 두 칸이다.
 
 **바닥과 천장.** SpatialVLA는 Fractal에서 84%, OpenVLA는 38%다. 바닥 근처의
 +9와 천장 근처의 +9는 같은 성취가 아니다. 독자가 열 간 Δ를 무방비로 비교하지
@@ -912,6 +974,11 @@ UniVLA +8.3, RoboVLMs −19.8 / −16.7)은 에피소드별 기록을 안 남긴
    호라이즌·물체 수도 다르다. Bridge로는 안 된다 — 확인해봤고 `stack_cube`는
    n=24라 검정력이 없으며 유일하게 유의한 칸이 반대 방향을 가리킨다.
    태스크를 추가하거나, 교란을 명시하고 멈추거나 둘 중 하나다.
+5. **UniVLA blur / `spoon_on_towel`을 같은 L4에서 한 번 더** (10분). 위에서
+   미결로 남긴 것 — 24/24가 그대로면 UniVLA도 결정론적이고 legacy와의 차이는
+   하드웨어다. 어긋나면 UniVLA 열만 실행 간 변동을 따로 져야 한다. 카드가
+   L4가 아니면 이 검정은 성립하지 않으므로 실행 전에 `nvidia-smi`로 확인한다.
+   비교는 성공률이 아니라 `compare_runs.py`로 에피소드 단위로 한다.
 ---
 
 ## 재현
@@ -919,6 +986,11 @@ UniVLA +8.3, RoboVLMs −19.8 / −16.7)은 에피소드별 기록을 안 남긴
 ```bash
 python experiments/build_grid_report.py           # 위의 모든 표
 python experiments/build_grid_report.py --json    # 기계 판독용
+
+# 재실행이 정말 재현됐는지, 에피소드 단위로
+python experiments/compare_runs.py \
+  results/univla_bridge_0805/foveate_blur \
+  /content/BiVLA/results/univla_recheck/foveate_blur
 
 # 개별 비교 하나 — 2x2 일치표와 태스크별 상세까지
 python adaptive_sparse_vla/paired_test.py \
