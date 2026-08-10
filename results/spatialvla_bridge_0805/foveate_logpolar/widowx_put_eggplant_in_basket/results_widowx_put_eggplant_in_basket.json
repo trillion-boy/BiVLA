@@ -1,0 +1,226 @@
+{
+  "model": "SpatialVLA-official",
+  "task": "widowx_put_eggplant_in_basket",
+  "success_rate": 0.4583333333333333,
+  "grasp_rate": 0.625,
+  "avg_model_ms_per_infer": 925.8017763186557,
+  "avg_steps": 78.875,
+  "foveate": {
+    "enabled": true,
+    "keep_percent": 20.0,
+    "mode": "logpolar",
+    "center": "image",
+    "phase": "always"
+  },
+  "tome": {
+    "enabled": false,
+    "r": 8,
+    "layers": 6,
+    "protect": "none"
+  },
+  "temporal_stride": 1,
+  "depth_prune": {
+    "count": 0
+  },
+  "spec_decode": {
+    "enabled": false
+  },
+  "action_repeat": 1,
+  "exec_chunk": {
+    "enabled": false
+  },
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "success": true,
+      "grasped": true,
+      "steps": 29,
+      "model_ms_per_infer": 974.2422926014867
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": true,
+      "grasped": true,
+      "steps": 26,
+      "model_ms_per_infer": 928.2643428215613
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": false,
+      "grasped": true,
+      "steps": 120,
+      "model_ms_per_infer": 923.5590815544128
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "success": true,
+      "grasped": true,
+      "steps": 29,
+      "model_ms_per_infer": 918.823266851491
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": true,
+      "grasped": true,
+      "steps": 27,
+      "model_ms_per_infer": 923.4924669618961
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 918.944940964381
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 923.7002213795979
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": true,
+      "grasped": true,
+      "steps": 32,
+      "model_ms_per_infer": 923.7795323133469
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 923.2213079929352
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": true,
+      "grasped": true,
+      "steps": 27,
+      "model_ms_per_infer": 926.8738428751627
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 924.0283509095509
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": true,
+      "grasped": true,
+      "steps": 32,
+      "model_ms_per_infer": 929.1529133915901
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": false,
+      "grasped": true,
+      "steps": 120,
+      "model_ms_per_infer": 923.2406775156658
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 924.6900022029877
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "success": true,
+      "grasped": true,
+      "steps": 42,
+      "model_ms_per_infer": 920.0022447676886
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 921.4274326960245
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "success": true,
+      "grasped": true,
+      "steps": 25,
+      "model_ms_per_infer": 922.9049301147461
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 924.4570930798849
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "success": true,
+      "grasped": true,
+      "steps": 22,
+      "model_ms_per_infer": 929.1642470793291
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "success": false,
+      "grasped": true,
+      "steps": 120,
+      "model_ms_per_infer": 925.3563006718954
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "success": true,
+      "grasped": true,
+      "steps": 42,
+      "model_ms_per_infer": 923.2502835137503
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 921.374895175298
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "success": false,
+      "grasped": false,
+      "steps": 120,
+      "model_ms_per_infer": 921.6749350229899
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "success": false,
+      "grasped": true,
+      "steps": 120,
+      "model_ms_per_infer": 923.6170291900635
+    }
+  ]
+}
