@@ -615,10 +615,13 @@ OpenVLA와 UniVLA에서는 **비율**(0.5 → 층 수의 절반부터), SpatialV
 
 | 캠페인 | 조건 | 후보 범위 | 실제로 지운 층 | 영역 |
 |---|---|---|---|---|
+| OpenVLA / Bridge | prune 1 | `0.5` → 16..31 | L23 | 뒤 |
+| OpenVLA / Bridge | prune 4 | `0.5` | L17, 20, 23, 27 (stack만 …26) | 뒤 |
+| OpenVLA / Bridge | prune 8 | `0.5` | L17,19,20,23,25,27,29,31 (태스크마다 조금 다름) | 뒤 |
 | OpenVLA / Fractal | prune 1 | `0.5` → 16..31 | L23 | 뒤 |
-| OpenVLA / Fractal | prune 2 | `0.5` | L23, 26 | 뒤 |
-| OpenVLA / Fractal | prune 4 | `0.5` | L17, 20, 23, 26 | 뒤 |
-| **OpenVLA / Fractal** | **prune 4 early** | **`0.08` → 2..31** | **L2, 4, 6, 23** | **앞 3 + 뒤 1** |
+| OpenVLA / Fractal | prune 2 | `0.5` | L23, 25 (move_near) / L23, 26 (pick) | 뒤 |
+| OpenVLA / Fractal | prune 4 | `0.5` | L17, 23, 25, 27 (move_near) / L17, 20, 23, 26 (pick) | 뒤 |
+| **OpenVLA / Fractal** | **prune 4 early** | **`0.08` → 2..31** | **L2, 4, 6, 23** (move_near) / **L2, 4, 23, 26** (pick) | **앞 2~3 + 뒤 1~2** |
 | SpatialVLA / Bridge | prune 1 | `2` → 2..25 | L10 | 중간 |
 | SpatialVLA / Bridge | prune 2 | `2` | L10, 19 | 중간 |
 | SpatialVLA / Fractal | prune 4 | `2` | L8, 9, 10, 20 | 중간 |
@@ -627,8 +630,13 @@ OpenVLA와 UniVLA에서는 **비율**(0.5 → 층 수의 절반부터), SpatialV
 | UniVLA / Bridge | prune 8 | `0.5` | L17,19,21,24,25,26,28,30 | 뒤 |
 | **UniVLA / Bridge** | **prune 4 mid** | **`0.08` → 2..31** | **L2, 4, 26, 30** | **앞 2 + 뒤 2** |
 
-(OpenVLA/Bridge 런은 층 목록을 결과 파일에 기록하지 않는다. 같은 코드 경로와
-같은 기본값을 쓰므로 Fractal 열과 같은 뒷절반으로 본다 — 이건 추론이다.)
+세 하네스 모두 지운 층을 결과 파일에 남긴다 — OpenVLA는 `depth.bypassed_layers`,
+SpatialVLA는 `depth_prune.pruned`, UniVLA는 `llm_pruning.active_layers`다. 위
+표는 전부 그 필드에서 읽었다.
+
+**같은 조건 안에서도 태스크마다 선택이 조금씩 다르다.** 랭킹을 에피소드의 실제
+관측으로 계산하기 때문이다(§2.4의 ShortGPT 대비 차이). 표에는 대표값을 적고
+차이가 나는 곳만 병기했다.
 
 **세 종류가 섞여 있다.** ① 기본값으로 돈 OpenVLA·UniVLA는 후보가 뒷절반뿐이라
 BI가 앞층을 선호해도 고를 수 없다. ② SpatialVLA는 후보가 2..25인데 BI가 실제로
