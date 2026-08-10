@@ -217,15 +217,29 @@ Models of Visual Attention(NeurIPS 2014)에서 시작하는데, 우리는 **중�
 ### (d) VLA에서 이미 해본 것
 
 **성공률 쪽 — 문헌은 "해롭다"로 수렴한다.** 우리와 가장 가까운 이웃은
-Gaze-Regularized VLA(arXiv 2603.23202)다. 시선 중심으로 foveated RGB를 만들어
+Gaze-Regularized VLA(arXiv 2603.23202)다. ⚠️ **이 항목은 원문 재대조가 아직
+안 됐다** — 제목과 저자 확인이 필요하고, 아래 10/10 수치는 그 전까지 인용하지
+말 것. 시선 중심으로 foveated RGB를 만들어
 (중심 고해상도, 주변 다운샘플/블러) VLA에 먹이는데, 우리 blur 변형과 사실상 같은
 조작이다. 부록 D.2의 LIBERO-Spatial 표에서 **10개 태스크 전부 하락, 평균
 −7.4**다. Look, Focus, Act(2025)가 foveated ViT + 인간 시선으로 짝을 이룬다.
 
-**속도 쪽 — 아끼지 못한다는 실측이 이미 있다.** VLA-Cache는 FastV를 걸었을 때
-FLOPs가 **1.864 → 1.864로 변하지 않고** 지연은 오히려 **증가**함을 보고한다.
-SparseVLM은 FLOPs를 25% 줄이고도 지연이 **60% 늘었다.** EfficientVLA는 시각만
-최적화했을 때 **memory-bound라 1.21×에 그친다**고 명시한다.
+**속도 쪽 — 아끼지 못한다는 실측이 이미 있다.** VLA-Cache Table 2(LIBERO,
+OpenVLA, RTX 4090):
+
+| | FLOPs (T) | 지연 (ms) |
+|---|---|---|
+| OpenVLA | 1.864 | 51.91 |
+| + FastV | **1.864** (변화 없음) | **53.28** (+2.6%) |
+| + SparseVLM | 1.407 (−24.5%) | **83.39** (**+60.6%**) |
+
+**FLOPs를 줄여도 시간이 줄지 않고 오히려 는다.** 저자들이 밝힌 원인은 두
+가지다 — 이 방법들은 *"target long output sequences, whereas VLA models generate
+short action outputs (e.g., 7 tokens)"*이고, 단일 프레임 안에서만 작동해
+*"disrupt spatial fidelity"*한다. EfficientVLA도 같은 벽을 지목한다: 시각 토큰
+가지치기는 처음엔 시간을 줄이지만 *"its efficacy quickly diminishes as the system
+becomes memory-bound by the LLM"*이고, FastV는 *"only a 1.21× speedup due to
+unaddressed memory bottlenecks"*에 그친다.
 
 **무엇을 남기느냐가 지배적이라는 증거.** EfficientVLA에서 무작위로 토큰을 남기면
 74.8 → **20.9**로 무너진다. 즉 토큰 예산을 줄이는 것 자체보다 **어느 토큰을
@@ -283,8 +297,8 @@ VLA의 지배적 비용은 **디코더 깊이**다. LLM 문헌은 큰 디코더�
 
 | 근거 | 조건 |
 |---|---|
-| EfficientVLA: SIMPLER에서 FLOPs −28.9%, 평균 **−0.6%p** | **학습 불필요**, 우리와 **같은 기준**, 우리와 **같은 벤치마크** |
-| EfficientVLA: pick coke can이 **91.3 → 94.0** (가지치기가 성공률을 **올린다**) | 저자들이 *"paradoxically"*라고 표현 |
+| EfficientVLA: SIMPLER에서 FLOPs를 **28.9%로**(71.1% 감소), 평균 **−0.6%p** | **학습 불필요**, 우리와 **같은 기준**, 우리와 **같은 벤치마크** |
+| EfficientVLA: pick coke can이 **91.3 → 93.3~95.3** (가지치기가 성공률을 **올린다**) | 네 구성 전부. Table 2 |
 | MoLe-VLA: 층 절반을 건너뛰고 **+10.2%p** | 라우터를 **학습**해야 함, 벤치마크 1개 |
 | ShortGPT: Llama2-13B에서 25% 제거에 MMLU 55.0 → 52.2 | LLM 전용, 폐루프 없음 |
 
@@ -312,17 +326,33 @@ EfficientVLA, VLA-Cache, FastV에 걸쳐 **12개 구성 전부**가 이렇다(Vi
 Matching 6 + Variant Aggregation 6). 그런데 어느 논문도 이를 언급하지 않는다.
 **전부 4-태스크 평균만 보고하기 때문이다.**
 
-> ⚠️ **출처와 독립성을 정확히 적을 것.** 이 12행은 **두 논문의 표**에서 왔다 —
-> EfficientVLA와 VLA-Cache. FastV 행은 독립 출처가 아니라 그중 한 논문이
-> **비교군으로 재현한 수치**다. 따라서 "세 논문이 독립적으로 일치한다"가 아니라
-> **"두 논문이 보고한 네 방법의 12개 설정이 일치한다"**로 써야 한다. 12개가
-> 12개의 독립 실험이 아닐 수 있다는 점(한 저자군의 한 평가 하네스일 가능성)은
-> 우리가 먼저 밝히는 편이 낫다 — 리뷰어가 짚을 지점이다.
+**출처.** 12행 전부 EfficientVLA Table 2에 있다. 그중 VLA-Cache 2행은
+EfficientVLA가 재현한 것이 아니라 **VLA-Cache 자신의 Table 3과 소수점까지
+동일**하므로(Matching 92.0 / 83.3 / 70.5 / 51.6, Aggregation 91.7 / 79.3 / 32.5 /
+45.8) 인용이고, 따라서 **독립 출처가 맞다.** 반면 **FastV 2행은 EfficientVLA에만
+있다** — 독립 출처가 아니라 그들이 돌린 비교군이다.
+
+정확한 서술은 **"저자군 둘, 방법군 셋, 12개 설정"**이다. "세 논문이 독립적으로
+일치한다"고 쓰면 안 된다.
+
+> ⚠️ **우리가 먼저 밝혀야 할 것 둘.**
 >
-> ⚠️ **범위.** `Drawer` 계열은 깨끗하지 않다. Visual Matching에서는 6/6
-> 하락하지만 Variant Aggregation에서는 섞이고, `DrawerApple`은 대부분 상승한다.
+> **① Random Dropping 2행을 제외했다.** Table 2에는 baseline 제외 **14행**이
+> 있고, 그중 Random Dropping은 PickCan이 91.3 → **9.7**로 무너져 패턴을 깬다.
+> 무작위 유지는 제안된 방법이 아니라 *"무엇을 남기느냐가 지배적"*임을 보이려는
+> 파괴 대조군이므로 제외가 타당하지만, **제외했다는 사실을 우리가 먼저 적어야
+> 한다.**
+>
+> **② `Drawer` 계열은 깨끗하지 않다.** Visual Matching에서는 6/6 하락하지만
+> Variant Aggregation에서는 섞이고, `DrawerApple`은 대부분 상승한다.
 > **단조롭게 갈리는 것은 `PickCan`(상승)과 `MoveNear`(하락) 둘뿐**이므로 주장을
 > 이 둘로 좁혀야 한다.
+
+**두 논문 모두 이 분할을 언급하지 않는다 — 본문에서 확인했다.** VLA-Cache의
+SIMPLER 절은 *"success rates comparable to the CogACT baseline ... while
+substantially reducing computational overhead"*가 전부이고, MoveNear가 내려간
+것에 대한 언급이 없다. EfficientVLA에서 `MoveNear`라는 단어는 **표 안에만**
+나온다.
 
 EfficientVLA는 자기 표 안의 반대 방향 두 곡선을 평균 내어 *"merely a 0.6%
 drop"*이라고 쓴다. **자기 숫자가 자기 결론을 반박하는데 저자들이 그것을 보지
