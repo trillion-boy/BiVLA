@@ -107,10 +107,25 @@ def truthy(v) -> bool:
     return bool(v)
 
 
-def classify(rec: dict) -> str | None:
-    """-> bucket name, or None when the episode carries no outcome detail."""
+def outcome_stats(rec: dict) -> dict:
+    """The two harnesses record the same flags in two different shapes.
+
+    OpenVLA and UniVLA store the terminal `info` wholesale, so the flags sit
+    under rec["final_info"]["episode_stats"]. SpatialVLA stores a flat record
+    and writes the flags as `env_<key>` at the top level. Accept both, so a
+    SpatialVLA run does not get silently skipped as "no outcome detail".
+    """
     info = rec.get("final_info") or {}
     stats = info.get("episode_stats") or info
+    if "moved_correct_obj" in stats:
+        return stats
+    flat = {k[len("env_"):]: v for k, v in rec.items() if k.startswith("env_")}
+    return flat
+
+
+def classify(rec: dict) -> str | None:
+    """-> bucket name, or None when the episode carries no outcome detail."""
+    stats = outcome_stats(rec)
     if "moved_correct_obj" not in stats:
         return None
 

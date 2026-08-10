@@ -49,10 +49,26 @@ _OUTCOME_KEYS = (
     "moved_wrong_obj",     # move_near: some other object moved
     "near_tgt_obj",        # move_near: it ended up near the named target
     "is_closest_to_tgt",
+    "all_obj_keep_height",  # move_near: nothing fell off the table
+
     "is_src_obj_grasped",  # grasp family
     "consecutive_grasp",
     "src_on_target",
 )
+
+
+def _truthy(v) -> bool:
+    """Normalise to a real bool before it reaches the JSON file.
+
+    These flags arrive as numpy bools, and numpy bools serialise through a
+    str() fallback -- which is how the OpenVLA records ended up holding
+    "True"/"False" strings for some of these keys and real bools for others.
+    bool("False") is True, so a string reaching bool() would invert the value
+    silently. Convert here, and treat a string defensively in case one does.
+    """
+    if isinstance(v, str):
+        return v.strip().lower() == "true"
+    return bool(v)
 
 
 def outcome_detail(final_info) -> dict:
@@ -62,7 +78,7 @@ def outcome_detail(final_info) -> dict:
     to move, and recording False there would read as a measurement.
     """
     stats = (final_info or {}).get("episode_stats") or {}
-    return {f"env_{k}": bool(stats[k]) for k in _OUTCOME_KEYS if k in stats}
+    return {f"env_{k}": _truthy(stats[k]) for k in _OUTCOME_KEYS if k in stats}
 
 
 def parse_args():
