@@ -33,6 +33,38 @@ from tome_siglip import apply_tome_to_siglip, center_protect_provider  # noqa: E
 from foveation import foveate_image_logpolar, foveate_image_blur, MotionGaze  # noqa: E402
 
 
+# The environment reports more than success. `move_near` in particular says
+# WHICH object moved, and that distinction is the difference between inferring
+# a mechanism and measuring one: a policy that moves the wrong object was
+# understood the arm but not the instruction, while a policy that moves nothing
+# failed at control. Dropping these fields -- which the harness did until
+# 2026-08-10 -- means every failure looks the same in the records, and the only
+# way left to argue about mechanism is to compare across tasks, where the task
+# identity is confounded with everything else that differs between them.
+#
+# Kept as a flat prefix rather than a nested dict so the fields survive the
+# existing per-episode readers unchanged.
+_OUTCOME_KEYS = (
+    "moved_correct_obj",   # move_near: the instructed object moved
+    "moved_wrong_obj",     # move_near: some other object moved
+    "near_tgt_obj",        # move_near: it ended up near the named target
+    "is_closest_to_tgt",
+    "is_src_obj_grasped",  # grasp family
+    "consecutive_grasp",
+    "src_on_target",
+)
+
+
+def outcome_detail(final_info) -> dict:
+    """-> {"env_<key>": value} for whatever this task's env actually reported.
+
+    Silent about keys a task does not define; a pick task has no wrong object
+    to move, and recording False there would read as a measurement.
+    """
+    stats = (final_info or {}).get("episode_stats") or {}
+    return {f"env_{k}": bool(stats[k]) for k in _OUTCOME_KEYS if k in stats}
+
+
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--model-path", required=True)
@@ -304,8 +336,10 @@ def main():
         g_mark = "G+" if grasped else "G-"
         print(f"   → {g_mark} {'SUCCESS' if success else 'FAIL'}  "
               f"({step} steps, {model_ms:.0f} ms/infer)", flush=True)
-        results.append({"ep": ep_count, "ep_id": ep_id, "success": success,
-                        "grasped": grasped, "steps": step, "model_ms_per_infer": model_ms})
+        rec = {"ep": ep_count, "ep_id": ep_id, "success": success,
+               "grasped": grasped, "steps": step, "model_ms_per_infer": model_ms}
+        rec.update(outcome_detail(final_info))
+        results.append(rec)
         env.close()
 
     n_ok = sum(r["success"] for r in results)
