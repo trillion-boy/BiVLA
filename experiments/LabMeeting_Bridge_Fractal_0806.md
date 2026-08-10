@@ -229,8 +229,9 @@ Two causes were possible: a different card changing the floating-point
 arithmetic, or UniVLA being nondeterministic to begin with. **Re-running blur /
 `spoon_on_towel` on the same L4 separated them, and it is the former.** All 24
 episodes match on success and on step count (16/24, zero flips, zero step
-disagreements); only the clock moved, 2903 → 2902 ms/infer. The re-run is in
-`results/univla_recheck_0809/`.
+disagreements); only the clock moved, 2903 → 2902 ms/infer. Its per-episode
+records were lost with the Colab runtime before they could be committed; the
+check is ten minutes to regenerate and is queued.
 
 So:
 
