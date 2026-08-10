@@ -76,15 +76,22 @@ IMPORTED = [
 # cannot subtract them from this column's baseline and get the same number.
 #
 # (rate, delta, own_baseline, source_document)
+# Empty since 2026-08-10: every cell in the grid now has per-episode records.
+# The table and its footnote stay in the code because the campaign will grow,
+# and a cell that gets reported without records has to be visibly different
+# from one that was paired -- but nothing is in that state today.
+#
+# What was retired, and what re-measuring cost each claim:
+#   SpatialVLA/Bridge foveate_logpolar -- was 25.0% against a 32.3% baseline;
+#     paired against this column's own 30.2% it is 21.9%, delta -8.3 at
+#     p = 0.20. The direction survives, the claim does not.
+#   SpatialVLA/Bridge foveate_blur -- was -2.1; paired it is exactly 0.0,
+#     13 broken against 13 fixed, p = 1.0000.
+#   SpatialVLA/Bridge depth_prune1 -- superseded by the paired -10.4.
+#   UniVLA/Bridge foveation (both variants) -- see
+#     LabMeeting_Bridge_Fractal_0806*.md; the log-polar cell reproduced its old
+#     pooled rate to the decimal while three of four task rates had moved.
 LEGACY = {
-    ("SpatialVLA", "Bridge", "foveate_blur"):
-        (30.2, -2.1, 32.3, "SpatialVLA_Bridge_Grid.md"),
-    # Retired as they were re-measured with per-episode records:
-    #   SpatialVLA/Bridge foveate_logpolar (2026-08-10) -- the old figure was
-    #     25.0% against a 32.3% baseline; paired against this column's own
-    #     30.2% it is 21.9%, delta -8.3 at p = 0.20, so the direction survives
-    #     and the significance does not.
-    #   SpatialVLA/Bridge depth_prune1 -- superseded by the paired -10.4.
     # The two UniVLA/Bridge foveation cells used to live here. They were
     # re-measured with per-episode records on 2026-08-09 and now come out of
     # `results/`, so they are gone from this table. What the old numbers are
@@ -114,11 +121,14 @@ CONDITION_ORDER = [
 # Runs that are controls for a specific question rather than cells of the grid.
 # `baseline_rerun` is the determinism check; listing it as a condition would
 # report "no change against baseline" as though that were a finding.
-# `depth_prune4_early` removes the same four layers as `depth_prune4` from a
-# different region -- putting the two in one column under adjacent names is the
-# exact confusion that produced 3c-bis in the first place. Both are analysed in
-# the report where their question lives.
-EXCLUDE = {"baseline_rerun", "depth_prune4_early", "depth_prune4_mid"}
+# `depth_prune4_early`, `depth_prune4_mid`, `depth_prune4_back` and
+# `depth_prune1_back` all remove the same number of layers as the condition they
+# are named after, from a different region. Putting them in one column under
+# adjacent names is the exact confusion that produced 3c-bis in the first place,
+# and the region contrast is the whole point of them. They are analysed in the
+# report where their question lives (§3.5, §3.6).
+EXCLUDE = {"baseline_rerun", "depth_prune4_early", "depth_prune4_mid",
+           "depth_prune4_back", "depth_prune1_back"}
 DISPLAY = dict(CONDITION_ORDER)
 # foveate / foveate_logpolar are the same condition under two harness spellings.
 CANON = {"foveate": "foveate_logpolar"}
@@ -524,11 +534,20 @@ def markdown(data) -> str:
              "baseline. `**` clears p<0.05, `***` clears the Bonferroni "
              "threshold for this campaign (a~0.003). Deltas use only episodes "
              "present in both runs.\n")
-    L.append("*Italic with `†`* = measured in an earlier campaign that kept no "
-             "per-episode records. Unpaired, and its delta is against that "
-             "campaign's own baseline, not the one in this table's first row -- "
-             "so it cannot be recomputed from this column and cannot carry a "
-             "claim that turns on its sign. Listed under the table.\n")
+    # The legend only appears when there is something to explain. Printing it
+    # over a table with no daggers tells the reader to look for a caveat that
+    # is not there, which is its own kind of wrong.
+    if LEGACY:
+        L.append("*Italic with `†`* = measured in an earlier campaign that kept "
+                 "no per-episode records. Unpaired, and its delta is against "
+                 "that campaign's own baseline, not the one in this table's "
+                 "first row -- so it cannot be recomputed from this column and "
+                 "cannot carry a claim that turns on its sign. Listed under the "
+                 "table.\n")
+    else:
+        L.append("**Every cell is paired**: measured against this column's own "
+                 "baseline on the same episode ids, on the same hardware. No "
+                 "cell is carried over unpaired from an earlier campaign.\n")
     L.append("| condition | " + " | ".join(f"{b}<br>{k}" for b, k in cols) + " |")
     L.append("|---|" + "---|" * len(cols))
     for cond in conditions_present(data):

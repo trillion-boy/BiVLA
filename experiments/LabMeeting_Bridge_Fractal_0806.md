@@ -119,28 +119,22 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 
 | condition | OpenVLA<br>Bridge | OpenVLA<br>Fractal | SpatialVLA<br>Bridge | SpatialVLA<br>Fractal | UniVLA<br>Bridge |
 |---|---|---|---|---|---|
-| original policy | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **78.1%** (n=96) |
-| action repeat 2 | 7.3%  −8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 7.3%  −70.8*** |
-| action repeat 4 | 4.2%  −11.5*** | 37.0%  −1.5 | 17.7%  −12.5 | 44.4%  −40.0*** | -- |
-| foveation log-polar 20% | 34.4%  +18.8** | 19.3%  −19.3*** | *25.0%  −7.3†* | 85.2%  +0.7 | 86.5%  +8.3 |
-| foveation blur 20% | 33.3%  +17.7** | 29.6%  −8.9 | *30.2%  −2.1†* | 83.0%  −1.5 | 72.9%  −5.2 |
-| depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | 19.8%  −10.4 | 92.6%  +8.1** | -- |
-| depth prune 2 | -- | 38.5%  +0.0 | 20.8%  −9.4 | 87.4%  +3.0 | -- |
-| depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | -- | 66.7%  −17.8*** | -- |
-| depth prune 8 | 15.6%  +0.0 | -- | -- | -- | -- |
-| depth prune 2 + action repeat 2 | -- | -- | -- | 83.0%  −1.5 | -- |
+| original policy | **15.6%** (n=96) | **38.5%** (n=135) | **30.2%** (n=96) | **84.4%** (n=135) | **81.2%** (n=96) |
+| action repeat 2 | 7.3%  -8.3 | 43.7%  +5.2 | 42.7%  +12.5** | 84.4%  +0.0 | 11.5%  -69.8*** |
+| action repeat 4 | 4.2%  -11.5*** | 37.0%  -1.5 | 17.7%  -12.5 | 44.4%  -40.0*** | 0.0%  -81.2*** |
+| foveation log-polar 20% | 34.4%  +18.8** | 19.3%  -19.3*** | 21.9%  -8.3 | 85.2%  +0.7 | 86.5%  +5.2 |
+| foveation blur 20% | 33.3%  +17.7** | 29.6%  -8.9 | 30.2%  +0.0 | 83.0%  -1.5 | 72.9%  -8.3 |
+| depth prune 1 | 17.7%  +2.1 | 39.3%  +0.7 | 19.8%  -10.4 | 92.6%  +8.1** | 78.1%  -3.1 |
+| depth prune 2 | 15.6%  +0.0 | 38.5%  +0.0 | 20.8%  -9.4 | 87.4%  +3.0 | 77.1%  -4.2 |
+| depth prune 4 | 16.7%  +1.0 | 54.1%  +15.6*** | 2.1%  -28.1*** | 66.7%  -17.8*** | 79.2%  -2.1 |
+| depth prune 8 | 15.6%  +0.0 | -- | -- | -- | 77.1%  -4.2 |
+| depth prune 2 + action repeat 2 | -- | -- | -- | 83.0%  -1.5 | -- |
 
-† legacy cells, with the baseline each was actually measured against:
-
-| backbone / benchmark | condition | rate | Δ | own baseline | source |
-|---|---|---|---|---|---|
-| SpatialVLA / Bridge | foveation log-polar | 25.0% | −7.3 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
-| SpatialVLA / Bridge | foveation blur | 30.2% | −2.1 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
-
-**The UniVLA/Bridge foveation deltas are provisional.** Both conditions were
-measured on an L4; the baseline they are subtracted from was not. The pipeline
-is deterministic at fixed hardware and not across it, so those two numbers carry
-a hardware component of unknown sign until the baseline is re-measured on an L4.
+**The whole UniVLA column is measured on an L4.** The baseline was re-measured
+on the same card on 2026-08-10 (81.2%) and the July baseline / repeat-2 pair was
+dropped from the grid, because subtracting across hardware puts a component of
+unknown sign inside every delta. That pair is kept on disk as the evidence for
+§"That determinism is with the hardware held fixed".
 
 Note the SpatialVLA/Bridge legacy baseline is **32.3%**, not the 30.2% in the
 first row. Broken down by task, the two campaigns agree almost everywhere:
@@ -476,38 +470,58 @@ resolved, which is the claim:
 Four of four tested pairs differ; two clear Bonferroni. This is not a difference
 of degree that a better default would smooth out.
 
-### 1b. Which *variant* wins is backbone-dependent too
+### 1b. Foveation is confirmed on one backbone only
 
-The two UniVLA/Bridge foveation cells became paired on 2026-08-09, which makes
-foveation testable across all three backbones on Bridge. Against baseline first:
+All four UniVLA and SpatialVLA foveation cells were re-measured with
+per-episode records on 2026-08-09 and 10. With the legacy entries gone, the
+three backbones can be put side by side on Bridge.
 
 | backbone (Bridge) | log-polar | blur |
 |---|---|---|
-| OpenVLA | **+18.8** (28/10, p=0.0051) | **+17.7** (26/9, p=0.0060) |
-| UniVLA | +8.3 (15/7, p=0.1338) | −5.2 (8/13, p=0.3833) |
-| SpatialVLA | −7.3† (unpaired) | −2.1† (unpaired) |
+| **OpenVLA** | **+18.8** (28 fixed / 10 broken, p=0.0051) | **+17.7** (26/9, p=0.0060) |
+| UniVLA | +5.2 (12/7, p=0.3593) | −8.3 (8/16, p=0.1516) |
+| SpatialVLA | −8.3 (11/19, p=0.2005) | **±0.0** (13/13, p=1.0000) |
 
-**On UniVLA neither variant separates from baseline.** The earlier campaign had
-written this cell up as "log-polar improves or holds on all four tasks"; pairing
-the episodes gives 15 fixed against 7 broken, and +8.3 does not separate from
-chance. **What reversed is the confidence, not the direction** — the mean is
-still up.
+**Only the two OpenVLA cells are significant.** All four UniVLA and SpatialVLA
+cells are indistinguishable from baseline; SpatialVLA blur flipped 26 of 96
+episodes and split them exactly evenly, for a delta of 0.0.
 
-Pairing the two variants against *each other* is a different story:
+Set against the earlier unpaired figures, what changed is visible:
+
+| cell | before (unpaired) | now (paired) | what moved |
+|---|---|---|---|
+| SpatialVLA log-polar | 25.0%, −7.3 | 21.9%, −8.3 (p=0.20) | direction survives, **claim does not** |
+| SpatialVLA blur | 30.2%, −2.1 | 30.2%, **±0.0** (p=1.00) | the delta itself went to zero |
+| UniVLA log-polar | 86.5%, +8.3 | 86.5%, +5.2 (p=0.36) | delta shrank once the baseline was re-measured |
+
+**All three became cells we cannot claim.** The legacy numbers were not wrong;
+paired, they do not separate from chance.
+
+### Which variant wins, then — three answers, none of them established
+
+Pairing the variants against each other:
 
 | comparison (Bridge, paired n=96) | split | p |
 |---|---|---|
-| UniVLA: log-polar vs blur | 19 / 6 | **0.0146** |
-| OpenVLA: log-polar vs blur | +18.8 vs +17.7 | effectively tied |
-| SpatialVLA: log-polar vs blur | −7.3 vs −2.1† | blur ahead (unpaired) |
+| UniVLA: log-polar over blur | 19 / 6 | 0.0146 |
+| SpatialVLA: blur over log-polar | 16 / 8 | 0.1516 |
+| OpenVLA: +18.8 vs +17.7 | effectively tied | — |
 
-So **log-polar beats blur on UniVLA** (nominally — it does not clear the
-campaign-wide Bonferroni bar of 0.0033), **the two are indistinguishable on
-OpenVLA**, and on SpatialVLA the order is reversed, though that cell is legacy
-and cannot carry the claim. It is not only *whether* an intervention helps that
-tracks the backbone: **which setting of the same intervention to pick tracks the
-backbone as well.** Tuning a configuration on one backbone and carrying it to
-the next breaks exactly here.
+**Three backbones, three answers** — log-polar on UniVLA, blur on SpatialVLA,
+a tie on OpenVLA. But none of the three clears the campaign's Bonferroni bar of
+0.0033, so **"the choice of variant tracks the backbone" is suggestive and not
+established.**
+
+> ⚠️ An earlier version of this section stated it flatly. That was written while
+> the SpatialVLA side was legacy; paired, it cannot be written that way.
+
+**What is established is something else.** Foveation is confirmed on **one of
+three backbones**, and on that one **the two variants are effectively the
+same**. And its direction is the opposite of the literature: Gaze-Reg trained
+the policy on foveated input and centred the fovea on human gaze, and still
+lost on ten tasks out of ten. **The literature converges on harmful while the
+only significant cells in our grid are strongly beneficial.** Explaining that
+one cell is this axis's open problem.
 
 ### 2. It also depends on the benchmark, with the policy unchanged
 
