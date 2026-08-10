@@ -77,12 +77,14 @@ IMPORTED = [
 #
 # (rate, delta, own_baseline, source_document)
 LEGACY = {
-    ("SpatialVLA", "Bridge", "foveate_logpolar"):
-        (25.0, -7.3, 32.3, "SpatialVLA_Bridge_Grid.md"),
     ("SpatialVLA", "Bridge", "foveate_blur"):
         (30.2, -2.1, 32.3, "SpatialVLA_Bridge_Grid.md"),
-    ("SpatialVLA", "Bridge", "depth_prune1"):
-        (22.9, -9.4, 32.3, "SpatialVLA_Bridge_Grid.md (1 of 26 layers)"),
+    # Retired as they were re-measured with per-episode records:
+    #   SpatialVLA/Bridge foveate_logpolar (2026-08-10) -- the old figure was
+    #     25.0% against a 32.3% baseline; paired against this column's own
+    #     30.2% it is 21.9%, delta -8.3 at p = 0.20, so the direction survives
+    #     and the significance does not.
+    #   SpatialVLA/Bridge depth_prune1 -- superseded by the paired -10.4.
     # The two UniVLA/Bridge foveation cells used to live here. They were
     # re-measured with per-episode records on 2026-08-09 and now come out of
     # `results/`, so they are gone from this table. What the old numbers are
@@ -116,10 +118,29 @@ CONDITION_ORDER = [
 # different region -- putting the two in one column under adjacent names is the
 # exact confusion that produced 3c-bis in the first place. Both are analysed in
 # the report where their question lives.
-EXCLUDE = {"baseline_rerun", "depth_prune4_early"}
+EXCLUDE = {"baseline_rerun", "depth_prune4_early", "depth_prune4_mid"}
 DISPLAY = dict(CONDITION_ORDER)
 # foveate / foveate_logpolar are the same condition under two harness spellings.
 CANON = {"foveate": "foveate_logpolar"}
+
+# UniVLA/Bridge was measured on two different GPUs. `baseline` and
+# `action_repeat2` came off the July card; everything else came off an L4, and a
+# re-run of one condition on the same L4 reproduced 24/24 while the July-vs-L4
+# baselines differ by 3.1 points. Subtracting across that boundary would put a
+# hardware component inside every delta, so the column is rebuilt around the L4
+# pair and the July pair drops out of the grid. It is not deleted -- the two
+# pairs measured under identical settings on different cards are the evidence
+# for the hardware caveat in the report, which is where they are discussed.
+#
+# Keyed by (backbone, benchmark): {raw condition -> canonical, or None to drop}.
+RENAME = {
+    ("UniVLA", "Bridge"): {
+        "baseline": None,
+        "action_repeat2": None,
+        "baseline_l4": "baseline",
+        "action_repeat2_l4": "action_repeat2",
+    },
+}
 
 
 def benchmark_of(task: str) -> str:
@@ -155,6 +176,11 @@ def _walk_campaigns():
 
         for cond, cdir in conditions:
             cond = CANON.get(cond, cond)
+            renamed = RENAME.get((backbone, bench), {})
+            if cond in renamed:
+                if renamed[cond] is None:
+                    continue
+                cond = renamed[cond]
             for task in sorted(os.listdir(cdir)):
                 path = os.path.join(cdir, task, f"results_{task}.json")
                 if not os.path.isfile(path):
