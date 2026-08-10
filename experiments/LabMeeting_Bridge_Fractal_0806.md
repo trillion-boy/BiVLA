@@ -41,9 +41,11 @@ else in the table. Nor is it only the benchmark axis: holding Bridge fixed,
 action repeat 2 is **+12.5** on SpatialVLA and **−70.8** on UniVLA.
 
 **② It is not noise.** A from-scratch baseline re-run reproduced **85/85
-episodes** — success flags, step counts, and grasp flags all identical. Re-run
-variance is zero, so the only uncertainty left is which episodes the protocol
-drew, and that is exactly what the paired test measures.
+episodes** — success flags, step counts, and grasp flags all identical; a third
+backbone reproduced 24/24 on a separate check. Re-run variance is zero **at
+fixed hardware**, so the only uncertainty left is which episodes the protocol
+drew, and that is exactly what the paired test measures. Change the GPU and it
+is no longer zero — see §"That determinism is with the hardware held fixed".
 
 **③ Why it flips — half an answer.** The divide is not the benchmark but the
 capability the task demands. Remove capacity and **the ability to resolve which
@@ -135,6 +137,11 @@ recomputed from this column and cannot carry a claim that turns on their sign.
 | SpatialVLA / Bridge | foveation log-polar | 25.0% | −7.3 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 | SpatialVLA / Bridge | foveation blur | 30.2% | −2.1 | 32.3% | `SpatialVLA_Bridge_Grid.md` |
 
+**The UniVLA/Bridge foveation deltas are provisional.** Both conditions were
+measured on an L4; the baseline they are subtracted from was not. The pipeline
+is deterministic at fixed hardware and not across it, so those two numbers carry
+a hardware component of unknown sign until the baseline is re-measured on an L4.
+
 Note the SpatialVLA/Bridge legacy baseline is **32.3%**, not the 30.2% in the
 first row. Broken down by task, the two campaigns agree almost everywhere:
 
@@ -218,12 +225,28 @@ EfficientVLA, VLA-Cache and FastV with, that a 4-task mean hides the
 PickCan↑/MoveNear↓ split, has now appeared once in our own data. This is why
 `experiments/compare_runs.py` compares episode vectors and not success rates.
 
-Two causes remain: a different card changing the floating-point arithmetic, or
-UniVLA being nondeterministic to begin with. **Re-running one task (blur /
-spoon, ten minutes) on the same L4 separates them.** If all 24 episodes match,
-it is the former and the determinism claim only needs qualifying with "at fixed
-hardware". If they do not, it is the latter, and **the whole UniVLA column needs
-a run-to-run variance component the other columns do not.** Open.
+Two causes were possible: a different card changing the floating-point
+arithmetic, or UniVLA being nondeterministic to begin with. **Re-running blur /
+`spoon_on_towel` on the same L4 separated them, and it is the former.** All 24
+episodes match on success and on step count (16/24, zero flips, zero step
+disagreements); only the clock moved, 2903 → 2902 ms/infer. The re-run is in
+`results/univla_recheck_0809/`.
+
+So:
+
+- **UniVLA is deterministic at fixed hardware too**, as OpenVLA and SpatialVLA
+  are. The determinism claim does not have to be split per backbone; it needs
+  the qualifier **"at fixed hardware"**, and under that qualifier every p-value
+  in this report is still the whole uncertainty account.
+- **One column does acquire a real defect, though.** The UniVLA baseline was
+  measured on 2026-08-05 on a different card, and today's two foveation
+  conditions are on an L4. **The +8.3 and −5.2 are therefore subtractions across
+  hardware**, mixing the effect of the intervention with the effect of the card.
+  The legacy-versus-today spread — up to 20.8 points on a single task — is the
+  size of that contamination.
+- There is one fix: **re-measure the UniVLA baseline on an L4** (four tasks,
+  forty minutes). Until then the UniVLA/Bridge deltas are provisional, and the
+  outstanding depth and repeat conditions all have to come off an L4 as well.
 
 ---
 
@@ -1039,12 +1062,15 @@ decide that, not to add another agreeing cell.
    differs in horizon and object count. Bridge cannot supply one — we checked,
    `stack_cube` at n=24 has no power and its one nominally significant cell
    points the wrong way. Either add a task or state the confound and stop.
-5. **UniVLA blur / `spoon_on_towel` once more on the same L4** (ten minutes).
-   The question left open above: 24 of 24 matching means UniVLA is deterministic
-   too and the divergence from the legacy run is hardware; any mismatch means
-   the UniVLA column carries a run-to-run component the others do not. Check the
-   card with `nvidia-smi` first — on anything but an L4 the test does not hold.
-   Compare with `compare_runs.py`, per episode, not by success rate.
+5. ~~**UniVLA blur / `spoon_on_towel` once more on the same L4.**~~ **Done —
+   24 of 24 identical.** UniVLA is deterministic at fixed hardware and the
+   divergence from the legacy run is the card. See "That determinism is with the
+   hardware held fixed" above.
+6. **Re-measure the UniVLA baseline on an L4** (four tasks, forty minutes). The
+   bill left by 5: the current baseline came off a different card, so today's
+   +8.3 and −5.2 are subtractions across hardware. The outstanding UniVLA
+   conditions (`action_repeat4`, depth prune 1/2/4) have to come off the same L4
+   as well, so check the card with `nvidia-smi` at the top of the session.
 ---
 
 ## Reproduce
