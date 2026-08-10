@@ -217,12 +217,41 @@ Models of Visual Attention(NeurIPS 2014)에서 시작하는데, 우리는 **중�
 ### (d) VLA에서 이미 해본 것
 
 **성공률 쪽 — 문헌은 "해롭다"로 수렴한다.** 우리와 가장 가까운 이웃은
-Gaze-Regularized VLA(arXiv 2603.23202)다. ⚠️ **이 항목은 원문 재대조가 아직
-안 됐다** — 제목과 저자 확인이 필요하고, 아래 10/10 수치는 그 전까지 인용하지
-말 것. 시선 중심으로 foveated RGB를 만들어
-(중심 고해상도, 주변 다운샘플/블러) VLA에 먹이는데, 우리 blur 변형과 사실상 같은
-조작이다. 부록 D.2의 LIBERO-Spatial 표에서 **10개 태스크 전부 하락, 평균
-−7.4**다. Look, Focus, Act(2025)가 foveated ViT + 인간 시선으로 짝을 이룬다.
+**Gaze-Regularized Vision-Language-Action Models for Robotic
+Manipulation**(Pani & Yang, HKU)이다. 시선 분포의 peak를 중심으로 foveated RGB를
+만들어(중심 고해상도, 주변 다운샘플/블러) 표준 비전 인코더에 그대로 먹인다 —
+우리 blur 변형과 사실상 같은 조작이다. 부록 D.2 / Table 11(LIBERO-Spatial,
+30k steps):
+
+| 태스크 | baseline | foveated | Δ |
+|---|---|---|---|
+| Between plate and ramekin | 83.3 | 80.0 | −3.3 |
+| Next to ramekin | 85.7 | 81.3 | −4.4 |
+| Table center | 100 | 95.7 | −4.3 |
+| On cookie box | 100 | 90.0 | −10.0 |
+| In cabinet drawer | 80 | 65.3 | **−14.7** |
+| On ramekin | 100 | 90.0 | −10.0 |
+| Next to cookie box | 100 | 94.0 | −6.0 |
+| On stove | 90 | 80.7 | −9.3 |
+| Next to plate | 50 | 44.7 | −5.3 |
+| On wooden cabinet | 70.3 | 63.3 | −7.0 |
+| **전체** | **85.9** | **78.5** | **−7.4** |
+
+**10개 태스크 전부 하락, 예외 없음.** 저자들의 해석은
+*"aggressively reducing peripheral detail removes useful contextual cues (e.g.,
+table geometry, supporting surfaces, or alternative grasps) that the policy
+relies on for precise spatial reasoning"* — **주변부가 필요한 맥락**이라는 것이다.
+
+> ⚠️ **인용할 때 반드시 붙일 조건 둘.**
+> **①** 그들의 foveation은 **학습 중에** 적용된다(절 제목이 "Foveated Vision
+> *during Training*", 30k 스텝). 우리는 학습 없이 추론 시점에 건다.
+> **②** 중심이 **인간 시선의 peak**다. 우리는 이미지 중심 고정이다.
+>
+> 다만 이 둘은 우리에게 **유리한 쪽으로** 작용한다. 그 입력으로 **학습시키고도**,
+> 중심을 **시선으로 맞춰주고도** 10/10 떨어졌다면, 학습도 없고 중심도 고정인
+> 우리 버전은 더더욱 오를 이유가 없다. 그래서 아래 (e)의 +18.8이 더 이상해진다.
+
+Look, Focus, Act(2025)가 foveated ViT + 인간 시선으로 짝을 이룬다.
 
 **속도 쪽 — 아끼지 못한다는 실측이 이미 있다.** VLA-Cache Table 2(LIBERO,
 OpenVLA, RTX 4090):
@@ -251,6 +280,8 @@ unaddressed memory bottlenecks"*에 그친다.
 
 그리고 더 중요한 것: **OpenVLA/Bridge에서 우리가 얻은 +18.8은 이 문헌 어디에도
 대응물이 없다.** 문헌 전체가 "해롭다"로 수렴하는데 한 칸만 크게 이롭다.
+Gaze-Reg의 가설(주변부는 필요한 맥락이다)과 **정확히 반대 방향**의 가설이
+필요하다 — 그 칸에서는 주변부가 도움이 아니라 **방해**였다는 것.
 EfficientVLA의 무작위 유지 결과와 함께 보면 가설은 *"Bridge/OpenVLA에서는
 주변부가 도움이 아니라 방해였다"*이고, 15.6%라는 낮은 baseline이 그 방증일 수
 있다. **이 이상치를 논문의 중심에 놓아야 한다.**
