@@ -1,0 +1,170 @@
+/content/venv310/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[load] model=openvla_foveated policy_setup=widowx_bridge unnorm_key=(derived)
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.53.3` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]
+Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  7.74it/s]
+Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 18.72it/s]
+[ok] model loaded  unnorm_key=bridge_orig sticky_gripper=1
+
+-- episode 00 (env_id=0) --
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+result: FAIL grasped=False steps=60 time=38.6s
+
+-- episode 01 (env_id=1) --
+[2026-08-11 02:42:38.042] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.6s
+
+-- episode 02 (env_id=2) --
+[2026-08-11 02:43:15.292] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.9s
+
+-- episode 03 (env_id=3) --
+[2026-08-11 02:43:52.844] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=False steps=60 time=36.5s
+
+-- episode 04 (env_id=4) --
+[2026-08-11 02:44:29.963] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=True steps=53 time=32.5s
+
+-- episode 05 (env_id=5) --
+[2026-08-11 02:45:03.104] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.5s
+
+-- episode 06 (env_id=6) --
+[2026-08-11 02:45:40.261] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=True steps=18 time=11.0s
+
+-- episode 07 (env_id=7) --
+[2026-08-11 02:45:51.832] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.4s
+
+-- episode 08 (env_id=8) --
+[2026-08-11 02:46:28.867] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.9s
+
+-- episode 09 (env_id=9) --
+[2026-08-11 02:47:06.318] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=False steps=60 time=36.5s
+
+-- episode 10 (env_id=10) --
+[2026-08-11 02:47:43.457] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=True steps=30 time=18.3s
+
+-- episode 11 (env_id=11) --
+[2026-08-11 02:48:02.366] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=False steps=60 time=36.4s
+
+-- episode 12 (env_id=12) --
+[2026-08-11 02:48:39.394] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.8s
+
+-- episode 13 (env_id=13) --
+[2026-08-11 02:49:16.766] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=False steps=60 time=36.5s
+
+-- episode 14 (env_id=14) --
+[2026-08-11 02:49:53.885] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=True steps=50 time=30.7s
+
+-- episode 15 (env_id=15) --
+[2026-08-11 02:50:25.169] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=False steps=60 time=36.6s
+
+-- episode 16 (env_id=16) --
+[2026-08-11 02:51:02.358] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=True steps=41 time=25.0s
+
+-- episode 17 (env_id=17) --
+[2026-08-11 02:51:27.960] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=False steps=60 time=36.5s
+
+-- episode 18 (env_id=18) --
+[2026-08-11 02:52:05.066] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.7s
+
+-- episode 19 (env_id=19) --
+[2026-08-11 02:52:42.350] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=True steps=36 time=21.9s
+
+-- episode 20 (env_id=20) --
+[2026-08-11 02:53:04.921] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=True steps=60 time=36.7s
+
+-- episode 21 (env_id=21) --
+[2026-08-11 02:53:42.215] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: FAIL grasped=False steps=60 time=36.6s
+
+-- episode 22 (env_id=22) --
+[2026-08-11 02:54:19.407] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=True steps=30 time=18.3s
+
+-- episode 23 (env_id=23) --
+[2026-08-11 02:54:38.338] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put carrot on plate
+result: SUCCESS grasped=False steps=40 time=24.3s
+
+==================================================
+task:         widowx_carrot_on_plate
+model:        openvla_foveated
+setup:        widowx_bridge (unnorm=bridge_orig, sticky=1)
+success_rate: 8/24 = 33.3%
+grasp_rate:   15/24 = 62.5%
+avg_steps:    52
+avg_elapsed:  32.1s
+model_ms_per_infer: 515.6ms  (pure model forward pass, CUDA-synced)
+model_ms_per_env_step: 515.6ms  (amortized over executed actions)
+==================================================
+saved: /content/BiVLA_full/results/openvla_bridge_foveate_sweep/keep100/widowx_carrot_on_plate/results_widowx_carrot_on_plate.json
