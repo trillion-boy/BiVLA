@@ -1,0 +1,154 @@
+/content/venv310/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[load] model=openvla_depth policy_setup=google_robot unnorm_key=(derived)
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.53.3` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]
+Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  7.15it/s]
+Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 17.34it/s]
+[depth/openvla] static pruning ON: bypass 4 most-redundant layers; eligible 28..31 of 32
+[ok] model loaded  unnorm_key=fractal20220817_data sticky_gripper=15
+
+-- episode 00 (env_id=0) --
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+instruction: pick coke can
+[depth] calibrated: bypass=[28, 29, 30, 31]
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+result: FAIL grasped=False steps=80 time=48.2s
+
+-- episode 01 (env_id=1) --
+[2026-08-11 11:14:16.993] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.4s
+
+-- episode 02 (env_id=2) --
+[2026-08-11 11:15:04.342] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.2s
+
+-- episode 03 (env_id=3) --
+[2026-08-11 11:15:51.501] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.2s
+
+-- episode 04 (env_id=4) --
+[2026-08-11 11:16:38.788] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=47.5s
+
+-- episode 05 (env_id=5) --
+[2026-08-11 11:17:27.251] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.3s
+
+-- episode 06 (env_id=6) --
+[2026-08-11 11:18:14.679] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.3s
+
+-- episode 07 (env_id=7) --
+[2026-08-11 11:19:01.910] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.3s
+
+-- episode 08 (env_id=8) --
+[2026-08-11 11:19:49.177] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.4s
+
+-- episode 09 (env_id=9) --
+[2026-08-11 11:20:36.560] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.9s
+
+-- episode 10 (env_id=10) --
+[2026-08-11 11:21:24.396] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.3s
+
+-- episode 11 (env_id=11) --
+[2026-08-11 11:22:11.566] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.3s
+
+-- episode 12 (env_id=12) --
+[2026-08-11 11:22:58.608] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.3s
+
+-- episode 13 (env_id=13) --
+[2026-08-11 11:23:45.890] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=True steps=80 time=46.6s
+
+-- episode 14 (env_id=14) --
+[2026-08-11 11:24:33.440] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=47.2s
+
+-- episode 15 (env_id=15) --
+[2026-08-11 11:25:21.564] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.6s
+
+-- episode 16 (env_id=16) --
+[2026-08-11 11:26:09.122] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.4s
+
+-- episode 17 (env_id=17) --
+[2026-08-11 11:26:56.432] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.3s
+
+-- episode 18 (env_id=18) --
+[2026-08-11 11:27:43.753] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.4s
+
+-- episode 19 (env_id=19) --
+[2026-08-11 11:28:31.152] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=True steps=80 time=47.0s
+
+-- episode 20 (env_id=20) --
+[2026-08-11 11:29:19.066] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.4s
+
+-- episode 21 (env_id=21) --
+[2026-08-11 11:30:06.438] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.4s
+
+-- episode 22 (env_id=22) --
+[2026-08-11 11:30:53.708] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.6s
+
+-- episode 23 (env_id=23) --
+[2026-08-11 11:31:41.243] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.4s
+
+-- episode 24 (env_id=24) --
+[2026-08-11 11:32:28.608] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+instruction: pick coke can
+result: FAIL grasped=False steps=80 time=46.6s
+
+==================================================
+task:         google_robot_pick_standing_coke_can
+model:        openvla_depth
+setup:        google_robot (unnorm=fractal20220817_data, sticky=15)
+success_rate: 0/25 = 0.0%
+grasp_rate:   2/25 = 8.0%
+avg_steps:    80
+avg_elapsed:  46.6s
+model_ms_per_infer: 459.7ms  (pure model forward pass, CUDA-synced)
+model_ms_per_env_step: 459.7ms  (amortized over executed actions)
+depth: bypassed 4 of 32 layers [28, 29, 30, 31]
+==================================================
+saved: /content/BiVLA_full/results/openvla_fractal_depth_control/window875/google_robot_pick_standing_coke_can/results_google_robot_pick_standing_coke_can.json
