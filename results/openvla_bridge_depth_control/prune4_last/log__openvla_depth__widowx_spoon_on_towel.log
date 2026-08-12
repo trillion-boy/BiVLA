@@ -1,0 +1,173 @@
+/content/venv310/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[load] model=openvla_depth policy_setup=widowx_bridge unnorm_key=(derived)
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.53.3` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]
+Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  7.78it/s]
+Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 18.90it/s]
+[depth/openvla] static pruning ON: bypass 4 most-redundant layers; eligible 28..31 of 32
+[ok] model loaded  unnorm_key=bridge_orig sticky_gripper=1
+
+-- episode 00 (env_id=0) --
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+[depth] calibrated: bypass=[28, 29, 30, 31]
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+result: FAIL grasped=False steps=60 time=34.4s
+
+-- episode 01 (env_id=1) --
+[2026-08-12 03:04:25.844] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.3s
+
+-- episode 02 (env_id=2) --
+[2026-08-12 03:04:59.032] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=33.0s
+
+-- episode 03 (env_id=3) --
+[2026-08-12 03:05:32.851] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=True steps=60 time=32.7s
+
+-- episode 04 (env_id=4) --
+[2026-08-12 03:06:06.370] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.7s
+
+-- episode 05 (env_id=5) --
+[2026-08-12 03:06:39.917] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: SUCCESS grasped=False steps=37 time=20.1s
+
+-- episode 06 (env_id=6) --
+[2026-08-12 03:07:00.912] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: SUCCESS grasped=True steps=24 time=12.9s
+
+-- episode 07 (env_id=7) --
+[2026-08-12 03:07:14.703] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.2s
+
+-- episode 08 (env_id=8) --
+[2026-08-12 03:07:47.749] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.5s
+
+-- episode 09 (env_id=9) --
+[2026-08-12 03:08:21.120] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.4s
+
+-- episode 10 (env_id=10) --
+[2026-08-12 03:08:54.339] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=True steps=60 time=32.6s
+
+-- episode 11 (env_id=11) --
+[2026-08-12 03:09:27.765] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.5s
+
+-- episode 12 (env_id=12) --
+[2026-08-12 03:10:01.084] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.4s
+
+-- episode 13 (env_id=13) --
+[2026-08-12 03:10:34.292] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.3s
+
+-- episode 14 (env_id=14) --
+[2026-08-12 03:11:07.390] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.3s
+
+-- episode 15 (env_id=15) --
+[2026-08-12 03:11:40.530] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.2s
+
+-- episode 16 (env_id=16) --
+[2026-08-12 03:12:13.575] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.5s
+
+-- episode 17 (env_id=17) --
+[2026-08-12 03:12:46.930] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=True steps=60 time=32.7s
+
+-- episode 18 (env_id=18) --
+[2026-08-12 03:13:20.441] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=True steps=60 time=32.6s
+
+-- episode 19 (env_id=19) --
+[2026-08-12 03:13:53.889] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: SUCCESS grasped=True steps=30 time=16.2s
+
+-- episode 20 (env_id=20) --
+[2026-08-12 03:14:10.928] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.4s
+
+-- episode 21 (env_id=21) --
+[2026-08-12 03:14:44.158] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.4s
+
+-- episode 22 (env_id=22) --
+[2026-08-12 03:15:17.371] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: SUCCESS grasped=True steps=18 time=9.7s
+
+-- episode 23 (env_id=23) --
+[2026-08-12 03:15:27.912] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put the spoon on the towel
+result: FAIL grasped=False steps=60 time=32.5s
+
+==================================================
+task:         widowx_spoon_on_towel
+model:        openvla_depth
+setup:        widowx_bridge (unnorm=bridge_orig, sticky=1)
+success_rate: 4/24 = 16.7%
+grasp_rate:   7/24 = 29.2%
+avg_steps:    55
+avg_elapsed:  29.6s
+model_ms_per_infer: 458.7ms  (pure model forward pass, CUDA-synced)
+model_ms_per_env_step: 458.7ms  (amortized over executed actions)
+depth: bypassed 4 of 32 layers [28, 29, 30, 31]
+==================================================
+saved: /content/BiVLA_full/results/openvla_bridge_depth_control/prune4_last/widowx_spoon_on_towel/results_widowx_spoon_on_towel.json
