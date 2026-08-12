@@ -1,0 +1,789 @@
+{
+  "model_type": "baseline",
+  "task": "widowx_carrot_on_plate",
+  "image_size": 256,
+  "min_pixels": 6400,
+  "vision_device": "cuda",
+  "llm_prune_count": 0,
+  "llm_prune_min_layer": 0.5,
+  "llm_prune_min_gap": 1,
+  "llm_prune_layers": [],
+  "success_rate": 0.7083333333333334,
+  "grasp_rate": 0.75,
+  "avg_steps": 35.833333333333336,
+  "avg_elapsed": 23.668887853622437,
+  "avg_model_ms_per_infer": 2848.8696502078146,
+  "avg_model_ms_per_env_step": 602.3332091496833,
+  "exec_chunk": 0,
+  "action_repeat": 1,
+  "predict_action_frames": 5,
+  "foveate": {
+    "enabled": true,
+    "mode": "logpolar",
+    "center": "image",
+    "phase": "always",
+    "keep_percent": 20.0
+  },
+  "fastv": {
+    "enabled": false,
+    "k": 3,
+    "keep_ratio": 0.4
+  },
+  "depth_ctrl": {
+    "enabled": false,
+    "deep": 2,
+    "shallow": 8,
+    "close_steps": 2,
+    "archetypes": "all"
+  },
+  "episodes": [
+    {
+      "ep": 0,
+      "ep_id": 0,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 25,
+      "elapsed": 16.72137951850891,
+      "model_ms_per_infer": 2979.6578884124756,
+      "model_ms_per_env_step": 595.9315776824951,
+      "final_info": {
+        "elapsed_steps": 25,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 35.742018699645996,
+      "model_ms_per_infer": 2624.352753162384,
+      "model_ms_per_env_step": 524.8705506324768,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 18,
+      "elapsed": 12.762895345687866,
+      "model_ms_per_infer": 2867.902994155884,
+      "model_ms_per_env_step": 637.3117764790853,
+      "final_info": {
+        "elapsed_steps": 18,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 3,
+      "ep_id": 3,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 27,
+      "elapsed": 19.760138034820557,
+      "model_ms_per_infer": 2970.377246538798,
+      "model_ms_per_env_step": 660.0838325641773,
+      "final_info": {
+        "elapsed_steps": 27,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 37.01456260681152,
+      "model_ms_per_infer": 2728.260815143585,
+      "model_ms_per_env_step": 545.652163028717,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 38.68683338165283,
+      "model_ms_per_infer": 2870.1504866282144,
+      "model_ms_per_env_step": 574.0300973256429,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 28,
+      "elapsed": 18.52389883995056,
+      "model_ms_per_infer": 2755.3837299346924,
+      "model_ms_per_env_step": 590.4393707002912,
+      "final_info": {
+        "elapsed_steps": 28,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 31,
+      "elapsed": 21.955089330673218,
+      "model_ms_per_infer": 2819.2804881504603,
+      "model_ms_per_env_step": 636.611723130749,
+      "final_info": {
+        "elapsed_steps": 31,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 26,
+      "elapsed": 18.893423795700073,
+      "model_ms_per_infer": 2833.793799082438,
+      "model_ms_per_env_step": 653.9524151728704,
+      "final_info": {
+        "elapsed_steps": 26,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 32,
+      "elapsed": 22.229715585708618,
+      "model_ms_per_infer": 2842.280455998012,
+      "model_ms_per_env_step": 621.7488497495651,
+      "final_info": {
+        "elapsed_steps": 32,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 25,
+      "elapsed": 15.912516355514526,
+      "model_ms_per_infer": 2817.4325466156006,
+      "model_ms_per_env_step": 563.4865093231201,
+      "final_info": {
+        "elapsed_steps": 25,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 38.54553246498108,
+      "model_ms_per_infer": 2852.8271516164145,
+      "model_ms_per_env_step": 570.5654303232828,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": "False",
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": "False",
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 22,
+      "elapsed": 16.04768419265747,
+      "model_ms_per_infer": 2885.3959560394287,
+      "model_ms_per_env_step": 655.7718081907793,
+      "final_info": {
+        "elapsed_steps": 22,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 13,
+      "ep_id": 13,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 28,
+      "elapsed": 19.715511560440063,
+      "model_ms_per_infer": 2951.32048924764,
+      "model_ms_per_env_step": 632.4258191244943,
+      "final_info": {
+        "elapsed_steps": 28,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 14,
+      "ep_id": 14,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 25,
+      "elapsed": 16.38616681098938,
+      "model_ms_per_infer": 2920.2121257781982,
+      "model_ms_per_env_step": 584.0424251556396,
+      "final_info": {
+        "elapsed_steps": 25,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 15,
+      "ep_id": 15,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 29,
+      "elapsed": 20.1601459980011,
+      "model_ms_per_infer": 3015.0604248046875,
+      "model_ms_per_env_step": 623.8056051320043,
+      "final_info": {
+        "elapsed_steps": 29,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 16,
+      "ep_id": 16,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 27,
+      "elapsed": 19.180546045303345,
+      "model_ms_per_infer": 2865.910053253174,
+      "model_ms_per_env_step": 636.8689007229276,
+      "final_info": {
+        "elapsed_steps": 27,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 17,
+      "ep_id": 17,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 24,
+      "elapsed": 16.727064847946167,
+      "model_ms_per_infer": 3001.801538467407,
+      "model_ms_per_env_step": 625.3753205140432,
+      "final_info": {
+        "elapsed_steps": 24,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 18,
+      "ep_id": 18,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 27,
+      "elapsed": 18.854552745819092,
+      "model_ms_per_infer": 2817.2277212142944,
+      "model_ms_per_env_step": 626.0506047142876,
+      "final_info": {
+        "elapsed_steps": 27,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 19,
+      "ep_id": 19,
+      "success": false,
+      "grasped": true,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 34.66314077377319,
+      "model_ms_per_infer": 2535.548150539398,
+      "model_ms_per_env_step": 507.1096301078797,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": false,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": false
+        },
+        "success": false
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 20,
+      "ep_id": 20,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 21,
+      "elapsed": 15.458123207092285,
+      "model_ms_per_infer": 2785.745859146118,
+      "model_ms_per_env_step": 663.2728236062186,
+      "final_info": {
+        "elapsed_steps": 21,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 21,
+      "ep_id": 21,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 38.86985421180725,
+      "model_ms_per_infer": 2883.8473359743753,
+      "model_ms_per_env_step": 576.7694671948751,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 22,
+      "ep_id": 22,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 25,
+      "elapsed": 15.987618684768677,
+      "model_ms_per_infer": 2831.4419746398926,
+      "model_ms_per_env_step": 566.2883949279785,
+      "final_info": {
+        "elapsed_steps": 25,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": true,
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": true
+        },
+        "success": true
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    },
+    {
+      "ep": 23,
+      "ep_id": 23,
+      "success": false,
+      "grasped": false,
+      "terminated": false,
+      "truncated": true,
+      "steps": 60,
+      "elapsed": 39.25489544868469,
+      "model_ms_per_infer": 2917.6596204439797,
+      "model_ms_per_env_step": 583.5319240887959,
+      "final_info": {
+        "elapsed_steps": 60,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "False",
+        "ever_grasped_src": false,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": false,
+          "consecutive_grasp": false,
+          "src_on_target": "False"
+        },
+        "success": "False"
+      },
+      "llm_prune_count": 0,
+      "llm_pruned_layers": []
+    }
+  ],
+  "llm_pruning": {
+    "avg_active_prune_count": 0.0,
+    "active_layers": []
+  }
+}
