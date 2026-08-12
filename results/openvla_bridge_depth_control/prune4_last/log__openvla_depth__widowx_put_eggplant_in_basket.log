@@ -1,0 +1,188 @@
+/content/venv310/lib/python3.10/site-packages/sapien/core/renderer_config.py:4: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+[load] model=openvla_depth policy_setup=widowx_bridge unnorm_key=(derived)
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- processing_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- configuration_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/openvla/openvla-7b:
+- modeling_prismatic.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]
+Fetching 3 files:  33%|███▎      | 1/3 [00:14<00:28, 14.24s/it]
+Fetching 3 files:  67%|██████▋   | 2/3 [00:39<00:19, 19.97s/it]
+Fetching 3 files: 100%|██████████| 3/3 [00:40<00:00, 13.50s/it]
+Fetching 3 files: 100%|██████████| 3/3 [00:40<00:00, 13.50s/it]
+Expected `transformers==4.40.1` and `tokenizers==0.19.1` but got `transformers==4.53.3` and `tokenizers==0.21.4`; there might be inference-time regressions due to dependency changes. If in doubt, pleaseuse the above versions.
+
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]
+Loading checkpoint shards:  33%|███▎      | 1/3 [00:00<00:00,  7.83it/s]
+Loading checkpoint shards: 100%|██████████| 3/3 [00:00<00:00, 18.96it/s]
+[depth/openvla] static pruning ON: bypass 4 most-redundant layers; eligible 28..31 of 32
+[ok] model loaded  unnorm_key=bridge_orig sticky_gripper=1
+
+-- episode 00 (env_id=0) --
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+[depth] calibrated: bypass=[28, 29, 30, 31]
+/content/venv310/lib/python3.10/site-packages/gymnasium/core.py:311: UserWarning: [33mWARN: env.get_language_instruction to get variables from other wrappers is deprecated and will be removed in v1.0, to get this variable you can do `env.unwrapped.get_language_instruction` for environment variables or `env.get_wrapper_attr('get_language_instruction')` that will search the reminding wrappers.[0m
+  logger.warn(
+result: FAIL grasped=True steps=120 time=68.2s
+
+-- episode 01 (env_id=1) --
+[2026-08-12 02:14:26.405] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=66.4s
+
+-- episode 02 (env_id=2) --
+[2026-08-12 02:15:33.792] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=68.6s
+
+-- episode 03 (env_id=3) --
+[2026-08-12 02:16:43.437] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=67.1s
+
+-- episode 04 (env_id=4) --
+[2026-08-12 02:17:51.615] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=66.4s
+
+-- episode 05 (env_id=5) --
+[2026-08-12 02:18:58.980] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=67.5s
+
+-- episode 06 (env_id=6) --
+[2026-08-12 02:20:07.496] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=68.8s
+
+-- episode 07 (env_id=7) --
+[2026-08-12 02:21:17.307] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=True steps=120 time=65.4s
+
+-- episode 08 (env_id=8) --
+[2026-08-12 02:22:23.661] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=65.9s
+
+-- episode 09 (env_id=9) --
+[2026-08-12 02:23:30.594] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: SUCCESS grasped=True steps=26 time=14.2s
+
+-- episode 10 (env_id=10) --
+[2026-08-12 02:23:45.764] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=65.7s
+
+-- episode 11 (env_id=11) --
+[2026-08-12 02:24:52.482] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=66.5s
+
+-- episode 12 (env_id=12) --
+[2026-08-12 02:25:59.947] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=66.4s
+
+-- episode 13 (env_id=13) --
+[2026-08-12 02:27:07.376] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: SUCCESS grasped=True steps=30 time=16.4s
+
+-- episode 14 (env_id=14) --
+[2026-08-12 02:27:24.787] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=True steps=120 time=66.7s
+
+-- episode 15 (env_id=15) --
+[2026-08-12 02:28:32.509] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: SUCCESS grasped=True steps=44 time=24.0s
+
+-- episode 16 (env_id=16) --
+[2026-08-12 02:28:57.537] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=68.2s
+
+-- episode 17 (env_id=17) --
+[2026-08-12 02:30:06.709] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=True steps=120 time=67.1s
+
+-- episode 18 (env_id=18) --
+[2026-08-12 02:31:14.850] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: SUCCESS grasped=True steps=35 time=19.2s
+
+-- episode 19 (env_id=19) --
+[2026-08-12 02:31:35.090] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=64.6s
+
+-- episode 20 (env_id=20) --
+[2026-08-12 02:32:40.760] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=True steps=120 time=65.1s
+
+-- episode 21 (env_id=21) --
+[2026-08-12 02:33:46.844] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=True steps=120 time=67.0s
+
+-- episode 22 (env_id=22) --
+[2026-08-12 02:34:54.880] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=False steps=120 time=67.6s
+
+-- episode 23 (env_id=23) --
+[2026-08-12 02:36:03.440] [svulkan2] [warning] A second renderer will share the same internal context with the first one. Arguments passed to constructor will be ignored.
+Control mode:  arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos
+instruction: put eggplant into yellow basket
+result: FAIL grasped=True steps=120 time=66.3s
+
+==================================================
+task:         widowx_put_eggplant_in_basket
+model:        openvla_depth
+setup:        widowx_bridge (unnorm=bridge_orig, sticky=1)
+success_rate: 4/24 = 16.7%
+grasp_rate:   11/24 = 45.8%
+avg_steps:    106
+avg_elapsed:  58.7s
+model_ms_per_infer: 457.8ms  (pure model forward pass, CUDA-synced)
+model_ms_per_env_step: 457.8ms  (amortized over executed actions)
+depth: bypassed 4 of 32 layers [28, 29, 30, 31]
+==================================================
+saved: /content/BiVLA_full/results/openvla_bridge_depth_control/prune4_last/widowx_put_eggplant_in_basket/results_widowx_put_eggplant_in_basket.json
