@@ -1,24 +1,24 @@
 {
   "model_type": "baseline",
-  "task": "widowx_spoon_on_towel",
+  "task": "widowx_put_eggplant_in_basket",
   "image_size": 256,
   "min_pixels": 6400,
   "vision_device": "cuda",
-  "llm_prune_count": 0,
-  "llm_prune_min_layer": 0.5,
+  "llm_prune_count": 4,
+  "llm_prune_min_layer": 0.875,
   "llm_prune_min_gap": 1,
   "llm_prune_layers": [],
-  "success_rate": 0.9583333333333334,
+  "success_rate": 1.0,
   "grasp_rate": 1.0,
-  "avg_steps": 29.5,
-  "avg_elapsed": 21.083853552738827,
-  "avg_model_ms_per_infer": 2964.708545654224,
-  "avg_model_ms_per_env_step": 649.4093921132023,
+  "avg_steps": 25.791666666666668,
+  "avg_elapsed": 15.957579344511032,
+  "avg_model_ms_per_infer": 2480.364328291681,
+  "avg_model_ms_per_env_step": 540.9702785765475,
   "exec_chunk": 0,
   "action_repeat": 1,
   "predict_action_frames": 5,
   "foveate": {
-    "enabled": true,
+    "enabled": false,
     "mode": "logpolar",
     "center": "image",
     "phase": "always",
@@ -45,73 +45,11 @@
       "terminated": true,
       "truncated": false,
       "steps": 23,
-      "elapsed": 17.044909715652466,
-      "model_ms_per_infer": 3063.8851642608643,
-      "model_ms_per_env_step": 666.0619922306226,
+      "elapsed": 15.7842538356781,
+      "model_ms_per_infer": 2785.945749282837,
+      "model_ms_per_env_step": 605.6403802788776,
       "final_info": {
         "elapsed_steps": 23,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": false,
-        "consecutive_grasp": false,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 1,
-      "ep_id": 1,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 27,
-      "elapsed": 19.923625707626343,
-      "model_ms_per_infer": 2992.346445719401,
-      "model_ms_per_env_step": 664.9658768265335,
-      "final_info": {
-        "elapsed_steps": 27,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": false,
-        "consecutive_grasp": false,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 2,
-      "ep_id": 2,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 50,
-      "elapsed": 32.53215718269348,
-      "model_ms_per_infer": 2891.872191429138,
-      "model_ms_per_env_step": 578.3744382858276,
-      "final_info": {
-        "elapsed_steps": 50,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
         "is_src_obj_grasped": true,
@@ -127,8 +65,85 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 1,
+      "ep_id": 1,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 25,
+      "elapsed": 14.012930631637573,
+      "model_ms_per_infer": 2412.431812286377,
+      "model_ms_per_env_step": 482.4863624572754,
+      "final_info": {
+        "elapsed_steps": 25,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 2,
+      "ep_id": 2,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 23,
+      "elapsed": 13.795271873474121,
+      "model_ms_per_infer": 2389.6685123443604,
+      "model_ms_per_env_step": 519.4931548574696,
+      "final_info": {
+        "elapsed_steps": 23,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 3,
@@ -137,10 +152,334 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
+      "steps": 29,
+      "elapsed": 17.066222429275513,
+      "model_ms_per_infer": 2461.7737929026284,
+      "model_ms_per_env_step": 509.3325088764059,
+      "final_info": {
+        "elapsed_steps": 29,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 4,
+      "ep_id": 4,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 26,
+      "elapsed": 17.30101227760315,
+      "model_ms_per_infer": 2545.977314313253,
+      "model_ms_per_env_step": 587.5332263799814,
+      "final_info": {
+        "elapsed_steps": 26,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 5,
+      "ep_id": 5,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 29,
+      "elapsed": 17.24687886238098,
+      "model_ms_per_infer": 2491.6962385177612,
+      "model_ms_per_env_step": 515.52335969333,
+      "final_info": {
+        "elapsed_steps": 29,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 6,
+      "ep_id": 6,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 23,
+      "elapsed": 13.375251293182373,
+      "model_ms_per_infer": 2314.573287963867,
+      "model_ms_per_env_step": 503.16810607910156,
+      "final_info": {
+        "elapsed_steps": 23,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 7,
+      "ep_id": 7,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 26,
+      "elapsed": 16.990950107574463,
+      "model_ms_per_infer": 2498.5214471817017,
+      "model_ms_per_env_step": 576.5818724265466,
+      "final_info": {
+        "elapsed_steps": 26,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 8,
+      "ep_id": 8,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 23,
+      "elapsed": 13.290106773376465,
+      "model_ms_per_infer": 2301.8269538879395,
+      "model_ms_per_env_step": 500.3971638886825,
+      "final_info": {
+        "elapsed_steps": 23,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 9,
+      "ep_id": 9,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 27,
+      "elapsed": 16.882174730300903,
+      "model_ms_per_infer": 2463.3615414301553,
+      "model_ms_per_env_step": 547.4136758733679,
+      "final_info": {
+        "elapsed_steps": 27,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 10,
+      "ep_id": 10,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 26,
+      "elapsed": 17.03812003135681,
+      "model_ms_per_infer": 2505.4060220718384,
+      "model_ms_per_env_step": 578.1706204781165,
+      "final_info": {
+        "elapsed_steps": 26,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 11,
+      "ep_id": 11,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
+      "steps": 27,
+      "elapsed": 16.953415155410767,
+      "model_ms_per_infer": 2472.919503847758,
+      "model_ms_per_env_step": 549.537667521724,
+      "final_info": {
+        "elapsed_steps": 27,
+        "moved_correct_obj": true,
+        "moved_wrong_obj": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
+        "src_on_target": "True",
+        "ever_grasped_src": true,
+        "episode_stats": {
+          "moved_correct_obj": true,
+          "moved_wrong_obj": false,
+          "is_src_obj_grasped": true,
+          "consecutive_grasp": true,
+          "src_on_target": "True"
+        },
+        "success": true
+      },
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    {
+      "ep": 12,
+      "ep_id": 12,
+      "success": true,
+      "grasped": true,
+      "terminated": true,
+      "truncated": false,
       "steps": 24,
-      "elapsed": 16.434048652648926,
-      "model_ms_per_infer": 2937.992525100708,
-      "model_ms_per_env_step": 612.0817760626475,
+      "elapsed": 14.295521259307861,
+      "model_ms_per_infer": 2489.4115447998047,
+      "model_ms_per_env_step": 518.627405166626,
       "final_info": {
         "elapsed_steps": 24,
         "moved_correct_obj": true,
@@ -158,287 +497,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 4,
-      "ep_id": 4,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 22,
-      "elapsed": 16.54373860359192,
-      "model_ms_per_infer": 2984.546899795532,
-      "model_ms_per_env_step": 678.3061135898937,
-      "final_info": {
-        "elapsed_steps": 22,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 5,
-      "ep_id": 5,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 29,
-      "elapsed": 20.14376997947693,
-      "model_ms_per_infer": 3004.9122969309487,
-      "model_ms_per_env_step": 621.7059924684721,
-      "final_info": {
-        "elapsed_steps": 29,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 6,
-      "ep_id": 6,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 22,
-      "elapsed": 15.744507074356079,
-      "model_ms_per_infer": 2823.413372039795,
-      "model_ms_per_env_step": 641.6848572817717,
-      "final_info": {
-        "elapsed_steps": 22,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 7,
-      "ep_id": 7,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 29,
-      "elapsed": 19.862027168273926,
-      "model_ms_per_infer": 2950.3725369771323,
-      "model_ms_per_env_step": 610.4219042021653,
-      "final_info": {
-        "elapsed_steps": 29,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 8,
-      "ep_id": 8,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 21,
-      "elapsed": 16.245026111602783,
-      "model_ms_per_infer": 2935.1089000701904,
-      "model_ms_per_env_step": 698.8354523976644,
-      "final_info": {
-        "elapsed_steps": 21,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 9,
-      "ep_id": 9,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 26,
-      "elapsed": 20.037178993225098,
-      "model_ms_per_infer": 3012.15922832489,
-      "model_ms_per_env_step": 695.1136680749746,
-      "final_info": {
-        "elapsed_steps": 26,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 10,
-      "ep_id": 10,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 23,
-      "elapsed": 16.210540771484375,
-      "model_ms_per_infer": 2904.2587280273438,
-      "model_ms_per_env_step": 631.3605930494226,
-      "final_info": {
-        "elapsed_steps": 23,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 11,
-      "ep_id": 11,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 26,
-      "elapsed": 19.89826011657715,
-      "model_ms_per_infer": 2994.786818822225,
-      "model_ms_per_env_step": 691.1046504974365,
-      "final_info": {
-        "elapsed_steps": 26,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
-    },
-    {
-      "ep": 12,
-      "ep_id": 12,
-      "success": true,
-      "grasped": true,
-      "terminated": true,
-      "truncated": false,
-      "steps": 21,
-      "elapsed": 16.21366596221924,
-      "model_ms_per_infer": 2935.4679584503174,
-      "model_ms_per_env_step": 698.9209424881708,
-      "final_info": {
-        "elapsed_steps": 21,
-        "moved_correct_obj": true,
-        "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
-        "src_on_target": "True",
-        "ever_grasped_src": true,
-        "episode_stats": {
-          "moved_correct_obj": true,
-          "moved_wrong_obj": false,
-          "is_src_obj_grasped": true,
-          "consecutive_grasp": true,
-          "src_on_target": "True"
-        },
-        "success": true
-      },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 13,
@@ -447,12 +512,12 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 27,
-      "elapsed": 19.880495071411133,
-      "model_ms_per_infer": 2989.449143409729,
-      "model_ms_per_env_step": 664.3220318688286,
+      "steps": 25,
+      "elapsed": 14.468438625335693,
+      "model_ms_per_infer": 2508.225393295288,
+      "model_ms_per_env_step": 501.6450786590576,
       "final_info": {
-        "elapsed_steps": 27,
+        "elapsed_steps": 25,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
         "is_src_obj_grasped": false,
@@ -468,8 +533,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 14,
@@ -478,16 +548,16 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 27,
-      "elapsed": 19.734375476837158,
-      "model_ms_per_infer": 2954.6979665756226,
-      "model_ms_per_env_step": 656.5995481279161,
+      "steps": 24,
+      "elapsed": 14.321028709411621,
+      "model_ms_per_infer": 2493.4366703033447,
+      "model_ms_per_env_step": 519.4659729798635,
       "final_info": {
-        "elapsed_steps": 27,
+        "elapsed_steps": 24,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
-        "is_src_obj_grasped": false,
-        "consecutive_grasp": false,
+        "is_src_obj_grasped": true,
+        "consecutive_grasp": true,
         "src_on_target": "True",
         "ever_grasped_src": true,
         "episode_stats": {
@@ -499,8 +569,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 15,
@@ -509,12 +584,12 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 34,
-      "elapsed": 23.38872218132019,
-      "model_ms_per_infer": 2986.7539065224782,
-      "model_ms_per_env_step": 614.9199219310984,
+      "steps": 29,
+      "elapsed": 17.307215690612793,
+      "model_ms_per_infer": 2512.017289797465,
+      "model_ms_per_env_step": 519.72771513051,
       "final_info": {
-        "elapsed_steps": 34,
+        "elapsed_steps": 29,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
         "is_src_obj_grasped": false,
@@ -530,8 +605,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 16,
@@ -540,12 +620,12 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 22,
-      "elapsed": 16.569120407104492,
-      "model_ms_per_infer": 2992.6995754241943,
-      "model_ms_per_env_step": 680.1589944145896,
+      "steps": 26,
+      "elapsed": 17.13327932357788,
+      "model_ms_per_infer": 2519.5748011271157,
+      "model_ms_per_env_step": 581.4403387216421,
       "final_info": {
-        "elapsed_steps": 22,
+        "elapsed_steps": 26,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
         "is_src_obj_grasped": true,
@@ -561,8 +641,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 17,
@@ -571,16 +656,16 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 28,
-      "elapsed": 20.0374276638031,
-      "model_ms_per_infer": 3000.852108001709,
-      "model_ms_per_env_step": 643.0397374289377,
+      "steps": 29,
+      "elapsed": 17.274303436279297,
+      "model_ms_per_infer": 2508.5923274358115,
+      "model_ms_per_env_step": 519.0191022280989,
       "final_info": {
-        "elapsed_steps": 28,
+        "elapsed_steps": 29,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
         "src_on_target": "True",
         "ever_grasped_src": true,
         "episode_stats": {
@@ -592,8 +677,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 18,
@@ -602,16 +692,16 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 23,
-      "elapsed": 16.198325634002686,
-      "model_ms_per_infer": 2906.3737392425537,
-      "model_ms_per_env_step": 631.8203780962073,
+      "steps": 26,
+      "elapsed": 16.338804006576538,
+      "model_ms_per_infer": 2391.1595741907754,
+      "model_ms_per_env_step": 551.8060555824866,
       "final_info": {
-        "elapsed_steps": 23,
+        "elapsed_steps": 26,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
         "src_on_target": "True",
         "ever_grasped_src": true,
         "episode_stats": {
@@ -623,39 +713,49 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 19,
       "ep_id": 19,
-      "success": false,
+      "success": true,
       "grasped": true,
-      "terminated": false,
-      "truncated": true,
-      "steps": 60,
-      "elapsed": 40.73894190788269,
-      "model_ms_per_infer": 3039.5922859509787,
-      "model_ms_per_env_step": 607.9184571901958,
+      "terminated": true,
+      "truncated": false,
+      "steps": 26,
+      "elapsed": 16.911293029785156,
+      "model_ms_per_infer": 2488.1724913915,
+      "model_ms_per_env_step": 574.1936518595769,
       "final_info": {
-        "elapsed_steps": 60,
+        "elapsed_steps": 26,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
         "is_src_obj_grasped": false,
         "consecutive_grasp": false,
-        "src_on_target": "False",
+        "src_on_target": "True",
         "ever_grasped_src": true,
         "episode_stats": {
           "moved_correct_obj": true,
           "moved_wrong_obj": false,
           "is_src_obj_grasped": true,
-          "consecutive_grasp": false,
-          "src_on_target": "False"
+          "consecutive_grasp": true,
+          "src_on_target": "True"
         },
-        "success": "False"
+        "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 20,
@@ -664,16 +764,16 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 49,
-      "elapsed": 32.986440658569336,
-      "model_ms_per_infer": 2942.3824548721313,
-      "model_ms_per_env_step": 600.4862152800267,
+      "steps": 26,
+      "elapsed": 16.312760591506958,
+      "model_ms_per_infer": 2390.83194732666,
+      "model_ms_per_env_step": 551.7304493830754,
       "final_info": {
-        "elapsed_steps": 49,
+        "elapsed_steps": 26,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
-        "consecutive_grasp": true,
+        "is_src_obj_grasped": false,
+        "consecutive_grasp": false,
         "src_on_target": "True",
         "ever_grasped_src": true,
         "episode_stats": {
@@ -685,8 +785,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 21,
@@ -695,12 +800,12 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 43,
-      "elapsed": 30.360660076141357,
-      "model_ms_per_infer": 3016.7959796057808,
-      "model_ms_per_env_step": 631.4224143360935,
+      "steps": 26,
+      "elapsed": 16.9954674243927,
+      "model_ms_per_infer": 2498.2908169428506,
+      "model_ms_per_env_step": 576.5286500637347,
       "final_info": {
-        "elapsed_steps": 43,
+        "elapsed_steps": 26,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
         "is_src_obj_grasped": true,
@@ -716,8 +821,13 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 22,
@@ -726,15 +836,15 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 21,
-      "elapsed": 16.070171356201172,
-      "model_ms_per_infer": 2903.7461280822754,
-      "model_ms_per_env_step": 691.3681257338751,
+      "steps": 25,
+      "elapsed": 14.877959966659546,
+      "model_ms_per_infer": 2587.6809120178223,
+      "model_ms_per_env_step": 517.5361824035645,
       "final_info": {
-        "elapsed_steps": 21,
+        "elapsed_steps": 25,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
-        "is_src_obj_grasped": true,
+        "is_src_obj_grasped": false,
         "consecutive_grasp": false,
         "src_on_target": "True",
         "ever_grasped_src": true,
@@ -742,13 +852,18 @@
           "moved_correct_obj": true,
           "moved_wrong_obj": false,
           "is_src_obj_grasped": true,
-          "consecutive_grasp": false,
+          "consecutive_grasp": true,
           "src_on_target": "True"
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     },
     {
       "ep": 23,
@@ -757,12 +872,12 @@
       "grasped": true,
       "terminated": true,
       "truncated": false,
-      "steps": 31,
-      "elapsed": 23.214348793029785,
-      "model_ms_per_infer": 2988.5387420654297,
-      "model_ms_per_env_step": 674.831328853484,
+      "steps": 26,
+      "elapsed": 17.009244203567505,
+      "model_ms_per_infer": 2497.2479343414307,
+      "model_ms_per_env_step": 576.2879848480225,
       "final_info": {
-        "elapsed_steps": 31,
+        "elapsed_steps": 26,
         "moved_correct_obj": true,
         "moved_wrong_obj": false,
         "is_src_obj_grasped": true,
@@ -778,12 +893,22 @@
         },
         "success": true
       },
-      "llm_prune_count": 0,
-      "llm_pruned_layers": []
+      "llm_prune_count": 4,
+      "llm_pruned_layers": [
+        28,
+        29,
+        30,
+        31
+      ]
     }
   ],
   "llm_pruning": {
-    "avg_active_prune_count": 0.0,
-    "active_layers": []
+    "avg_active_prune_count": 4.0,
+    "active_layers": [
+      28,
+      29,
+      30,
+      31
+    ]
   }
 }
