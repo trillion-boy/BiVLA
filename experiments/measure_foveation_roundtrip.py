@@ -1,9 +1,10 @@
 """What the two foveation variants actually do to an image, measured.
 
-Two questions, two reports.
+Three questions, three reports.
 
   (1) round-trip error per `keep`      -- backs Report §4.3 (b)
   (2) radial detail curve per variant  -- backs RelatedWork §2.3 (b)
+  (3) column -> radius map of the warp -- backs Report §4.3 (b), the mechanism
 
 Why this exists
 ---------------
@@ -46,6 +47,22 @@ The curve also shows why the two variants are not a matched pair: blur holds
 the center bit-exactly and erases the far field, while log-polar degrades the
 center and preserves the far field better. They remove different information in
 different places, so their difference does not isolate "the geometry share".
+
+The column -> radius map
+------------------------
+Why the round-trip costs the periphery and not the center. `warpPolar` with
+WARP_POLAR_LOG lays radius out logarithmically along the output columns, so a
+fixed number of columns covers each *ratio* of radius rather than each pixel of
+it. Near the center that means one source pixel is spread over dozens of
+columns; out at the rim it means several source pixels are averaged into one.
+The rim's detail is gone before the inverse warp ever runs.
+
+This is measured, not derived from the documented formula: an image whose pixel
+value *is* the radius gets warped, and the column -> radius map is read straight
+back out of the result. The warp arguments come from the shared module, not from
+constants retyped here, so the map cannot drift from what the eval ran. (An
+earlier hand-derived version of this table was wrong at small radii: it assumed
+rho = exp(x/M) when OpenCV actually uses rho = exp(x/M) - 1.)
 
 What it does not establish
 --------------------------
@@ -146,6 +163,49 @@ def radial_curve(name: str, img: np.ndarray, keep: float = 0.2) -> None:
     print("  ^ same image, same keep: dead-center retention differs by metric.")
 
 
+def column_radius_map(w: int = 640, h: int = 480) -> None:
+    """Measure which source radius each log-polar output column samples.
+
+    Defaults to the resolution the WidowX/Bridge camera actually renders at
+    (ManiSkill2_real2sim widowx defaults.py: width=640, height=480), which is
+    what the eval hands to foveation before the processor resizes to 224.
+    """
+    import cv2
+    captured = {}
+    real = cv2.warpPolar
+
+    def spy(src, dsize, center, max_radius, flags):
+        captured.setdefault("args", (dsize, center, max_radius, flags))
+        return real(src, dsize, center, max_radius, flags)
+
+    probe = np.zeros((h, w, 3), np.uint8)
+    cv2.warpPolar = spy
+    try:
+        foveate_image_logpolar(probe, keep_ratio=1.0, center=None)
+    finally:
+        cv2.warpPolar = real
+    dsize, center, max_radius, flags = captured["args"]
+
+    ys, xs = np.mgrid[0:h, 0:w]
+    radius = np.hypot(xs - center[0], ys - center[1]).astype(np.float32)
+    warped = real(radius, dsize, center, max_radius, flags)
+    # radius depends only on the column; angles that fall outside the frame are
+    # filled with 0, so max-over-angles recovers the true value per column.
+    r = warped.max(axis=0)
+
+    print(f"\nwarp arguments captured from the shared module, input {w}x{h}:")
+    print(f"  dsize={dsize}  center={center}  maxRadius={max_radius}  flags={int(flags)}")
+    print(f"  map monotone: {bool(np.all(np.diff(r) >= 0))}   last column -> {r[-1]:.1f} px")
+    print(f"\n{'radius band (px)':>18}{'columns':>10}{'source px':>12}{'source px/column':>18}")
+    edges = [1, 2, 4, 8, 16, 32, 64, 128, 256, int(max_radius)]
+    for lo, hi in zip(edges, edges[1:]):
+        n = int(((r >= lo) & (r < hi)).sum())
+        cell = (hi - lo) / n if n else float("nan")
+        print(f"{f'{lo}-{hi}':>18}{n:>10}{hi - lo:>12}{cell:>18.2f}")
+    print("\n<1 means the center is magnified (one pixel spread over many columns);")
+    print(">1 means the periphery is decimated (several pixels averaged into one).")
+
+
 def main(paths: list[str]) -> int:
     rng = np.random.default_rng(0)
     images = {
@@ -194,6 +254,12 @@ def main(paths: list[str]) -> int:
     print("degrades the center and preserves the far field better. Different")
     print("information removed in different places -- so subtracting the two does")
     print("NOT isolate the geometric-distortion share.")
+
+    print("\n" + "=" * 72)
+    print("(3) column -> radius map of the warp  [Report 4.3 (b), mechanism]")
+    print("    why the round-trip costs the periphery and not the center")
+    print("=" * 72)
+    column_radius_map()
     return 0
 
 
