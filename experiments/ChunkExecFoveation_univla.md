@@ -1,5 +1,17 @@
 # UniVLA: Chunk 실행 + Foveation 실험 리포트
 
+> ⚠️ **대체된 작업 노트다. 수치를 인용하지 말 것.** 이 문서는 2026-07-20
+> Colab **L4**에서 돌린 초기 실행 기록이고, 이후 `results/univla_bridge_0805/`
+> 캠페인이 **다른 카드에서 다시 재면서 값이 바뀌었다.** 예: eggplant blur의
+> grasp가 여기서는 19/24(79.2%)인데 현재 기록은 **22/24(91.7%)**이고,
+> blur 평균도 76.0% 대 **72.9%**다. 방향(log-polar가 blur보다 낫고, blur만
+> eggplant에서 떨어진다)은 양쪽에서 같다.
+>
+> **현재 기준 문서는 `Report.md`(§4.3, §5.3)와 `RelatedWork.md`(§2.3)다.**
+> 3.3절의 디테일 보존 곡선은 살아 있지만, 그 해석 중 "두 변형의 차이가 곧
+> 기하 왜곡의 몫"이라는 취지의 문장은 `RelatedWork.md` §2.3 (b)에서 철회했다 —
+> 두 변형은 줄이는 정보의 **양과 위치가 서로 달라** 빼도 기하 성분만 남지 않는다.
+
 **날짜:** 2026-07-20
 **세팅:** SimplerEnv WidowX-Bridge, N=24/task, Colab (L4),
 `UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K` (Emu3-MoE 백본, VQ 토큰 직접 입력,
