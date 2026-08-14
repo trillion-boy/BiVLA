@@ -85,7 +85,10 @@ for keep, exp in (("keep10", +4.2), ("keep20", +18.8), ("keep40", +19.8), ("keep
 print("\n" + "=" * 78)
 print("(3) benchmark sign flip  [Overview line 156]")
 print("=" * 78)
+# The OpenVLA/Bridge log-polar cell has no directory under results/ -- it is the
+# same legacy RetinaBased run used for keep20 above. Report 7.1 logs that.
 show("OpenVLA/Bridge  log-polar", ob,
-     load("results/openvla_bridge_0805/foveate_logpolar/**/results_*.json"), +18.8)
+     load("RetinaBased/GoogleColab/results_reproduction_eager/openvla_foveated"
+          "/**/results_*.json"), +18.8)
 show("OpenVLA/Fractal log-polar", base,
      load("results/openvla_fractal_0806_foveate/**/results_*.json"), -19.3)
