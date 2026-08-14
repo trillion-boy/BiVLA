@@ -27,10 +27,12 @@
 > 우리 쪽 수치 오류는 없었고, 대신 **ShortGPT 논문 자체의 내부 불일치 셋**을
 > 찾았다(A.3).
 >
-> **반면 §2.2와 §2.3 (a)가 인용하는 계보 문헌**(Atari frame skip, action
-> chunking, log-polar 고전, 최근 chunking 논문들)은 **이번 대조 범위 밖이다.**
-> 맥락을 세우려고 적은 것이고 우리 주장이 그 위에 얹혀 있지는 않지만,
-> 투고 전에 따로 확인해야 한다.
+> §2.2와 §2.3 (a)가 배경으로 인용하는 문헌들도 제목·출처를 확인했다 — Braylan
+> et al.(AAAI-15 워크숍), Dynamic Frame skip DQN(1605.05365), 프레임 스킵 분석
+> (2102.03718), Traver & Bernardino(*Robotics and Autonomous Systems* 58(4),
+> 2010), Schwartz(1977/1980), 그리고 최근 chunking 논문 넷(2511.19433,
+> 2606.18589, 2604.02965, 2607.01804, 2603.28565). 다만 이들은 **제목과 요지만**
+> 확인한 것이고, 부록 A처럼 표 안 숫자까지 대조하지는 않았다.
 
 ---
 
@@ -558,13 +560,16 @@ search, MCTS, self-consistency, self-refine — 은 **하나도 저자들이 만
 |---|---|---|---|
 | EfficientVLA | CogACT 1개 (3 사이즈) | SIMPLER 1개 | ✗ |
 | VLA-Cache | LIBERO엔 OpenVLA·OpenVLA-OFT, SIMPLER엔 CogACT | LIBERO + SIMPLER + 실로봇 | ✗ **벤치마크를 바꾸면 백본도 바뀌어 부호 비교가 불가능** |
-| MoLe-VLA | CogACT / OpenVLA | RLBench 1개 (+실로봇) | ✗ |
-| Gaze-Reg | OpenVLA · Pi-0 | LIBERO 4스위트 + Gym-Aloha + 실로봇 | ✗ |
-| **본 연구** | **3** | **2** | **✓** |
+| MoLe-VLA | CogACT / OpenVLA | RLBench 1개 (+실로봇) | ✗ **백본 둘을 한 벤치마크에서만 비교** |
+| Gaze-Reg | OpenVLA · Pi-0 | LIBERO 4스위트 + Gym-Aloha + 실로봇 | ✗ **OpenVLA로 두 벤치마크를 돌지만 백본 축이 없다**(Pi-0는 실로봇 전용) |
+| **본 연구** | **3** | **2** | **✓ 3 × 2 격자의 다섯 칸** |
 
-**확인한 범위에서 경쟁자 0건.** VLA-Cache가 벤치마크 둘로 가장 근접하지만
-**벤치마크마다 백본을 바꾸므로**, 부호 뒤집힘은 그 설계에서 원리적으로 관측될 수
-없다.
+**확인한 범위에서 경쟁자 0건.** 다만 두 편이 각각 한 축씩은 갖고 있다 —
+**MoLe-VLA는 백본 축**(RLBench 한 곳에서 CogAct와 OpenVLA), **Gaze-Reg는
+벤치마크 축**(OpenVLA 하나로 LIBERO와 Gym-Aloha)이다. 두 축을 **같이** 놓고
+같은 개입의 부호를 비교한 곳이 없고, 어느 쪽도 에피소드를 짝지어 검정하지
+않는다. VLA-Cache는 벤치마크가 둘이지만 **벤치마크를 바꿀 때 백본도 바뀌어서**
+부호 뒤집힘이 그 설계에서 원리적으로 관측될 수 없다.
 
 > ⚠️ **이건 부정 명제다.** "없다"는 증명할 수 없고, 위 표는 읽은 다섯 편과
 > 검색으로 훑은 범위에서 못 찾았다는 뜻이다. 투고 전에 **최소 한 번은 체계적
