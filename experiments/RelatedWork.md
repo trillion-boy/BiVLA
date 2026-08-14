@@ -298,6 +298,12 @@ relies on for precise spatial reasoning"* — **주변부가 필요한 맥락**�
 주변은 성기게) foveated tokenization을 쓰는데, ViT 연산이 94% 줄고 추론이 3×
 빨라지며 **일부 고정밀 과제에서는 성공률도 오른다**고 적는다.
 
+> **다만 그 상승은 조건을 탄다.** 가장 뚜렷한 것은 **시뮬레이션 + ViT
+> 사전학습 없음** 설정이고, MAE 사전학습을 하면 격차가 줄며, **실로봇 네 칸
+> 중 셋은 균일 토큰화가 앞선다**(A.6 ④). 그러므로 "foveation이 성공률을
+> 올린다"가 아니라 **"조건에 따라 오르기도 한다"**로 인용해야 한다. 방향이
+> 갈린다는 사실 자체는 그대로다.
+
 > **두 논문이 갈리는 지점은 "무엇을 바꾸는가"다.** Gaze-Reg는 **토큰 수를
 > 그대로 두고 픽셀만 흐리게** 만들어 정보를 줄였고(10/10 하락), Look, Focus,
 > Act는 **패치를 다시 배치해 토큰 개수 자체를 줄였다**(324 → 20, Table II).
@@ -363,8 +369,9 @@ unaddressed memory bottlenecks"*에 그친다.
 
 **즉 VLA에서는 시각 쪽을 완전히 없애도 1.3배가 못 된다.** 오른쪽 열은 인코딩과
 프롬프트 읽기를 **둘 다** 0으로 놓은, 어떤 시각 기법도 넘을 수 없는 상한이다.
-VLA-Cache가 실측으로 보인 벽(FLOPs를 24.5% 줄였는데 시간은 60.6% 늘었다)과
-EfficientVLA의 *"memory-bound by the LLM"*이 같은 이야기의 다른 표현이다.
+VLA-Cache가 **SparseVLM을 재서** 보인 벽(FLOPs는 24.5% 줄었는데 시간은 60.6%
+늘었다. 위 표)과 EfficientVLA의 *"memory-bound by the LLM"*이 같은 이야기의
+다른 표현이다.
 
 > **우리 변형은 저 표에도 못 들어간다.** log-polar도 blur도 **이미지 크기와
 > 토큰 수를 그대로 둔 채** 픽셀 값만 바꾸므로, 인코딩 비용 자체가 안 줄어든다.
@@ -1062,7 +1069,7 @@ Look, Focus, Act는 조건을 달리해 상승을 보고하므로, 이 축은 **
 ## A.6 Look, Focus, Act (+ Segment This Thing)
 
 `arXiv 2507.15833v2 (2025-09-22)` · Chuang et al., UC Berkeley / Tongji / UC Davis · 원문 확인 (Table I, Table II, 5장 A절)
-`arXiv 2506.11131v1 (2025-06-10)` · Schmidt & Newcombe, Meta Reality Labs · 원문 확인 (Table 2, 5장)
+`arXiv 2506.11131v1 (2025-06-10)` · Schmidt & Newcombe, Meta Reality Labs · CVPR 2025 · 원문 확인 (Table 2, 5장)
 
 두 편을 묶는 이유는 **같은 토큰화가 두 설정을 건너간 것**이기 때문이다. Look,
 Focus, Act가 밝힌 대로, foveated tokenization은 Segment This Thing에서 왔다 —
@@ -1122,10 +1129,33 @@ ViT만 보면 **14.9×**, GFLOPs는 **−93.9%**다. 그런데 정책 전체 추
 14.9×가 3.8×로 줄었다. **VLA는 그 뒤 단계가 디코더 전체 12~26회**이므로 같은
 논리가 훨씬 세게 걸린다 — 그 계산이 §2.3 (d)의 마지막 두 표다.
 
-성공률 쪽은 Table III/IV다. **사전학습 없이 훈련한 in-distribution 설정에서
-Fov-UNet이 다른 방식들과 같거나 낫고**, Fov-Act도 `ThreadNeedle`·
-`PourTestTube` 같은 정밀 과제에서 Fine·Coarse를 넘는다. 방해물을 넣은 설정에서
-이점이 더 커진다.
+성공률 쪽은 Table III(시뮬)과 Table IV(실로봇)인데, **조건에 따라 그림이
+달라지므로 갈라 적어야 한다.**
+
+**① 사전학습 없이, 방해물 없이(시뮬).** Fov-UNet이 여섯 과제 **전부에서**
+다른 셋과 같거나 낫다(예: HookPackage 28/18/12 → **56**, PourTestTube
+34/60/78 → **84**). Fov-Act도 `ThreadNeedle`(62 대 57·48)과
+`PourTestTube`(78 대 34·60)에서 Fine·Coarse를 넘는다.
+
+**② 방해물을 넣으면 foveation 쪽 이점이 더 커진다** — 저자들의 해석은
+주변부를 깎는 것이 **방해물에 대한 강건성**을 준다는 것이다.
+
+**③ 그런데 MAE 사전학습을 하면 격차가 줄어든다.** 방해물 없는 설정에서
+**Fine이 두 과제, Fov-UNet이 세 과제에서 앞선다.** 즉 "foveation이 이긴다"는
+**사전학습이 없을 때 가장 뚜렷하다.**
+
+**④ 실로봇에서는 오히려 Fine이 낫다.** Table IV의 네 칸 중 **셋을 Fine이
+가져간다** — Ball 64 대 62(표준), Toothbrush 24 대 18(표준)과 18 대 14(방해물).
+Fov-UNet이 앞선 것은 Ball 방해물 조건 하나뿐(48 → **56**)이다. 저자들도
+*"differences ... are less pronounced than in simulation"*이라고 적는다.
+
+> **우리에게 가장 쓸모 있는 한 줄은 `HookPackage`의 Fov-Act다.** 그 과제만
+> Fov-Act가 모든 방식보다 나쁘다(12). 이유를 저자들이 적는데, **목표물인 작은
+> 고리가 주변부에 있어서 foveation의 다운스케일 때문에 시선을 못 맞춘다**는
+> 것이다. 즉 **주변부를 깎는 것은 목표가 주변부에 있을 때 직접적인 손해**가
+> 된다. Gaze-Reg가 *"주변부는 필요한 맥락"*이라고 한 것과 같은 방향의
+> 증거이고, 우리 격자에서 foveation 부호가 칸마다 뒤집히는 것과도 형태가
+> 맞는다 — **주변부가 필요한 칸과 방해가 되는 칸이 따로 있다는 것.**
 
 > ⚠️ **인용할 때 같이 적을 조건 셋.** ① 이 방식은 **토큰화 패턴 자체를 바꾸므로
 > 공개된 사전학습 ViT 가중치를 쓸 수 없다.** 저자들은 ImageNet-1K 전체가 아니라
@@ -1153,7 +1183,7 @@ OpenVLA/Bridge의 +18.8이 그 조건인데, 그쪽은 학습을 하고 우리�
 | ShortGPT | LLM 4종 | NLP 13개 | ✗ | — | 로봇 실험 없음 (다만 **과제 유형별 분할을 자기 Limitation에 기록**) |
 | MoLe-VLA | CogACT / OpenVLA | RLBench + 실로봇(Franka FR3) | **✓** | ✗ | ✗ |
 | Gaze-Reg | OpenVLA · Pi-0 | LIBERO 4스위트 + Gym-Aloha + 실로봇 | **✓** | ✗ | ✗ |
-| Look, Focus, Act | 자체 flow matching 정책 | AV-ALOHA 시뮬 6과제 + 실로봇 3과제 | **✓** (MAE 사전학습부터) | ✗ | ✗ |
+| Look, Focus, Act | 자체 flow matching 정책 | AV-ALOHA 시뮬 6과제 + 실로봇 2과제 | **✓** (ViT를 직접 MAE 사전학습) | ✗ | ✗ |
 | Segment This Thing | 자체 ViT (B/L/H) | 분할 데이터셋 9개 | **✓** | — | 로봇 실험 없음 |
 | **본 연구** | **3개** | **2개** | **✗** | **✓** | **✓** |
 
