@@ -551,9 +551,9 @@ search, MCTS, self-consistency, self-refine — 은 **하나도 저자들이 만
 | 논문 | 백본 | 벤치마크 | 축을 교차했나 |
 |---|---|---|---|
 | EfficientVLA | CogACT 1개 (3 사이즈) | SIMPLER 1개 | ✗ |
-| VLA-Cache | LIBERO엔 OpenVLA, SIMPLER엔 CogACT | 2개 | ✗ **벤치마크마다 백본이 달라 부호 비교가 불가능** |
+| VLA-Cache | LIBERO엔 OpenVLA·OpenVLA-OFT, SIMPLER엔 CogACT | LIBERO + SIMPLER + 실로봇 | ✗ **벤치마크를 바꾸면 백본도 바뀌어 부호 비교가 불가능** |
 | MoLe-VLA | CogACT / OpenVLA | RLBench 1개 (+실로봇) | ✗ |
-| Gaze-Reg | 1개 | LIBERO 1개 | ✗ |
+| Gaze-Reg | OpenVLA · Pi-0 | LIBERO 4스위트 + Gym-Aloha + 실로봇 | ✗ |
 | **본 연구** | **3** | **2** | **✓** |
 
 **확인한 범위에서 경쟁자 0건.** VLA-Cache가 벤치마크 둘로 가장 근접하지만
@@ -677,8 +677,8 @@ spatial structure essential for robotic tasks under closed-loop control"*
 **4. 기술적 기여.** ① 프레임 간 정적 토큰 식별 ② 과제 연관성 필터 ③ 층마다
 어텐션 집중도에 따라 재사용 비율을 바꾸는 layer-adaptive 전략.
 
-**5. 어떤 비교 실험을 했나.** LIBERO(OpenVLA 백본, 4개 스위트)와 SIMPLER
-(CogACT 백본, 4개 태스크). RTX 4090. **여기서 우리 §2.3 (d)의 핵심 표가 나온다:**
+**5. 어떤 비교 실험을 했나.** LIBERO 네 스위트(OpenVLA, 그리고 OpenVLA-OFT로 한 번
+더), SIMPLER 네 태스크(CogACT), 그리고 Kinova Jaco2 실로봇 네 과제. 전부 RTX 4090. **여기서 우리 §2.3 (d)의 핵심 표가 나온다:**
 
 | | FLOPs (T) | 지연 (ms) |
 |---|---|---|
@@ -889,9 +889,9 @@ Table 5의 구성요소 ablation을 보면 이득의 출처가 갈린다.
 같이 성립한다 — **아무 층이나 지우면 안 되고, 잘 골라도 증류 없이는 이득이
 없다.**
 
-인용할 때 같이 적을 조건: **학습이 필요하고**(우리는 학습 없음),
-**벤치마크가 RLBench 하나**이며, 성공률이 전부 4의 배수라 **태스크당 n = 25**
-인데 신뢰구간도 paired 검정도 없다.
+인용할 때 같이 적을 조건: **학습이 필요하고**(우리는 학습 없음), **시뮬레이션
+벤치마크가 RLBench 하나**이며(그 밖에 Franka FR3 실로봇 3과제), 논문이 밝힌 대로
+**태스크당 25 시행**인데 신뢰구간도 짝지은 검정도 없다.
 
 > ⚠️ 표에 모호한 점 하나. `Random-skip-CogAct` 행의 action head가 **MLP**로
 > 적혀 있는데 `CogAct`는 Diffusion이다. 이름대로라면 Diffusion이어야 하므로
@@ -919,11 +919,13 @@ Table 5의 구성요소 ablation을 보면 이득의 출처가 갈린다.
 **3. 핵심 아이디어와 가정.** 시선 히트맵을 패치 단위 분포로 바꾸고 트랜스포머
 어텐션을 **KL 발산으로 정규화**한다. 구조 변경도, 추론 시점 부담도 없다.
 
-**4. 기술적 기여.** 시선 정규화 학습 프레임워크. 조작 벤치마크에서 4–12% 향상,
-더 적은 학습 스텝으로 같은 성능, 조명·센서 노이즈에 강건.
+**4. 기술적 기여.** 시선 정규화 학습 프레임워크. 초록의 요약은 조작 벤치마크에서
+**4–12% 향상**, 더 적은 학습 스텝으로 같은 성능, 조명 변화와 센서 잡음에 강건하다는
+것이다.
 
-**5. 어떤 비교 실험을 했나.** LIBERO-Spatial 등. **우리에게 중요한 것은 본체가
-아니라 부록 D.2다** — 시선 peak를 중심으로 foveated RGB를 만들어 표준 인코더에
+**5. 어떤 비교 실험을 했나.** LIBERO 네 스위트(Spatial / Object / Goal / 10)를
+OpenVLA로, Gym-Aloha 시뮬레이션 두 과제, 그리고 Pi-0로 실로봇 세 과제까지
+돈다(Table 3, Table 4). **우리에게 중요한 것은 이 본체가 아니라 부록 D.2다** — 시선 peak를 중심으로 foveated RGB를 만들어 표준 인코더에
 그대로 먹인 변형을 30k 스텝 학습해 비교한다. Table 11에서 **10개 태스크 전부
 하락, 전체 85.9 → 78.5 (−7.4).** 저자들의 해석은 *"aggressively reducing
 peripheral detail removes useful contextual cues (e.g., table geometry,
@@ -953,10 +955,10 @@ precise spatial reasoning."*
 | 논문 | 백본 | 벤치마크 | 학습 필요 | 에피소드 기록 공개 | 축을 교차 |
 |---|---|---|---|---|---|
 | EfficientVLA | CogACT (3 사이즈) | SIMPLER 1개 | ✗ | ✗ | ✗ |
-| VLA-Cache | LIBERO엔 OpenVLA, SIMPLER엔 CogACT | 2개 | ✗ | ✗ | ✗ (백본이 같이 바뀜) |
+| VLA-Cache | LIBERO엔 OpenVLA·OpenVLA-OFT, SIMPLER엔 CogACT | LIBERO + SIMPLER + 실로봇 | ✗ | ✗ | ✗ (벤치마크를 바꾸면 백본도 바뀐다) |
 | ShortGPT | LLM 4종 | NLP 13개 | ✗ | — | 로봇 실험 없음 (다만 **과제 유형별 분할을 자기 Limitation에 기록**) |
-| MoLe-VLA | CogACT / OpenVLA | RLBench 1개 | **✓** | ✗ | ✗ |
-| Gaze-Reg | 1개 | LIBERO 1개 | **✓** | ✗ | ✗ |
+| MoLe-VLA | CogACT / OpenVLA | RLBench + 실로봇(Franka FR3) | **✓** | ✗ | ✗ |
+| Gaze-Reg | OpenVLA · Pi-0 | LIBERO 4스위트 + Gym-Aloha + 실로봇 | **✓** | ✗ | ✗ |
 | **본 연구** | **3개** | **2개** | **✗** | **✓** | **✓** |
 
 마지막 두 열이 우리가 채우는 곳이다. 다만 §2.6의 한정어가 그대로 적용된다 —
