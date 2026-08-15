@@ -336,7 +336,20 @@ def interaction(data, cond: str, left: tuple, right: tuple):
             fisher_exact_2x2(a[1], b[1], a[2], b[2]))
 
 
-def fmt_cell(c, pr, legacy=None) -> str:
+def grid_family(data, cols) -> int:
+    """How many paired tests the grid actually runs -- the Bonferroni denominator.
+
+    Counted, never written down: the number is 5 cells x 7 conditions plus the
+    conditions that only some cells ran (`depth prune 8` in two, `depth prune 2
+    + action repeat 2` in one), and it moves whenever a condition is added. It
+    was hardcoded three times in the prose and was wrong all three times, so the
+    only honest source is this count.
+    """
+    return sum(1 for b, k in cols for cond in conditions_present(data)
+               if paired(data, b, k, cond) is not None)
+
+
+def fmt_cell(c, pr, alpha, legacy=None) -> str:
     if c is None:
         if legacy is None:
             return "--"
@@ -349,7 +362,7 @@ def fmt_cell(c, pr, legacy=None) -> str:
     if pr is None:
         return f"**{s}** (n={n})"
     d, fixed, broke, p, npair = pr
-    star = "***" if p < 0.003 else "**" if p < 0.05 else ""
+    star = "***" if p < alpha else "**" if p < 0.05 else ""
     return f"{s}  {d:+.1f}{star}"
 
 
@@ -370,6 +383,22 @@ TASK_FAMILIES = {
 def task_family_section(data, cols) -> list:
     L = []
     body = []
+    # This is its own multiple-comparison family: every cell is split into two
+    # task families and each half gets its own paired test, so the denominator
+    # is neither the grid's nor the Fisher table's. Counted in one pass first so
+    # the stars below use a threshold this section actually earned.
+    n_fam = 0
+    for b, k in cols:
+        fams = TASK_FAMILIES.get(k)
+        if not fams:
+            continue
+        for cond in conditions_present(data):
+            if cond == "baseline" or not data.get((b, k, cond)):
+                continue
+            cells = [paired(data, b, k, cond, f) for _, f in fams]
+            if not any(c is None for c in cells):
+                n_fam += len(cells)
+    fam_alpha = 0.05 / max(1, n_fam)
     for b, k in cols:
         fams = TASK_FAMILIES.get(k)
         if not fams:
@@ -393,7 +422,7 @@ def task_family_section(data, cols) -> list:
         for cond, cells in rows:
             cs = []
             for d, fixed, broke, p, _n in cells:
-                star = "***" if p < 0.003 else "**" if p < 0.05 else ""
+                star = "***" if p < fam_alpha else "**" if p < 0.05 else ""
                 cs.append(f"{d:+.1f}{star} ({fixed} fixed / {broke} broke, p={p:.4f})")
             body.append(f"| {DISPLAY.get(cond, cond)} | " + " | ".join(cs) + " |")
     if not body:
@@ -405,6 +434,11 @@ def task_family_section(data, cols) -> list:
              "on; the three `pick_coke_can` variants share one instruction and "
              "one target. Deltas below are paired within each family against "
              "the same family of the baseline.\n")
+    L.append(f"Own multiple-comparison family: {n_fam} paired tests, so `***` "
+             f"is p < 0.05/{n_fam} ~ {fam_alpha:.4f} and `**` is p<0.05. This is "
+             f"a different denominator from the grid's and from the Fisher "
+             f"table's -- quoting one threshold for all three is how a family "
+             f"size ends up written down wrong.\n")
     L.extend(body)
     return L
 
@@ -529,11 +563,17 @@ def markdown(data) -> str:
             ("UniVLA", "Bridge")]
     cols = [c for c in cols if any(k[0] == c[0] and k[1] == c[1] for k in data)]
 
+    # Derived, not hardcoded: this family is the paired tests this table
+    # actually runs, and it grows as conditions are added.
+    n_grid = grid_family(data, cols)
+    grid_alpha = 0.05 / max(1, n_grid)
+
     L.append("## The grid\n")
-    L.append("Success rate, and the paired delta against that column's own "
-             "baseline. `**` clears p<0.05, `***` clears the Bonferroni "
-             "threshold for this campaign (a~0.003). Deltas use only episodes "
-             "present in both runs.\n")
+    L.append(f"Success rate, and the paired delta against that column's own "
+             f"baseline. `**` clears p<0.05, `***` clears the Bonferroni "
+             f"threshold for this family: {n_grid} paired tests, so "
+             f"a = 0.05/{n_grid} ~ {grid_alpha:.4f}. Deltas use only episodes "
+             f"present in both runs.\n")
     # The legend only appears when there is something to explain. Printing it
     # over a table with no daggers tells the reader to look for a caveat that
     # is not there, which is its own kind of wrong.
@@ -554,7 +594,7 @@ def markdown(data) -> str:
         row = [DISPLAY.get(cond, cond)]
         for b, k in cols:
             row.append(fmt_cell(cell(data, b, k, cond), paired(data, b, k, cond),
-                                LEGACY.get((b, k, cond))))
+                                grid_alpha, LEGACY.get((b, k, cond))))
         L.append("| " + " | ".join(row) + " |")
 
     if LEGACY:
@@ -594,10 +634,17 @@ def markdown(data) -> str:
     for bb in backbones:                       # same backbone, two benchmarks
         if (bb, "Bridge") in cols and (bb, "Fractal") in cols:
             pairs.append((f"{bb}: Bridge vs Fractal", (bb, "Bridge"), (bb, "Fractal")))
-    for i, b1 in enumerate(backbones):         # same benchmark, two backbones
-        for b2 in backbones[i + 1:]:
-            if (b1, "Bridge") in cols and (b2, "Bridge") in cols:
-                pairs.append((f"Bridge: {b1} vs {b2}", (b1, "Bridge"), (b2, "Bridge")))
+    # Same benchmark, two backbones. Both benchmarks, not just Bridge: an
+    # earlier version hardcoded "Bridge" here, which silently dropped the one
+    # backbone pair Fractal has (OpenVLA vs SpatialVLA) and so understated this
+    # family by seven tests. The Bonferroni denominator below is len(rows), so
+    # a dropped comparison also loosened the threshold.
+    for benchmark in ("Bridge", "Fractal"):
+        for i, b1 in enumerate(backbones):
+            for b2 in backbones[i + 1:]:
+                if (b1, benchmark) in cols and (b2, benchmark) in cols:
+                    pairs.append((f"{benchmark}: {b1} vs {b2}",
+                                  (b1, benchmark), (b2, benchmark)))
     rows = []
     for title, left, right in pairs:
         for cond in conditions_present(data):
