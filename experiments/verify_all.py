@@ -584,6 +584,128 @@ m = re.search(r"decided classes \(1-3\) failures: (\d+)", r2)
 ck(m is not None and m.group(1) == "0", "audit_claims classes 1-3 not clean")
 print("    verify_overview_claims 10/10, audit classes 1-3 clean")
 
+# ================================================================ 12
+sec("12  Report-specific claims")
+# (a) direct-pair tests quoted only in Report prose (S3.6, S4.4, S5.3-adjacent)
+SB = "results/spatialvla_bridge_0805/{}/**/results_*.json"
+pairs = [
+    ("S3.6 prune1 vs prune1_back", SB.format("depth_prune1"), SB.format("depth_prune1_back"),
+     -2.1, 0.80, 2),
+    ("S3.6 prune2 -> prune4", SB.format("depth_prune2"), SB.format("depth_prune4"),
+     -18.8, 0.0001, 4),
+    ("S3.6 prune4 vs prune4_back", SB.format("depth_prune4"), SB.format("depth_prune4_back"),
+     -2.1, 0.50, 2)]
+for name, p1, p2, dd, pp, dec in pairs:
+    n, d, br, fx, pv = mcn(load(p1), load(p2))
+    ck(near(d, dd) and round(pv, dec) == pp, f"{name}: d={d:+.1f} p={pv:.4f}")
+# keep10 -> keep100 within the new tree only (tree-pure comparison in S4.3 b)
+n, d, br, fx, pv = mcn(load("results/openvla_bridge_foveate_sweep/keep10/**/results_*.json"),
+                       load("results/openvla_bridge_foveate_sweep/keep100/**/results_*.json"))
+ck(near(d, 26.0) and abs(pv - 4.7e-4) / 4.7e-4 < 0.05, f"keep10->keep100 {d:+.1f} p={pv:.2e}")
+# (b) window25 is bit-identical to prune4 (same layers selected) -- 135/135
+w25 = load_steps("results/openvla_fractal_depth_control/window25/**/results_*.json")
+p4 = load_steps("results/openvla_fractal_0806_depth_prune4/**/results_*.json")
+sh = set(w25) & set(p4)
+ck(len(sh) == 135 and all(w25[k] == p4[k] for k in sh), "window25 == prune4 135/135")
+# (c) S4.4 (3): spoon_on_towel reselected the same layer -> 24 bit-identical episodes
+a1 = load_steps(SB.format("depth_prune1"))
+a2 = load_steps(SB.format("depth_prune1_back"))
+spoon = [k for k in set(a1) & set(a2) if "spoon" in k[0]]
+ck(len(spoon) == 24 and all(a1[k] == a2[k] for k in spoon),
+   "prune1_back spoon 24/24 bit-identical")
+# (d) S4.4 pick_horizontal layer ladder: 5/6/8/11/14/5/0 vs baseline 7
+LAD = [("results/openvla_fractal_0806_depth_prune1/**/results_*.json", 5),
+       ("results/openvla_fractal_0806_depth_prune2/**/results_*.json", 6),
+       ("results/openvla_fractal_depth_control/prune3/**/results_*.json", 8),
+       ("results/openvla_fractal_0806_depth_prune4/**/results_*.json", 11),
+       ("results/openvla_fractal_0806_depth_prune4_early/**/results_*.json", 14),
+       ("results/openvla_fractal_depth_control/prune4_gap3/**/results_*.json", 5),
+       ("results/openvla_fractal_depth_control/window875/**/results_*.json", 0),
+       ("results/openvla_fractal_0806_baseline/**/results_*.json", 7)]
+for pat, want in LAD:
+    got = sum(v for (t, _), v in load(pat).items() if "pick_horizontal" in t)
+    ck(got == want, f"ladder pick_horizontal {pat.split('/')[1]}: {got} != {want}")
+# prune3 whole-cell +11.1 (p=0.0167) quoted in S4.4
+n, d, br, fx, pv = mcn(load("results/openvla_fractal_0806_baseline/**/results_*.json"),
+                       load("results/openvla_fractal_depth_control/prune3/**/results_*.json"))
+ck(near(d, 11.1) and round(pv, 4) == 0.0167, f"prune3 {d:+.1f} p={pv:.4f}")
+# (e) S6.4 sign tests: 0->12 gives p=0.0005, 1->4 gives p=0.375 (exact binomial)
+ck(round(min(1.0, 2 * sum(comb(12, x) for x in range(0 + 1)) / 2 ** 12), 4) == 0.0005,
+   "6.4 no_contact sign test 0.0005")
+ck(round(min(1.0, 2 * sum(comb(5, x) for x in range(1 + 1)) / 2 ** 5), 3) == 0.375,
+   "6.4 wrong_object sign test 0.375")
+# dual-baseline McNemar p = 0.5488 (11 discordant, 7/4)
+ck(round(min(1.0, 2 * sum(comb(11, x) for x in range(4 + 1)) / 2 ** 11), 4) == 0.5488,
+   "dual-baseline p 0.5488")
+# (f) S3.8 baseline table: our five values match records; exactly one lower, by 4.2
+seg38 = rep.split("### (c)")[1].split("### (d)")[0] if "### (c)" in rep else rep
+ours = {"OpenVLA / Bridge": 15.6, "OpenVLA / Fractal": 38.5, "SpatialVLA / Bridge": 30.2,
+        "SpatialVLA / Fractal": 84.4, "UniVLA / Bridge": 81.2}
+BASE = {"OpenVLA / Bridge": "results/openvla_bridge_0805/baseline/**/results_*.json",
+        "OpenVLA / Fractal": "results/openvla_fractal_0806_baseline/**/results_*.json",
+        "SpatialVLA / Bridge": "results/spatialvla_bridge_0805/baseline/**/results_*.json",
+        "SpatialVLA / Fractal": "results/spatialvla_fractal_0806/baseline/**/results_*.json",
+        "UniVLA / Bridge": "results/univla_bridge_0805/baseline_l4/**/results_*.json"}
+for cell, want in ours.items():
+    d0 = load(BASE[cell])
+    ck(near(100 * sum(d0.values()) / len(d0), want), f"3.8 our baseline {cell}")
+ck("넷이 높고 하나가" in rep and "4.2" in rep and "30.2% 대 34.4%" in rep,
+   "3.8 four-higher-one-lower statement")
+# (g) every "p = <decimal>" literal in Report must be a p some real pairing produces
+pool = set()
+
+
+def add_p(pv):
+    for dec in (1, 2, 3, 4):
+        pool.add(round(pv, dec))
+
+
+for v in paired.values():
+    add_p(v[3])
+for _, _, r in inter:
+    add_p(r[4])
+for pat1, pat2, *_ in pairs:
+    pass
+CAMPS = ["results/openvla_bridge_0805", "results/openvla_fractal_0806_*",
+         "results/openvla_fractal_depth_control", "results/openvla_bridge_foveate_sweep",
+         "results/spatialvla_bridge_0805", "results/spatialvla_fractal_0806",
+         "results/univla_bridge_0805"]
+trees = {}
+for c in CAMPS:
+    for d0 in glob.glob(c) + glob.glob(c + "/*"):
+        if os.path.isdir(d0) and glob.glob(d0 + "/**/results_*.json", recursive=True):
+            if not any(os.path.isdir(os.path.join(d0, x)) and
+                       glob.glob(os.path.join(d0, x) + "/**/results_*.json", recursive=True)
+                       for x in os.listdir(d0)):
+                trees[d0] = load(d0 + "/**/results_*.json")
+trees["legacy_fov"] = load(
+    "RetinaBased/GoogleColab/results_reproduction_eager/openvla_foveated/**/results_*.json")
+tl = list(trees.values())
+for i in range(len(tl)):
+    for j in range(i + 1, len(tl)):
+        if set(tl[i]) & set(tl[j]):
+            _, _, _, _, pv = mcn(tl[i], tl[j])
+            add_p(pv)
+            for fam in ("move_near", "coke_can", "carrot", "eggplant", "spoon", "stack"):
+                ai = {k: v for k, v in tl[i].items() if fam in k[0]}
+                bj = {k: v for k, v in tl[j].items() if fam in k[0]}
+                if ai and set(ai) & set(bj):
+                    _, _, _, _, pv2 = mcn(ai, bj)
+                    add_p(pv2)
+for m_, k_ in ((12, 0), (5, 1), (11, 4), (3, 0)):
+    add_p(min(1.0, 2 * sum(comb(m_, x) for x in range(k_ + 1)) / 2 ** m_))
+for a_ in (0.05 / 38, 0.05 / 43, 0.05 / 35, 0.05 / 42, 0.05 / 15, 0.05 / 36, 0.05 / 30):
+    add_p(a_)
+unexplained = []
+for m in re.finditer(r"p\s*=\s*(0\.\d+)", rep):
+    lit = m.group(1)
+    if round(float(lit), len(lit) - 2) not in pool:
+        ln = rep[:m.start()].count("\n") + 1
+        unexplained.append((ln, lit))
+ck(not unexplained, f"p literals no pairing produces: {unexplained[:6]}")
+n_plits = len(re.findall(r"p\s*=\s*0\.", rep))
+print(f"    direct pairs, ladders, sign tests, 3.8 table, {n_plits} p-literals all sourced")
+
 # ================================================================ done
 print("\n" + "=" * 66)
 print(f"checks run: {CHECKS[0]}   failures: {len(FAILS)}")
