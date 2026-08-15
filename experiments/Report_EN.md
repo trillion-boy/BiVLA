@@ -1977,3 +1977,620 @@ harness we re-ran `baseline` and `depth_prune4` on `move_near`.
 baseline      ref 50/60  new 50/60  -> identical    VERDICT: reproduced exactly
 depth_prune4  ref 31/60  new 31/60  -> identical    VERDICT: reproduced exactly
 ```
+
+The deleted layers are `[8, 9, 10, 20]`, same as on August 6. So **not one
+episode's success/failure changed — only more was recorded.** The exact
+same pair as §6.1's −31.7.
+
+| | Success | dropped | **wrong_object** | misplaced | **no_contact** |
+|---|---:|---:|---:|---:|---:|
+| baseline | 50 | 4 | **1** | 5 | **0** |
+| depth_prune4 | 31 | 7 | **4** | 6 | **12** |
+
+Paired per bucket (same 60 episodes):
+
+| Bucket | baseline → prune4 | new / resolved | p |
+|---|---|---:|---:|
+| **`no_contact`** | **0 → 12** | 12 / 0 | **0.0005** |
+| `wrong_object` | 1 → 4 | 4 / 1 | 0.3750 |
+| `misplaced` | 5 → 6 | 5 / 4 | 1.0000 |
+| `dropped` | 4 → 7 | 6 / 3 | 0.5078 |
+
+Looking only at the 22 episodes the baseline solved and prune4 lost:
+`no_contact` 10, `misplaced` 5, `dropped` 5, **`wrong_object` 2.**
+
+**Only one thing moved: `no_contact`.** And it moves from a baseline of
+**exactly zero** to 12 — the original policy moved something by more than
+3cm in all 60 episodes, and with 4 layers deleted, 12 episodes end without
+touching anything. `wrong_object` grows 1 → 4 but is indistinguishable from
+chance (p = 0.375).
+
+**So §6.1's hypothesis is not supported by our measurement.** Opening up
+the very cell where the drop happened, from inside the task, what was
+damaged is **not the pointing but the doing.**
+
+## 6.5 So what is §6, in the end
+
+**① What was rejected.** The reading "cut capacity and the ability to pick
+out the named target is damaged first" is not supported by our data. Its
+only evidence was the between-task comparison (§6.1), and replacing that
+with a within-task measurement produced no trace of the predicted signal.
+
+**② What remains — but never counted in raw numbers.**
+
+> ⚠️ **The draft of this item used the wrong method.** Failure counts
+> differ per condition (from 10 to 56), yet the draft lined up the buckets'
+> **raw counts** and read "success drops, `no_contact` grows." When
+> failures grow, every bucket's count grows arithmetically — much of that
+> observation is automatic. **We told others to look at the split behind
+> the average, then failed to divide by the denominator ourselves** —
+> logged in §7.1 ②. Below is the recount, **as shares of failures.**
+
+One task, `move_near` (n=60), all eleven conditions:
+
+| Backbone / condition | Success | Failures | `wrong_object` (share of failures) | `no_contact` (share of failures) |
+|---|---:|---:|---:|---:|
+| OpenVLA baseline | 37 | 23 | 0 (**0.0%**) | 16 (**69.6%**) |
+| OpenVLA prune 4 | **42** | 18 | 2 (11.1%) | 4 (**22.2%**) |
+| OpenVLA prune 3 | **42** | 18 | 2 (11.1%) | 7 (38.9%) |
+| OpenVLA `gap3` | 38 | 22 | 1 (4.5%) | 6 (27.3%) |
+| OpenVLA `early` | 30 | 30 | 1 (3.3%) | 19 (63.3%) |
+| OpenVLA blur | 18 | 42 | 3 (7.1%) | 19 (45.2%) |
+| OpenVLA log-polar | 12 | 48 | 1 (2.1%) | 35 (72.9%) |
+| OpenVLA `window875` | 11 | 49 | 0 (**0.0%**) | 41 (**83.7%**) |
+| SpatialVLA baseline | 50 | 10 | 1 (10.0%) | 0 (**0.0%**) |
+| SpatialVLA prune 4 | 31 | 29 | 4 (13.8%) | 12 (41.4%) |
+| SpatialVLA `prune4_back` | **4** | 56 | 7 (**12.5%**) | 42 (**75.0%**) |
+
+**Two things we can say.**
+
+**(i) `wrong_object` is a minority of failures everywhere** — between 0.0%
+and 13.8% — and **it does not grow with intervention strength.** In
+OpenVLA's most-failing condition (`window875`, 49 failures) it is **0.0%**,
+and in the campaign's most-failing condition (SpatialVLA `prune4_back`, 56
+failures) it is 12.5% — while that backbone's **baseline is already
+10.0%.** The interventions do not create this failure type.
+
+**(ii) On SpatialVLA, the `no_contact` share rises with intervention
+strength** — 0.0% → 41.4% → 75.0%. Three points, monotone.
+
+**One thing we cannot say.** **On OpenVLA the relation is not monotone.**
+The baseline is already at 69.6%; prune 4, which *raises* success, brings
+it down to 22.2%; and blur (18 successes) sits at 45.2%, below both
+log-polar (12 successes, 72.9%) and baseline (37 successes, 69.6%). The
+draft's **"no exceptions" is not a fact.**
+
+So the sentence §6 leaves behind is:
+
+> **Traces of damaged target selection are a minority of failures in every
+> condition and do not grow with intervention strength. Failures
+> concentrate instead in "touched nothing," and the relation to strength is
+> monotone on one backbone — SpatialVLA, the one with three points.**
+
+**③ What this tool can and cannot rule out.** `moved_wrong_obj` fires only
+when another object actually **moves** more than 3cm. An episode where the
+arm reached toward the wrong object but failed to push it lands in
+`no_contact`, not `wrong_object`. So **we cannot write "the pointing is
+intact."** What we can write:
+
+> **We found no trace of wrong pointing carried through to manipulation;
+> instead, failures that manipulate nothing at all grew from 0 to 12.**
+
+One fact narrows this qualifier: the baseline's `no_contact` was **zero.**
+The original policy moved something in all 60 episodes. If only the
+pointing had broken while execution stayed intact, those 12 episodes
+should still have moved *something*.
+
+**④ So §6.1's between-task drop is still unexplained.** That `move_near`
+is −31.7 while `pick_coke_can` is −6.7 is real and significant (§4.4 d).
+What we showed is that **the difference is not explained by a difference in
+pointing ability** — not what does explain it. The remaining candidates —
+trajectory length, required precision, scene complexity from object count
+— are not separable with our data. **§6 stands as a negative result.**
+
+> There was a temptation to delete this section. It was not the direction
+> we wanted, and a whole section amounts to "our hypothesis was wrong." We
+> keep it for two reasons. First, this paper's thesis is **"a number
+> measured in one condition cannot carry a claim"** — and claiming a
+> mechanism from one between-task comparison is exactly that error; there
+> has to be a record of us applying our own standard to ourselves. Second,
+> the concentration into `no_contact` is **less interesting but more
+> certain** than what §6.1 tried to claim.
+
+## 6.6 The harness change
+
+We added a function to
+`SpatialVLA/experiments/tome/tome_spatialvla_eval.py` that records only the
+keys the task actually reported:
+
+```python
+_OUTCOME_KEYS = (
+    "moved_correct_obj", "moved_wrong_obj", "near_tgt_obj", "is_closest_to_tgt",
+    "is_src_obj_grasped", "consecutive_grasp", "src_on_target",
+)
+
+def outcome_detail(final_info) -> dict:
+    """-> {"env_<key>": value} for whatever this task's env actually reported."""
+    stats = (final_info or {}).get("episode_stats") or {}
+    return {f"env_{k}": bool(stats[k]) for k in _OUTCOME_KEYS if k in stats}
+```
+
+Keys a task does not define are **not written.** Pick tasks have no "wrong
+object," and writing `False` there would read as if it were measured.
+
+UniVLA (`adaptive_sparse_vla/eval.py`) and OpenVLA (`simple_eval.py`)
+already save `final_info` wholesale, so nothing needed changing. But UniVLA
+is Bridge-only and has no `move_near` — on this axis UniVLA is out from the
+start (§7 ②).
+
+---
+
+# §7. What is settled and what is open
+
+## 7.0 Campaign status — what has finished running
+
+**The grid is full.** Five columns (backbone × benchmark) × **eight
+conditions** — one original policy + seven interventions (repeat 2/4,
+foveation ×2, prune 1/2/4) — with **no gaps.** (The 38 **paired tests**
+§3.3 counts exclude the baseline — the 35 of this table's five columns ×
+seven conditions, plus the two `prune8` cells and one `prune2+repeat2` —
+while the eight here are **runs**, baseline included.)
+
+| Column | Original | repeat 2/4 | foveation ×2 | prune 1/2/4 | Status |
+|---|---|---|---|---|---|
+| OpenVLA / Bridge | ✓ | ✓ | ✓ | ✓ (+8 layers) | **done** |
+| OpenVLA / Fractal | ✓ | ✓ | ✓ | ✓ | **done** |
+| SpatialVLA / Bridge | ✓ | ✓ | ✓ | ✓ | **done** |
+| SpatialVLA / Fractal | ✓ | ✓ | ✓ | ✓ | **done** |
+| UniVLA / Bridge | ✓ | ✓ | ✓ | ✓ (+8 layers) | **done** |
+
+On top of this come the diagnostics — determinism re-checks
+(`baseline_rerun`, 85/85 and 24/24), region controls (`depth_prune4_early`
+/ `_mid` / `_back`, `depth_prune1_back`), the task-version contrast
+(`move_near_v1`), one combination (`prune2 + repeat2`), the foveation
+capacity sweep (**keep 10 / 40 / 100** — keep 20 is already a grid cell,
+so these three complete the four-point curve), and the §6 mechanism
+measurement.
+
+**Every run is finished.** The foveation capacity sweep (keep
+10/20/40/100, all four points at 96 episodes, §4.3 b), OpenVLA/Fractal's
+depth window sweep (`prune3`, `prune4_gap3`, `window25`, `window875`, 135
+episodes), and the widening of that contrast **to all five cells**
+(§4.4 c) are complete. The §6 mechanism measurement and the determinism
+re-checks are done too.
+
+**What remains open cannot be opened by more simulation.** A third
+benchmark (①), a UniVLA/Fractal checkpoint (②), a named-target task other
+than `move_near` (③) — all three need a new benchmark or a new
+checkpoint.
+
+> **One optional item.** OpenVLA / Fractal at **8 layers removed.** Not a
+> grid row (see the note at §4.4 a), so its absence breaks no uniformity —
+> but that cell's 4-layer point is the campaign's largest gain at +15.6,
+> so whether it keeps rising or bends at 8 would strengthen §4.4's
+> capacity curve. SpatialVLA is already at the floor at 4 layers (Bridge
+> 2.1%), so there is nothing to measure at 8.
+
+---
+
+The three big items.
+
+**① A third benchmark.** With two, "those two are peculiar" is still
+sayable; with three, it becomes a pattern. The biggest open item — and
+**the only one more simulation can close** — no amount of filling other
+conditions changes the number of benchmarks.
+
+**② UniVLA/Fractal cannot be filled — which actually enlarges ①.**
+UniVLA's authors evaluated SimplerEnv on Bridge only and released a
+Bridge-only checkpoint. So the benchmark axis's sign-flip evidence comes
+**from OpenVLA and SpatialVLA only.** The backbone axis is carried by all
+three backbones and passes correction on **both benchmarks** (repeat 2 at
++12.5 vs. −69.8 on Bridge; `prune 4` at +15.6 vs. −17.8 on Fractal). Even
+so, four of the backbone axis's six passes are on Bridge, so the weight
+leans one way — and the fact that the two axes use different cell sets
+must be stated in the paper, not hidden. One more reason a third
+benchmark is needed: right now the benchmark axis rests on two backbones.
+> One alternative. **If UniVLA has a LIBERO checkpoint**, UniVLA gains a
+> second benchmark and the campaign gains its third. Worth checking.
+
+**③ Only two task families — and this one simulation can open.** §6's
+decisive run happened and did not support the hypothesis (§6.4). So **why
+`move_near`'s −31.7 is larger than `pick_coke_can`'s −6.7 remains
+unexplained.** The remaining candidates — trajectory length, required
+precision, scene complexity — cannot be separated by the current grid,
+because Fractal has only **two** families in it.
+
+**The three drawer tasks open that door** (the warning box in §3.2).
+`open_drawer`, `close_drawer`, and `place_in_closed_drawer` are already
+registered in the harness and are **articulated-object manipulation** — a
+third ability type belonging to neither family. With a third family,
+"does it fall because it is a named-target task, or just because it is
+harder" becomes separable for the first time.
+
+| Scope | Runs | Cost (est.) | What it buys |
+|---|---|---|---|
+| **Into the grid** | Fractal's two columns × 8 conditions × 3 drawer tasks | **over 15 hours** | fills all three categories of the standard protocol |
+| **Diagnostic only** | two columns × {baseline, prune4, foveate} × `open`+`close` | **about 6 hours** | a third point on §6's family axis |
+
+Under §3.6's rule **diagnostics need not be uniform**, so the second
+option is available. Numbers obtained that way are used only as §6's
+supporting evidence, never as grid cells. **Lower priority than the third
+benchmark (①)** — ① extends the thesis's axes; this raises one section's
+resolution.
+
+**⑤ We did not record the execution environment.** Result files carry no
+GPU, and inference times cannot identify the card (§3.4.0). So "all five
+cells ran on the same hardware" **cannot be proven from the records.** The
+size is bounded at about 3.1 points (§3.4.0's two-baseline contrast), but
+that is an after-the-fact estimate. **The next campaign must stamp GPU,
+driver, and library versions into the result files** — one line, and this
+open item disappears entirely.
+
+**④ What we measured is "success rate," not "ability."** §6.5 ③'s limit
+generalizes here. `episode_stats` gives the terminal state; which internal
+failure produced that state is not observed. Every sentence we can defend
+has the form **"in this condition, this metric moved this much"** — and
+"what broke" is written only to the degree of §6.5 ② — that is, only at
+the level of correlation.
+
+---
+
+## 7.1 What moved and what did not
+
+Sentences change every time results come in. We record which changes are
+normal and which are not — without that distinction, "the story keeps
+changing" and "an experiment is in progress" look the same.
+
+**What did not move (the thesis)**
+
+- The same intervention's effect **does not keep its sign across backbones
+  and benchmarks.**
+- Therefore **a number measured in one condition cannot carry a claim about
+  the method.**
+- **Episodes must be paired instead of subtracting two success rates.**
+- **Averages hide the task-family split.**
+
+Each new result made these four stronger, not weaker. Re-measuring UniVLA
+foveation on matched hardware gave the same conclusion; pairing the
+SpatialVLA legacy runs produced one more "cell that cannot carry a claim";
+and ShortGPT's Limitation confirmed the fourth item one domain up.
+
+**What moved ①: because new measurements came in — normal**
+
+| What | Before | After | Why |
+|---|---|---|---|
+| UniVLA foveation log-polar | +8.3 | +5.2 | re-measured the baseline on the same card |
+| UniVLA/Bridge depth axis | 1·2 layers only | 1·2·4·8 layers + range contrast | ran more conditions |
+| SpatialVLA/Bridge foveation | †legacy | paired −8.3 (p = 0.20) | re-measured with records kept |
+| §2.4 (e) "only the backbone differs" | asserted | region confound stated | checked the layers actually deleted |
+| §3.6 region control | at dose 4 only | region also irrelevant at dose 1 (Δ −2.1, p = 0.80) | ran `depth_prune1_back` |
+| §6 mechanism | "pointing dies first" (hypothesis) | **rejected.** What is damaged is execution (`no_contact` 0 → 12, p = 0.0005) | measured inside the task, in the cell that dropped |
+| §6.5 ② | "no exceptions," from raw bucket counts | recounted **as shares of failures**; OpenVLA is not monotone | failure counts ran 10–56, so raw-count comparison did not hold |
+| §4.3 foveation | "it helps by discarding the periphery" | **compression is not the source of the gain** — keep 100% is the maximum | ran the capacity sweep |
+| §4.3 (b) "the round trip itself is lossy" | claimed from reading code | **measured in pixels** — at keep 100% the periphery degrades 2.7× more than the center | passed a real Bridge observation through the transform |
+| §4.4 OpenVLA/Fractal +15.6 | "removing 4 layers helps" | **one window flag spans +15.6 to −30.4** | ran the four-condition window sweep |
+| §4.4 selection sensitivity | "depth pruning is sensitive to layer choice" | **the sensitivity itself depends on the cell, and follows the benchmark** (Fractal 45.9·50.4 vs. Bridge 2.1·5.2·6.3) | ran the same contrast in five cells |
+| §4.4 depth drop-off (**OpenVLA/Fractal**) | "between 2 and 4 layers" | **between 2 and 3** (already +11.1 at 3) | ran `prune3`. **SpatialVLA/Bridge's "between 2 and 4" stands** — that cell never ran 3 layers, so it cannot be narrowed |
+| §3.5 implementation differences | one (`min-layer` meaning) | **three** — argument meaning · last-layer protection · EOS dependence | stepped on two more while widening the window sweep to five columns |
+| §5.4 cost | "each intervention has a fixed saving" | **selection changes even the sign of the saving** (−10.6% vs. 4× more) | observed the generation-length blow-up on SpatialVLA |
+| §3.8 baseline check | did not exist | **all five cells compared against the authors' values** — four higher, one −4.2 | opened the three backbone papers and checked the right column too |
+| the UniVLA log-polar cell | empty as `--` in the grid | **recovered.** +5.2 (p = 0.36) | found in history that `git add results/` had committed missing files as deletions |
+| §4.4 "swing" | nearly compared one number across cells that tried different condition counts | separated **paired gap** (for comparison) and **observed range** (within a cell) | UniVLA was 1st by observed range (77.1) and 4th by paired gap (6.3) |
+
+**What moved ②: because we got ahead of the data — not normal**
+
+| What | What was wrong |
+|---|---|
+| "the tables of **three** prior papers" | Two papers. The FastV rows are not an independent source |
+| "EfficientVLA FLOPs **−28.9%**" | reduced **to** 28.9% = a 71.1% cut |
+| "all 12 settings" | did not disclose that the 2 Random Dropping rows were excluded |
+| "MoLe's gain comes from the **router**" | Table 5 says the opposite; distillation makes it |
+| "**no cell** saves compute while keeping its sign" | OpenVLA depth prune 4 is the counterexample |
+| §0's depth-pruning sign flip (−10.4 / +8.1) | wrote Δ but **no p.** Neither passes correction (0.0872 / 0.0127) |
+| §0 "**both** foveation values pass correction" | the Bridge +18.8 does not (p = 0.0051). The generator printed `**`, transcription turned it into `***` |
+| Bonferroni "15 comparisons, α ≈ 0.0033" → then "**42**" → then "**35**" | **None of the three is the number of tests actually run.** The generator's paired table has **38 rows** — 5 cells × 7 conditions plus two `prune8` cells and one `prune2+repeat2`. α is 0.0013. Fortunately **the same eight cells pass under 35, 38, or 42** — rank 8 at 1.07 × 10⁻³ and rank 9 at 5.10 × 10⁻³ leave the gap empty. The "ranks 10·11" wording was wrong too (those p-values are ranks 8·9). **Fixed three times, hand-counted three times, wrong three times** — the denominator is now the table's row count |
+| §0 UniVLA action repeat 2 "**−70.8**" | re-paired against the L4 baseline it is −69.8 |
+| "sweeping keep **upward is pointless** — Δ→0 is forced by design" | written without reading the code. `keep` only sets sample density **after** the warp; the round trip always happens. keep 100% is not the original, and that direction was exactly the one that decided the question |
+| "**whichever four** you pick, front or back, success rises" | `window875` is −30.4. Two of four conditions rise. Generalized from the three diagnostics (`prune4`, `prune4_early`, `gap3`) alone |
+| asserting `prune4`'s layers as `[17,23,25,27]` | that is `move_near`'s set alone. The ranking is per-task, so the pick sets are `[17,20,23,26]` / `[17,21,23,26]` |
+| §2.5 "the **basis** of §6" · A.3 "**proposed** in §6" | sentences from before §6 was rejected were still standing. The **fact** of the split in others' tables stands; **why it splits is open** |
+| §2.4·A.3 "the ranking is recalibrated **per episode**" | the code calibrates **once** per run (`calibrated` flag). Layers differ per task because each task is a separate process |
+| A.1 "the authors **do not see it**" | only "it is not in the text" is verifiable |
+| A.3 ShortGPT headline "MMLU **55.0 → 52.2**" | the introduction's value. **Table 2's same setting is 55.00 → 54.69**, 2.5 points apart. An internal inconsistency of the paper; we use the table value |
+| §6.3 ② "foveation's damage is **clearly execution-side**" | counts go 16 → 35, but **as shares, 69.6% → 72.9%** — almost unchanged. Failure composition did not move — the same denominator error as §6.5 |
+| §5.3 variant comparison | **subtracted two Δs** against baseline. The variants run the same episodes, so they must be **paired directly** — the very move §3.3 forbids |
+| §5.1 "the other five point the same way" | of six rows, **three flip sign** and three keep it (differing in size) |
+| §4.1 "on SpatialVLA/Fractal no intervention **exceeds +5**" | `depth prune 1` is **+8.1** |
+| §0 "§5's sign-instability pattern exists in prior papers" | what §2.5 shows is the **task split** (move_near vs. pick), not a benchmark sign flip |
+| Appendix A.6 "these **six** papers" | five were read closely. The table's sixth row is this work |
+| §4.3 (c) "the two variants **share the same `keep` meaning**" | they do not. Blur's keep is **the area of the central disc left original**; log-polar's keep is **the fraction of samples kept after the warp.** At keep=100%, blur is a no-op (`frame.copy()`) and log-polar is the campaign's largest-gain condition |
+| §4.3 (b)·Overview §② "the center is **barely touched** (1.2)" | quoted the mean only. Re-measured at 224×224, even keep=100% changes **71% of pixels with a max of 187/255**, and 2.2% of the center moves by 10+. The mean is small because most of the image is background |
+| §4's tables never said **what bold means** | §4 bolds `p < 0.05` (uncorrected, 12 cells); `Overview.md` bolds **corrected** (8 cells). Different rules, neither stated — so **the same +12.5 was bold in one document and not the other.** The rule and an example now head §4 |
+| §7.0 "the grid is full … **the only gaps are these three**" | self-contradictory within one sentence; the table right below has **no gaps.** A sentence from the era when the grid had holes. Also explained why "eight conditions" (runs incl. baseline) differs from §3.3's "seven" (tests excl. baseline) |
+| §7.0 "capacity sweep (keep 10 / 40 / 100)" vs. "keep 10/20/40/100" four lines later | both true, but three vs. four within four lines — keep 20 is a grid cell, so only three more were run as diagnostics. The reason is now in parentheses |
+| §4.3 (b) "keep 100% is the maximum in **three of four** tasks" | counting: **two** (`carrot` 8/24, `eggplant` 19/24). `spoon` and `stack` bend at keep 20% (10/24, 11/24). **The total is monotone while half the tasks are not** — the very shape we criticize in §2.5, in our own table. Added the per-task table and narrowed the conclusion to the total |
+| §4.3 (b) keep axis | presented +30.2 alone, but that value **crosses two trees.** Added the two tree-pure comparisons (old tree +18.8 p=0.0051; new campaign keep10→keep100 +26.0 p=0.00047), closing the confound |
+| RelatedWork §2.2 (b) "**three backbones** agree to the decimal" | the three cited are OpenVLA/Bridge, SpatialVLA/Bridge, **SpatialVLA/Fractal** — **three cells of two backbones** — and the UniVLA values (−52.3 / −76.6) were missing. All five cells now listed |
+| RelatedWork §2.4 (e) "on SpatialVLA: −10.4 at 1 layer, −17.8 at 4" | −10.4 is **Bridge's** 1 layer; −17.8 is **Fractal's** 4 — **two cells mixed.** And Fractal's 1 layer is **+8.1**, opposite in sign |
+| RelatedWork §2.4 (e) "Δ from −2.1 to **−77.1**" | **−79.2** (81.2% → 2.1%). 77.1 is `depth_prune8`'s **success rate**, not a Δ |
+| RelatedWork A.6 · §2.6 "Gaze-Reg: **1 backbone · 1 LIBERO**" | the paper runs **LIBERO's four suites (OpenVLA) + Gym-Aloha + Pi-0 real robot.** Our conclusion (no axis crossing) stands, but we had shrunk someone's experimental scope |
+| RelatedWork A.6 "VLA-Cache: **2 benchmarks**" | LIBERO and SIMPLER plus a **Kinova Jaco2 real robot**, and LIBERO runs on both OpenVLA and **OpenVLA-OFT** |
+| RelatedWork A.6 "MoLe-VLA: **RLBench only**" | there are also **3 Franka FR3 real-robot tasks** (present in §2.6's table, missing from A.6) |
+| RelatedWork A.3 — quoting ShortGPT's Limitation | the original says *"XSum **and C3** deceases to nearly zero"*, but in the same paper's Table 2, **C3 is 43.56 → 39.62 / 64.55 → 56.33** — not near zero. Only XSum falls near zero, so we split the citation |
+| RelatedWork §2.6 "zero competitors" — the supporting text | Gaze-Reg runs **two benchmarks on one backbone**, MoLe-VLA runs **two backbones on one benchmark** — **each has one axis.** The conclusion (nobody put both axes together with paired tests) stands, but the support must say so |
+| RelatedWork §2.3 (d) "the success-rate **literature converges on 'harmful'**" | it does not converge. **Look, Focus, Act** (2507.15833) reports 94% ViT compute cut, 3× inference, and **success gains on some high-precision tasks.** The split with Gaze-Reg is **whether the token count is reduced or only pixels blurred** |
+| RelatedWork §2.3 (e) "we found **no report corresponding to** +18.8" | reports that foveation helps exist. What we could not find is a gain under **our combination — token count unchanged, fixed center, no training.** Narrowed accordingly |
+| Overview §① paired gap "**46.0**" | **45.9.** 46.0 comes from adding two rounded Δs; from raw counts it is (73−11)/135 = 45.93. Report was fixed but **not propagated to Overview** |
+| Overview §①'s five numbers | never said what they were, so they read as success rates. Now stated as **the gap between two conditions' Δs within one cell**, with the note that deleted layers differ per cell |
+| §4.4 (c) text "the three Bridge cells are 2.1, 5.2, **6.2**" | the same section's table says **6.3.** 6/96 = 6.25, exactly on the boundary — standardized to 6.3 |
+| §4.3 (b) the keep 20% row | never disclosed that this row alone comes from the legacy `RetinaBased/` tree, not `results/`. The 96/96-identical baselines justify the juxtaposition, but provenance must be stated |
+| Overview §② "lowering keep **barely changes the periphery**" | true only on the checkerboard test image (its periphery is already saturated). On real Bridge observations both degrade: center 1.2 → 3.5, periphery 3.3 → 7.6 |
+| §3.5.2 "back-solving from two measurements **works out**" | two unknowns, two points — **anything solves it exactly**; fitting is not evidence. And the draft assumed 8 normal tokens where our `chunk_exec.py` profile measures **about 12** (3 × 4 chunks). d swings 10–19 ms with the episode you fit |
+| §3.5.2 "generation runs to the 256 cap" (asserted as mechanism) | if all three hit the cap their times should match, yet they spread **1.61×** (5466/3702/3390). Token counts were not logged — downgraded to **a likely explanation** |
+| RelatedWork §2.3 (b) "the two variants' **difference is the geometric-distortion share**" | does not hold. The same section's table refutes it — blur keeps the center at 100% and erases the periphery; log-polar cuts the center to 39% and keeps more periphery. **Different amounts in different places** — subtracting does not isolate geometry |
+| the preamble "all numbers are generated from `results/`. **Nothing is hand-transcribed**" | §3.5.2 in the same document said "copied from the console." Values from outside the grid number **three** — §3.5.2's ms values, §3.8's right column, §2.2 (c)'s chunk numbers. The preamble now names all three and points to §7.2 |
+| RelatedWork preamble "the PDF check surfaced **two things**" | only ShortGPT's internal inconsistency and "scope written too narrowly." Our errors were actually **four** (three scopes + Gaze-Reg backbones reversed + LFA conditions omitted + calibration data amount). `Report.md` §7.2 had been fixed; this one had not |
+| §7.2 "human transcription is the **only** place errors occurred" · §7.1 "② is **entirely** pre-checking writing" · "Appendix A's **only** discrepancy is not ours" | all three falsified by the full read. ② has **three causes** with different detection methods — caught by source comparison, caught only by **re-deriving the recipe** (`>` vs. `>=`, channel aggregation), caught only by **reading through** (§3.8 ① contradicting ②). Appendix A had our errors too (scope, attribution). All three sentences fixed; cause table added |
+| §0 ④ "foveation saves **0%** compute" | §4.3 (a) says −3.1% to +2.7% and §0 ⑥ says "≈0%." Only ④ was categorical |
+| §3.8 (c) ① "our baselines are **nowhere lower. All five equal or higher**" | **wrong, and ② right below recorded the counterexample itself** — SpatialVLA/Bridge is 30.2% vs. 34.4%, **4.2 points lower.** Checked against the three backbone papers. Precisely: four higher, one at −4.2 — and the defense ("a broken setup would be consistently low") stands. Replaced with the five-cell table |
+| §3.8 (a) "the OpenVLA paper and OFT both evaluate **only on real robots**" | the original has **LIBERO simulation in Appendix E.** The core claim (no SimplerEnv numbers) stands, but "only real robots" is not a fact |
+| §3.8 citation keys `[30]` · `[59, re-cited 55]` | **mixed reference numbers from different papers** — `[30]` is SpatialVLA's number for OpenVLA; `[59]` is UniVLA's for SpatialVLA. Not our document's keys; replaced with paper names |
+| §3.1 backbone table "Gemma2-based" · "8B" | SpatialVLA's backbone is **PaliGemma 2** (its decoder is Gemma 2), and UniVLA is **8.5B.** Layer counts 26·32·32 match the result files |
+| §2 preamble "moved to RelatedWork (about **1,195 lines**)" | the header table was updated but **this one line was not.** It is 1,230 lines |
+| §4.3 (b) 224 table "pixels changed by **2 or more**" | actually counted with **`> 2`** (strictly more). And within the same table, the "mean" column alone used **channel averages** while "max" used channel maxima — two rules in one table. **Unified on channel maxima** (means become 1.75→2.06 etc.) and fixed the threshold wording |
+| §4.3 (b) "**2.2%** of center pixels move 10+ … **2.2% → 7.2%**" | the same `>` vs. `>=` issue. Counted as written (**10 or more**): **2.5% → 8.3%.** Also these two values are at the original **640×480** while the table above is at 224 (at 224: 0.6% → 5.5%). Both now stated |
+| §3.2 "**eight** Google Robot tasks registered" | 8 is right, but the table listed 4 used + 3 unused = 7, one short. The missing one is `move_near` (non-v0), same family as our `move_near_v0`, hence not run. Added to the table |
+| RelatedWork §2.5 "the direction is **monotone in capacity**" (as if for all 12) | only **EfficientVLA's four configurations** have capacity ladders, giving four ladders over two settings. All four are monotone, but the other four rows (FastV, VLA-Cache) are **single points where monotonicity cannot be asked.** Split as **direction 12/12, monotonicity 8/12** |
+| §3.3·§0·§3.6·Overview "the grid runs **42** paired tests" → corrected to "**35**" | **the correction was wrong too.** 35 counts the grid body only, missing `prune8` (two cells) and `prune2+repeat2` (one). Actually run: **38**, α ≈ 0.0013. The passing eight are the same under any denominator |
+| §5 "cell-to-cell comparisons: **36**" → corrected to "**42**" | **both wrong, and this is the heaviest row of the audit.** 36 was what the generator actually printed — but **the generator had a bug**: the backbone-axis loop was hardcoded to `"Bridge"`, so **Fractal's only backbone pair (OpenVLA vs. SpatialVLA) — seven tests — never ran.** 42 was hand-counted, one short (the `prune8` pair has eight). The true value after the fix: **43**, α ≈ 0.0012 |
+| §5 — what that bug did to the results | **the denominator is `len(rows)`, so missing tests loosen α** — the omission made passing easier. Even so, **two of the seven missing tests pass correction** (`depth prune 4` p = 4.3 × 10⁻⁷, `action repeat 4` p = 1.4 × 10⁻⁵). The first is OpenVLA +15.6 vs. SpatialVLA −17.8 — **the only pair where both sides individually pass with opposite signs.** So §5.2's passes number **six**, not four — we had been **understating our own thesis.** No new runs; a question the same grid had never been asked |
+| §7.2 "the §5 Fisher count is **36, matching the document**" (recorded as a passing machine check) | **the document and the script shared the same bug, so the comparison passed.** Machine verification verifies only when the two sources are independent — a number copied from the script proves nothing. The caveat now sits in §7.2 |
+| §6.4·Overview "the original policy moved something by **3cm or more** in all 60 episodes" | the environment code is `source_obj_xy_move_dist > 0.03` — **strictly more than 3cm** (`move_near_in_scene.py`). The same type as §4.3 (b)'s "2 or more vs. `> 2`", in another section — meaning threshold sentences need an exhaustive list, which we built (`audit_claims.py` class 5, all 29 sentences checked) |
+| Overview "**80 points** apart in one row" vs. "**82 points** of difference" in the same document | +12.5 vs. −69.8 is **82.3 points.** The same value rounded two ways within one document — same type as 46 vs. 45.9. Unified on 82 |
+| RelatedWork A.6 "**5.6×** vs. EfficientSAM" | computing from the very table quoted above it: 78.6/13.7 = **5.7×.** A number at odds with its own table. Which row (EfficientSAM-S) and the arithmetic are now stated |
+| §4.3 (b)·Overview "edges return to the **0.37 px** spot" | re-measured: **it swings 0.0–1.0 px with marker position, size, and estimator**, and a single-pixel marker can vanish entirely at the far edge. 0.37 was one setting's value, quoted without its recipe — **a violation of the rule we set in §7.1 ourselves** ("state what you measured with and against"). Lowered to "within 1 px (sub-pixel)" with conditions |
+| RelatedWork §2.3 (b) "shrink to 256×256 and 21% becomes **39%**" | 39% is **INTER_LINEAR only.** INTER_AREA gives **55%**, INTER_CUBIC 30% — 25 points of swing from the interpolation choice, with no recipe stated. The direction (it rises) holds under any of them, so the range and condition are now written |
+| §4.4 ★·Overview ① "the only thing changed is the `--depth-min-layer` **value**" / "we only touched **① (the window)**" | of the four conditions, **only three moved the window** (0.5 / 0.08 / 0.875); `gap3` **kept the default window and added a spacing-3 rule to the selection.** The same section's condition table had it right ("L16–31, gap 3") — the summary flattened its own table. Overview's window table also showed only two windows, making [2,4,…] read as the default window's product. Rewritten as three windows + one rule |
+| Overview status table "correction log **42 entries**", "notes on **5 papers**", "discrepancies: **0**" | corrections were 66 at the time; the notes are 7 papers (Look Focus Act and Segment This Thing added); and "0 discrepancies" must be written as **"every discrepancy found in checking was fixed"** — it read as "there never were any" |
+| RelatedWork A.3 "extends to non-transformers in **§4.4**" | ShortGPT's §4.4 — but our Report also has a §4.4, so it read as ours. Now "that paper's §4.4" |
+| RelatedWork §2.4 (a)·A.3 "calibration is **once on both sides; the only difference is what you look at**" | re-reading the original proved this wrong. ShortGPT averages BI **across** *"a calibration set, which is a **set** of unlabelled text samples such as PG19"* — that is the `E[ ]`. We use **one forward pass of one frame**, averaging only over token positions (`_sum`/`_cnt` in `depth_prune_gemma2.py`). **Two differences, not one** (what you look at / how much) — and the smaller-sample side is **us.** Written as our open question |
+| RelatedWork A.5·§2.6·A.7 Gaze-Reg's backbone arrangement | **written backwards.** The main backbone is **Pi-0**, running LIBERO's four suites + Gym-Aloha + the real robot (Tables 2·4); **OpenVLA runs LIBERO only** as a transfer check (Table 3). We had written "OpenVLA runs both benchmarks and Pi-0 is real-robot only." Corrected — and it turns out **Gaze-Reg has our grid's shape**: both axes present, crossing cell (OpenVLA × Gym-Aloha) empty. The conclusion (no crossing) survives, but as our nearest neighbor it must be written that way |
+| §3.4 hardware re-run "log-polar: **three of four** tasks moved" | **all four moved** (−4.2 / +4.2 / +8.3 / −8.3). The mean stayed at 86.5% to the decimal while all four moved — so **the original claim gets stronger.** Also missing: under the same card change the baseline stayed 96/96 (only the foveation path wobbled) |
+| §3.4 "**with hardware fixed**, run variance is zero" — applied to the grid | result files carry no GPU and timings cannot identify the card. **We cannot prove the five cells shared one card.** Instead the two UniVLA baselines (11/96 episodes apart, 3.1 points) **bound the size at 3.1 points**, and attaching every Δ to both baselines flips no significance (§3.4.0, new). Added to §7 ⑤ |
+| the ④ table under §3.6 ③'s "the value of deleting L10" | the ③ table had been fixed per task, but **the ④ table right under it still showed one task's values.** All five rows now carry all four tasks (`prune4_back` is `[13,17,19,20]` on three of four) |
+| §3.6 ① "OpenVLA/Fractal 4 layers **[17,20,23,26] → `move_near` 70.0**" | layers and task mismatched. **[17,20,23,26] is pick's set**; the set that produced `move_near`'s 70.0 is **[17,23,25,27].** The right-hand cell ([2,4,6,23]) was correct for move_near, so one row mixed two bases |
+| §4.3 (b) "in the **five** images tested, periphery/center **1.5–4.8×**" | does not reproduce. Three synthetic + four Bridge observations = **seven** images, and at keep=100% the ratio is **1.5–2.8×** (1.1–2.8× over all keeps). 4.8 appears only for **a file that was already foveated fed back in.** Replaced with the stronger fact that **the direction holds in all 28 cells.** The synthetic-image range is also **19–89**, not "20–80" |
+| §4.4 (c) `window25`'s compute "−11.9%" | copied from `prune4`. Measured: **−10.7%.** The two conditions delete the same layers over the same 135 episodes, so **the 1.2 points is the wobble of running the same computation twice** — footnoted as such |
+| §3.6 ③ "the two layers' BI: **0.939 vs. 0.938**" | `carrot`'s values alone. Across all four tasks: 0.925–0.939 vs. 0.920–0.938 — same conclusion (they overlap), but it must be a range |
+| §5.3's OpenVLA/Bridge row | only that row has log-polar from the legacy tree and blur from `results/`. Disclosed in §4.3 (b) but **not here** |
+| preamble "RelatedWork **~985 lines**" · §2 "about **800**" · status "UniVLA 5 conditions **running**" | all three stale (RelatedWork was 1,195 lines then). §7.0 in the same document said "the grid is full." **Length notes go stale with every edit — recount before committing** |
+| RelatedWork A.6 "Look, Focus, Act … **success rises**" (unconditioned) | unfolding Tables III/IV, it depends on conditions. The clear gains are **sim + no ViT pre-training**; with MAE pre-training Fine wins two tasks and Fov-UNet three; and **on the real robot uniform tokenization leads in three of four cells** (Ball 64 vs. 62, Toothbrush 24 vs. 18 / 18 vs. 14). Split four ways |
+| RelatedWork A.7 "Look, Focus, Act: **3 real-robot tasks**" | **2 tasks** (Ball, 60 episodes; Toothbrush, 78). Sim's 6 tasks were right |
+| RelatedWork §2.3 (d) "**VLA-Cache** cut FLOPs 24.5% while time rose 60.6%" | that row is **SparseVLM.** VLA-Cache is the paper that **measured and reported** it; its own method goes 51.91 → 31.83 ms. Subject corrected |
+| RelatedWork §2.4 (e)·§4.4 "SpatialVLA/Bridge prune 1 is **L10** (depth 38%)" | differs per task — **two L10s, one L17, one L9.** The very error §7.1 had caught on OpenVLA `prune4`, repeated on the SpatialVLA and UniVLA rows. The conclusion (all middle-band) stands, but as a range |
+| RelatedWork §2.4 (e)·§4.4 UniVLA window contrast "`[21,24,26,30]` → `[2,4,26,30]`" | one representative task. The narrow window also produces `[21,23,26,30]`, `[21,25,27,30]`, `[20,22,26,30]`. Writing it as **"all four tasks ≥ L20 → all four include L2·L4"** is both accurate and stronger |
+| §4.4 ③ "ran the same one layer **chosen from the back half**" | true of three of four tasks. On `spoon_on_towel` BI picked the same L17 (already in the back half), so **the two conditions are identical there** and its 24 episodes are bit-identical. The test uses discordant pairs only, so Δ −2.1 and p = 0.8036 stand — but the contrast covering 3/4 tasks must be said |
+| RelatedWork preamble "the five-paper check found **no numeric errors on our side**" | the copied values were right, but the same check surfaced **three papers' scopes written too narrowly** (Gaze-Reg, VLA-Cache, MoLe-VLA). Not "no errors" — "values right, scope descriptions wrong" |
+| RelatedWork §2.1 "one cell stacks **all three axes**" | that cell (SpatialVLA/Fractal `prune2_repeat2`) stacks **two.** No grid condition stacks three |
+| RelatedWork §2.3 (b) Look, Focus, Act "**324 → 20 patches**" | judged absent from the original based on search results and deleted it — **opening the PDF, it is right there in Table II and §5 A** (Fine 324 / Foveated 20). Restored. **Trying to refute a primary source with a secondary one** was the mistake |
+| RelatedWork §2.3 (d)·A.5 "the two Gaze-Reg conditions work **in our favor** → our version has even less reason to rise" | the same sentence in two places. ① Not "in our favor" — **conditions favoring foveation.** ② More importantly, that conclusion **collides head-on with our +18.8, and the collision went unmentioned.** Now: "our result is not explained by this paper" |
+| §7.1's own tallies ("② has **42**", "wrong numbers: **three**", "the other **twenty**") | the table had grown to 44 rows and the paragraphs below never followed; the type table summed to 16. **Reclassified all rows** so the sums match, and noted that classification involves judgment |
+| RelatedWork §2.3 (b) "the measured curve: **even dead center only 30–53%**" | reproduces under its own conditions, but **the metric was never named** — same image, same keep: Laplacian 39%, Sobel 68%. It read like an intrinsic property of the transform |
+| Overview status table "baseline … **nowhere lower than the papers**" | **Report §3.8 was fixed without propagating to Overview.** The same error lived in both documents; one was fixed, and for days Overview carried an already-refuted sentence. Now "four higher, one −4.2." **There was no procedure of grepping the other documents when fixing an error** — the cross-document version of the repeated-across-backbones hole §7.1 had already recorded |
+| Overview §③ "changing the backbone gives four, **three at p < 10⁻⁵**" | the four p-values are 1.736 × 10⁻¹³ · 1.376 × 10⁻⁶ · 1.561 × 10⁻⁵ · 3.55 × 10⁻⁴. **Two are below 10⁻⁵; three are below 10⁻⁴.** Report §5.2 had said "p < 0.0001" correctly all along — only Overview slid the exponent |
+| §1·§3.1·Overview "UniVLA takes **3 seconds** per step" (Overview) · "**~2.9 s**" (Report) | measured: `avg_model_ms_per_infer` = 2811.5 ms = **2.81 s.** The two documents carried different roundings, both above the measurement. Unified at three digits with the field name |
+
+② has **three causes, not one**, and each is caught differently.
+
+| Cause | How it gets caught | Example |
+|---|---|---|
+| **writing before checking the source or code** | going back to the source/code catches it | calibration data amount; Gaze-Reg backbones |
+| **the number is right but its label disagrees with the computation** | only **re-deriving the recipe** catches it | "2 or more" over an actual `> 2`; two channel rules in one table |
+| **the document contradicts itself** | only **reading it through** catches it | §3.8 ① said "nowhere lower" while ② recorded the counterexample |
+
+**The draft listed only the first cause.** So "we checked the originals"
+can never be grounds for closure — the second needs the scripts re-run, and
+the third needs reading. If another ② appears, it gets added here.
+
+---
+
+## 7.2 Machine verification — did this document's numbers come from the records?
+
+Every hand-carried number was **checked against the records.** We first
+believed human transcription was the only place errors could occur — **that
+belief was wrong**: two of the three causes above have nothing to do with
+transcription. So the table below records not "how many mismatches" but
+**what was verified, and with what.**
+
+| What was verified | With what | Status |
+|---|---|---|
+| the grid's 35 cells — Δ, p, broke/fixed | recomputed from `results/` episode records | **match** |
+| compute savings % (all conditions) | `model_stats` in the result files | **match** |
+| §5's 15 Fisher p-values (§5.1: 6 + §5.2: 9) | recomputed from the discordant splits | **match** |
+| the two test-family sizes | enumerated the conditions directly | **were wrong → corrected to 38 / 43** |
+| keep sweep · window sweep | recomputed | **match** |
+| all §6 failure-bucket tables | ran `mechanism_move_near.py` | **match** |
+| deleted layer sets (all conditions, all tasks) | the layer fields in the result files | **match** (single-task notation corrected to ranges) |
+| four bit-identity claims | episode/step/grasp comparison | **match** |
+| foveation pixel measurements | re-ran the measurement script + traced recipes | **threshold wording corrected** |
+| code citations (formulas, flags, line numbers) | compared against source | **match** |
+| §3.8 **left column** (our baselines) | recomputed | **match** |
+| §3.8 **right column** (authors' values) | checked against the SpatialVLA, UniVLA, OpenVLA PDFs | **match** ("nowhere lower" corrected) |
+| Appendix A quoted values (**7** PDFs + 3 backbone papers) | direct table/sentence comparison | **match** (the papers' own 3 inconsistencies separate) |
+| background citations (arXiv IDs, bibliography) | search comparison | **match** |
+| internal tallies, cross-references, lengths | script | **match** |
+| universal sentences ("all/only/nowhere") and threshold sentences | `audit_claims.py` **enumerates exhaustively** (counts recounted each run), each traced to evidence | **pass** (one 3cm wording corrected) |
+| **all of the above at once** | **`verify_all.py`** — every machine check in this table (record integrity → grid → test families → costs → control runs → mechanism → pixel measurements → document structure → external records → citation arithmetic → sub-suites) in **one command**, printing a failure list. The campaign's lesson is that verification arriving in installments can never be known to be finished, so the entry point is one | **all 189 checks pass** |
+| **execution environment (GPU)** | **no record exists** | **impossible; §7 ⑤** |
+
+> **This table is the document's verification boundary.** What could *not*
+> be verified is now **only the last row — the GPU record** — absent from
+> the data and unrecoverable after the fact (its size is bounded at 3.1
+> points in §3.4.0). Everything else was matched by recomputation or
+> source comparison. **Whenever we write "verified," this row is never
+> omitted.**
+
+**More than 140 numbers match.** §5's Fisher count is 43, matching the
+document (while this line said 36, the generator printed 36 too — **the two
+shared one bug, so the comparison passed.** When script and document come
+from the same source, agreement is not evidence of correctness). The three
+determinism re-runs (SpatialVLA/Fractal 85/85, UniVLA 24/24, §6's 60/60 on
+both arms) matched down to **step counts**, and the 255 files and 7,198
+episodes were recounted and confirmed.
+
+> **One number verification cannot reach.** §3.5.2's three ms values
+> (5466/3702/3390) have no result files — the run was aborted and they were
+> copied from the console. The baseline/prune values in the same section
+> were recomputed from records. **The exception is noted in §3.5.2's text
+> as well.**
+
+**Every table value copied in Appendix A matched the originals.** Our
+errors came not from values but from **scope and attribution** — three
+papers' scopes written too narrowly, Gaze-Reg's backbones reversed,
+Look/Focus/Act's gains quoted without conditions (all in §7.1 ②). And the
+papers themselves carry three inconsistencies (ShortGPT's introduction vs.
+Table 2: MMLU 55.0 → 52.2 vs. 55.00 → 54.69; Table 2 vs. Table 6 on BoolQ;
+and the Limitation's "XSum and C3"). The values proper — EfficientVLA
+Table 2's 12 settings and eight Δs (PickCan +4.0/+3.4/+2.7/+2.0, MoveNear
+−1.7/−2.6/−2.9/−3.7) exact; VLA-Cache Table 3's eight cells identical to
+EfficientVLA's citation row to the decimal, **confirming the
+independent-source judgment**; MoLe Table 5's `STAR alone 56.3% < baseline
+57.2%`; Gaze-Reg Table 11's **10/10 decline and 85.9 → 78.5** — all stood.
+
+**So the remaining risk is sentences, not numbers.** Of ②'s 98 rows,
+**twelve are mistranscribed numbers** (−70.8 → −69.8, −77.1 → −79.2,
+46.0 → 45.9, 6.2 → 6.3, the −10.4/−17.8 cell mix, "three → two" tasks,
+layers-vs-task mismatch, `window25`'s copied saving, the exponent
+10⁻⁵ → 10⁻⁴, UniVLA latency 2.9/3 s → 2.81 s, 80 → 82, 5.6× → 5.7×) —
+mostly rounding or adjacent-cell slips. **The other eighty-six are
+sentences that got ahead of the data**, falling into these types:
+
+> **Do not confuse tables ① and ②.** ① (17 rows) is **sentences changed
+> by new measurements** — that is an experiment in progress, not error. ②
+> (98 rows) is **us getting ahead of the data.** In the draft, six rows that
+> belonged in ② were mixed into ①.
+
+| Type | Count | Examples |
+|---|---:|---|
+| **writing a one-condition measurement as a general property** | 24 | foveation's periphery behavior (checkerboard image), the detail curve (Laplacian), §3.5.2's back-solve, "difference = geometry share", **one task's values as a whole condition (five)**, LFA's gains without conditions, extending determinism from two columns to the grid's hardware |
+| **writing without reading the code or the original** | 26 | calibration data amount, the meaning of `keep`, MoLe's router, FLOPs 28.9%, four scopes of others' experiments, **Gaze-Reg's backbones reversed**, picking the wrong row of someone's table, back-solving a number and writing it as the paper's, **a range our own script does not reproduce (1.5–4.8×)** |
+| **not dividing by the denominator / not counting the family / not stating provenance / not propagating across documents** | 32 | §6.3's bucket shares, **the two family sizes swapped (35 ↔ 42)**, `**` → `***`, "six papers", "three axes", §5.3's tree mixing, lengths/status blocks/status tables, another paper's section number as ours, §7.1's own tallies, **a fixed baseline sentence left unfixed in Overview** |
+| **mistranscribed numbers** | 12 | the twelve above |
+| **the verification script itself wrong** | 2 | the backbone-axis loop hardcoded to Bridge, dropping seven tests; document and script sharing one bug so the machine comparison passed |
+| **sentences surviving from before the result** | 2 | §2.5's "the basis of §6", and the Gaze-Reg passage written as if unaware of our +18.8 |
+
+> **The same type repeated three times.** "Writing one task's deleted
+> layers as the whole condition's" had already been caught once on OpenVLA
+> `prune4` — and was repeated verbatim on the SpatialVLA and UniVLA rows.
+> **There was no procedure for checking whether a caught error also lives
+> in the other backbone rows** — that is what this table teaches.
+
+> **And the same hole has a cross-document version.** Report §3.8's
+> "nowhere lower" was fixed without fixing the same sentence in
+> `Overview.md`'s status table. 46.0 → 45.9 and the UniVLA latency have the
+> same shape — **a sentence fixed in one document survived in another.** So
+> one more rule: **when a value or sentence is fixed, grep all three
+> documents for the same value or phrasing before committing.** The last
+> three rows of this table are the ones caught late for lack of that
+> procedure.
+
+> Type assignment involves judgment, and a few rows sit on boundaries. But
+> **pushing them either way changes nothing** — the two largest types are
+> "writing without looking" and "generalizing one condition," and pure
+> transcription slips are a minority.
+
+**"Writing without looking," the denominators, and the stale sentences all
+arose at transcription points, not in computation.** Everything new from
+sweeping §2 and Appendix A was the same — §2.5 and A.3 still held pre-
+rejection sentences after §6 was rejected, and our calibration procedure
+had been written from memory instead of code. This type **is always caught
+by going back to the source or the code.**
+
+**"Generalizing one condition" is different in kind, and more dangerous.**
+Transcription errors are caught by comparison with records; this is the
+case where **the number is right and the sentence is wrong.** The detail
+curve reproduces exactly under its own conditions, and §3.5.2's back-solve
+is arithmetically sound — what was wrong was **not stating what the value
+depends on.** Switch the metric from Laplacian to Sobel and 39% becomes
+68%; switch the test image from a checkerboard to a real observation and
+the periphery conclusion reverses.
+
+> **Hence one more rule.** When quoting a measurement, **state what it was
+> measured with and measured against.** Not "39% at dead center" but "39%
+> by Laplacian (a metric sensitive to the finest texture) on a 640×480
+> Bridge observation." And **when the number of unknowns equals the number
+> of measurement points, the solution is not a verification** — it must be
+> labeled as such.
+
+**And one rule of this document, fixed here.** When quoting totals,
+**write the denominator with them.** Not "16 → 35" but "16 of 23 failures
+→ 35 of 48 failures." Using counts where shares are needed makes the mere
+growth of failures read like an effect — the same error we criticize in
+§2.5.
+
+---
+
+## 7.3 Where this document goes in the paper
+
+**This document is not the paper — it is the paper's material.** Here is
+which section goes where, and **what the paper needs that we do not yet
+have.**
+
+### The mapping
+
+| Paper | What it takes from here | Status |
+|---|---|---|
+| **Abstract** | §0's one sentence + the five results | **not written** |
+| **1. Introduction** | all of §1 (the field's claim → the premise we test) | draft exists |
+| **2. Related Work** | §2.1–2.6; material in Appendix A | draft exists |
+| **3. Method** | **§3.0** (intervention specs) · **§3.3** (pairing protocol) · **§3.4 + 3.4.1** (determinism and the p-value's premises) · §3.6 (grid uniformity rules) | ready |
+| **4. Experimental Setup** | §3.1 backbones · §3.2 benchmarks · §3.5 deleted layers · §3.8 baseline comparison · §3.7 reproduction | ready |
+| **5. Results** | §4 (per axis) · §5 (across axes) | ready |
+| **6. Analysis** | §6 (mechanism — negative result) · §4.4 (c) (selection sensitivity) | ready |
+| **7. Limitations** | §7.0 status · §7 ①②③④ | ready |
+| **8. Conclusion** | — | **not written** |
+| **Appendix** | Appendix A · §3.5.1–3.5.2 · §7.1 · §7.2 | ready |
+
+### Do not confuse what the Method is
+
+**We propose no new method.** So what goes into the Method section is not
+an algorithm but **a measurement procedure.** Three parts:
+
+1. **Per-episode pairing** (§3.3) — pair identical initial states and
+   count only discordant pairs, instead of subtracting two success rates.
+   Impossible to apply to prior work (no episode records released), which
+   is itself one of our points.
+2. **The determinism check and the statistical reading that follows**
+   (§3.4, §3.4.1) — re-run variance is confirmed zero, so the p-value, not
+   a confidence interval, is the entire uncertainty. The premise is
+   stated.
+3. **The grid uniformity rules** (§3.6) — what is a grid cell, what is a
+   diagnostic, and why diagnostics need not be uniform.
+
+These three are the Method; **§3.0's intervention specs are what that
+Method is applied to.**
+
+### Results has three tiers
+
+| Tier | What | Where |
+|---|---|---|
+| **the grid** | 5 columns × 8 conditions, paired Δ and p | §4 |
+| **tests across axes** | the 43 Fisher tests — does the same intervention act differently per cell | §5.1–5.3 |
+| **digging into one cell** | the keep sweep (4 points), the depth window sweep (5 cells), the mechanism measurement | §4.3 (b), §4.4 (c), §6 |
+
+The third tier is **likely to carry the paper's weight.** The grid shows
+"the sign splits" but controls few variables; the third tier **fixes
+backbone, benchmark, method, capacity, and cost, moves one flag**, and
+produces 45.9–50.4 points.
+
+### What the paper needs and we lack
+
+| Missing | Note |
+|---|---|
+| **Abstract / Conclusion** | the results are settled, so these can now be written |
+| **Figures** | tables only so far. At minimum: (a) a grid heatmap, (b) the keep dose-response curve, (c) a five-cell paired-gap bar chart |
+| **A third benchmark** | §7 ① — not openable by simulation |
+| **The drawer task family** | §7 ③ — openable by simulation; about 6 hours at diagnostic scope |
+| **The paper version of the correction log** | §7.1's table does not go in as is. Only §7.2's **three causes and the "totals with denominators" rule** go into the methodology section, as one paragraph |
+
+---
