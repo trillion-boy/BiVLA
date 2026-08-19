@@ -1,11 +1,12 @@
 # Method notebooks — one per intervention
 
-Self-contained notebooks for the four conditions in the comparison grid, split
-by **method** rather than by backbone so each can be lifted into a different
-codebase (CALVIN, a new simulator, a real robot) without untangling flags.
+Notebooks for the four conditions in the comparison grid, split by **method**
+rather than by backbone so each can be lifted into a different codebase
+(CALVIN, a new simulator, a real robot) without untangling flags — plus a
+fifth that runs the campaign with them.
 
-Each notebook carries the method's code inline — copied verbatim from
-`adaptive_sparse_vla/`, not imported — so it runs on its own.
+`01`–`04` carry the method's code inline — copied verbatim from
+`adaptive_sparse_vla/`, not imported — so each runs on its own.
 
 | notebook | condition | hook | runs standalone? |
 |---|---|---|---|
@@ -13,6 +14,20 @@ Each notebook carries the method's code inline — copied verbatim from
 | `02_fixed_foveation.ipynb` | Fixed foveation | **A** — the observation | yes, `cv2` + `numpy` |
 | `03_action_repeat.ipynb` | Action repeat | **B** — the actions | yes, `numpy` |
 | `04_fixed_depth_pruning.ipynb` | Fixed depth pruning | **C** — the decoder stack | yes, `torch` only |
+| `05_run_campaign.ipynb` | — (runs all eight) | — | dry run yes; real runs need a simulator |
+
+`01`–`04` are the method, stated without naming a model or a benchmark.
+**`05` is the other half**: it builds the real SimplerEnv and LIBERO
+environments, sweeps the eight conditions, and writes the files. It loads
+`01`–`04` from the `.ipynb` files in the same directory rather than copying
+their code, so it cannot drift from them.
+
+The only thing `05` does not supply is **the policy** — an object exposing
+`step(image, instruction)` and `reset()`, plus a `.model` attribute if depth
+pruning is wanted. Its `check_policy()` catches the shape mistakes on one
+fake frame; the two that fail quietly (`unnorm_key` and the gripper
+convention) are caught only by comparing the baseline to the model's own
+published number, which is step 3 of `05`'s closing checklist.
 
 **Read `01` first.** It defines the control loop and the three hook points that
 `02`–`04` attach to; the other three describe themselves in its terms.
@@ -78,7 +93,7 @@ LIBERO and SimplerEnv adapters are included as examples, neither privileged.
 
 ## Verification
 
-Every code cell in all four notebooks executes top to bottom with no simulator
+Every code cell in all five notebooks executes top to bottom with no simulator
 and no checkpoint, and each notebook ends in assertions rather than eyeballing:
 
 - **01** runs the loop against both simulator APIs × both policy shapes
@@ -93,6 +108,10 @@ and no checkpoint, and each notebook ends in assertions rather than eyeballing:
   failure that would otherwise surface only as a quietly lower success rate),
   that the two layer-window conventions really do select different layers,
   and that calibration survives `reset_episode()` by default.
+- **05** dry-runs the whole driver on stubs: eight conditions produce eight
+  correctly named directories, the depth conditions bypass layers and restore
+  them, and the written files pair on `ep_id`. Only the two `build_*_env`
+  functions need a simulator.
 
 ## The output files
 

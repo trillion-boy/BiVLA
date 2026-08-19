@@ -315,6 +315,31 @@ out_dir=...)` produces
 `<out_dir>/<condition>/<task>/results_<task>.json` — the layout
 `build_grid_report.py` walks — so nothing has to be reformatted afterwards.
 
+**A fifth notebook runs the campaign.** `01`–`04` state the method and name no
+model or benchmark, which left two pieces to write per model: the environment
+builders and the eight-condition driver. `05_run_campaign.ipynb` supplies both:
+
+| in `05` | |
+|---|---|
+| SimplerEnv Bridge builder | with the `rgb_overlay_path` check — it refuses to run without the visual-matching image rather than scoring on the raw render |
+| SimplerEnv Fractal builder | `prepackaged_config=True`, plus the same overlay check |
+| LIBERO suite loader | one env per task, `set_init_state` per trial, `MUJOCO_GL=osmesa` set before the first import |
+| `CONDITIONS` + `run_campaign` | the eight conditions under the directory names the analysis expects |
+| `attach_depth_pruning` | the OpenVLA wiring shape — hooks ride the first real prediction, so calibration costs no extra forward |
+| `check_policy` | catches shape mistakes on one fake frame |
+| a dry run | the whole driver on stubs: eight directories, layers bypassed and restored, files pairing on `ep_id` |
+
+It loads `01`–`04` out of the `.ipynb` files rather than copying their code, so
+it cannot drift from them.
+
+**What is still per model: the policy wrapper.** An object exposing
+`step(image, instruction) -> (T, action_dim)` and `reset()`, plus `.model` if
+depth pruning is wanted. Ours were about 150 lines each and did nothing but
+translate between that contract and the checkpoint's own API. Two things live
+there and fail quietly rather than raising — `unnorm_key` and the gripper
+convention — and neither is catchable by any check in the notebooks; only
+comparing the baseline against that model's published number finds them.
+
 Notebook 01 ends by writing two conditions to a temporary directory and
 pairing them back the way the analysis does (index by `ep_id`, count only the
 episodes whose outcome flipped). That check runs with no simulator and no

@@ -2331,4 +2331,650 @@ cells04 = [
 ]
 write("04_fixed_depth_pruning.ipynb", cells04)
 
+
+# ------------------------------------------------------------------- 05
+
+cells05 = [
+    md("""
+    # 05 — Running the campaign
+
+    `01`–`04` define the loop and the three interventions and prove them on
+    stubs. They deliberately name no model and no benchmark. This notebook is
+    the other half: it builds the real environments, sweeps the eight
+    conditions, and writes the files the analysis reads.
+
+    **You supply one thing: a policy object.** Everything else is here.
+
+    | | where it comes from |
+    |---|---|
+    | the control loop, the file format, the episode ids | `01` |
+    | foveation, action repeat, depth pruning | `02`, `03`, `04` |
+    | SimplerEnv and LIBERO environments | this notebook |
+    | the eight conditions and the driver | this notebook |
+    | **the policy** | **you** |
+
+    Run order in a fresh session: put all five notebooks in one directory and
+    start here — the next cell loads `01`–`04` for you.
+    """),
+    code('''
+    # Load 01-04 into this session. They are read from the .ipynb files rather
+    # than copied, so this notebook cannot drift from them.
+    import json
+    import os
+
+    NOTEBOOK_DIR = os.getcwd()
+    _NEEDED = ["01_original_policy", "02_fixed_foveation",
+               "03_action_repeat", "04_fixed_depth_pruning"]
+
+    for _name in _NEEDED:
+        _path = os.path.join(NOTEBOOK_DIR, _name + ".ipynb")
+        if not os.path.exists(_path):
+            raise FileNotFoundError(
+                f"{_path} not found. Put all five notebooks in one directory, "
+                f"or set NOTEBOOK_DIR to where they live. Copying the code in "
+                f"by hand instead is how the notebook and the runs drift "
+                f"apart.")
+        with open(_path) as fh:
+            _nb = json.load(fh)
+        print(f"--- {_name} ---", flush=True)
+        for _cell in _nb["cells"]:
+            if _cell["cell_type"] == "code":
+                exec(compile("".join(_cell["source"]), _name, "exec"), globals())
+
+    # Their self-checks just ran, so if this line prints, the loop, the two
+    # image transforms, the action transform and the bypass layer all work in
+    # this environment -- before any checkpoint is downloaded.
+    for _fn in ["run_episode", "run_condition", "EPISODE_IDS", "reset_options",
+                "make_foveation_hook", "make_action_repeat_hook",
+                "StaticDepthPruner", "find_decoder_layers"]:
+        assert _fn in globals(), f"{_fn} missing -- did a cell above fail?"
+    print("\\n01-04 loaded and self-checked")
+    '''),
+    md("""
+    ## The one thing you supply
+
+    ```python
+    class YourPolicy:
+        def reset(self) -> None: ...
+        def step(self, image, instruction) -> np.ndarray   # (T, action_dim)
+    ```
+
+    A single-action policy may return a flat `(action_dim,)` vector; the loop
+    handles both. For depth pruning the object also needs a `.model` attribute
+    holding the `torch.nn.Module` whose decoder stack should be pruned.
+
+    Two things live in this wrapper and nowhere else, and both fail **quietly**
+    — they lower the success rate instead of raising:
+
+    * **`unnorm_key`** — which dataset's percentile statistics de-normalise the
+      action. Pass it explicitly and check it against the keys the checkpoint
+      actually ships. A wrong key produces plausible-looking but wrong motion.
+    * **the gripper convention** — training range and sign differ per
+      checkpoint. Get it wrong and the arm reaches correctly and never grasps,
+      which looks exactly like a method failure.
+
+    `check_policy` below catches the shape mistakes. It cannot catch either of
+    those two; only the baseline-vs-paper comparison at the end can.
+    """),
+    code('''
+    def check_policy(policy, image_shape=(256, 256, 3), instruction="pick up the cup"):
+        """Fail now, on one fake frame, rather than 90 episodes in."""
+        for name in ("reset", "step"):
+            if not callable(getattr(policy, name, None)):
+                raise AttributeError(f"policy has no callable {name}()")
+        policy.reset()
+        frame = np.zeros(image_shape, dtype=np.uint8)
+        actions = np.atleast_2d(np.asarray(policy.step(frame, instruction)))
+        if actions.ndim != 2:
+            raise ValueError(
+                f"policy.step returned shape {actions.shape}; expected "
+                f"(T, action_dim) or a flat (action_dim,)")
+        chunk, dim = actions.shape
+        has_model = isinstance(getattr(policy, "model", None), torch.nn.Module)
+        print(f"  returns {chunk} action(s) of dim {dim}")
+        print(f"  .model present: {has_model}"
+              f"{'' if has_model else '  <- depth pruning needs this'}")
+        if has_model:
+            layers = find_decoder_layers(policy.model)
+            if layers is None:
+                print("  decoder stack: NOT FOUND -- add the attribute path to "
+                      "find_decoder_layers in 04 before running depth prune")
+            else:
+                print(f"  decoder stack: {len(layers)} layers")
+        # Native chunk length decides how action repeat composes: a policy
+        # already emitting 10 actions per call is amortised 10x before the
+        # intervention, so repeat=2 lands at 20 env steps per forward.
+        print(f"  native chunk length: {chunk}"
+              f"{'  (repeat composes on top of this)' if chunk > 1 else ''}")
+        return {"chunk": chunk, "action_dim": dim, "has_model": has_model}
+    '''),
+    md("""
+    ## SimplerEnv environments
+
+    Two families with different construction paths, and neither detail is
+    cosmetic.
+
+    **Bridge** needs the `rgb_overlay_path` real-inpainting image. The
+    checkpoints were evaluated against that composite; without it the policy is
+    scored on a distribution it has never seen. It does not raise — it just
+    scores badly — so the builder below refuses to run instead.
+
+    **Fractal** needs `prepackaged_config=True`, which sets robot, control
+    mode, frequencies, scene and overlay from the env itself. Re-deriving those
+    by hand is how a run silently loses its overlay.
+
+    `SIMPLER_ROOT` must point at your SimplerEnv checkout.
+    """),
+    code('''
+    SIMPLER_ROOT = "/content/SimplerEnv"    # <- set this
+
+    BRIDGE_TASKS = {
+        "widowx_put_eggplant_in_basket": {
+            "env_name": "PutEggplantInBasketScene-v0",
+            "robot": "widowx_sink_camera_setup",
+            "scene_name": "bridge_table_1_v2",
+            "rgb_overlay_path": "ManiSkill2_real2sim/data/real_inpainting/bridge_sink.png",
+            "max_episode_steps": 120,
+        },
+        "widowx_carrot_on_plate": {
+            "env_name": "PutCarrotOnPlateInScene-v0",
+            "robot": "widowx",
+            "scene_name": "bridge_table_1_v1",
+            "rgb_overlay_path": "ManiSkill2_real2sim/data/real_inpainting/bridge_real_eval_1.png",
+            "max_episode_steps": 60,
+        },
+        "widowx_stack_cube": {
+            "env_name": "StackGreenCubeOnYellowCubeBakedTexInScene-v0",
+            "robot": "widowx",
+            "scene_name": "bridge_table_1_v1",
+            "rgb_overlay_path": "ManiSkill2_real2sim/data/real_inpainting/bridge_real_eval_1.png",
+            "max_episode_steps": 60,
+        },
+        "widowx_spoon_on_towel": {
+            "env_name": "PutSpoonOnTableClothInScene-v0",
+            "robot": "widowx",
+            "scene_name": "bridge_table_1_v1",
+            "rgb_overlay_path": "ManiSkill2_real2sim/data/real_inpainting/bridge_real_eval_1.png",
+            "max_episode_steps": 60,
+        },
+    }
+
+    FRACTAL_TASKS = {
+        "google_robot_pick_horizontal_coke_can": {
+            "env_name": "GraspSingleOpenedCokeCanInScene-v0",
+            "env_kwargs": {"lr_switch": True}, "max_episode_steps": 80},
+        "google_robot_pick_vertical_coke_can": {
+            "env_name": "GraspSingleOpenedCokeCanInScene-v0",
+            "env_kwargs": {"laid_vertically": True}, "max_episode_steps": 80},
+        "google_robot_pick_standing_coke_can": {
+            "env_name": "GraspSingleOpenedCokeCanInScene-v0",
+            "env_kwargs": {"upright": True}, "max_episode_steps": 80},
+        "google_robot_move_near_v0": {
+            "env_name": "MoveNearGoogleBakedTexInScene-v0",
+            "env_kwargs": {}, "max_episode_steps": 80},
+    }
+
+    # Bridge renders the policy view from 3rd_view_camera, Fractal from
+    # overhead_camera. Reading the wrong one is silent.
+    CAMERA = {**{t: "3rd_view_camera" for t in BRIDGE_TASKS},
+              **{t: "overhead_camera" for t in FRACTAL_TASKS}}
+
+
+    def build_bridge_env(task, ep_id):
+        from simpler_env.utils.env.env_builder import (
+            build_maniskill2_env, get_robot_control_mode)
+
+        cfg = BRIDGE_TASKS[task]
+        overlay = None
+        for base in (SIMPLER_ROOT, os.path.join(SIMPLER_ROOT, "ManiSkill2_real2sim")):
+            cand = os.path.join(base, cfg["rgb_overlay_path"])
+            if os.path.exists(cand):
+                overlay = cand
+                break
+        if overlay is None:
+            raise FileNotFoundError(
+                f"visual-matching overlay not found: {cfg['rgb_overlay_path']} "
+                f"(searched under {SIMPLER_ROOT}). Refusing to run: without it "
+                f"the policy is scored on the raw sim render, which is not the "
+                f"distribution it was evaluated on, and nothing about the run "
+                f"will look wrong.")
+        env = build_maniskill2_env(
+            cfg["env_name"], obs_mode="rgbd", robot=cfg["robot"],
+            sim_freq=500, control_freq=5,
+            control_mode=get_robot_control_mode(cfg["robot"], "policy"),
+            max_episode_steps=cfg["max_episode_steps"],
+            scene_name=cfg["scene_name"],
+            camera_cfgs={"add_segmentation": True},
+            renderer_kwargs={"offscreen_only": True},
+            rgb_overlay_path=overlay,
+            rgb_overlay_cameras=["3rd_view_camera"],
+        )
+        _, options = reset_options(task, ep_id)          # from 01
+        obs, _ = env.reset(seed=int(ep_id), options=options)
+        return env, obs
+
+
+    def build_fractal_env(task, ep_id):
+        import gymnasium as gym
+        import simpler_env  # noqa: F401 -- registers the env ids
+
+        cfg = FRACTAL_TASKS[task]
+        env = gym.make(cfg["env_name"], obs_mode="rgbd", prepackaged_config=True,
+                       max_episode_steps=cfg["max_episode_steps"],
+                       **cfg["env_kwargs"])
+        _, options = reset_options(task, ep_id)          # from 01
+        obs, _ = env.reset(seed=int(ep_id), options=options)
+        if not getattr(env.unwrapped, "rgb_overlay_path", None):
+            raise RuntimeError(
+                f"{task}: SimplerEnv returned no rgb_overlay_path. The "
+                f"real_inpainting assets are missing under "
+                f"{SIMPLER_ROOT}/ManiSkill2_real2sim/data. Refusing to run "
+                f"rather than evaluate on the raw sim render.")
+        return env, obs
+
+
+    def simpler_adapter_factory(task, ep_id):
+        """The (task, ep_id) -> (adapter, instruction) callable run_condition wants."""
+        build = build_bridge_env if task in BRIDGE_TASKS else build_fractal_env
+        env, _ = build(task, ep_id)
+        instruction = env.get_language_instruction()
+        cfg = (BRIDGE_TASKS if task in BRIDGE_TASKS else FRACTAL_TASKS)[task]
+        cam = CAMERA[task]
+
+        def get_image(obs):
+            from simpler_env.utils.env.observation_utils import (
+                get_image_from_maniskill2_obs_dict)
+            return get_image_from_maniskill2_obs_dict(env, obs, camera_name=cam)
+
+        adapter = EnvAdapter(
+            env, get_image=get_image,
+            is_success=lambda obs, term, info: bool(info.get("success", False)),
+            settle_steps=0, max_steps=cfg["max_episode_steps"])
+        return adapter, instruction
+
+
+    BRIDGE_PLAN = {t: EPISODE_IDS[t] for t in BRIDGE_TASKS}       # 96 episodes
+    FRACTAL_PLAN = {t: EPISODE_IDS[t] for t in FRACTAL_TASKS}     # 135 episodes
+    print("Bridge ", sum(len(v) for v in BRIDGE_PLAN.values()), "episodes")
+    print("Fractal", sum(len(v) for v in FRACTAL_PLAN.values()), "episodes")
+    '''),
+    md("""
+    ## LIBERO environments
+
+    Three differences from SimplerEnv, all of which have bitten us:
+
+    1. **LIBERO cannot be run zero-shot.** Success collapses to roughly 0
+       without a LIBERO fine-tune, and each released checkpoint is trained on
+       **one suite only**. Always pair the checkpoint with its own suite;
+       crossing them measures nothing.
+    2. **The initial states are an explicit array.**
+       `env.set_init_state(init_states[i])` fully determines the episode, so
+       here the pairing key really is `(task_id, trial)` — a plain counter,
+       unlike the SimplerEnv coke-can tasks.
+    3. **Rendering.** On current Colab images EGL hangs or segfaults once a
+       policy is resident on the GPU. Set `MUJOCO_GL=osmesa` **before** the
+       first LIBERO import; OSMesa renders on the CPU and cannot contend with
+       CUDA.
+
+    One env per task, reset per trial — the same convention as OpenVLA's
+    official eval. Building an env is the slow, hang-prone step; rebuilding it
+    per trial multiplies that by the trial count for no benefit.
+    """),
+    code('''
+    os.environ.setdefault("MUJOCO_GL", "osmesa")     # before any libero import
+
+    LIBERO_SUITES = ["libero_spatial", "libero_object", "libero_goal", "libero_10"]
+    LIBERO_RESOLUTION = 256
+    LIBERO_MAX_STEPS = 220
+
+
+    def libero_plan(suite, n_tasks=10, n_trials_per_task=5):
+        """-> {task_name: [trial, ...]}, one entry per LIBERO task.
+
+        The task name carries the suite so the written files stay separable
+        when several suites share an output directory.
+        """
+        return {f"{suite}_task{tid:02d}": list(range(n_trials_per_task))
+                for tid in range(n_tasks)}
+
+
+    class _LiberoEpisode:
+        """One fixed initial state, presented as a plain env.
+
+        `reset()` has to do two things on LIBERO -- reset, then apply the
+        stored init state -- and the loop only calls one. Wrapping keeps that
+        detail out of EnvAdapter.
+        """
+
+        def __init__(self, env, init_state):
+            self.env, self.init_state = env, init_state
+
+        def reset(self):
+            self.env.reset()
+            return self.env.set_init_state(self.init_state)
+
+        def step(self, action):
+            return self.env.step(action)
+
+
+    class LiberoTasks:
+        """Suite loader that keeps one env alive per task."""
+
+        def __init__(self):
+            self._suites, self._env, self._env_key = {}, None, None
+
+        def suite(self, name):
+            if name not in self._suites:
+                from libero.libero import benchmark
+                self._suites[name] = benchmark.get_benchmark_dict()[name]()
+            return self._suites[name]
+
+        def _build(self, suite_name, task_id):
+            from libero.libero import get_libero_path
+            from libero.libero.envs import OffScreenRenderEnv
+
+            task = self.suite(suite_name).get_task(task_id)
+            bddl = os.path.join(get_libero_path("bddl_files"),
+                                task.problem_folder, task.bddl_file)
+            env = OffScreenRenderEnv(bddl_file_name=bddl,
+                                     camera_heights=LIBERO_RESOLUTION,
+                                     camera_widths=LIBERO_RESOLUTION)
+            env.seed(0)
+            return env, task
+
+        def factory(self, task_name, trial):
+            suite_name, _, tail = task_name.rpartition("_task")
+            task_id = int(tail)
+            key = (suite_name, task_id)
+            if self._env_key != key:
+                self.close()
+                self._env, self._task = self._build(suite_name, task_id)
+                self._env_key = key
+            states = self.suite(suite_name).get_task_init_states(task_id)
+            episode = _LiberoEpisode(self._env, states[trial % len(states)])
+            adapter = libero_adapter(episode, max_steps=LIBERO_MAX_STEPS)  # from 01
+            return adapter, self._task.language
+
+        def close(self):
+            if self._env is not None:
+                self._env.close()
+            self._env, self._env_key = None, None
+
+
+    # Usage:
+    #   libero = LiberoTasks()
+    #   run_campaign(policy, libero.factory, libero_plan("libero_spatial"), out)
+    #   libero.close()
+    print("LIBERO suites:", ", ".join(LIBERO_SUITES))
+    print("per suite:", sum(len(v) for v in libero_plan("libero_spatial").values()),
+          "episodes per condition")
+    '''),
+    md("""
+    ## The eight conditions
+
+    Six of them are one argument. Depth pruning is not, and the difference is
+    structural rather than incidental: foveation and action repeat are
+    functions applied *around* the policy, while depth pruning replaces modules
+    *inside* it.
+
+    | condition | how |
+    |---|---|
+    | `baseline` | no hooks |
+    | `action_repeat2` / `action_repeat4` | `action_fn=make_action_repeat_hook(repeat=k)` |
+    | `foveate_logpolar` | `image_fn=make_foveation_hook("logpolar", 20.0)` |
+    | `foveate_blur` | `image_fn=make_foveation_hook("blur", 20.0)` |
+    | `depth_prune1` / `2` / `4` | wrap `policy.step` so the first call calibrates |
+
+    The condition names are the directory names the analysis expects. Keep
+    them.
+
+    **`DEPTH_KW` is the layer-window convention, and it is per backbone
+    family** — see `04`. The default is OpenVLA/UniVLA's; SpatialVLA's is
+    `window="count", min_layer=2, min_gap=0, protect_last=True`. Pick one per
+    model and keep it fixed across all its columns.
+    """),
+    code('''
+    CONDITIONS = [
+        ("baseline",         {}),
+        ("action_repeat2",   {"repeat": 2}),
+        ("action_repeat4",   {"repeat": 4}),
+        ("foveate_logpolar", {"foveate": ("logpolar", 20.0)}),
+        ("foveate_blur",     {"foveate": ("blur", 20.0)}),
+        ("depth_prune1",     {"prune": 1}),
+        ("depth_prune2",     {"prune": 2}),
+        ("depth_prune4",     {"prune": 4}),
+    ]
+
+    DEPTH_KW = dict(window="ratio", min_layer=0.5, min_gap=1, protect_last=False)
+
+
+    def attach_depth_pruning(policy, prune, **kw):
+        """Wrap policy.step so the first call calibrates and the rest run pruned.
+
+        This is the OpenVLA shape from 04: the hooks ride on the first real
+        action prediction, so calibration costs no extra forward pass. It
+        works whenever policy.step() performs the model forward.
+
+        If your policy's forward happens where these hooks cannot see it --
+        a generate() buried inside a helper, or a cache type the bypass does
+        not write into -- attach the pruner at that call instead. 04's
+        "How this was wired" section has the three shapes we hit.
+        """
+        model = getattr(policy, "model", None)
+        if not isinstance(model, torch.nn.Module):
+            raise AttributeError(
+                "depth pruning needs policy.model to be the torch module whose "
+                "decoder stack should be pruned. Expose it, or attach the "
+                "pruner inside the wrapper.")
+        if find_decoder_layers(model) is None:
+            raise RuntimeError(
+                "decoder stack not found -- refusing to report an unpruned run "
+                "as pruned. Add this model's attribute path to "
+                "find_decoder_layers in 04.")
+        pruner = StaticDepthPruner(model, prune=prune, **kw)
+        original = policy.step
+
+        def step(image, instruction, *a, **kwargs):
+            return pruner.calibrate_on(
+                lambda: original(image, instruction, *a, **kwargs))
+
+        policy.step = step
+        policy._depth = (pruner, original)
+        return pruner
+
+
+    def detach_depth_pruning(policy):
+        """Put the real layers and the real step back. Always call this."""
+        state = getattr(policy, "_depth", None)
+        if state is None:
+            return
+        pruner, original = state
+        pruner.restore()
+        policy.step = original
+        del policy._depth
+    '''),
+    md("""
+    ## The driver
+
+    One call per cell of the table: one model, one benchmark, eight conditions.
+
+    Order matters in one respect only — `baseline` runs first, so a setup
+    problem shows up before seven intervention runs have been spent on it.
+    Otherwise the conditions are independent; `skip` lets you resume after an
+    interruption without redoing what is already on disk.
+    """),
+    code('''
+    def run_campaign(policy, adapter_factory, plan, out_dir, model_name="",
+                     conditions=None, skip=()):
+        """Run all eight conditions over `plan` and write them under `out_dir`.
+
+        Returns {condition: {task: summary}}. Files land at
+        <out_dir>/<condition>/<task>/results_<task>.json.
+        """
+        conditions = list(conditions or CONDITIONS)
+        done = {}
+        for name, spec in conditions:
+            if name in skip:
+                print(f"[skip] {name}", flush=True)
+                continue
+            print(f"\\n{'=' * 64}\\n  {name}\\n{'=' * 64}", flush=True)
+            kwargs, extra = {}, {}
+            if "repeat" in spec:
+                kwargs["action_fn"] = make_action_repeat_hook(repeat=spec["repeat"])
+                extra["action_repeat"] = spec["repeat"]
+            if "foveate" in spec:
+                mode, keep = spec["foveate"]
+                kwargs["image_fn"] = make_foveation_hook(mode, keep)
+                extra["foveate"] = {"mode": mode, "keep_percent": keep}
+            if "prune" in spec:
+                attach_depth_pruning(policy, spec["prune"], **DEPTH_KW)
+                extra["depth_prune"] = spec["prune"]
+                extra["depth_window"] = dict(DEPTH_KW)
+            try:
+                done[name] = run_condition(
+                    adapter_factory, policy, plan, condition=name,
+                    out_dir=out_dir, model_name=model_name, extra=extra,
+                    **kwargs)
+            finally:
+                # In a finally block on purpose: an exception mid-condition
+                # would otherwise leave the next one running on a pruned
+                # stack and silently report it as something else.
+                detach_depth_pruning(policy)
+
+        print("\\n" + "=" * 64)
+        for name, per_task in done.items():
+            n = sum(s["n_episodes"] for s in per_task.values())
+            ok = sum(s["success_rate"] * s["n_episodes"] for s in per_task.values())
+            print(f"  {name:<18} {ok:>5.0f}/{n:<5} = {100 * ok / n:5.1f}%")
+        return done
+
+
+    # One cell of the table:
+    #   run_campaign(policy, simpler_adapter_factory, BRIDGE_PLAN,
+    #                "results/mymodel_bridge", model_name="MyVLA")
+    '''),
+    md("""
+    ## Dry run — the whole driver, no simulator and no checkpoint
+
+    Everything above except the two `build_*_env` functions runs here on stubs.
+    What it proves: the eight conditions produce eight directories with the
+    expected names, the depth conditions really bypass layers and really put
+    them back, and the written files pair on `ep_id`.
+
+    Run this before downloading anything.
+    """),
+    code('''
+    import shutil
+    import tempfile
+
+
+    class _StubVLA:
+        """Policy shaped like a real one: a torch model and a chunk of actions.
+
+        `_FakeModel` comes from 04 -- the same synthetic stack its own checks
+        use, so the pruner here is exercised exactly as it was there,
+        including the attention shape it needs for the KV placeholder.
+        """
+
+        def __init__(self):
+            self.model = _FakeModel()
+            self.calls = 0
+
+        def reset(self):
+            self.calls = 0
+
+        def step(self, image, instruction):
+            self.calls += 1
+            self.model(torch.randn(1, 4, 16))       # a real forward to hook
+            return np.zeros((2, 7), dtype=np.float32)
+
+
+    class _StubEnv(GymnasiumEnv):
+        def __init__(self, solve_at):
+            super().__init__(solve_at=solve_at)
+
+
+    def _stub_factory(task, ep_id):
+        # Odd episodes succeed, so success rates are neither 0 nor 100.
+        adapter = EnvAdapter(_StubEnv(6 if ep_id % 2 else 10_000),
+                             get_image=lambda obs: obs["cam"], max_steps=20)
+        return adapter, "pick up the cup"
+
+
+    policy = _StubVLA()
+    print("check_policy:")
+    check_policy(policy, image_shape=(64, 64, 3))
+
+    tmp = tempfile.mkdtemp()
+    try:
+        out = run_campaign(policy, _stub_factory,
+                           {"widowx_stack_cube": list(range(6))}, tmp,
+                           model_name="stub")
+
+        names = sorted(os.listdir(tmp))
+        assert names == sorted(n for n, _ in CONDITIONS), names
+        print("\\n  wrote:", ", ".join(names))
+
+        # The depth conditions must have restored the stack afterwards.
+        assert not hasattr(policy, "_depth")
+        assert all(not isinstance(l, BypassDecoderLayer) for l in policy.model.layers)
+        print("  decoder stack restored after the depth conditions")
+
+        # And the files must pair, which is the only thing the analysis needs.
+        def load(cond):
+            p = os.path.join(tmp, cond, "widowx_stack_cube",
+                             "results_widowx_stack_cube.json")
+            with open(p) as fh:
+                return {int(e["ep_id"]): bool(e["success"])
+                        for e in json.load(fh)["episodes"]}
+
+        base, pruned = load("baseline"), load("depth_prune4")
+        assert set(base) == set(pruned) == set(range(6))
+        print(f"  baseline and depth_prune4 pair on all {len(base)} episodes")
+
+        # The recorded metadata has to say which condition it was.
+        with open(os.path.join(tmp, "action_repeat2", "widowx_stack_cube",
+                               "results_widowx_stack_cube.json")) as fh:
+            meta = json.load(fh)
+        assert meta["action_repeat"] == 2 and meta["condition"] == "action_repeat2"
+        print("  condition metadata is in the file")
+    finally:
+        shutil.rmtree(tmp)
+
+    print("\\nthe driver works end to end; only the env builders need a simulator")
+    '''),
+    md("""
+    ## Before trusting the first real cell
+
+    In order, because each one makes the next meaningful.
+
+    1. **Run the dry run above.** It costs seconds and covers everything except
+       the two environment builders.
+    2. **Run `check_policy`.** Note the native chunk length — a policy already
+       emitting a chunk of 10 is amortised 10× before action repeat touches it,
+       so its `action_repeat2` row is not comparable to a chunk-1 model's
+       without saying so.
+    3. **Run `baseline` alone and compare it to the number that model's own
+       paper reports for that benchmark.** Every other row in the column is a
+       difference against this one, so an error here is inherited by all seven.
+
+       Not a formality: our OpenVLA baseline on `libero_spatial` came out at
+       74.0% against a published 84.7%, a reproducible 10.7-point gap we never
+       explained. Differences measured with the gap held fixed are still
+       usable; absolute numbers are not comparable to the literature until it
+       is understood. Better to find it before seven more runs than after.
+    4. **Check that depth pruning actually got faster.** Bypassing N of L
+       layers should cut `model_ms_per_infer` by roughly N/L. If the success
+       rate moved and the latency did not, the layers were not really bypassed
+       — check `find_decoder_layers`, do not conclude the method failed.
+    5. **Then the remaining conditions.**
+
+    One habit worth keeping: run `baseline` twice, on the same episode ids, at
+    different times. Any episode that disagrees between the two is
+    non-determinism, and it caps how small a difference the rest of the column
+    can claim.
+    """),
+]
+write("05_run_campaign.ipynb", cells05)
+
 print("\ndone")
