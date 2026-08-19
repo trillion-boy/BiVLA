@@ -629,14 +629,17 @@ cells01 = [
                       f"{rec['model_ms_per_infer']:.0f} ms/infer", flush=True)
 
             n_ok = sum(e["success"] for e in episodes)
-            n_grasp = sum(1 for e in episodes if e["grasped"])
+            # None if the env never reported grasp (LIBERO): "not measured"
+            # must not be written as 0%.
+            grasp_known = [e for e in episodes if e["grasped"] is not None]
             summary = {
                 "model": model_name,
                 "task": task,             # trusted over the directory name
                 "condition": condition,
                 "n_episodes": len(episodes),
                 "success_rate": n_ok / len(episodes) if episodes else 0.0,
-                "grasp_rate": n_grasp / len(episodes) if episodes else 0.0,
+                "grasp_rate": (sum(e["grasped"] for e in grasp_known)
+                               / len(grasp_known)) if grasp_known else None,
                 "avg_model_ms_per_infer": float(np.mean(
                     [e["model_ms_per_infer"] for e in episodes])),
                 "avg_model_ms_per_env_step": float(np.mean(
