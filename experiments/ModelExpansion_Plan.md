@@ -58,9 +58,15 @@ if the base 8 come back looking like the existing cells.
 
 | Condition | Where it was run | Value |
 |---|---|---:|
-| depth prune 8 | OpenVLA / Bridge | −18.8 |
-| depth prune 8 | UniVLA / Bridge | −79.2 |
+| depth prune 8 | OpenVLA / Bridge | ±0.0 |
+| depth prune 8 | UniVLA / Bridge | −4.2 |
 | depth prune 2 + action repeat 2 | SpatialVLA / Fractal | −1.5 |
+
+(Values recomputed from the per-episode records, paired against each cell's
+own baseline: OpenVLA 15/96 = 15.6% vs 15.6%; UniVLA 74/96 = 77.1% vs 81.2%.
+Not to be confused with the *window* experiments on the same cells — UniVLA's
+prune 8 with the eligible window widened to L2–31 is −79.2, but that is a
+different condition, reported in Report §4.4.)
 
 These three are why the current test family is **38**, not 35.
 
