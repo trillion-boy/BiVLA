@@ -3,9 +3,13 @@
 Extending the backbone axis downward in parameter count. The current grid sits
 at 4–8.5B; the five new models cover 0.2–4B.
 
-**Benchmarks (2)** = both SimplerEnv suites, for every model:
-**WidowX-Bridge** (4 tasks × 24 = 96 episodes) and
-**Google Robot / Fractal** (coke can 3 poses × 25 + move_near 60 = 135 episodes).
+**Benchmarks.** Two families, six suites in total:
+
+| family | suites | episodes per run |
+|---|---|---:|
+| **SimplerEnv** | WidowX-Bridge (4 tasks × 24) | 96 |
+| | Google Robot / Fractal (coke can 3 poses × 25 + move_near 60) | 135 |
+| **LIBERO** | Spatial, Object, Goal, Long (= LIBERO-10) | 50 each |
 
 **Conditions (8)** = baseline plus the seven interventions. This is the row set
 of the existing grid, and it is what has to be run per cell — a single
@@ -16,7 +20,7 @@ of the existing grid, and it is what has to be run per cell — a single
 
 ---
 
-## Run table
+## SimplerEnv run table
 
 Rows are conditions, columns are cells (model × benchmark). Values are the
 **change in success rate against that column's own baseline, measured on
@@ -62,6 +66,104 @@ These three are why the current test family is **38**, not 35.
 
 ---
 
+## LIBERO run table
+
+Four suites, and one naming point first: in LIBERO, **Long and LIBERO-10 are
+the same suite** (`libero_10`, the ten long-horizon tasks). So "Spatial,
+Object, Long, 10" is four names for three suites unless the fourth is
+**Goal** — which is also the reading that matches what is actually
+downloadable, since OpenVLA released exactly four LIBERO checkpoints:
+spatial, object, goal, 10. The table below assumes Spatial / Object / Goal /
+Long(=10); if the intent was three suites, drop the Goal columns.
+
+Rows are the same eight conditions as SimplerEnv, so the two families stay
+comparable. 50 episodes per run (10 tasks × 5 initial states) — see the note
+on protocol below.
+
+| | TurboVLA<br>Spatial | TurboVLA<br>Object | TurboVLA<br>Goal | TurboVLA<br>Long | CoTinyVLA<br>Spatial | CoTinyVLA<br>Object | CoTinyVLA<br>Goal | CoTinyVLA<br>Long | FLOWER<br>Spatial | FLOWER<br>Object | FLOWER<br>Goal | FLOWER<br>Long | MiniVLA<br>Spatial | MiniVLA<br>Object | MiniVLA<br>Goal | MiniVLA<br>Long | SmolVLA<br>Spatial | SmolVLA<br>Object | SmolVLA<br>Goal | SmolVLA<br>Long |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| *params* | *0.2B* | *0.2B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *0.9B* | *0.9B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *4B* | *4B* | *4B* | *4B* |
+| *LIBERO checkpoint?* | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| *baseline success* | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+| action repeat 2 | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+| action repeat 4 | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+| foveation log-polar | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+| foveation blur | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+| depth prune 1 | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+| depth prune 2 | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+| depth prune 4 | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
+
+**To run: 20 cells × 8 conditions = 160 runs**, 8,000 episodes at 50 per run.
+
+### The checkpoint row is the gate, and it is per suite
+
+**LIBERO cannot be run zero-shot.** Success collapses to roughly 0 without a
+LIBERO fine-tune, and each of OpenVLA's four checkpoints is trained on **one
+suite only** — pairing a checkpoint with a different suite measures nothing.
+So a model needs up to four separate released checkpoints to fill its four
+columns, and that is the first thing to check for each of the five, before
+any scheduling.
+
+This is not hypothetical: it is why our own LIBERO work used OpenVLA rather
+than SpatialVLA. SpatialVLA reports LIBERO numbers but never released those
+weights — the `IPEC-COMMUNITY` org ships only `224-pt`, `mix-224-pt`,
+`sft-bridge`, `sft-fractal`. A model in the same position can appear on the
+SimplerEnv table and be absent from this one.
+
+Where a model ships fewer than four, run the columns it has and mark the rest
+`—` rather than substituting a checkpoint from another suite.
+
+### What we already have on LIBERO
+
+Only `libero_spatial`, only two backbones, and a condition set that does not
+line up with the SimplerEnv grid (no repeat 4, no prune 1/2; prune 8 and the
+phase-adaptive controller instead). Reference, not a grid row:
+
+| condition | OpenVLA | UniVLA |
+|---|---:|---:|
+| *baseline* | *74.0%* | *96.0%* |
+| action repeat 2 | −8.0 | **−68.0** |
+| foveation blur 20% | −16.0 | −2.0 |
+| foveation log-polar 20% | **−74.0** | −8.0 |
+| depth prune 4 | −18.0 | −10.0 |
+| depth prune 8 | −46.0 | −10.0 |
+| depth controller 2→8 | −24.0 | ±0.0 |
+
+Worth keeping in view for two reasons. First, the same interventions behave
+differently here than on SimplerEnv — log-polar took OpenVLA to 0.0% on
+`libero_spatial` while *helping* it on Bridge (+18.8) — so LIBERO is not a
+redundant copy of the SimplerEnv columns. Second, our OpenVLA baseline of
+74.0% sits 10.7 points under the published 84.7% on the same suite, a
+reproducible gap we never explained. Differences measured with that gap held
+fixed are still usable; absolute numbers are not comparable to the
+literature. The same check is worth running for each new model before its
+intervention rows are trusted.
+
+### Protocol: 50 episodes or 500?
+
+Ours is 10 tasks × 5 initial states = **50 per run**. OpenVLA's reference eval
+is 10 tasks × 50 trials = **500**, which is what the published numbers come
+from. At 50, a 4-point difference on one suite is inside the noise; the
+numbers above are only useful because the drops are large.
+
+Both are defensible, and the choice is the mentor's, but it should be the
+same for every model and every suite in the table. At 500 the LIBERO half of
+this expansion is **80,000 episodes** rather than 8,000 — worth deciding
+before rather than after.
+
+### Pairing on LIBERO
+
+Simpler than SimplerEnv, and worth saying because the two are not the same
+mechanism. LIBERO exposes an explicit array of initial states per task, and
+`env.set_init_state(init_states[i])` fully determines the episode. So the
+pairing key is **(`task_id`, `trial`)**, where `trial` indexes that array —
+here a plain counter *is* the right thing, unlike the SimplerEnv coke-can
+tasks. Both numbers have to be in every record.
+
+Everything else in the next section applies unchanged.
+
+---
+
 ## What each run has to write out
 
 Our protocol pairs episodes by **initial state** and counts only the ones whose
@@ -70,11 +172,12 @@ Each run needs one record per episode:
 
 | Field | Why |
 |---|---|
-| `ep_id` | the pairing key — the **environment's** episode/init id, identical across all 8 conditions |
+| `ep_id` (SimplerEnv) | the pairing key — the **environment's** episode/init id, identical across all 8 conditions |
+| `task_id` + `trial` (LIBERO) | the pairing key there; `trial` indexes the suite's `init_states` array |
 | `success` | boolean, from the env's own success flag |
 | `steps` | determinism check |
 | `model_ms_per_infer`, `model_ms_per_env_step` | the compute-saving column |
-| `grasped` | from `episode_stats.is_src_obj_grasped`, for the failure-type analysis |
+| `grasped` | from `episode_stats.is_src_obj_grasped`, for the failure-type analysis (SimplerEnv only) |
 
 Format to match: `results/<campaign>/<condition>/<task>/results_<task>.json`.
 Notebook 01's `run_condition(..., out_dir=...)` writes exactly this, so it
@@ -100,15 +203,17 @@ we currently have to disclose (Report §7 ⑤).
 
 ## Per-model information needed before the runs
 
-| Model | Checkpoint (HF path) | Decoder layers | Native chunk length | Action head |
-|---|---|---:|---:|---|
-| TurboVLA | | | | |
-| CoTinyVLA | | | | |
-| FLOWER | | | | |
-| MiniVLA | | | | |
-| SmolVLA | | | | |
+| Model | SimplerEnv checkpoint | LIBERO checkpoints (which suites) | Decoder layers | Native chunk length | Action head |
+|---|---|---|---:|---:|---|
+| TurboVLA | | | | | |
+| CoTinyVLA | | | | | |
+| FLOWER | | | | | |
+| MiniVLA | | | | | |
+| SmolVLA | | | | | |
 
-Two of these decide whether a condition is even applicable:
+The LIBERO column decides how many of that model's four LIBERO columns can be
+filled at all — see the gate above. The two after it decide whether a
+condition is even applicable:
 
 - **Native chunk length** — if a model natively emits action chunks, action
   repeat interacts with that. On our existing backbones this varied
@@ -129,20 +234,45 @@ go in the table.
 
 ---
 
+## Totals
+
+| | cells | runs | episodes |
+|---|---:|---:|---:|
+| SimplerEnv (10 new cells × 8) | 10 | 80 | 9,240 |
+| LIBERO (20 new cells × 8, 50 ep) | 20 | 160 | 8,000 |
+| **total** | **30** | **240** | **17,240** |
+
+At OpenVLA's own LIBERO protocol (500 per run) the second row becomes 80,000
+and the total 89,240. That single choice is roughly a 5× swing in the whole
+campaign, which is why it is worth settling first.
+
+---
+
 ## One consequence to expect
 
-The multiple-comparison threshold is derived from how many tests we run. The
-main grid goes from 5 × 7 = 35 to 15 × 7 = 105, so α tightens from ≈ 0.0013
-to ≈ 0.0005.
+The multiple-comparison threshold is derived from how many tests we run, so
+adding cells tightens it for the cells we already have.
 
-Two of the eight cells that currently pass sit just above that line:
+| family | intervention tests | α |
+|---|---:|---:|
+| now (5 SimplerEnv cells × 7) | 35 | 0.0013 |
+| + 10 SimplerEnv cells | 105 | 0.0005 |
+| + 20 LIBERO cells, if pooled into one family | 245 | 0.0002 |
 
-| Cell | current p | survives α ≈ 0.0005? |
-|---|---:|---|
-| OpenVLA/Fractal `depth prune 4` (**+15.6**) | 0.0011 | **no** |
-| OpenVLA/Bridge `action repeat 4` (**−11.5**) | 0.0010 | **no** |
+Whether LIBERO joins the same family is a judgement call rather than a fact:
+it is a different benchmark family asking the same question, so treating it
+as a second family with its own α is defensible. Pooling is the conservative
+choice, and it is the one that costs us something.
 
-The first one is the cell we lean on for "saves compute and success goes up."
+Two of the eight cells that currently pass sit just above the first line
+already:
+
+| Cell | current p | α ≈ 0.0005 | α ≈ 0.0002 |
+|---|---:|---|---|
+| OpenVLA/Fractal `depth prune 4` (**+15.6**) | 0.0011 | **no** | **no** |
+| OpenVLA/Bridge `action repeat 4` (**−11.5**) | 0.0010 | **no** | **no** |
+
+The first is the cell we lean on for "saves compute and success goes up."
 It does not become wrong — the estimate is unchanged — but it stops being
 callable as corrected-significant once the grid is this wide. Worth saying out
 loud before the runs rather than after.
