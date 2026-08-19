@@ -112,7 +112,7 @@ HOOK_TABLE = """
 |---|---|---|---|
 | **A** | the raw camera frame, **before** the policy's own preprocessing | every control step | `02_fixed_foveation` |
 | **B** | the action array the policy returned, **before** `env.step` | every control step | `03_action_repeat` |
-| **C** | the decoder-layer modules inside the LLM | once per episode (calibrate), then in effect for every forward | `04_fixed_depth_pruning` |
+| **C** | the decoder-layer modules inside the LLM | once per run (calibrate), then in effect for every forward | `04_fixed_depth_pruning` |
 """
 
 WHY_SAME_PLACE = """
@@ -179,7 +179,8 @@ Two numbers are easy to confuse:
 * **ms per environment step** — what the robot actually experiences.
 
 They are only the same when the policy emits one action per call. A policy that
-emits a chunk of 10 and executes all of them costs `ms_per_call / 10` per
+emits a chunk of 10 and executes all of them costs
+`model_ms_per_infer / 10` per
 environment step. Reporting one as the other makes an already-fast policy look
 slow, or vice versa.
 
@@ -296,6 +297,46 @@ cells01 = [
         return bool(terminated)
 
 
+    def default_grasped(info):
+        """Was the source object EVER grasped during this episode?
+
+        ManiSkill2_real2sim keeps this as a cumulative flag in
+        `info["episode_stats"]`, so reading the last step's info is enough.
+        It separates "never touched the object" from "grasped it and lost
+        it", which is what the failure-type analysis is made of, and it is
+        independent of whether the episode ultimately succeeded.
+
+        Returns None rather than False when the env does not report it, so
+        "not grasped" and "not measured" stay distinguishable in the file.
+        """
+        if not isinstance(info, dict):
+            return None
+        stats = info.get("episode_stats")
+        if not isinstance(stats, dict) or "is_src_obj_grasped" not in stats:
+            return None
+        return bool(stats["is_src_obj_grasped"])
+
+
+    def to_jsonable(value):
+        """numpy scalars and arrays -> plain Python.
+
+        An env's info dict is full of numpy bools, and json.dump refuses
+        them. Without this the run finishes and then dies on the last line,
+        when writing the file -- the most expensive place to fail.
+        """
+        if isinstance(value, dict):
+            return {str(k): to_jsonable(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [to_jsonable(v) for v in value]
+        if isinstance(value, np.ndarray):
+            return to_jsonable(value.tolist())
+        if isinstance(value, np.generic):
+            return value.item()
+        if value is None or isinstance(value, (str, int, float, bool)):
+            return value
+        return repr(value)
+
+
     class EnvAdapter:
         """Wraps a simulator so the loop never sees benchmark-specific details.
 
@@ -305,10 +346,12 @@ cells01 = [
         """
 
         def __init__(self, env, get_image, is_success=default_is_success,
+                     grasped=default_grasped,
                      noop_action=None, settle_steps=0, max_steps=220):
             self.env = env
             self.get_image = get_image
             self.is_success = is_success
+            self.grasped = grasped
             self.noop_action = noop_action
             self.settle_steps = int(settle_steps)
             self.max_steps = int(max_steps)
@@ -390,6 +433,11 @@ cells01 = [
         `state` is a free-form dict handed to both hooks, so a hook can keep
         per-episode state (a gaze tracker, a step counter) without this
         function knowing what the hook is.
+
+        The key names below are not cosmetic. They are the names the paired
+        tooling reads (`ep_id`, `success`, `steps`, `model_ms_per_infer`,
+        `model_ms_per_env_step`), and a record written with other names does
+        not load at all rather than loading wrong.
         """
         state = {} if state is None else state
         policy.reset()
@@ -397,6 +445,8 @@ cells01 = [
 
         success, done, act_steps = False, False, 0
         model_time, model_calls = 0.0, 0
+        info = {}                       # survives an episode with zero steps
+        t_start = time.time()
 
         for _ in range(adapter.settle_steps):      # benchmark-specific; 0 for
             obs, term, trunc, info = adapter.step(adapter.noop_action)
@@ -437,13 +487,22 @@ cells01 = [
         return {
             "success": bool(success),
             "steps": act_steps,
+            "elapsed": time.time() - t_start,
             "model_calls": model_calls,
-            "ms_per_call": (model_time / model_calls * 1000) if model_calls else 0.0,
-            "ms_per_env_step": (model_time / max(act_steps, 1)) * 1000,
+            "model_ms_per_infer": (model_time / model_calls * 1000) if model_calls else 0.0,
+            # Amortised over ENV steps, which is what the robot experiences:
+            # with a chunk or a repeat of k, one forward covers k env steps.
+            "model_ms_per_env_step": (model_time / max(act_steps, 1)) * 1000,
             # env steps executed per observation -- the quantity action repeat
             # actually changes, and not comparable across backbones unless
             # recorded (see 03).
             "steps_per_call": act_steps / model_calls if model_calls else 0.0,
+            # Grasp is not success. Keeping it makes "reached but never held"
+            # separable from "held it and dropped it" afterwards; not keeping
+            # it means re-running the episode to ask.
+            "grasped": adapter.grasped(info),
+            "episode_stats": to_jsonable(info.get("episode_stats"))
+                             if isinstance(info, dict) else None,
         }
     '''),
     md("""
@@ -496,40 +555,185 @@ cells01 = [
     independent samples, and a paired test (McNemar) on the same data is far
     more sensitive because episodes where both conditions agree carry no
     information about which is better.
+
+    ### An episode id is not a loop counter
+
+    The number that identifies an episode is the number the **environment**
+    uses to fix the initial state, and it has to be passed to the env's
+    reset. A bare `for i in range(24)` is not a substitute: it only agrees
+    with the env's numbering by accident, and where it disagrees the two
+    conditions are scored on different scenes while still looking paired.
+
+    So `run_condition` takes explicit ids per task and refuses to invent
+    them. The next section gives the ids for both SimplerEnv suites, where
+    the mapping differs by task family.
     """),
     code('''
-    def run_condition(adapter_factory, policy, tasks, n_trials=24, **loop_kwargs):
-        """Run one condition over a task list and summarise.
+    import json
+    import os
 
-        adapter_factory(task, trial) must be deterministic in (task, trial) so
-        that every condition sees the identical initial states.
+
+    def run_condition(adapter_factory, policy, tasks, condition="baseline",
+                      out_dir=None, model_name="", extra=None, **loop_kwargs):
+        """Run one condition over `tasks` and return {task: summary}.
+
+        tasks -- {task_name: [ep_id, ...]}. Explicit, because there is no
+                 safe default: on MoveNear the ids are ordered by object
+                 triplet, so a prefix such as range(24) is a biased subset
+                 rather than a smaller unbiased one.
+
+        adapter_factory(task, ep_id) must reset the env to the initial state
+        that env calls `ep_id`, and must do so identically in every
+        condition. That is the whole basis of the pairing.
+
+        out_dir -- if given, writes
+                   <out_dir>/<condition>/<task>/results_<task>.json,
+                   the layout the grid tooling reads.
+        extra   -- condition metadata to store at the top of each file, e.g.
+                   {"action_repeat": 2} or {"depth_prune": 4}.
         """
-        episodes = []
-        for task in tasks:
-            for trial in range(n_trials):
-                adapter, instruction = adapter_factory(task, trial)
-                rec = run_episode(adapter, policy, instruction, **loop_kwargs)
-                rec.update({"task": task, "trial": trial})
-                episodes.append(rec)
-                print(f"  {task} trial {trial}: "
-                      f"{'SUCCESS' if rec['success'] else 'FAIL':<7} "
-                      f"{rec['ms_per_call']:.0f} ms/call", flush=True)
+        if not isinstance(tasks, dict):
+            raise TypeError(
+                "tasks must be {task_name: [ep_id, ...]}. Passing a bare task "
+                "list would mean guessing the episode ids, and a guess that is "
+                "wrong produces two conditions that look paired and are not.")
 
-        n_ok = sum(e["success"] for e in episodes)
-        summary = {
-            "n_episodes": len(episodes),
-            "success_rate": n_ok / len(episodes) if episodes else 0.0,
-            "avg_ms_per_call": float(np.mean([e["ms_per_call"] for e in episodes])),
-            "avg_ms_per_env_step": float(np.mean([e["ms_per_env_step"] for e in episodes])),
-            "avg_calls": float(np.mean([e["model_calls"] for e in episodes])),
-            "avg_steps_per_call": float(np.mean([e["steps_per_call"] for e in episodes])),
-            "episodes": episodes,      # keep per-episode records for paired tests
-        }
-        print(f"\\n[SUMMARY] {n_ok}/{len(episodes)} = "
-              f"{summary['success_rate'] * 100:.1f}%  "
-              f"{summary['avg_ms_per_call']:.0f} ms/call  "
-              f"{summary['avg_steps_per_call']:.1f} env-steps/call")
-        return summary
+        out = {}
+        for task, ep_ids in tasks.items():
+            episodes = []
+            for ep_id in ep_ids:
+                adapter, instruction = adapter_factory(task, ep_id)
+                rec = run_episode(adapter, policy, instruction, **loop_kwargs)
+                rec.update({"task": task, "ep_id": int(ep_id)})
+                episodes.append(rec)
+                print(f"  {task} ep {ep_id}: "
+                      f"{'SUCCESS' if rec['success'] else 'FAIL':<7} "
+                      f"{rec['model_ms_per_infer']:.0f} ms/infer", flush=True)
+
+            n_ok = sum(e["success"] for e in episodes)
+            n_grasp = sum(1 for e in episodes if e["grasped"])
+            summary = {
+                "model": model_name,
+                "task": task,             # trusted over the directory name
+                "condition": condition,
+                "n_episodes": len(episodes),
+                "success_rate": n_ok / len(episodes) if episodes else 0.0,
+                "grasp_rate": n_grasp / len(episodes) if episodes else 0.0,
+                "avg_model_ms_per_infer": float(np.mean(
+                    [e["model_ms_per_infer"] for e in episodes])),
+                "avg_model_ms_per_env_step": float(np.mean(
+                    [e["model_ms_per_env_step"] for e in episodes])),
+                "avg_steps": float(np.mean([e["steps"] for e in episodes])),
+                "avg_steps_per_call": float(np.mean(
+                    [e["steps_per_call"] for e in episodes])),
+                # Which GPU this ran on. Latency numbers are not comparable
+                # across cards, and a file that does not say which one leaves
+                # that as a caveat forever.
+                "gpu": _gpu_name(),
+                "episodes": episodes,   # per-episode records for paired tests
+            }
+            summary.update(extra or {})
+            print(f"[{task}] {n_ok}/{len(episodes)} = "
+                  f"{summary['success_rate'] * 100:.1f}%  "
+                  f"{summary['avg_model_ms_per_infer']:.0f} ms/infer\\n")
+
+            if out_dir:
+                d = os.path.join(out_dir, condition, task)
+                os.makedirs(d, exist_ok=True)
+                path = os.path.join(d, f"results_{task}.json")
+                with open(path, "w") as fh:
+                    json.dump(to_jsonable(summary), fh, indent=1)
+                print(f"  wrote {path}", flush=True)
+            out[task] = summary
+        return out
+
+
+    def _gpu_name():
+        try:
+            import torch
+            if torch.cuda.is_available():
+                return torch.cuda.get_device_name(0)
+        except Exception:
+            pass
+        return ""
+    '''),
+    md("""
+    ## The episode ids, for both SimplerEnv suites
+
+    This is the part that cannot be guessed, and the three Google Robot task
+    families do it three different ways:
+
+    | task family | how an episode index becomes an initial state |
+    |---|---|
+    | WidowX-Bridge (4 tasks) | `episode_id`, 0–23 |
+    | MoveNear | `episode_id`, 0–59 (ordered by object triplet) |
+    | coke can (3 poses) | **no `episode_id` at all** — a 5 × 5 grid of object init xy over `[−0.35, −0.12] × [−0.02, 0.42]`, indexed by the episode number |
+
+    In every case the seed is also set to the episode number. Without it the
+    URDF variant is drawn from a per-env RNG that is reseeded whenever the
+    env is rebuilt, so two conditions would be scored on different initial
+    states — the one failure a paired test cannot detect and cannot survive.
+
+    Coke can is the case that matters most here, because it is the one where
+    a `range(...)` counter silently does something else: it does not reach
+    the env's placement grid at all.
+    """),
+    code('''
+    # 96 Bridge episodes (4 x 24) and 135 Fractal episodes (3 x 25 + 60).
+    EPISODE_IDS = {
+        # WidowX-Bridge
+        "widowx_put_eggplant_in_basket": list(range(24)),
+        "widowx_carrot_on_plate":        list(range(24)),
+        "widowx_stack_cube":             list(range(24)),
+        "widowx_spoon_on_towel":         list(range(24)),
+        # Google Robot / Fractal
+        "google_robot_pick_horizontal_coke_can": list(range(25)),
+        "google_robot_pick_vertical_coke_can":   list(range(25)),
+        "google_robot_pick_standing_coke_can":   list(range(25)),
+        "google_robot_move_near_v0":             list(range(60)),
+    }
+
+    # "xy_grid" tasks have no episode_id; the index selects a placement.
+    XY_GRID_TASKS = {
+        "google_robot_pick_horizontal_coke_can",
+        "google_robot_pick_vertical_coke_can",
+        "google_robot_pick_standing_coke_can",
+    }
+    XY_GRID = {"x": (-0.35, -0.12, 5), "y": (-0.02, 0.42, 5)}
+
+
+    def reset_options(task, ep_id):
+        """-> (seed, options) turning an episode index into ONE fixed state.
+
+        Kept in one function because every condition has to use the same
+        mapping; an episode index that means two different things in two
+        conditions is not a paired experiment, and nothing downstream can
+        detect that it happened.
+        """
+        ep_id = int(ep_id)
+        if task not in XY_GRID_TASKS:
+            return ep_id, {"obj_init_options": {"episode_id": ep_id}}
+        xs = np.linspace(*XY_GRID["x"])
+        ys = np.linspace(*XY_GRID["y"])
+        n = len(xs) * len(ys)
+        if ep_id >= n:
+            raise ValueError(
+                f"episode {ep_id} is outside this task's {len(xs)}x{len(ys)} "
+                f"placement grid ({n} distinct initial states). Asking for "
+                f"more episodes would re-run the same states and inflate n "
+                f"without adding information.")
+        x, y = xs[ep_id // len(ys)], ys[ep_id % len(ys)]
+        return ep_id, {"obj_init_options": {"init_xy": [float(x), float(y)]}}
+
+
+    # Sanity check: the two mappings must not be interchangeable.
+    assert reset_options("widowx_stack_cube", 7)[1] == {
+        "obj_init_options": {"episode_id": 7}}
+    assert "init_xy" in reset_options(
+        "google_robot_pick_standing_coke_can", 7)[1]["obj_init_options"]
+    assert sum(len(v) for k, v in EPISODE_IDS.items() if k.startswith("widowx")) == 96
+    assert sum(len(v) for k, v in EPISODE_IDS.items() if k.startswith("google")) == 135
+    print("episode-id mapping: 96 Bridge + 135 Fractal, coke can on the xy grid")
     '''),
     md(CAVEAT_MEASURE),
     md("""
@@ -629,6 +833,73 @@ cells01 = [
     assert not r["success"] and r["steps"] == 60
 
     print("\\nloop is portable across both simulator APIs and both policy shapes")
+    '''),
+    md("""
+    ## The output files, checked by round-tripping them
+
+    A run that finishes and writes a file the analysis cannot read is the
+    expensive kind of mistake, so the schema is exercised here on the stub
+    env rather than discovered after a real campaign.
+
+    Two conditions are written to a temporary directory and then paired the
+    way the analysis pairs them: look up each episode by `ep_id`, keep only
+    the pairs whose outcome differs, and count them in both directions. The
+    pairing is a dictionary lookup on `ep_id`, which is why that field's
+    name and meaning matter more than any other in the file.
+    """),
+    code('''
+    import shutil
+    import tempfile
+
+
+    class _FlakyEnv(GymnasiumEnv):
+        """Succeeds only on the episodes listed, so two conditions differ."""
+
+        def __init__(self, solves):
+            super().__init__(solve_at=10 if solves else 10_000)
+
+
+    def _stub_factory(solving_ids):
+        def factory(task, ep_id):
+            adapter = EnvAdapter(_FlakyEnv(ep_id in solving_ids),
+                                 get_image=get_cam, max_steps=30)
+            return adapter, "pick up the black bowl"
+        return factory
+
+
+    tmp = tempfile.mkdtemp()
+    try:
+        plan = {"widowx_stack_cube": list(range(8))}
+        run_condition(_stub_factory({0, 1, 2, 3, 4}), StubPolicy(), plan,
+                      condition="baseline", out_dir=tmp, model_name="stub")
+        run_condition(_stub_factory({0, 1, 5, 6}), StubPolicy(), plan,
+                      condition="action_repeat2", out_dir=tmp,
+                      model_name="stub", extra={"action_repeat": 2})
+
+        def load(condition, task):
+            path = os.path.join(tmp, condition, task, f"results_{task}.json")
+            with open(path) as fh:
+                summary = json.load(fh)
+            # Exactly what the analysis does: index by ep_id, read success.
+            return {int(e["ep_id"]): bool(e["success"])
+                    for e in summary["episodes"]}
+
+        base = load("baseline", "widowx_stack_cube")
+        alt = load("action_repeat2", "widowx_stack_cube")
+        shared = sorted(set(base) & set(alt))
+        fixed = sum(1 for k in shared if alt[k] and not base[k])
+        broke = sum(1 for k in shared if base[k] and not alt[k])
+
+        print(f"\\n  paired on ep_id: {len(shared)} of 8 episodes")
+        print(f"  {fixed} fixed / {broke} broke -> "
+              f"delta {100 * (fixed - broke) / len(shared):+.1f} points")
+        assert len(shared) == 8, "every episode must pair across conditions"
+        assert (fixed, broke) == (2, 3)
+    finally:
+        shutil.rmtree(tmp)
+
+    print("\\nthe written files pair on ep_id and carry the fields the "
+          "analysis reads")
     '''),
     md(PORTING),
 ]
@@ -1284,10 +1555,10 @@ cells03 = [
     Report either:
 
     * **calls per episode** (halved), or
-    * **ms per environment step** = `ms_per_call × calls / env_steps` (halved),
+    * **ms per environment step** = `model_ms_per_infer × calls / env_steps` (halved),
 
     and say which. The `run_episode` in notebook 01 returns both
-    `ms_per_call` and `ms_per_env_step` for exactly this reason.
+    `model_ms_per_infer` and `model_ms_per_env_step` for exactly this reason.
 
     One more asymmetry, and it is structural rather than empirical: a policy
     that already emits a chunk of 10 and executes all of them is *already* amortised
@@ -1438,8 +1709,10 @@ cells04 = [
     2. **Rank** and pick the N most idle, subject to two safeguards (below).
     3. **Replace** those modules with a pass-through.
 
-    Step 1 rides on the first inference of the episode, which has to run
-    anyway, so calibration costs **no extra forward pass**.
+    Step 1 rides on the first inference of the run, which has to happen
+    anyway, so calibration costs **no extra forward pass**. It happens once
+    per run, not once per episode: the bypassed set is a property of the
+    condition being measured.
 
     ### The two safeguards, and why each exists
 
@@ -1454,6 +1727,24 @@ cells04 = [
     between backbones is the *rule*: the claim "backbone A tolerates more depth
     removal than backbone B" only means something if both were ranked and cut
     identically.
+
+    ### Two conventions exist, and they must not be mixed inside one table
+
+    Our own runs did not all use the settings above. SpatialVLA's stack was
+    cut under a different convention, and `rank_layers` takes both:
+
+    | | OpenVLA, UniVLA | SpatialVLA |
+    |---|---|---|
+    | how `min_layer` reads | `window="ratio"` — 0.5 = the back half | `window="count"` — 2 = skip layers 0–1 |
+    | eligible range on a 26-layer stack | L13–25 | L2–25 |
+    | gap rule | `min_gap=1` | `min_gap=0` (none) |
+    | final layer | eligible | always protected |
+
+    The same argument value means different things under the two readings,
+    which is why the reading is named explicitly rather than guessed from
+    the number. Pick one per backbone family and keep it fixed; a column cut
+    under one convention and a column cut under the other differ in more
+    than the layer count.
     """),
     md("""
     ## The pass-through layer
@@ -1596,12 +1887,39 @@ cells04 = [
         return None if any(s is None for s in scores) else [float(s) for s in scores]
 
 
-    def rank_layers(importance, min_layer=0.5, min_gap=1):
-        """Eligible layers, most-redundant first, gap-respecting."""
+    def rank_layers(importance, min_layer=0.5, min_gap=1, window="ratio",
+                    protect_last=False):
+        """Eligible layers, most-redundant first, gap-respecting.
+
+        The defaults are the OpenVLA / UniVLA convention. SpatialVLA's is
+        different in all three respects, and the two are not interchangeable:
+
+            OpenVLA, UniVLA:  window="ratio", min_layer=0.5, min_gap=1,
+                              protect_last=False
+            SpatialVLA:       window="count", min_layer=2,   min_gap=0,
+                              protect_last=True
+
+        `window` says how to read `min_layer`. Under "ratio", 0.5 means "the
+        back half"; under "count", 2 means "skip layers 0 and 1". On a
+        26-layer stack those start at layer 13 and layer 2 -- the same
+        argument naming two very different experiments -- so the reading is
+        spelled out rather than inferred from the value.
+
+        `min_gap=0` disables the gap rule (no two layers are ever within 0
+        of each other), which is what SpatialVLA's selection does.
+        """
         scores = np.asarray(importance, dtype=np.float32)
         n = int(scores.shape[0])
-        start = int(math.floor(np.clip(min_layer, 0.0, 1.0) * n))
-        candidates = list(range(start, n)) or list(range(n))
+        if window == "ratio":
+            start = int(math.floor(np.clip(min_layer, 0.0, 1.0) * n))
+        elif window == "count":
+            start = int(np.clip(int(min_layer), 0, n))
+        else:
+            raise ValueError(f"window must be 'ratio' or 'count', got {window!r}")
+        candidates = [i for i in range(start, n)
+                      if not (protect_last and i == n - 1)]
+        if not candidates:
+            candidates = list(range(n))
         ranked = sorted(candidates, key=lambda i: (float(scores[i]), i))
         ordered = []
         for i in ranked:                       # gap-respecting greedy first
@@ -1615,11 +1933,26 @@ cells04 = [
     '''),
     code('''
     class StaticDepthPruner:
-        """Calibrate once per episode, then bypass the N most redundant layers."""
+        """Calibrate once per RUN, then bypass the N most redundant layers.
 
-        def __init__(self, model, prune=8, min_layer=0.5, min_gap=1):
+        Per run, not per episode. Every number in the grid was produced this
+        way: the ranking is measured on the first forward of the first
+        episode and then held fixed for the whole condition, so the bypassed
+        set is a property of the condition rather than of an episode.
+
+        Re-calibrating each episode is a perfectly defensible experiment --
+        it is just a different one, and mixing the two inside one table
+        would compare conditions that differ in more than the layer count.
+        It is available as `recalibrate_each_episode=True`, opt-in.
+        """
+
+        def __init__(self, model, prune=8, min_layer=0.5, min_gap=1,
+                     window="ratio", protect_last=False,
+                     recalibrate_each_episode=False):
             self.model, self.prune = model, int(prune)
             self.min_layer, self.min_gap = min_layer, min_gap
+            self.window, self.protect_last = window, bool(protect_last)
+            self.recalibrate_each_episode = bool(recalibrate_each_episode)
             self._originals, self._active, self._done = {}, (), False
 
         def layers(self):
@@ -1682,7 +2015,8 @@ cells04 = [
             self._active = valid
 
         def calibrate_on(self, run_fn):
-            """Call with the model's real first forward of the episode."""
+            """Call with the model's real first forward. Rides on it, so it
+            costs no extra pass; after the first call it is a no-op."""
             if self._done:
                 return run_fn()
             layers = self.layers()
@@ -1695,12 +2029,25 @@ cells04 = [
             importance = measure_redundancy_with_hooks(
                 layers, lambda: captured.setdefault("out", run_fn()))
             if importance is not None:
-                self.apply(rank_layers(importance, self.min_layer, self.min_gap)[:self.prune])
+                ranking = rank_layers(importance, self.min_layer, self.min_gap,
+                                      window=self.window,
+                                      protect_last=self.protect_last)
+                self.apply(ranking[:self.prune])
                 print(f"[depth] bypassing {list(self._active)} of {len(layers)}")
             self._done = True
             return captured.get("out")
 
         def reset_episode(self):
+            """Call between episodes. A no-op unless recalibration is on.
+
+            Deliberately not "clear the ranking": with the default the
+            bypassed set has to stay fixed across the condition, and a
+            reset here would quietly turn a run into per-episode
+            recalibration -- a different experiment that looks the same in
+            the output file.
+            """
+            if not self.recalibrate_each_episode:
+                return
             self._done = False
             self.restore()
     '''),
@@ -1906,14 +2253,44 @@ cells04 = [
     pruner.restore()
     assert not isinstance(model.layers[bypassed[0]], BypassDecoderLayer)
     print("[7] restore() puts the real modules back")
+
+    # The two conventions must actually differ, and the SpatialVLA one must
+    # never hand back the final layer.
+    n = len(model.layers)
+    ratio_order = rank_layers(imp, min_layer=0.5, min_gap=1, window="ratio")
+    count_order = rank_layers(imp, min_layer=2, min_gap=0, window="count",
+                              protect_last=True)
+    assert min(ratio_order) >= n // 2
+    assert min(count_order) >= 2 and (n - 1) not in count_order
+    assert count_order == sorted(count_order, key=lambda i: (imp[i], i))
+    print(f"[8] ratio window {ratio_order} vs count window {count_order} "
+          f"(last layer {n - 1} protected)")
+
+    # Default: calibration survives reset_episode, so the bypassed set is
+    # fixed for the whole run.
+    p = StaticDepthPruner(model, prune=2)
+    p.calibrate_on(lambda: model(x))
+    fixed = p._active
+    p.reset_episode()
+    assert p._active == fixed, "default must not re-calibrate between episodes"
+    p.restore()
+
+    p = StaticDepthPruner(model, prune=2, recalibrate_each_episode=True)
+    p.calibrate_on(lambda: model(x))
+    p.reset_episode()
+    assert p._active == (), "opt-in recalibration must clear the bypass"
+    p.restore()
+    print("[9] calibration is once per run unless recalibration is opted into")
     print("\\nALL CHECKS PASSED")
     '''),
     md("""
     ## Three rules that hold regardless of backbone
 
-    * **Calibrate on the unpruned stack, every episode.** A bypassed layer has
+    * **Calibrate on the unpruned stack.** A bypassed layer has
       input == output, so measuring it while already bypassed scores it ~0
-      redundancy and locks it in permanently.
+      redundancy and locks it in permanently. This is also why calibration
+      is once per run: a second pass would be taken on an already-pruned
+      stack unless the layers are restored first.
     * **Do not carry a value of N between backbones — measure the curve.** How
       much depth a model can spare is a property of that model, and the rule
       above only ranks layers; it does not tell you how many are safe to cut.

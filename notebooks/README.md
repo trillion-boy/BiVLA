@@ -88,9 +88,26 @@ and no checkpoint, and each notebook ends in assertions rather than eyeballing:
   and that restricting to named views leaves the others bit-identical.
 - **03** shows repeat=2 halving the calls while leaving env steps unchanged, for
   both a single-action and a chunk-10 policy.
-- **04** ends with seven assertions on a synthetic stack — including that a
-  bypassed layer is an exact identity and that the KV cache has no gaps, the
-  failure that would otherwise surface only as a quietly lower success rate.
+- **04** ends with nine checks on a synthetic stack — including that a
+  bypassed layer is an exact identity, that the KV cache has no gaps (the
+  failure that would otherwise surface only as a quietly lower success rate),
+  that the two layer-window conventions really do select different layers,
+  and that calibration survives `reset_episode()` by default.
+
+## The output files
+
+`01`'s `run_condition` writes `<out_dir>/<condition>/<task>/results_<task>.json`
+with one record per episode. The field names are load-bearing: the paired
+tooling looks up `ep_id`, `success`, `steps`, `model_ms_per_infer` and
+`model_ms_per_env_step` by name, and a file written with other names does not
+load at all rather than loading wrong.
+
+`ep_id` is **the environment's** episode index, not a loop counter — it is what
+fixes the initial state, and it is the key every condition is paired on. `01`
+carries the mapping for both SimplerEnv suites, including the coke-can tasks,
+which have no `episode_id` at all and index a 5 × 5 grid of object placements
+instead. A bare `range(n)` there does not reach that grid, and the result is two
+conditions that look paired and are not — which nothing downstream can detect.
 
 ## What is deliberately not here
 

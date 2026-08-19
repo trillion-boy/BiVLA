@@ -76,8 +76,9 @@ Each run needs one record per episode:
 | `model_ms_per_infer`, `model_ms_per_env_step` | the compute-saving column |
 | `grasped` | from `episode_stats.is_src_obj_grasped`, for the failure-type analysis |
 
-Format to match: any file under
-`results/<campaign>/<condition>/<task>/results_<task>.json`.
+Format to match: `results/<campaign>/<condition>/<task>/results_<task>.json`.
+Notebook 01's `run_condition(..., out_dir=...)` writes exactly this, so it
+does not have to be assembled by hand.
 
 **`ep_id` is not a loop counter.** On Bridge it is passed to
 `env.reset(options={"obj_init_options": {"episode_id": ep_id}})` and happens to
@@ -88,12 +89,12 @@ run 0–23. On Fractal the two task families differ:
   explicit 5 × 5 xy grid over `[−0.35, −0.12] × [−0.02, 0.42]`, indexed by
   `ep_id`, with the seed also set to `ep_id`.
 
-`simpler_fractal_protocol.py` (`prepackaged_reset_options`) already does both.
-If a new model's runner re-implements the reset itself, Fractal episodes will
-not be paired and the whole column becomes unusable.
+Notebook 01 carries both mappings (`EPISODE_IDS` and `reset_options`). If a
+new model's runner re-implements the reset itself, Fractal episodes will not
+be paired and the whole column becomes unusable.
 
-If the GPU model can go into the file too, that closes a limitation we
-currently have to disclose (Report §7 ⑤).
+The GPU name is now written into the file as well, which closes a limitation
+we currently have to disclose (Report §7 ⑤).
 
 ---
 
@@ -151,57 +152,45 @@ loud before the runs rather than after.
 ## Appendix — do the four notebooks match the code that produced `results/`?
 
 Checked by parsing both sides and comparing function bodies after removing
-docstrings, type annotations and variable names. The notebooks are standalone
-reimplementations, not imports, so this had to be compared directly rather
-than assumed.
+docstrings, type annotations and variable names, because the notebooks are
+standalone reimplementations rather than imports.
 
-**The interventions themselves are the same computation.**
+**The interventions themselves were already the same computation.**
 
 | Piece | Verdict |
 |---|---|
 | `foveate_image_logpolar` | same — only `fwd`/`inv` vs. `forward_flags`/`inverse_flags`, `ys, xs` vs. `sample_ys, sample_xs` |
 | `foveate_image_blur` | same — `out[dist <= r0] = frame[dist <= r0]` written in one line instead of two |
-| `_uniform_sample_grid` | byte-identical after normalization |
-| `find_decoder_layers`, `BypassDecoderLayer`, the hook | byte-identical after normalization |
+| `_uniform_sample_grid` | identical after normalization |
+| `find_decoder_layers`, `BypassDecoderLayer`, the redundancy hook | identical after normalization |
 | `measure_redundancy_with_hooks` | same — one `return` folded into a conditional expression |
 | `rank_layers` | same rule — module-level args instead of `self.min_layer` / `self.min_gap` |
-| `apply_action_repeat` | no package counterpart to diff against; `np.repeat` gives `[a,a,b,b]`, which is what the runs did |
-| per-episode records kept | yes — `run_condition` keeps an `episodes` list |
+| `apply_action_repeat` | `np.repeat` gives `[a,a,b,b]`, which is what the runs did |
 
-**Five things differ, and all five change the experiment rather than the
-code's appearance.**
+**Five things did not match, and all five have now been fixed in the
+notebooks.** They are listed because each was a way to produce a run that
+looks fine and is not comparable — worth knowing about even now that the
+code no longer does it.
 
-1. **Field names.** The notebook writes `task` + `trial`, `ms_per_call`,
-   `ms_per_env_step`. Our files carry `ep_id`, `model_ms_per_infer`,
-   `model_ms_per_env_step`. `build_grid_report.py` pairs on `ep_id`, so files
-   written with the notebook's names do not load at all — not "load wrong",
-   do not load.
-2. **`trial` is not `ep_id`.** `run_condition` loops `for trial in range(24)`
-   and hands `(task, trial)` to a caller-supplied `adapter_factory`. Nothing
-   in the notebook connects that number to the environment's initial state.
-   On Bridge the two happen to coincide (0–23); on Fractal they do not, per
-   the coke-can note above.
-3. **`reset_episode()` re-calibrates.** The notebook's `StaticDepthPruner`
-   says "calibrate once per episode" and its `reset_episode` clears `_done`.
-   The campaign calibrated **once per run** — in static mode
-   (`ctrl=False`) `depth_prune.py`'s `reset_episode` returns before touching
-   `_calibrated`. Calling `reset_episode()` in an episode loop gives a
-   per-episode-recalibration experiment, which is a different thing from
-   what the grid contains.
-4. **Layer-selection convention is OpenVLA/UniVLA only.** The notebook uses
-   `min_layer` as a **ratio** (0.5 → back half) with a gap rule and no
-   protected last layer. The SpatialVLA runs used
-   `SpatialVLA/experiments/tome/depth_prune_gemma2.py`, where `min_layer` is a
-   **count** (2 → skip layers 0–1), the final layer is always protected
-   (`protected = set(range(min_layer)) | {n - 1}`), and there is **no gap
-   rule**. For a Gemma-family or otherwise SpatialVLA-shaped small model,
-   the notebook would pick a different layer set than our SpatialVLA columns
-   did.
-5. **No `episode_stats` / terminal `info` capture.** That harness change is
-   dated 2026-08-10 (§6.6), after the notebooks. Without it there is no
-   `grasped` field and the §6 failure-type analysis is unavailable for the
-   new models.
+| # | What was wrong | What it would have caused | Fix |
+|---|---|---|---|
+| 1 | records written as `trial` / `ms_per_call` / `ms_per_env_step` | the grid tooling pairs on `ep_id`; those files do not load at all | `run_episode` now emits `ep_id`, `success`, `steps`, `elapsed`, `model_ms_per_infer`, `model_ms_per_env_step` |
+| 2 | `trial` was a loop counter with nothing tying it to the env's initial state | Bridge coincides by accident; **coke can does not** — two conditions scored on different scenes while looking paired | `EPISODE_IDS` + `reset_options()` carry both mappings, including the 5 × 5 placement grid |
+| 3 | `reset_episode()` cleared the calibration | per-episode recalibration — a different experiment from the grid, invisible in the output file | calibration is once per run; `reset_episode()` is a no-op unless `recalibrate_each_episode=True` |
+| 4 | only the OpenVLA/UniVLA layer window (ratio, gap rule, last layer eligible) | a SpatialVLA-shaped model would be cut differently than our SpatialVLA columns were | `rank_layers(..., window="count", min_gap=0, protect_last=True)` gives SpatialVLA's convention; both are documented side by side |
+| 5 | no `episode_stats`, no `grasped`, no GPU field | no failure-type analysis for the new models; latency caveat stays open | all three are captured; `grasped` is `None` rather than `False` when the env does not report it |
 
-Items 1 and 3 are a few lines each. Item 2 is a wiring decision the runner
-has to make. Items 4 and 5 are only worth doing if the corresponding analysis
-is wanted for the new models.
+The notebooks also now **write the files themselves.** `run_condition(...,
+out_dir=...)` produces
+`<out_dir>/<condition>/<task>/results_<task>.json` — the layout
+`build_grid_report.py` walks — so nothing has to be reformatted afterwards.
+
+Notebook 01 ends by writing two conditions to a temporary directory and
+pairing them back the way the analysis does (index by `ep_id`, count only the
+episodes whose outcome flipped). That check runs with no simulator and no
+checkpoint, so the file format can be confirmed before any GPU time is spent.
+
+All four notebooks still execute top to bottom on stubs — no simulator, no
+checkpoint — and each ends in assertions rather than eyeballing. 04's now
+include that the two layer windows really do select different layers and that
+`reset_episode()` leaves the calibration alone by default.
