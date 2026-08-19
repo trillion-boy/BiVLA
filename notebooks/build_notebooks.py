@@ -347,7 +347,8 @@ cells01 = [
 
         def __init__(self, env, get_image, is_success=default_is_success,
                      grasped=default_grasped,
-                     noop_action=None, settle_steps=0, max_steps=220):
+                     noop_action=None, settle_steps=0, max_steps=220,
+                     owns_env=True):
             self.env = env
             self.get_image = get_image
             self.is_success = is_success
@@ -355,6 +356,13 @@ cells01 = [
             self.noop_action = noop_action
             self.settle_steps = int(settle_steps)
             self.max_steps = int(max_steps)
+            # Who closes the simulator. SimplerEnv builds one env per episode,
+            # so the adapter owns it and must close it -- a renderer per
+            # episode is a leak that ends the run partway through a condition,
+            # with no useful error. LIBERO reuses one env across the trials of
+            # a task, so there the adapter must NOT close it.
+            self.owns_env = bool(owns_env)
+
             if self.settle_steps and self.noop_action is None:
                 raise ValueError("settle_steps > 0 requires a noop_action")
 
@@ -365,6 +373,10 @@ cells01 = [
         def step(self, action):
             obs, _, term, trunc, info = _unpack_step(self.env.step(list(action)))
             return obs, term, trunc, info
+
+        def close(self):
+            if self.owns_env and hasattr(self.env, "close"):
+                self.env.close()
     '''),
     md("""
     ## The policy contract, as we actually implemented it
@@ -534,6 +546,9 @@ cells01 = [
             noop_action=[0, 0, 0, 0, 0, 0, -1],   # -1 = gripper OPEN in LIBERO
             settle_steps=10,
             max_steps=max_steps,
+            # One env serves every trial of a task -- building it is the slow,
+            # hang-prone step. Whoever built it closes it.
+            owns_env=False,
         )
 
 
@@ -603,7 +618,10 @@ cells01 = [
             episodes = []
             for ep_id in ep_ids:
                 adapter, instruction = adapter_factory(task, ep_id)
-                rec = run_episode(adapter, policy, instruction, **loop_kwargs)
+                try:
+                    rec = run_episode(adapter, policy, instruction, **loop_kwargs)
+                finally:
+                    adapter.close()
                 rec.update({"task": task, "ep_id": int(ep_id)})
                 episodes.append(rec)
                 print(f"  {task} ep {ep_id}: "
@@ -2682,7 +2700,9 @@ cells05 = [
             env.seed(0)
             return env, task
 
-        def factory(self, task_name, trial):
+        def __call__(self, task_name, trial):
+            """The (task, ep_id) -> (adapter, instruction) callable, so this
+            object can be passed to run_campaign directly and closed by it."""
             suite_name, _, tail = task_name.rpartition("_task")
             task_id = int(tail)
             key = (suite_name, task_id)
@@ -2692,6 +2712,7 @@ cells05 = [
                 self._env_key = key
             states = self.suite(suite_name).get_task_init_states(task_id)
             episode = _LiberoEpisode(self._env, states[trial % len(states)])
+            # owns_env=False inside: this object closes the env, not the loop.
             adapter = libero_adapter(episode, max_steps=LIBERO_MAX_STEPS)  # from 01
             return adapter, self._task.language
 
@@ -2702,9 +2723,8 @@ cells05 = [
 
 
     # Usage:
-    #   libero = LiberoTasks()
-    #   run_campaign(policy, libero.factory, libero_plan("libero_spatial"), out)
-    #   libero.close()
+    #   run_campaign(policy, LiberoTasks(), libero_plan("libero_spatial"), out)
+    # run_campaign closes it for you when it finishes.
     print("LIBERO suites:", ", ".join(LIBERO_SUITES))
     print("per suite:", sum(len(v) for v in libero_plan("libero_spatial").values()),
           "episodes per condition")
@@ -2813,6 +2833,26 @@ cells05 = [
         """
         conditions = list(conditions or CONDITIONS)
         done = {}
+        try:
+            _run_conditions(policy, adapter_factory, plan, out_dir, model_name,
+                            conditions, skip, done)
+        finally:
+            # LiberoTasks holds one env open across a whole condition; nothing
+            # else in the loop can know when it is finished with.
+            closer = getattr(adapter_factory, "close", None)
+            if callable(closer):
+                closer()
+
+        print("\\n" + "=" * 64)
+        for name, per_task in done.items():
+            n = sum(s["n_episodes"] for s in per_task.values())
+            ok = sum(s["success_rate"] * s["n_episodes"] for s in per_task.values())
+            print(f"  {name:<18} {ok:>5.0f}/{n:<5} = {100 * ok / n:5.1f}%")
+        return done
+
+
+    def _run_conditions(policy, adapter_factory, plan, out_dir, model_name,
+                        conditions, skip, done):
         for name, spec in conditions:
             if name in skip:
                 print(f"[skip] {name}", flush=True)
@@ -2840,13 +2880,6 @@ cells05 = [
                 # would otherwise leave the next one running on a pruned
                 # stack and silently report it as something else.
                 detach_depth_pruning(policy)
-
-        print("\\n" + "=" * 64)
-        for name, per_task in done.items():
-            n = sum(s["n_episodes"] for s in per_task.values())
-            ok = sum(s["success_rate"] * s["n_episodes"] for s in per_task.values())
-            print(f"  {name:<18} {ok:>5.0f}/{n:<5} = {100 * ok / n:5.1f}%")
-        return done
 
 
     # One cell of the table:
@@ -2889,14 +2922,17 @@ cells05 = [
             return np.zeros((2, 7), dtype=np.float32)
 
 
+    _CLOSED = {"n": 0}
+
+
     class _StubEnv(GymnasiumEnv):
-        def __init__(self, solve_at):
-            super().__init__(solve_at=solve_at)
+        def close(self):
+            _CLOSED["n"] += 1
 
 
     def _stub_factory(task, ep_id):
         # Odd episodes succeed, so success rates are neither 0 nor 100.
-        adapter = EnvAdapter(_StubEnv(6 if ep_id % 2 else 10_000),
+        adapter = EnvAdapter(_StubEnv(solve_at=6 if ep_id % 2 else 10_000),
                              get_image=lambda obs: obs["cam"], max_steps=20)
         return adapter, "pick up the cup"
 
@@ -2938,6 +2974,13 @@ cells05 = [
             meta = json.load(fh)
         assert meta["action_repeat"] == 2 and meta["condition"] == "action_repeat2"
         print("  condition metadata is in the file")
+
+        # Every env the factory built must have been closed. SimplerEnv builds
+        # one per episode; leaking them means a run that dies partway through
+        # a condition with nothing in the traceback about renderers.
+        expected = len(CONDITIONS) * 6
+        assert _CLOSED["n"] == expected, (_CLOSED["n"], expected)
+        print(f"  all {expected} envs closed ({len(CONDITIONS)} conditions x 6 episodes)")
     finally:
         shutil.rmtree(tmp)
 
@@ -2973,6 +3016,26 @@ cells05 = [
     different times. Any episode that disagrees between the two is
     non-determinism, and it caps how small a difference the rest of the column
     can claim.
+
+    ## Two things this notebook does not do
+
+    Both are stated rather than worked around, because a silent workaround
+    would be worse than the gap.
+
+    **One camera view.** `run_episode` passes a single image to
+    `policy.step(image, instruction)`. One of our own backbones (UniVLA) also
+    consumes a wrist view, and its wrapper had to be given one. A model that
+    needs a second view needs that plumbed through `EnvAdapter.get_image`, the
+    hook, and the policy call — foveation's hook already handles a dict or a
+    list of views, so the loop is the only piece to extend.
+
+    **Bridge episodes are seeded here; ours were not.** Our own Bridge runs
+    passed only `episode_id` to `reset`, letting the rest of the randomness
+    fall where it fell; `build_bridge_env` above also sets `seed=ep_id`, the
+    way the Fractal protocol always did. That makes conditions more exactly
+    matched, not less, so it is the better default — but it means a Bridge
+    column produced here is not bit-identical to ours. It does not need to be:
+    every column is compared against its own baseline.
     """),
 ]
 write("05_run_campaign.ipynb", cells05)

@@ -110,8 +110,8 @@ and no checkpoint, and each notebook ends in assertions rather than eyeballing:
   and that calibration survives `reset_episode()` by default.
 - **05** dry-runs the whole driver on stubs: eight conditions produce eight
   correctly named directories, the depth conditions bypass layers and restore
-  them, and the written files pair on `ep_id`. Only the two `build_*_env`
-  functions need a simulator.
+  them, every env the factory built gets closed, and the written files pair on
+  `ep_id`. Only the two `build_*_env` functions need a simulator.
 
 ## The output files
 
@@ -127,6 +127,22 @@ carries the mapping for both SimplerEnv suites, including the coke-can tasks,
 which have no `episode_id` at all and index a 5 × 5 grid of object placements
 instead. A bare `range(n)` there does not reach that grid, and the result is two
 conditions that look paired and are not — which nothing downstream can detect.
+
+## Known gaps
+
+Stated rather than worked around.
+
+- **One camera view.** `run_episode` passes a single image to
+  `policy.step(image, instruction)`. UniVLA also consumed a wrist view and its
+  wrapper had to be given one; a model that needs a second view needs it
+  plumbed through `EnvAdapter.get_image`, the hook and the policy call.
+  Foveation's hook already handles a dict or a list of views, so the loop is
+  the only piece to extend.
+- **Bridge episodes are seeded in `05`; ours were not.** Our Bridge runs passed
+  only `episode_id`; `build_bridge_env` also sets `seed=ep_id`, the way the
+  Fractal protocol always did. That matches conditions more exactly, not less,
+  but a Bridge column produced by `05` is not bit-identical to ours. It does
+  not need to be — every column is compared against its own baseline.
 
 ## What is deliberately not here
 
