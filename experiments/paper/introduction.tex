@@ -1,0 +1,125 @@
+% ---------------------------------------------------------------------------
+% Introduction
+% Drafted from experiments/Overview.md and experiments/Report.md.
+% Every number here is reproduced by experiments/verify_all.py (214 checks).
+% Citation keys are placeholders -- replace with the keys in the .bib.
+% ---------------------------------------------------------------------------
+
+\section{Introduction}
+
+Vision-language-action (VLA) policies are slow. On the hardware we used, a
+single observation costs one of our backbones 2.8~seconds. This has motivated
+a growing set of \emph{training-free} interventions that leave the checkpoint
+untouched and make inference cheaper: skipping decoder layers, caching or
+pruning visual tokens, and reusing a predicted action across several control
+steps~\cite{efficientvla, vlacache, fastv, molevla, shortgpt}.
+
+Papers proposing such interventions report their result in a recurring form:
+
+\begin{quote}
+\emph{Applying method $M$ to backbone $A$ on benchmark $B$ reduced FLOPs by
+$X\%$ while success dropped only $Y$ points. Therefore $M$ is efficient.}
+\end{quote}
+
+For that final clause to follow, the measured effect has to be a property of
+\emph{the method} rather than of the single configuration it was measured in.
+Changing the backbone, the benchmark, or an implementation detail that the
+paper does not report should not change the direction of the result. That
+premise, rather than any individual method, is what this paper tests.
+
+We re-measure three existing interventions under one protocol across three
+open VLA backbones (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla},
+UniVLA~\cite{univla}) and two SimplerEnv~\cite{simplerenv} suites
+(WidowX-Bridge and Google Robot / Fractal). The three interventions were
+chosen to consume different resources: \emph{action repeat} changes how often
+the policy is called, \emph{foveation} changes what the policy is shown, and
+\emph{depth pruning} changes how much of the network each call uses. The grid
+has five filled cells (UniVLA releases a Bridge-only checkpoint) and eight
+conditions per cell, for 7{,}198 episodes.
+
+The measurement is paired. We do not subtract two aggregate success rates:
+every condition replays the same initial states as its cell's baseline, and we
+count only the episodes whose outcome changed, testing them with McNemar's
+exact test. The simulator is deterministic --- we verified that re-running a
+condition reproduces it episode for episode --- so there is no run-to-run
+variance, and the remaining uncertainty is entirely in the $p$-values. Across
+the 38 paired tests in the grid, a Bonferroni threshold of
+$\alpha \approx 0.0013$ leaves eight cells significant; across the 43
+cross-cell comparisons, seven survive $\alpha \approx 0.0012$.
+
+Three results follow, and they have the same shape.
+
+\textbf{An unreported implementation choice moves the result by 45.9 points.}
+Holding the backbone, the benchmark, the method, the number of layers removed
+(four) and the compute saved ($-11\%$) all fixed inside one cell, and changing
+only which layers were \emph{eligible} to be removed, success moves from
+$+15.6$ to $-30.4$ against the same baseline. The ranking criterion is
+identical in both; what differs is the candidate window and the spacing
+constraint, values that the papers we surveyed generally do not report. Run in
+all five cells, the same contrast spans 2.1 to 50.4 points --- so the
+sensitivity to layer choice is itself a property of the configuration, not of
+the method.
+
+\textbf{A gain attributed to compression does not come from compression.}
+Sweeping how much of the observation foveation keeps, the best setting is the
+one that discards nothing: $+30.2$ points at \texttt{keep}$=100\%$ versus
+$+18.8$ at $20\%$ and $+4.2$ at $10\%$. The intervention also changes measured
+compute by between $-3.1\%$ and $+2.7\%$ across the five cells, because the
+image size and the token count are unchanged. The effect is real and traceable
+--- the log-polar round trip degrades the periphery irreversibly even when
+nothing is subsampled --- but it is an input transformation, not an efficiency
+technique.
+
+\textbf{Changing the backbone moves results more than changing the
+benchmark.} One benchmark-axis comparison passes correction; six
+backbone-axis comparisons do, five of them at $p < 10^{-4}$. The cleanest case
+is a sign reversal: on the same 135 Fractal episodes with the same
+\texttt{depth prune 4}, OpenVLA gains $+15.6$ and SpatialVLA loses $-17.8$,
+each significant on its own ($p = 4.3 \times 10^{-7}$ for the interaction).
+The widest is \texttt{action repeat 2} on Bridge, where SpatialVLA gains
+$+12.5$ and UniVLA loses $-69.8$ --- 82 points apart
+($p = 1.7 \times 10^{-13}$) --- while the compute saved is identical by
+construction.
+
+This is not only visible in our own grid. Splitting the Google Robot results
+that prior work already publishes, \texttt{pick coke can} rises or holds while
+\texttt{move near} falls in all twelve configurations reported across two
+author groups and three method families~\cite{efficientvla, vlacache, fastv}.
+None of those papers discusses the split, because all of them report only the
+four-task average.
+
+Finally, we asked what breaks rather than how much. In the cell with the
+largest drop we classified failures inside a single task and found that the
+policy's ability to identify the commanded object was statistically unchanged
+($1 \to 4$ episodes, $p = 0.375$), while episodes in which it never moved any
+object at all went from $0$ to $12$ ($p = 0.0005$). Removing layers damages
+execution before it damages grounding. We note that this contradicts the
+hypothesis we designed the measurement to test.
+
+\subsection*{Contributions}
+
+\begin{itemize}
+  \item A uniform re-measurement of three training-free VLA interventions over
+        a $3 \times 2$ backbone-benchmark grid (five filled cells, eight
+        conditions each, 7{,}198 episodes), with per-episode records released.
+  \item Evidence that reported effects are frequently properties of the
+        configuration rather than of the method: an unreported eligibility
+        flag moves one result by 45.9 points, and the same intervention
+        reverses sign across backbones with both directions individually
+        significant.
+  \item Evidence that compute saved does not predict success change. The
+        intervention with the largest effect in our grid saves approximately
+        no compute, and its benefit is maximised when it discards nothing.
+  \item A measurement procedure for this class of claim --- episode-level
+        pairing, an explicit determinism check, and a uniformity rule for the
+        grid --- together with an account of what current reporting practice
+        omits that makes such claims unreproducible.
+\end{itemize}
+
+We do not propose a new efficiency method, and we do not claim that any of the
+three interventions fails in general. Our baselines reproduce published
+numbers in four of five cells and fall 4.2 points short in the fifth, which is
+inconsistent with a systematic setup error. What we claim is narrower and, we
+think, more useful: the evidence currently offered for these methods does not
+distinguish a property of the method from a property of the one configuration
+it was measured in.
