@@ -6,10 +6,10 @@ claim: `RelatedWork_Sources.md`.*
 
 ---
 
-We cover three strands: efficient VLA inference, the training-free
+We cover three strands: the cost of VLA inference, the training-free
 interventions we re-measure, and how such interventions are evaluated.
 
-### Efficient VLA inference
+### Inference cost in VLA policies
 
 VLA policies adapt pretrained vision-language models to output robot actions,
 inheriting their size and latency; surveys of the resulting efficiency
