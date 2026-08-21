@@ -11,9 +11,9 @@ than compiled — citations are spelled out, and every number is one that
 Vision-language-action policies are slow. In our own runs, one forward pass
 costs **UniVLA 2.80 s** and **SpatialVLA 0.90 s**, averaged over the 96
 baseline episodes of the WidowX-Bridge suite. (Model time only, excluding
-simulator stepping. We give it as a scale, not a benchmark — the GPU model was
-not recorded in our result files, which is a limitation of ours that we state
-in its own section.)
+simulator stepping, on Colab T4/L4-class hardware. We give these as a scale
+rather than a comparable benchmark: our result files do not record *which* card
+each run used — see the limitation note below.)
 
 So a steady stream of **training-free** interventions has appeared: methods
 that leave the checkpoint untouched and make inference cheaper by skipping
@@ -226,6 +226,50 @@ field.
    an explicit determinism check, and a uniformity rule for the grid — together
    with an account of what current reporting practice omits that makes these
    claims unreproducible.
+
+---
+
+## A note on the hardware limitation
+
+We ran on Colab, on T4 and L4 cards. The limitation is not that we don't know
+the hardware class — it is that **"T4 or L4" is two different cards, and no
+per-run record says which one each run used.**
+
+That would be a bookkeeping nit if the card made no difference. It does. We
+have a direct measurement, because UniVLA/Bridge has two baselines with
+identical settings run on different cards:
+
+| | mean | episodes differing |
+|---|---:|---:|
+| `baseline` (08-05) | 78.1% | — |
+| `baseline_l4` (08-10) | 81.2% | **11 of 96** |
+
+And inference time cannot recover the card: 2802 ms versus 2812 ms, essentially
+identical while 11 episodes disagree. Commit dates show that at least one
+cell's conditions were run across several sessions.
+
+There is a sharper version of the same measurement. Re-running UniVLA/Bridge
+foveation on a different card left the mean **identical to the decimal**
+(86.5% → 86.5%) while **all four task rates moved** (−4.2 / +4.2 / +8.3 / −8.3)
+and cancelled out. The baseline over the same card change moved 0 of 96
+episodes — so what shifted was the foveation path specifically, and we could
+not separate a GPU cause from a `cv2` build difference.
+
+**What this costs us, and what it doesn't.** Attaching every condition in that
+cell to both baselines shifts every delta by 3.1 points and flips no
+significance decision; the two that change sign have p ≥ 0.6 either way. Our
+headline values (−69.8, −40.0, −28.1, −19.3, +18.8, +15.6) are an order of
+magnitude larger. So the effect is bounded, and hardware confounding cannot
+overturn the conclusions.
+
+But the sentence we can defend is **"even if the card was not fixed, the effect
+does not exceed this size"** — not "the card was fixed." The fix costs one line
+in the next campaign: write the GPU, driver and library versions into the
+result file. The notebooks we hand over now do this.
+
+*(This is also why we present the two latency figures above as a scale rather
+than a benchmark: we cannot rule out that UniVLA and SpatialVLA were timed on
+different cards.)*
 
 ---
 

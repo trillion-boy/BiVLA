@@ -10,10 +10,11 @@
 Vision-language-action (VLA) policies are slow. In our own runs, one forward
 pass costs UniVLA~\cite{univla} $2.80$~s and SpatialVLA~\cite{spatialvla}
 $0.90$~s, averaged over the 96 baseline episodes of the WidowX-Bridge suite
-(Sec.~\ref{sec:setup}).\footnote{Model time only, excluding simulator stepping.
-We report it as a scale, not as a benchmark: the GPU model was not recorded in
-our result files, which is a limitation we return to in
-Sec.~\ref{sec:limitations}.} This has motivated a growing set of
+(Sec.~\ref{sec:setup}).\footnote{Model time only, excluding simulator
+stepping, on Colab T4/L4-class hardware. We give these as a scale rather than
+a comparable benchmark: our result files do not record \emph{which} card each
+run used, and inference time does not identify it
+(Sec.~\ref{sec:limitations}).} This has motivated a growing set of
 \emph{training-free} interventions that leave the checkpoint untouched and make
 inference cheaper: skipping decoder layers, caching or pruning visual tokens,
 and reusing a predicted action across several control
