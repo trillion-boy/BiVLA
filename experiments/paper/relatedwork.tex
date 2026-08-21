@@ -2,7 +2,8 @@
 % Related Work -- ICRA form, modelled on Bag of Tricks (429 words, three
 % bold run-in paragraphs, no tables, each paragraph ending on our position).
 %
-% Target ~500 words / ~0.5 page. Reading copy: paper/RelatedWork.md
+% 566 rendered words against a 450--560 target / ~0.5 page.
+% Reading copy: paper/RelatedWork.md
 % Provenance for every factual claim: paper/RelatedWork_Sources.md
 % ---------------------------------------------------------------------------
 
@@ -13,24 +14,22 @@ interventions we re-measure, and how such interventions are evaluated.
 
 \textbf{Inference cost in VLA policies.}
 VLA policies adapt pretrained vision-language models to output robot actions,
-inheriting their size and latency; surveys of the resulting efficiency
-literature are now
-appearing~\cite{effvlasurvey1, effvlasurvey2}. Work on reducing inference
-cost falls into three families by the resource each spends:
+inheriting their size and latency; the resulting efficiency literature already
+has surveys of its own~\cite{effvlasurvey1, effvlasurvey2}. It falls into three
+families by the resource each spends:
 1)~\emph{when the policy runs} --- executing a predicted chunk over several
-control steps, a lineage running from frame skip in
-RL~\cite{dqn} through action chunking~\cite{act, diffusionpolicy} to the
-parallel decoding of OpenVLA-OFT~\cite{openvlaoft};
-2)~\emph{what it is shown} --- reducing or reweighting visual tokens; and
+control steps, from frame skip in RL~\cite{dqn} through action
+chunking~\cite{act, diffusionpolicy} to OpenVLA-OFT's parallel
+decoding~\cite{openvlaoft};
+2)~\emph{what it is shown} --- reducing or reweighting visual tokens;
 3)~\emph{how much network each call uses} --- skipping decoder layers. We
-treat these as three axes rather than as competing methods, because a claim
-about efficiency is a claim about one of these resources being spent
-differently.
+treat these as axes rather than as competing methods, because a claim about
+efficiency is a claim about one of these resources being spent differently.
 
 \textbf{The interventions we re-measure.}
 Layer redundancy in language models is well
-established~\cite{shortgpt, gromov}, and the Block Influence criterion we
-adopt is ShortGPT's~\cite{shortgpt}; EfficientVLA carries it into VLAs without
+established~\cite{shortgpt, gromov}; the Block Influence criterion we adopt is
+ShortGPT's~\cite{shortgpt}. EfficientVLA carries it into VLAs without
 training~\cite{efficientvla}, while MoLe-VLA pursues layer skipping \emph{with}
 a learned router and distillation~\cite{molevla}, which places it outside what
 we test. On the visual axis, methods developed for
@@ -38,8 +37,15 @@ VLMs~\cite{fastv, sparsevlm, tome} have been reported to transfer poorly to
 VLAs: VLA-Cache attributes this to VLAs emitting short action sequences and
 measures FastV leaving FLOPs unchanged while latency
 rises~\cite{vlacache}, and VLA-Pruner reproduces the degradation on a third
-setting~\cite{vlapruner}. Foveation, our own visual intervention, is a vision
-technique of the same kind, tested for the same transfer. Notably, recent
+setting~\cite{vlapruner}. Our own visual intervention, foveation, comes from
+the other direction: the log-polar retinotopic mapping of
+Schwartz~\cite{schwartz}, adopted in robot vision to cut data while
+preserving central resolution~\cite{traver}, and applied to VLAs by
+gaze-conditioned policies~\cite{gazereg, lookfocusact}. We include it because
+it edits the observation \emph{before} the encoder, which is what makes it
+comparable across backbones: however the encoders differ, each splits the image
+into a \emph{uniform} grid, so empty background receives the same budget as the
+region where the gripper meets the object. Notably, recent
 compact VLAs no longer apply these reductions at inference but build them in
 --- FLOWER prunes 30--50\% of its VLM layers by design~\cite{flower}, SmolVLA
 retains only the first sixteen~\cite{smolvla}, and TurboVLA removes the
@@ -48,20 +54,21 @@ entirely~\cite{turbovla} --- which makes whether such a reduction transfers a
 question about architecture, not only about a switch.
 
 \textbf{How these claims are evaluated.}
-Efficiency results are reported on SimplerEnv~\cite{simplerenv} and
-LIBERO~\cite{libero}, and recent work has begun to address the surrounding
-infrastructure: vla-eval unifies fourteen benchmarks behind one harness and
-documents previously undocumented evaluation
-pitfalls~\cite{vlaeval}. What that infrastructure cannot supply is the
-comparison itself. Papers that use several backbones change the benchmark at
-the same time~\cite{vlacache, specprune, vlaiap}, and those with both axes
-present leave the crossing cell empty~\cite{gazereg, vlapruner}; all report
-mean success rates over independent runs. Consequently, whether an
-intervention keeps its \emph{direction} when the backbone or the benchmark
-changes cannot be read off the published tables, and neither can the
-per-task disagreements those tables average over
-(Table~\ref{tab:reporting}).
+Results are reported on SimplerEnv~\cite{simplerenv} and
+LIBERO~\cite{libero}, and recent work addresses the surrounding
+infrastructure: vla-eval unifies fourteen benchmarks and documents previously
+undocumented evaluation pitfalls~\cite{vlaeval}. What infrastructure cannot
+supply is the comparison itself. Papers that use several backbones change the
+benchmark at the same time~\cite{vlacache, specprune, vlaiap}, and those with
+both axes present leave the crossing cell empty~\cite{gazereg, vlapruner}; the
+tables we cite report mean success rates over independent runs, without
+matched-episode outcomes. So whether an intervention keeps its \emph{direction}
+when the backbone or the benchmark changes cannot be read off these tables, nor
+can the per-task disagreements they average over (Table~\ref{tab:reporting}).
 
+We do not cover quantisation, KV-cache compression or learned early exit, which
+spend resources our three axes do not. Re-measuring methods one did not invent
+is itself an established form~\cite{bagoftricks_cnn, bagoftricks_llm}.
 Unique to this paper, we measure the same interventions over a complete
 backbone $\times$ benchmark grid and test each result on matched episodes
 rather than on aggregate rates, so that the direction of an effect --- not

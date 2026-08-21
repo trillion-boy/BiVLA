@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex` — citations spelled out, same content.
-483 words in the LaTeX, against *Bag of Tricks*' 429. Provenance for every
-claim: `RelatedWork_Sources.md`.*
+566 rendered words in the LaTeX, against a 450–560 target and *Bag of Tricks*'
+429. Provenance for every claim: `RelatedWork_Sources.md`.*
 
 ---
 
@@ -12,33 +12,41 @@ interventions we re-measure, and how such interventions are evaluated.
 ### Inference cost in VLA policies
 
 VLA policies adapt pretrained vision-language models to output robot actions,
-inheriting their size and latency; surveys of the resulting efficiency
-literature are now appearing. Work on reducing inference cost falls into three
-families, by the resource each spends:
+inheriting their size and latency; the resulting efficiency literature already
+has surveys of its own. It falls into three families by the resource each
+spends:
 
 1. **when the policy runs** — executing a predicted chunk over several control
-   steps, a lineage running from frame skip in RL through action chunking
-   (ACT, Diffusion Policy) to the parallel decoding of OpenVLA-OFT;
+   steps, from frame skip in RL through action chunking (ACT, Diffusion Policy)
+   to OpenVLA-OFT's parallel decoding;
 2. **what it is shown** — reducing or reweighting visual tokens;
 3. **how much network each call uses** — skipping decoder layers.
 
-We treat these as three axes rather than as competing methods, because a claim
-about efficiency is a claim about one of these resources being spent
-differently.
+We treat these as axes rather than as competing methods, because a claim about
+efficiency is a claim about one of these resources being spent differently.
 
 ### The interventions we re-measure
 
-Layer redundancy in language models is well established, and the Block
-Influence criterion we adopt is ShortGPT's. EfficientVLA carries it into VLAs
-without training; MoLe-VLA pursues layer skipping **with** a learned router and
-distillation, which places it outside what we test.
+Layer redundancy in language models is well established (ShortGPT, Gromov et
+al.); the Block Influence criterion we adopt is ShortGPT's. EfficientVLA
+carries it into VLAs without training, while MoLe-VLA pursues layer skipping
+**with** a learned router and distillation, which places it outside what we
+test.
 
 On the visual axis, methods developed for VLMs (FastV, SparseVLM, ToMe) have
 been reported to transfer poorly to VLAs: VLA-Cache attributes this to VLAs
 emitting short action sequences and measures FastV leaving FLOPs unchanged
 while latency rises, and VLA-Pruner reproduces the degradation on a third
-setting. Foveation, our own visual intervention, is a vision technique of the
-same kind, tested for the same transfer.
+setting.
+
+Our own visual intervention, foveation, comes from the other direction: the
+log-polar retinotopic mapping of Schwartz, adopted in robot vision to cut data
+while preserving central resolution (Traver & Bernardino), and applied to VLAs
+by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). We include it because
+it edits the observation *before* the encoder, which is what makes it
+comparable across backbones: however the encoders differ, each splits the image
+into a **uniform** grid, so empty background receives the same budget as the
+region where the gripper meets the object.
 
 Notably, recent compact VLAs no longer apply these reductions at inference but
 **build them in** — FLOWER prunes 30–50% of its VLM layers by design, SmolVLA
@@ -48,26 +56,29 @@ question about architecture, not only about a switch.
 
 ### How these claims are evaluated
 
-Efficiency results are reported on SimplerEnv and LIBERO, and recent work has
-begun to address the surrounding infrastructure: vla-eval unifies fourteen
-benchmarks behind one harness and documents previously undocumented evaluation
-pitfalls.
+Results are reported on SimplerEnv and LIBERO, and recent work addresses the
+surrounding infrastructure: vla-eval unifies fourteen benchmarks and documents
+previously undocumented evaluation pitfalls.
 
-What that infrastructure cannot supply is **the comparison itself.** Papers
-that use several backbones change the benchmark at the same time (VLA-Cache,
+What infrastructure cannot supply is **the comparison itself.** Papers that use
+several backbones change the benchmark at the same time (VLA-Cache,
 SpecPrune-VLA, VLA-IAP), and those with both axes present leave the crossing
-cell empty (Gaze-Reg, VLA-Pruner); all report mean success rates over
-independent runs. Consequently, whether an intervention keeps its *direction*
-when the backbone or the benchmark changes cannot be read off the published
-tables, and neither can the per-task disagreements those tables average over
-(Table I).
+cell empty (Gaze-Reg, VLA-Pruner); the tables we cite report mean success rates
+over independent runs, without matched-episode outcomes. So whether an
+intervention keeps its *direction* when the backbone or the benchmark changes
+cannot be read off these tables, nor can the per-task disagreements they
+average over (Table I).
 
 ---
 
-Unique to this paper, we measure the same interventions over a complete
-backbone × benchmark grid and test each result on matched episodes rather than
-on aggregate rates, so that the direction of an effect — not only its size —
-is something the evidence can decide.
+We do not cover quantisation, KV-cache compression or learned early exit, which
+spend resources our three axes do not. Re-measuring methods one did not invent
+is itself an established form (the image-classification and the
+inference-time-computation *bag of tricks* studies). Unique to this paper, we
+measure the same interventions over a complete backbone × benchmark grid and
+test each result on matched episodes rather than on aggregate rates, so that
+the direction of an effect — not only its size — is something the evidence can
+decide.
 
 ---
 
@@ -78,17 +89,29 @@ three bold run-in paragraphs, each ending on our position rather than on a
 summary, and a closing "Unique to this paper" sentence. No tables — theirs is
 in the Introduction, and so is ours.
 
-**Three things deliberately left out.**
+**Length.** 566 rendered words against the 450–560 target set in
+`RelatedWork_Plan.md`. The target itself rests on an *unverified* rule of thumb
+(≈500–550 words per IEEEtran column); compile one real column before treating
+either number as binding. If it runs long, the first sentence to cut is the
+Schwartz/Traver lineage clause in paragraph two — the foveation rationale
+survives without it, since the load-bearing part is "edits the observation
+before the encoder," not who invented log-polar mapping.
 
-1. **The per-task split** (`RelatedWork.md` §2.5) gets one clause, not a
-   paragraph. It is a finding; its evidence is Table I in the Introduction and
-   its statement is in Results.
+**Four things deliberately left out.**
+
+1. **The per-task split** (`RelatedWork.md` §2.5 of the long version) gets one
+   clause, not a paragraph. It is a finding; its evidence is Table I in the
+   Introduction and its statement is in Results.
 2. **StarVLA**, whose stated problem supports our motivation, is not cited —
    we have a search snippet, not the PDF.
 3. **The ten training-free papers** in `Survey_2026-08.md` §4 are not cited.
    Abstract-level only.
+4. **The 8 × 3 scale statement** (eight backbones once the mentor's five runs
+   land, three benchmarks) belongs in **Setup**, not here. Related Work claims
+   a *method* — complete grid plus matched episodes — not a coverage record,
+   because vla-eval already publishes 14 benchmarks × 6 model servers.
 
-**Two sentences a reviewer will test.** *"None pairs episodes"* is a claim
-about the tables we cite, not about the field — keep it that way. And the
+**Two sentences a reviewer will test.** The matched-episode claim is scoped to
+"the tables we cite," not to the field — keep it that way. And the
 crossing-cell claim was already too strong once, which is why
 `Survey_2026-08.md` exists; re-run that sweep close to submission.
