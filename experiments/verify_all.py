@@ -247,10 +247,28 @@ for name, pat, want in [
         ("window25", "results/openvla_fractal_depth_control/window25/**/results_*.json", -10.7)]:
     got = 100 * (raw_step(pat) / ofb - 1)
     ck(near(got, want), f"window cost {name} {got:+.1f} != {want}")
-ck(near(json.load(open(glob.glob("results/univla_bridge_0805/baseline_l4/**/results_*.json",
-        recursive=True)[0])).get("avg_model_ms_per_infer", 2811.5) / 1000, 2.81, 0.5),
-   "UniVLA per-infer latency far from 2.81 s")
+def mean_infer(pat):
+    """Mean ms/infer over EVERY episode under `pat`, or None if the field is
+    absent. Averaging one task's summary would hide a task that never
+    recorded it; returning None keeps "not measured" out of the average."""
+    v = [e["model_ms_per_infer"] for f in glob.glob(pat, recursive=True)
+         for e in json.load(open(f))["episodes"] if e.get("model_ms_per_infer")]
+    return sum(v) / len(v) / 1000 if v else None
+
+
+# The two latency figures the Introduction quotes as a scale. Checked over all
+# 96 episodes each rather than one task's summary, and pinned tightly: these
+# are cited in prose, so a drift has to fail here rather than be re-typed.
+for name, pat, want in [
+        ("UniVLA/Bridge baseline", "results/univla_bridge_0805/baseline/**/results_*.json", 2.80),
+        ("UniVLA/Bridge baseline_l4", "results/univla_bridge_0805/baseline_l4/**/results_*.json", 2.81),
+        ("SpatialVLA/Bridge baseline", "results/spatialvla_bridge_0805/baseline/**/results_*.json", 0.90)]:
+    got = mean_infer(pat)
+    ck(near(got, want, 0.02),
+       f"{name} ms/infer {got if got is None else round(got, 3)} != {want} s")
 print("    repeat/foveation/depth/window costs all reproduce")
+print(f"    per-infer latency: UniVLA {mean_infer('results/univla_bridge_0805/baseline/**/results_*.json'):.2f} s, "
+      f"SpatialVLA {mean_infer('results/spatialvla_bridge_0805/baseline/**/results_*.json'):.2f} s")
 
 # ================================================================ 5
 sec("5  window contrast, variant pairs, keep sweep, controls")
