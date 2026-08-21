@@ -104,12 +104,15 @@ $-0.9$) — the gain comes from the distillation. It is not training-free, so it
 is out of scope by definition, and running it would be a category error.
 
 **FastV is still worth running, for a better reason than the objection.**
-VLA-Cache published a specific number: on OpenVLA, FastV leaves FLOPs
-unchanged (1.864 T) and *increases* latency (51.91 → 53.28 ms). That is one
-backbone on one benchmark — exactly the shape of claim our grid exists to
-test, and this time with a published number to compare against. If FastV's
-behaviour is stable across our five cells, that is a result; if it is not, it
-is a stronger one, and it lands on a method the field actually cites.
+Two papers disagree about it in print. FastV's own paper reports a 45% FLOPs
+reduction on LLaVA-1.5-13B "without sacrificing performance," and is
+training-free by its own §4.1. VLA-Cache, running it on a **VLA**, reports the
+opposite: FLOPs unchanged (1.864 T) and latency *up* (51.91 → 53.28 ms),
+attributed to VLAs generating ~7 action tokens rather than long sequences.
+
+That is a published disagreement about one method across two configurations —
+exactly the shape our grid exists to resolve, and the only case where we would
+have prior numbers on both sides to compare against.
 
 ### ② Simulation only, at a robotics conference
 
