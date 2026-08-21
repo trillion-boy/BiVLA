@@ -67,10 +67,12 @@ One benchmark-axis comparison survives correction; six backbone-axis
 comparisons do, five at $p < 10^{-4}$. On the same $135$ Fractal episodes with
 the same intervention, OpenVLA gains $+15.6$ and SpatialVLA loses $-17.8$, each
 significant alone ($p = 4.3 \times 10^{-7}$). The same split is already visible
-in published tables: \texttt{pick coke can} rises while \texttt{move near}
-falls in all twelve configurations reported across two author groups and three
-method families~\cite{efficientvla, vlacache, fastv}, and none of those papers
-discusses it, because all report only the four-task average.
+in published tables: \texttt{pick coke can} holds up better than
+\texttt{move near} in fourteen of the fifteen configurations reported across
+four author groups~\cite{efficientvla, vlacache, fastv, vlapruner}. The single
+exception is the one method explicitly designed to preserve action-relevant
+tokens~\cite{vlapruner} --- which is what its own mechanism predicts. None of
+these papers discusses the split.
 
 \textbf{Contributions.}
 \textbf{1)~A uniform re-measurement} of three training-free VLA interventions

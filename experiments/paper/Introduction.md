@@ -160,10 +160,16 @@ tokeniser cause from a training-distribution one.)*
 ## The same split is already in the published tables
 
 This is not only visible in our grid. Splitting the Google Robot results that
-prior work already prints, `pick coke can` rises or holds while `move near`
-falls in **all twelve configurations** reported — across two author groups and
-three method families (EfficientVLA, VLA-Cache, FastV). Where a capacity ladder
-exists, the direction is monotone in eight of the twelve.
+prior work already prints, `pick coke can` holds up better than `move near` in
+**fourteen of fifteen configurations** reported across four author groups
+(EfficientVLA, VLA-Cache, FastV, VLA-Pruner). Where a capacity ladder exists,
+the direction is monotone in eight of them.
+
+**The one exception is informative rather than damaging.** It is VLA-Pruner —
+the single method in the set designed specifically to stop pruning
+action-critical tokens (97.0% of baseline preserved on `move near` against
+94.9% on `pick coke can`). The pattern holding for the salience-based methods
+and breaking for the method built to fix it is what its mechanism predicts.
 
 None of those papers discusses the split. All of them report only the
 four-task average, which is exactly the operation that hides it.
