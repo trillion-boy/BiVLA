@@ -11,7 +11,7 @@ change in success rate against that column's own baseline, on paired episodes.
 
 | | OpenVLA<br>Bridge | OpenVLA<br>Fractal | SpatialVLA<br>Bridge | SpatialVLA<br>Fractal | UniVLA<br>Bridge | UniVLA<br>Fractal | TurboVLA<br>Bridge | TurboVLA<br>Fractal | CoTinyVLA<br>Bridge | CoTinyVLA<br>Fractal | FLOWER<br>Bridge | FLOWER<br>Fractal | MiniVLA<br>Bridge | MiniVLA<br>Fractal | SmolVLA<br>Bridge | SmolVLA<br>Fractal |
 |---|---:|---:|---:|---:|---:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| *params* | *7B* | *7B* | *4B* | *4B* | *8.5B* | *8.5B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *1B* | *1B* | *1B* | *1B* | *4B* | *4B* |
+| *params* | *7B* | *7B* | *4B* | *4B* | *8.5B* | *8.5B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *0.95B* | *0.95B* | *1B* | *1B* | *0.45B* | *0.45B* |
 | *decoder layers* | *32* | *32* | *26* | *26* | *32* | *32* | *?* | *?* | *?* | *?* | *?* | *?* | *?* | *?* | *?* | *?* |
 | *baseline success* | *15.6%* | *38.5%* | *30.2%* | *84.4%* | *81.2%* | — | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
 | action repeat 2 | −8.3 | +5.2 | +12.5 | ±0.0 | **−69.8** | — | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
@@ -30,7 +30,7 @@ change in success rate against that column's own baseline, on paired episodes.
 
 | | TurboVLA<br>Spatial | TurboVLA<br>Object | TurboVLA<br>Goal | TurboVLA<br>Long | CoTinyVLA<br>Spatial | CoTinyVLA<br>Object | CoTinyVLA<br>Goal | CoTinyVLA<br>Long | FLOWER<br>Spatial | FLOWER<br>Object | FLOWER<br>Goal | FLOWER<br>Long | MiniVLA<br>Spatial | MiniVLA<br>Object | MiniVLA<br>Goal | MiniVLA<br>Long | SmolVLA<br>Spatial | SmolVLA<br>Object | SmolVLA<br>Goal | SmolVLA<br>Long |
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| *params* | *0.2B* | *0.2B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *0.9B* | *0.9B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *4B* | *4B* | *4B* | *4B* |
+| *params* | *0.2B* | *0.2B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *0.9B* | *0.9B* | *0.95B* | *0.95B* | *0.95B* | *0.95B* | *1B* | *1B* | *1B* | *1B* | *0.45B* | *0.45B* | *0.45B* | *0.45B* |
 | *LIBERO checkpoint?* | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 | *baseline success* | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
 | action repeat 2 | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |

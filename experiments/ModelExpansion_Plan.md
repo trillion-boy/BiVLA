@@ -1,7 +1,7 @@
 # Model Expansion — Run Table
 
 Extending the backbone axis downward in parameter count. The current grid sits
-at 4–8.5B; the five new models cover 0.2–4B.
+at 4–8.5B; the five new models cover 0.2–1B.
 
 **Benchmarks.** Two families, six suites in total:
 
@@ -29,7 +29,7 @@ paired episodes**. Bold = passes the current multiple-comparison threshold
 
 | | OpenVLA<br>Bridge | OpenVLA<br>Fractal | SpatialVLA<br>Bridge | SpatialVLA<br>Fractal | UniVLA<br>Bridge | UniVLA<br>Fractal | TurboVLA<br>Bridge | TurboVLA<br>Fractal | CoTinyVLA<br>Bridge | CoTinyVLA<br>Fractal | FLOWER<br>Bridge | FLOWER<br>Fractal | MiniVLA<br>Bridge | MiniVLA<br>Fractal | SmolVLA<br>Bridge | SmolVLA<br>Fractal |
 |---|---:|---:|---:|---:|---:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| *params* | *7B* | *7B* | *4B* | *4B* | *8.5B* | *8.5B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *1B* | *1B* | *1B* | *1B* | *4B* | *4B* |
+| *params* | *7B* | *7B* | *4B* | *4B* | *8.5B* | *8.5B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *0.95B* | *0.95B* | *1B* | *1B* | *0.45B* | *0.45B* |
 | *decoder layers* | *32* | *32* | *26* | *26* | *32* | *32* | *?* | *?* | *?* | *?* | *?* | *?* | *?* | *?* | *?* | *?* |
 | *baseline success* | *15.6%* | *38.5%* | *30.2%* | *84.4%* | *81.2%* | — | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
 | action repeat 2 | −8.3 | +5.2 | +12.5 | ±0.0 | **−69.8** | — | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
@@ -47,8 +47,15 @@ that column cannot be filled by running anything.
 Per new model: 8 × 96 (Bridge) + 8 × 135 (Fractal) = 1,848 episodes.
 Five models = **9,240 episodes.**
 
-> Parameter counts for the five new models are as given; worth confirming
-> against each paper, since several ship in more than one size.
+> Parameter counts are now **from the papers**, not as given. One correction:
+> **SmolVLA is 450M, not 4B.** The five span 0.2–1B.
+>
+> **Priority note.** Only two of the five publish SimplerEnv numbers — FLOWER
+> (Bridge *and* Google Robot) and MiniVLA (Bridge, our exact four tasks). All
+> five publish LIBERO. So the baseline-vs-paper check that catches setup
+> errors is available on LIBERO for everyone and on SimplerEnv for two.
+> **Run FLOWER first**: it is the only cell where a wrong setup would be
+> caught on both suites before seven intervention rows are spent on it.
 
 ### Optional extra rows
 
@@ -88,7 +95,7 @@ on protocol below.
 
 | | TurboVLA<br>Spatial | TurboVLA<br>Object | TurboVLA<br>Goal | TurboVLA<br>Long | CoTinyVLA<br>Spatial | CoTinyVLA<br>Object | CoTinyVLA<br>Goal | CoTinyVLA<br>Long | FLOWER<br>Spatial | FLOWER<br>Object | FLOWER<br>Goal | FLOWER<br>Long | MiniVLA<br>Spatial | MiniVLA<br>Object | MiniVLA<br>Goal | MiniVLA<br>Long | SmolVLA<br>Spatial | SmolVLA<br>Object | SmolVLA<br>Goal | SmolVLA<br>Long |
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| *params* | *0.2B* | *0.2B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *0.9B* | *0.9B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *1B* | *4B* | *4B* | *4B* | *4B* |
+| *params* | *0.2B* | *0.2B* | *0.2B* | *0.2B* | *0.9B* | *0.9B* | *0.9B* | *0.9B* | *0.95B* | *0.95B* | *0.95B* | *0.95B* | *1B* | *1B* | *1B* | *1B* | *0.45B* | *0.45B* | *0.45B* | *0.45B* |
 | *LIBERO checkpoint?* | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 | *baseline success* | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
 | action repeat 2 | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not | Not |
@@ -209,13 +216,43 @@ we currently have to disclose (Report §7 ⑤).
 
 ## Per-model information needed before the runs
 
-| Model | SimplerEnv checkpoint | LIBERO checkpoints (which suites) | Decoder layers | Native chunk length | Action head |
-|---|---|---|---:|---:|---|
-| TurboVLA | | | | | |
-| CoTinyVLA | | | | | |
-| FLOWER | | | | | |
-| MiniVLA | | | | | |
-| SmolVLA | | | | | |
+**Filled from the papers** (see `paper/FiveModels_Read.md`). Only the
+checkpoint columns are still open.
+
+| Model | Params | Backbone | Native chunk | Action head | Own benchmarks |
+|---|---:|---|---:|---|---|
+| TurboVLA | 0.2B | **no LLM** — direct V&L interaction | chunk | compact decoder, single forward, continuous | LIBERO, RoboTwin, real |
+| CoTinyVLA | 0.9B | Qwen3.5-0.8B | chunk | autoregressive + CoT tokens | LIBERO-Plus only |
+| MiniVLA | ~1B | Qwen2.5-0.5B + OpenVLA ViT | **8** | VQ discrete (Residual VQ) | LIBERO-90, **SimplerEnv Bridge** |
+| FLOWER | 0.95B | pruned VLM + Flow Transformer | **20** / 50 | flow matching | CALVIN, LIBERO, **SIMPLER Bridge + Google Robot** |
+| SmolVLA | **0.45B** | SmolVLM-2, **first 16 LLM layers only** | **50** | flow-matching expert (~100M) | LIBERO, Meta-World, real |
+
+> **SmolVLA is 450M, not 4B** — its own text: *"Our main model contains 450
+> million parameters."* So the five span **0.2–1B**, and there is no overlap
+> with our existing 4–8.5B grid.
+
+### Which conditions actually apply
+
+| | TurboVLA | CoTinyVLA | MiniVLA | FLOWER | SmolVLA |
+|---|:--:|:--:|:--:|:--:|:--:|
+| foveation | ✅ | ✅ ×32 imgs | ✅ | ✅ | ✅ |
+| action repeat | ⚠ chunk | ⚠ chunk | ⚠ chunk 8 | ⚠ chunk 20–50 | ⚠ chunk 50 |
+| depth pruning | ❌ **no LLM stack** | ✅ | ✅ | ⚠ **already prunes 30–50%** | ⚠ **already 16 layers only** |
+
+- **TurboVLA has nothing to prune.** It *"avoid[s] … processing multimodal
+  inputs through a billion-parameter language model"* and emits chunks
+  *"without autoregressive action-token generation."* Depth pruning runs on
+  **two of the five**.
+- **FLOWER and SmolVLA already prune by construction.** Not a nuisance — a
+  result: the field has begun building this intervention into the
+  architecture.
+- **Action repeat composes onto native chunking.** Ours were 1/1/5; these are
+  8 to 50. Repeat 2 on a chunk-50 model is 100 env steps per forward. The row
+  is runnable but not comparable down the column unless the chunk length is
+  printed next to it. SmolVLA's own Table 12 shows chunk length alone moving
+  LIBERO by 34 points (chunk 1 → 50.0%, chunk 10 → 84.0%).
+- **CoTinyVLA takes 16 history frames × 2 views.** Foveation must be applied
+  to all 32 images per step, not just the newest (notebook 02's warning).
 
 The LIBERO column decides how many of that model's four LIBERO columns can be
 filled at all — see the gate above. The two after it decide whether a
