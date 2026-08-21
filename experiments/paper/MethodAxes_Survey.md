@@ -71,14 +71,14 @@ further column matters for them.
 
 | candidate | **training-free?** | new resource? | all 3 backbones? | in repo? | verdict |
 |---|---|---|---|---|---|
-| **Visual token pruning** (FastV) | **yes** — inference-time attention scores, no fit | **yes** — sequence length | yes, via 3 impls | **yes** | **add first** |
+| **Visual token pruning** (FastV) | **yes** — our impl. has no parameters/loss; uses the model's own attention | **yes** — sequence length | yes, via 3 impls | **yes** | **add first** |
 | **Self-speculative decoding** | **yes** — draft and verifier are the same weights | **yes** — decode steps | yes (all 3 decode autoregressively) | **yes** | **add second** |
 | **Input resolution** | **yes** — a preprocessing argument | **yes** — token count via pixels | yes, trivially | partly (`--image-size`) | **cheap, high value** |
 | Token merging (ToMe) | yes — the off-the-shelf variant needs no training | same as token pruning | **no** — UniVLA has no ViT | yes | variant, and blocked |
 | Temporal feature caching (VLA-Cache) | yes — reuses KV, nothing fit | yes — recompute frequency | probably, untested | SpatialVLA only | possible, more work |
 | Post-training quantization | yes — PTQ by definition | **yes** — bits per weight | yes | no | possible, but breaks our determinism claim |
 | ~~MoLe-VLA~~ | **NO — verified from source** | (moot) | (moot) | no | **disqualified**, see below |
-| ~~Early exit (CALM, DeeR-VLA)~~ | **no** — the exit criterion is learned | (moot) | (moot) | no | **disqualified** |
+| ~~Early exit (CALM, DeeR-VLA)~~ | **no** — learned exit criterion *(not read from source; provisional)* | (moot) | (moot) | no | **disqualified, pending a read** |
 | Chunk execution (`exec-chunk`) | yes | yes — actions per call | **no** — see §4 | yes | **excluded, and we say why** |
 | KV-cache compression | yes, for the eviction-policy variants | yes — memory bandwidth | probably | no | out of scope for latency claims |
 
@@ -109,6 +109,36 @@ So MoLe-VLA is a **citation**, not a candidate. It belongs in Related Work as
 the VLA layer-skipping paper, with the observation that its reported gain
 comes from the distillation rather than from the skipping — which is a point
 in our favour, not a method for us to run.
+
+### How each row's training-free status was checked
+
+The MoLe-VLA error was that I took the framing instead of reading. So this is
+what backs each cell of that column, and where it is weaker than it should be.
+
+| candidate | evidence | strength |
+|---|---|---|
+| **FastV** | our implementation has **no** `nn.Parameter`, no optimiser, no loss, no `.backward()`; the importance signal is the model's own attention read at layer *k*. Grepped, not assumed | **strong for what we would run**; the ECCV paper itself is unread |
+| **Self-speculative decoding** | draft and verify **share every weight** — only which layers are active differs, toggled by a caller-supplied mode. Same grep, clean. And `test_self_spec_decode.py` passes today: output byte-identical to plain greedy over 20 seeds at both 0.4 and 0.9 draft-disagreement rates | **strong**, and the losslessness is demonstrated rather than claimed |
+| **ToMe** | merging is a weighted average between frozen SigLIP layers, then unmerged; no parameters. Same grep, clean. The ICLR paper does also offer a *with-training* variant we would not use | **strong for the off-the-shelf variant** |
+| **Input resolution** | a preprocessing argument | trivially true |
+| **Post-training quantization** | training-free by definition of PTQ | true by definition; the specific toolchain still needs choosing |
+| **EfficientVLA** | title is literally *Training-Free…*, and `RelatedWork.md` A.1 records from the PDF that the three reductions are done **without training** | **verified from source** |
+| **VLA-Cache** | A.2, from the PDF: reuses KV for tokens unchanged between frames; nothing is fit | **verified from source** |
+| **ShortGPT** | A.3, from the PDF: BI metric plus **training-free layer removal** | **verified from source** |
+| ~~**MoLe-VLA**~~ | §3.5 *Optimization Objective*, Eq. 18–19, learnable STAR router, CogKD distillation | **verified from source — fails** |
+| ~~**Early exit** (CALM, DeeR-VLA)~~ | the exit criterion is a learned predictor | **not verified from source** — treat as provisional |
+| **SparseVLM, VLA-Pruner** | named in `RelatedWork_Candidates.md`, never read | **not verified** — do not put in a training-free list until read |
+
+**What is still missing, and why.** arXiv, OpenReview, Semantic Scholar and
+HuggingFace are all blocked by this environment's egress policy, so FastV,
+ToMe, self-speculative decoding, SparseVLM and the early-exit papers could not
+be fetched. For the three we would actually run this matters less than it
+looks — the question that decides whether they belong in our grid is whether
+*our* implementation trains anything, and that is answered by reading our own
+code, which is what the table does. But the sentence "FastV is training-free"
+in a paper needs the paper, so those three PDFs should be checked once before
+submission. The two rows marked *not verified* should not appear in any
+training-free list until then.
 
 ### The three worth doing, and why each helps *this* paper
 
