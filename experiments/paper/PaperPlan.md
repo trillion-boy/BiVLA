@@ -112,9 +112,9 @@ Six pages of content, two of references, IEEEtran two-column.
 | Title, abstract, Introduction | 0.75 | intro ≈ ¾ column; Fig. 1 takes the rest of page 1 |
 | **Fig. 1** — the grid as a signed heat map | (in the above) | 7 conditions × 5 cells; the reader should see signs disagreeing within a row before reading a word |
 | **Table I** — what prior work reports | 0.25 | see above |
-| Related Work | 0.75 | three axes, one paragraph each, plus the reporting-practice paragraph |
+| Related Work | **0.5** | three run-in paragraphs, ~500 words — measured against *Bag of Tricks*' 429 (`RelatedWork_Plan.md`) |
 | Setup and protocol | 1.0 | backbones, benchmarks, the eight conditions, pairing, determinism, the correction family |
-| Results | 2.0 | the three results; four tables |
+| Results | **2.25** | the three results; four tables. Takes the 0.25 freed from Related Work |
 | What breaks (failure typing) | 0.5 | the one table with five buckets |
 | Limitations and conclusion | 0.75 | GPU recording, third benchmark, single-cell mechanism |
 | **total** | **6.0** | |
