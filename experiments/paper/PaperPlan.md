@@ -81,8 +81,8 @@ not about our results.** Their Table 1 lists six prior methods against the
 configuration knobs each one uses, showing that the field does not standardise
 them. We have the identical move available and it is directly on thesis:
 
-> **Table I — What prior work reports.** Rows: EfficientVLA, VLA-Cache, FastV,
-> MoLe-VLA, ShortGPT. Columns: layer candidate window · selection constraint ·
+> **Table I — What prior work reports.** Rows: EfficientVLA, VLA-Cache,
+> FastV, ShortGPT (the training-free ones). Columns: layer candidate window · selection constraint ·
 > foveation/keep value · per-task split · per-episode records. Mostly empty
 > cells, and each empty cell is one of the values we show changes the answer.
 

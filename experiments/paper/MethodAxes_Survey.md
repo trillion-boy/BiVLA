@@ -17,14 +17,17 @@ picked because each **spends a different resource**:
 | vision | what the policy **sees** (pixels) | foveation |
 | depth | how many **layers** each call uses | depth pruning *k* |
 
-So a candidate earns a place only if it passes three tests:
+So a candidate earns a place only if it passes three tests, **checked in this
+order**:
 
-1. **New resource.** It must spend something the three above do not. A method
+1. **Training-free and checkpoint-untouched.** Checked *first*, because it is
+   disqualifying and because a method's name and framing do not tell you.
+   Anything with a training objective is a different paper. What counts as
+   evidence: a loss function, learnable parameters, a router that is fit, a
+   distillation stage. Not the abstract's adjectives.
+2. **New resource.** It must spend something the three above do not. A method
    that removes layers by a different criterion is a *variant*, not an axis.
-2. **Training-free and checkpoint-untouched.** Anything requiring a fine-tune
-   is a different paper.
-3. **Runs uniformly on all three backbones.** This is the hard one, and it is
-   the test that eliminates most candidates. Our whole argument rests on the
+3. **Runs uniformly on all three backbones.** Our whole argument rests on the
    grid being uniform: an axis that only runs on two of three backbones cannot
    answer "does this transfer across backbones," which is the question.
 
@@ -63,17 +66,49 @@ from zero.
 
 ## 3. The candidates, scored against the filter
 
-| candidate | new resource? | all 3 backbones? | in repo? | verdict |
-|---|---|---|---|---|
-| **Visual token pruning** (FastV, SparseVLM, VLA-Pruner) | **yes** — sequence length | yes, via 3 impls | **yes** | **add first** |
-| **Self-speculative decoding** | **yes** — decode steps | yes (all 3 decode autoregressively) | **yes** | **add second** |
-| **Input resolution** | **yes** — token count via pixels | yes, trivially | partly (`--image-size`) | **cheap, high value** |
-| Token merging (ToMe) | same as token pruning | **no** — UniVLA has no ViT | yes | variant, and blocked |
-| Temporal feature caching (VLA-Cache) | yes — recompute frequency | probably, untested | SpatialVLA only | possible, more work |
-| Quantization (INT8/FP8/4-bit) | **yes** — bits per weight | yes | no | possible, but breaks determinism |
-| Early exit / adaptive depth (CALM, MoLe-VLA) | no — depth again | yes | partly | variant of our axis 3 |
-| Chunk execution (`exec-chunk`) | yes — actions per call | **no** — see §4 | yes | **excluded, and we say why** |
-| KV-cache compression | yes — memory bandwidth | probably | no | out of scope for latency claims |
+**Test 1 first.** Two candidates fail it outright and are struck through; no
+further column matters for them.
+
+| candidate | **training-free?** | new resource? | all 3 backbones? | in repo? | verdict |
+|---|---|---|---|---|---|
+| **Visual token pruning** (FastV) | **yes** — inference-time attention scores, no fit | **yes** — sequence length | yes, via 3 impls | **yes** | **add first** |
+| **Self-speculative decoding** | **yes** — draft and verifier are the same weights | **yes** — decode steps | yes (all 3 decode autoregressively) | **yes** | **add second** |
+| **Input resolution** | **yes** — a preprocessing argument | **yes** — token count via pixels | yes, trivially | partly (`--image-size`) | **cheap, high value** |
+| Token merging (ToMe) | yes — the off-the-shelf variant needs no training | same as token pruning | **no** — UniVLA has no ViT | yes | variant, and blocked |
+| Temporal feature caching (VLA-Cache) | yes — reuses KV, nothing fit | yes — recompute frequency | probably, untested | SpatialVLA only | possible, more work |
+| Post-training quantization | yes — PTQ by definition | **yes** — bits per weight | yes | no | possible, but breaks our determinism claim |
+| ~~MoLe-VLA~~ | **NO — verified from source** | (moot) | (moot) | no | **disqualified**, see below |
+| ~~Early exit (CALM, DeeR-VLA)~~ | **no** — the exit criterion is learned | (moot) | (moot) | no | **disqualified** |
+| Chunk execution (`exec-chunk`) | yes | yes — actions per call | **no** — see §4 | yes | **excluded, and we say why** |
+| KV-cache compression | yes, for the eviction-policy variants | yes — memory bandwidth | probably | no | out of scope for latency claims |
+
+**MoLe-VLA, checked against the paper rather than its framing.** An earlier
+version of this document listed it as a depth-axis variant without checking.
+It is not training-free:
+
+- §3.5 is titled *Optimization Objective* and gives a training loss,
+  $\mathcal{L}_{\text{MoLe}} = \mathcal{L}_{\text{task}} + \lambda_2
+  \mathcal{L}_{\text{cog}} + \lambda_3 \mathcal{L}_{\text{lb}}$ (Eq. 19),
+  with an EMA teacher at $\alpha = 0.999$ (Eq. 18).
+- The STAR router has learnable parameters and selects layers through
+  Gumbel-Softmax, i.e. it is fit by gradient descent.
+- CogKD adds a *learnable cognition token* and a teacher-student stage.
+- The string "training-free" appears once in the entire paper — in the title
+  of reference [42].
+
+And its own Table 5 shows why the training is not incidental: layer skipping
+**alone** scores *below* the baseline it starts from.
+
+| | STAR | cognition token | CogKD | mean |
+|---|:--:|:--:|:--:|---:|
+| Ex0 — CogAct baseline | ✗ | ✗ | ✗ | 57.2% |
+| **Ex1−1 — STAR only** | ✓ | ✗ | ✗ | **56.3%** |
+| Ex2−4 — full | ✓ | ✓ | ✓ | 60.8% |
+
+So MoLe-VLA is a **citation**, not a candidate. It belongs in Related Work as
+the VLA layer-skipping paper, with the observation that its reported gain
+comes from the distillation rather than from the skipping — which is a point
+in our favour, not a method for us to run.
 
 ### The three worth doing, and why each helps *this* paper
 
@@ -129,7 +164,12 @@ images become a fixed grid of **discrete VQ token IDs** whose dimensions are
 declared in the text prefix. You cannot average two discrete IDs, and dropping
 any breaks the declared grid. So ToMe is structurally impossible there.
 
-**These two exclusions are findings, not gaps.** They are concrete instances
+**MoLe-VLA is excluded for a different reason** — it is not training-free at
+all (§3). That one is not a finding about architecture, just a scope boundary,
+and it should be stated once in Related Work so no reader wonders why the
+obvious VLA layer-skipping paper is absent from our comparison.
+
+**The first two exclusions are findings, not gaps.** They are concrete instances
 of the paper's claim: two widely-cited efficiency methods cannot be applied
 uniformly across three ordinary open VLAs, which means any cross-backbone
 claim about them is untestable as published. One paragraph in Related Work,

@@ -18,8 +18,10 @@ each run used — see the limitation note below.)
 So a steady stream of **training-free** interventions has appeared: methods
 that leave the checkpoint untouched and make inference cheaper by skipping
 decoder layers, caching or pruning visual tokens, or reusing one predicted
-action across several control steps. EfficientVLA, VLA-Cache, FastV, MoLe-VLA
-and ShortGPT are the ones we read closely.
+action across several control steps. EfficientVLA, VLA-Cache, FastV and
+ShortGPT are the training-free ones we read closely. MoLe-VLA pursues layer
+skipping too, but **with training** — a learned router plus self-distillation
+— so it sits outside what we test, and we cite it as such.
 
 Papers of this kind report their result in a recurring form:
 

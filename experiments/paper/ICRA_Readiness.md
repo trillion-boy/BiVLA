@@ -187,9 +187,9 @@ a hardware campaign — an existence check. Pairing survives without determinism
 paper evaluates hardware this way.
 
 **3. Table I: what prior work reports. (medium impact, nearly free)**
-Rows: EfficientVLA, VLA-Cache, FastV, MoLe-VLA, ShortGPT. Columns: candidate
-window · selection constraint · keep value · per-task split · per-episode
-records. Mostly empty. Each empty cell is a value we show changes the answer.
+Rows: EfficientVLA, VLA-Cache, FastV, ShortGPT — the training-free ones.
+Columns: candidate window · selection constraint · keep value · per-task
+split · per-episode records. Mostly empty. Each empty cell is a value we show changes the answer.
 This is the same move the NeurIPS reference paper makes with its Table 1, and
 it converts our first result from an accusation into a documented gap.
 

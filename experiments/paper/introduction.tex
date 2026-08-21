@@ -20,7 +20,9 @@ a benchmark: our files do not record which card each run used
 \emph{training-free} interventions that leave the checkpoint untouched and make
 inference cheaper --- skipping decoder layers, pruning or caching visual
 tokens, and reusing a predicted action across several control
-steps~\cite{efficientvla, vlacache, fastv, molevla, shortgpt}.
+steps~\cite{efficientvla, vlacache, fastv, shortgpt}. Layer skipping has also
+been pursued \emph{with} training~\cite{molevla}, which is outside the scope
+we test here.
 
 Papers of this kind report a recurring claim: \emph{applying method $M$ to
 backbone $A$ on benchmark $B$ cut FLOPs by $X\%$ while success dropped only $Y$
