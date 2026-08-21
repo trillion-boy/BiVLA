@@ -9,10 +9,9 @@ of a reviewer.*
 ## Short answer
 
 **The measurement is strong enough. The framing and the venue fit are the
-risk.** If I had to put a number on it: as it stands today, borderline — the
-kind of paper that gets one champion and one reviewer who says "simulation
-only, and you never ran the methods you are criticising." The expansion helps
-with breadth but does not touch either of those two objections.
+risk.** As it stands today: borderline — the kind of paper that gets one
+champion and one reviewer who says "simulation only." The expansion to 15
+cells adds breadth but does not touch that.
 
 Two changes would move it more than 10 more models would, and both are cheap.
 They are §5 below.
@@ -62,28 +61,55 @@ cell empty. That is a defensible novelty claim, stated with the right hedge
 
 ## What could sink it, ranked
 
-### ① "You never ran a published method." — the biggest risk
+### ① "You never ran a published method." — real, but a framing risk, not an experimental gap
 
-This is the objection I would raise as a reviewer, and right now the answer is
-uncomfortable:
+**Corrected from an earlier version of this document, which overstated it and
+named the wrong target.**
 
-| our intervention | is it a published VLA efficiency method? |
+Two things make this weaker than it first looks.
+
+**Each intervention already has a defensible provenance:**
+
+| our intervention | what it actually is |
 |---|---|
-| depth pruning | criterion is ShortGPT's Block Influence — **but ShortGPT is an LLM paper**. MoLe-VLA is the VLA one, and we did not run it |
-| foveation | log-polar is from Schwartz / Traver-Bernardino (robot vision). Not a published VLA efficiency method |
-| action repeat | frame skip, from DQN. Not a VLA efficiency method at all |
+| depth pruning | ShortGPT's Block Influence criterion, applied to VLA. A published criterion |
+| foveation | a **VLM/vision technique tested for transfer to VLA** — which is the question VLA-Cache itself poses about FastV, SparseVLM and ToMe |
+| action repeat | frame skip, and the direct ancestor of the action-chunking that OpenVLA-OFT made standard. A training-free lever the field uses |
 
-So the sentence "published efficiency claims do not transfer" is currently
-supported by **three interventions we implemented ourselves**, none of which
-appears in the papers being criticised. A reviewer can say: *you showed your
-own three knobs are configuration-sensitive; you did not show that
-EfficientVLA or MoLe-VLA are.*
+The foveation framing is the one worth stating explicitly in the paper,
+because VLA-Cache already made the argument for us: VLM acceleration methods
+*"reduce redundancy within a single image but disregard the temporal and
+spatial structure essential for robotic tasks under closed-loop control."*
+Asking whether a vision technique survives the move to VLA is a recognised
+question in this literature, not a substitute for asking a different one.
 
-The §2.6 defence ("Bag of Tricks did not invent its methods either") is good
-but not complete — Bag of Tricks ran Best-of-N and MCTS **as those methods are
-defined**. We ran generic analogues.
+**And we already have experimental evidence about published methods — from
+their own tables.** The twelve-configuration `pick coke can` / `move near`
+split is drawn from EfficientVLA, VLA-Cache and FastV's published numbers. It
+is observational rather than a rerun, but it is evidence about the methods
+being criticised.
 
-**This is fixable cheaply, and that is §5.**
+**What the risk actually is.** Not that we must rerun anyone. It is that a
+reviewer may read a stronger claim into the paper than we make — "published
+methods do not transfer" instead of "effects of this kind are configuration
+properties, and current reporting cannot tell you which." The Introduction
+already hedges correctly (*"that premise, not any individual method, is what
+we test"*), and Related Work should hold the same line. This is a wording
+problem, and wording problems are cheap.
+
+**Not MoLe-VLA.** An earlier version of this document listed it as something
+we should run. That was wrong: MoLe-VLA requires CogKD self-distillation, and
+its own Table 5 shows the router **alone scores below baseline** (56.3%,
+$-0.9$) — the gain comes from the distillation. It is not training-free, so it
+is out of scope by definition, and running it would be a category error.
+
+**FastV is still worth running, for a better reason than the objection.**
+VLA-Cache published a specific number: on OpenVLA, FastV leaves FLOPs
+unchanged (1.864 T) and *increases* latency (51.91 → 53.28 ms). That is one
+backbone on one benchmark — exactly the shape of claim our grid exists to
+test, and this time with a published number to compare against. If FastV's
+behaviour is stable across our five cells, that is a result; if it is not, it
+is a stronger one, and it lands on a method the field actually cites.
 
 ### ② Simulation only, at a robotics conference
 
@@ -122,7 +148,7 @@ probably be first, or at least co-equal.
 
 | objection | does 5 new models + LIBERO help? |
 |---|---|
-| ① never ran a published method | **no.** Same three interventions on more backbones |
+| ① a reviewer reads a stronger claim than we make | **no** — but it is a wording fix, not an experiment |
 | ② simulation only | **no.** More simulation |
 | ③ critique at a method venue | **no** |
 | "N is small" | somewhat — 15 cells, and the correction family grows to 105 |
@@ -146,12 +172,13 @@ property of scale" is a result either way.
 
 Ranked. The first two are worth more than the entire model expansion.
 
-**1. Run one published VLA method, as published. (highest impact, low cost)**
-We already have `fastv_emu3.py` — 336 lines, unit-tested, blocked only on a
-`transformers` install. FastV is cited in EfficientVLA's own comparison table.
-Running it over the five existing cells is ~1,100 episodes and converts
-objection ① from fatal to answered: *we also ran a published method, and it
-behaves the same way.*
+**1. Run FastV over the five existing cells. (high impact, low cost)**
+`fastv_emu3.py` is 336 lines, unit-tested, blocked only on a `transformers`
+install; ~1,100 episodes. The reason is not to deflect objection ① but that
+VLA-Cache published a concrete claim about FastV on one backbone — FLOPs
+unchanged, latency up — and our grid is built to ask whether such a claim
+holds elsewhere. It also adds the token-space half of the visual axis
+(`MethodAxes_Survey.md` §3).
 
 **2. A minimal real-robot result. (high impact, real cost)**
 One task, baseline vs one intervention, ~20 paired episodes on a WidowX. Not
@@ -189,10 +216,11 @@ reasonable target.
 
 ## The one-line version for the mentor
 
-> The measurement is publication-grade; the exposure is that we test three
-> interventions we implemented rather than any published method, and that
-> everything is in simulation. Running FastV over the existing five cells
-> (~1,100 episodes, code already written) closes the first, and a 20-episode
-> real-robot check closes the second — both worth more than the five new
-> models, which should be framed as *does sensitivity depend on scale* rather
-> than as coverage.
+> The measurement is publication-grade. The two real exposures are that
+> everything is in simulation, and that a reviewer may read a stronger claim
+> into the paper than we make — the second is a wording fix, the first is not.
+> A 20-episode paired real-robot check changes the paper's category; running
+> FastV over the existing five cells (~1,100 episodes, code already written)
+> adds a published method with a published number to argue against. Both are
+> worth more than the five new models, which should be framed as *does
+> sensitivity depend on scale* rather than as coverage.
