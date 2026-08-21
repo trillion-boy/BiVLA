@@ -71,14 +71,14 @@ further column matters for them.
 
 | candidate | **training-free?** | new resource? | all 3 backbones? | in repo? | verdict |
 |---|---|---|---|---|---|
-| **Visual token pruning** (FastV) | **yes** — our impl. has no parameters/loss; uses the model's own attention | **yes** — sequence length | yes, via 3 impls | **yes** | **add first** |
+| **Visual token pruning** (FastV; SparseVLM, VLA-Pruner also training-free) | **yes** — our impl. has no parameters/loss; uses the model's own attention | **yes** — sequence length | yes, via 3 impls | **yes** | **add first** |
 | **Self-speculative decoding** | **yes** — draft and verifier are the same weights | **yes** — decode steps | yes (all 3 decode autoregressively) | **yes** | **add second** |
 | **Input resolution** | **yes** — a preprocessing argument | **yes** — token count via pixels | yes, trivially | partly (`--image-size`) | **cheap, high value** |
 | Token merging (ToMe) | yes — *"without needing to train"*, off-the-shelf variant | same as token pruning | **no** — UniVLA has no ViT | yes | variant, and blocked |
 | Temporal feature caching (VLA-Cache) | yes — reuses KV, nothing fit | yes — recompute frequency | probably, untested | SpatialVLA only | possible, more work |
 | Post-training quantization | yes — PTQ by definition | **yes** — bits per weight | yes | no | possible, but breaks our determinism claim |
 | ~~MoLe-VLA~~ | **NO — verified from source** | (moot) | (moot) | no | **disqualified**, see below |
-| ~~Early exit (CALM, DeeR-VLA)~~ | **no** — learned exit criterion *(not read from source; provisional)* | (moot) | (moot) | no | **disqualified, pending a read** |
+| ~~Early exit (DeeR-VLA)~~ | **no** — auxiliary action heads trained jointly with the MLLM *(verified from source)* | (moot) | (moot) | no | **disqualified** |
 | Chunk execution (`exec-chunk`) | yes | yes — actions per call | **no** — see §4 | yes | **excluded, and we say why** |
 | KV-cache compression | yes, for the eviction-policy variants | yes — memory bandwidth | probably | no | out of scope for latency claims |
 
@@ -153,12 +153,18 @@ the losslessness guarantee is unaffected either way — verification has final
 say — so only the *speedup* depends on the selection, which we can then report
 as a measured quantity rather than an inherited one.
 
-**Not verified — do not put these in a training-free list yet:**
-SparseVLM and VLA-Pruner (named in `RelatedWork_Candidates.md`, never read),
-and CALM / DeeR-VLA (marked as learned-exit on general knowledge, not from
-source). arXiv, OpenReview, Semantic Scholar and HuggingFace are all blocked by
-this environment's egress policy, so these need PDFs the way the three above
-did.
+**Also verified from source** (see `NewReadings_2026-08.md`):
+
+| paper | verdict |
+|---|---|
+| **SparseVLM** | ✅ *"a text-guided **training-free** token optimization mechanism … eliminates the need of extra parameters or fine-tuning costs"* — and it explicitly contrasts itself with methods that *"learn a network to prune"* |
+| **VLA-Pruner** | ✅ *"a general, **training-free** framework"*, *"plug-and-play acceleration module"*; its only two uses of "loss" are *accuracy loss* and *without loss of generality* |
+| **DeeR-VLA** | ❌ *"we design a tailored **training method**"*; N auxiliary action heads jointly trained with the MLLM (Eq. 8); two-phase schedule in App. A.3 |
+
+**Nothing on this list is unverified now.** CALM remains uncited and unread,
+but it is not a candidate — it is an LLM early-exit paper we would only mention
+in passing, and DeeR-VLA is the VLA instance of the same idea, disqualified
+above.
 
 ### The three worth doing, and why each helps *this* paper
 
