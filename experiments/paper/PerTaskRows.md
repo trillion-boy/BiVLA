@@ -176,14 +176,15 @@ split.
 
 ## 4. Why the claim is worth its footnote at all
 
-Our own finding is that the backbone axis moves results more than the
-benchmark axis, measured on 135 paired Fractal episodes. That stands on its
-own data.
+Our own finding is that the same intervention reverses sign across backbones,
+measured on 135 paired Fractal episodes. That stands on its own data. (This
+paragraph used to say the backbone axis moves results more than the benchmark
+axis, which the grid cannot establish. See `AxisClaim.md`.)
 
 What these fifteen rows add is that **the same task-level split is already
 sitting in other people's published tables**, across four method families and
-three independent author groups, and that not one of those papers remarks on
-it. That is the difference between "our setup produced an odd result" and "the
+two independently authored tables, and that neither paper remarks on it. That
+is the difference between "our setup produced an odd result" and "the
 field has been averaging over this for years." It is worth four lines.
 
 The honesty cost is the footnote, which has to say that two rows were removed

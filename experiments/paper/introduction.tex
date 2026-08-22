@@ -42,7 +42,7 @@ Such papers share one form of claim. \emph{Applying method $M$ to backbone $A$
 on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$ points, so $M$
 is efficient.} That last step holds only if the effect belongs to the method
 rather than to the configuration it was measured in, and telling those apart
-needs a grid that moves the backbone and the benchmark independently. The
+takes a grid that moves the backbone and the benchmark independently. The
 premise is what we test, not any individual method.
 
 We re-measured three interventions under one protocol, on three open backbones
@@ -64,17 +64,17 @@ credited to is not what moved it.
 Inside one cell we held the backbone, the benchmark, the method and the number
 of layers removed (four) fixed, and varied only which layers were
 \emph{eligible} for removal. Success went from $+15.6$ to $-30.4$ against the
-same baseline, while the compute saved stayed between $-10.6$ and $-11.9\%$, a
-spread no wider than repeating the same measurement produces. The ranking
-criterion never changed. The candidate window did, and the two prescriptions
-on record disagree about it. The methods we re-measure rank every layer and
-constrain nothing~\cite{shortgpt, efficientvla}, while a competing one
-restricts removal to a contiguous block at the deep end and reports that the
-final layer must be kept~\cite{gromov}. Confining removal to the deep end is a
-restriction an implementation can add without recording it, and ours did. The
-setting that loses $30.4$ points is the one that confines it far enough to
-delete the final layer. Across all five cells the contrast spans $2.1$ to
-$50.4$ points, so even the sensitivity is a property of the configuration.
+same baseline, while the compute saved stayed between $-10.6$ and $-11.9\%$.
+The ranking criterion never changed. The candidate window did, and the
+prescriptions on record disagree about it. The methods we re-measure rank
+every layer and constrain nothing~\cite{shortgpt, efficientvla}, while a
+competing one restricts removal to a contiguous block at the deep end and
+reports that the final layer must be kept~\cite{gromov}. Confining removal to
+the deep end is a restriction an implementation can add without recording it,
+and ours did. The setting that loses $30.4$ points is the one that confines it
+far enough to delete the final layer. Across all five cells the contrast spans
+$2.1$ to $50.4$ points, so even the sensitivity is a property of the
+configuration.
 
 \textbf{Compute saved does not predict what happens to success.} Sweeping how
 much of the observation foveation keeps, we find the best setting discards
@@ -84,16 +84,14 @@ neither the image size nor the token count changes. The gain tracks the
 log-polar round trip, but it is an input transformation and not an efficiency
 technique.
 
-\textbf{In our grid the backbone matters more than the benchmark.} One of the
-fourteen benchmark-axis comparisons survives correction, against six of the
-twenty-nine along the backbone axis. On the same $135$ Fractal episodes under
-the same intervention, OpenVLA gains $+15.6$ while SpatialVLA loses $-17.8$,
-each surviving correction on its own and differing from the other. Averaged
-over those two cells the intervention would look like nothing, and the same
-cancelling happens one level further down. Within a cell, \texttt{pick coke
-can} degrades less than \texttt{move near} under almost every intervention we
-ran, and published SimplerEnv comparisons print that difference without
-discussing it~\cite{efficientvla, vlapruner}.
+\textbf{The same intervention reverses sign across backbones.} On the same
+$135$ Fractal episodes under the same intervention, OpenVLA gains $+15.6$
+while SpatialVLA loses $-17.8$, each surviving correction on its own and
+differing from the other. Averaged over those two cells the intervention would
+look like nothing, and the same cancelling happens one level further down.
+Within a cell, \texttt{pick coke can} degrades less than \texttt{move near}
+under almost every intervention we ran, and published SimplerEnv comparisons
+print that difference without discussing it~\cite{efficientvla, vlapruner}.
 
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} Three
 training-free VLA interventions over a $3 \times 2$ backbone-benchmark grid,
