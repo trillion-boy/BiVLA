@@ -92,3 +92,37 @@ per-episode records. Nothing in the repository publishes them yet.
 **Nothing in the Introduction is unsourced.** Every figure is recomputed from
 `results/`, and every claim about another paper is quoted in
 `TableI_Cells.md`, `PerTaskRows.md` or `AxisClaim.md`.
+
+---
+
+## 4. Pass five, 2026-08-22, and one new defect class
+
+Run after the previous "exhaustive" pass, on the rule in the header: a new
+kind of defect means a new class, added here, and the table re-read against
+it.
+
+**Class M, sampled verification.** A check that sampled instead of
+enumerating, so the verdict column itself was wrong. Row 30 claimed "7 of 8"
+for the per-task split, but the script behind it tested 4 of the 7
+intervention conditions per cell. The full enumeration is 14 comparisons,
+with **ten ahead, one tie, three behind**, and the three breaks include
+`depth pruning 1` on both backbones. "Almost every" was an exaggeration on
+the true count. The sentence now carries the count itself, which needs no
+disclosure because nothing is excluded from it.
+
+The other findings of this pass, by class:
+
+| sentence | class | defect | fix |
+|---|---|---|---|
+| 3 | B | "OFT **measures** ... at 3 to 5 Hz". Its own tables measure 4.2 and 1.8 Hz. The 3 to 5 figure is one it states citing prior work | "reports" |
+| 18 | A/K | "the compute **saved** stayed between $-10.6$ and $-11.9\%$" says we saved negative amounts | "stayed 10.6 to 11.9\% below baseline" |
+| 22 | A | "a restriction an implementation can add **without recording it**, and ours did" is false about ours, which is a flag with help text | "can add on its own, and ours did" |
+| 26 | A | the $-3.1$ to $+2.7\%$ range came from the grid foveation cells but sat next to the sweep, reading as the sweep's. The sweep's own runs sit within $0.6\%$ | scoped to "across every foveation condition we ran, within $3.1\%$" |
+| 28/29 | style | "the same ... the same ... the same" three times in two sentences | the intervention is named instead |
+| 30 | M | see class M above | the count |
+| 6, 13, 31, 34, 37 | style | passives and noun-phrase contributions | active voice, "we run ... and we release" |
+
+Sweep compute, measured for row 26: `keep10` $+0.3\%$, `keep40` $-0.6\%$,
+`keep100` $-0.4\%$ against the 96-episode baseline mean of $517.7$~ms.
+`keep20` has no millisecond records of its own, since that cell is the
+imported foveation campaign.

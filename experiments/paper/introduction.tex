@@ -27,16 +27,16 @@
 
 Vision-language-action (VLA) policies are becoming capable of general-purpose
 robotic control, and running one is expensive. In our own runs a single
-forward pass of model time averaged $2.81$~s for UniVLA~\cite{univla} and
+forward pass averaged $2.81$~s of model time for UniVLA~\cite{univla} and
 $0.90$~s for SpatialVLA~\cite{spatialvla} over 96 baseline WidowX-Bridge
-episodes. OpenVLA-OFT measures autoregressive OpenVLA at $3$ to $5$~Hz, below
-the $25$ to $50$~Hz it reports real-time deployment needs~\cite{openvlaoft}. A
+episodes. OpenVLA-OFT reports autoregressive OpenVLA at $3$ to $5$~Hz, below
+the $25$ to $50$~Hz it says real-time deployment needs~\cite{openvlaoft}. A
 literature has grown up around fixing this without retraining. The idea is to
 leave the checkpoint alone and make inference cheaper by skipping decoder
 layers, by pruning or caching visual tokens, or by holding one predicted
 action across several control steps~\cite{efficientvla, vlacache, fastv,
-shortgpt}. Layer skipping has also been pursued \emph{with}
-training~\cite{molevla}, which is outside what we test.
+shortgpt}. MoLe-VLA learns which layers to skip~\cite{molevla} and is outside
+what we test.
 
 Such papers share one form of claim. \emph{Applying method $M$ to backbone $A$
 on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$ points, so $M$
@@ -51,70 +51,70 @@ and two SimplerEnv~\cite{simplerenv} suites (WidowX-Bridge, Google
 Robot/Fractal). We chose these three because each spends a different resource.
 Action repetition changes how often the policy runs, visual foveation (a
 log-polar warp and its inverse) changes what it is shown, and network depth
-pruning changes how much of the model each call uses. Five of the six cells
-are filled, since UniVLA releases a Bridge-only checkpoint, and each carries
-eight conditions, for $7{,}198$ episodes in all (Fig.~\ref{fig:grid}). Every
+pruning changes how much of the model each call uses. UniVLA releases a
+Bridge-only checkpoint, so we fill five of the six cells, each with eight
+conditions, for $7{,}198$ episodes in all (Fig.~\ref{fig:grid}). Every
 condition replays the initial states of its cell's baseline, and we test the
 episodes whose outcome flipped with McNemar's exact test.
 
-Three results follow, and each has the same shape. The factor a result would
-be credited to is not the one that moved it.
+Three results follow, and each has the same shape. The factor that would get
+the credit is not the factor that moved the number.
 
 \textbf{A choice the specifications leave open moves a result by 45.9 points.}
 Inside one cell we held the backbone, the benchmark, the method and the number
 of layers removed (four) fixed, and varied only which layers were
 \emph{eligible} for removal. Success went from $+15.6$ to $-30.4$ against the
-same baseline, while the compute saved stayed between $-10.6$ and $-11.9\%$.
-The ranking criterion never changed. The candidate window did, and the
+same baseline, while measured compute stayed $10.6$ to $11.9\%$ below it. The
+ranking criterion never changed. The candidate window did, and the
 prescriptions on record disagree about it. The methods we re-measure rank
 every layer and constrain nothing~\cite{shortgpt, efficientvla}, while a
 competing one restricts removal to a contiguous block at the deep end and
 reports that the final layer must be kept~\cite{gromov}. Confining removal to
-the deep end is a restriction an implementation can add without recording it,
-and ours did. The setting that loses $30.4$ points is the one that confines it
-far enough to delete the final layer. Across all five cells the contrast spans
+the deep end is a restriction an implementation can add on its own, and ours
+did. The setting that loses $30.4$ points is the one that confines it far
+enough to delete the final layer. Across all five cells the contrast spans
 $2.1$ to $50.4$ points, so even the sensitivity is a property of the
 configuration.
 
 \textbf{Compute saved does not predict what happens to success.} Sweeping how
 much of the observation foveation keeps, we find the best setting discards
 nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$
-at $10\%$. Measured compute moved between $-3.1\%$ and $+2.7\%$, because
-neither the image size nor the token count changes. The gain is largest where
-only the round trip is left, and it is an input transformation rather than an
-efficiency technique.
+at $10\%$. Across every foveation condition we ran, measured compute stayed
+within $3.1\%$ of baseline, because neither the image size nor the token count
+changes. The gain is largest where only the round trip is left, and it is an
+input transformation rather than an efficiency technique.
 
-\textbf{The same intervention reverses sign across backbones.} On the same
-$135$ Fractal episodes under the same intervention, OpenVLA gains $+15.6$
-while SpatialVLA loses $-17.8$, each surviving correction on its own and
-differing from the other. Averaged over those two cells the intervention would
-look like nothing, and the same cancelling happens one level further down.
-Within a cell, \texttt{pick coke can} degrades less than \texttt{move near}
-under almost every intervention we ran, and published SimplerEnv comparisons
-print that difference without discussing it~\cite{efficientvla, vlapruner}.
+\textbf{The same intervention reverses sign across backbones.} Under depth
+pruning of four layers, OpenVLA gains $+15.6$ on the same $135$ Fractal
+episodes while SpatialVLA loses $-17.8$, each surviving correction on its own
+and differing from the other. Average the two cells and the effect nearly
+vanishes. The cell mean hides a split of its own, since \texttt{pick coke can}
+comes out ahead of \texttt{move near} in ten of the fourteen conditions our
+two Fractal cells ran, and published SimplerEnv comparisons print the same
+split without discussing it~\cite{efficientvla, vlapruner}.
 
-\textbf{Contributions.} \textbf{1)~A uniform re-measurement.} Three
-training-free VLA interventions over a $3 \times 2$ backbone-benchmark grid,
-with five filled cells, eight conditions each, $7{,}198$ episodes, and
-per-episode records released. \textbf{2)~Evidence that a reported effect can
-be a property of the configuration.} A candidate window the specifications
-leave open moves one result by $45.9$ points, and one intervention reverses
-sign across backbones with both directions individually significant.
+\textbf{Contributions.} \textbf{1)~A uniform re-measurement.} We run three
+training-free interventions over a $3 \times 2$ backbone-benchmark grid, five
+filled cells with eight conditions each and $7{,}198$ episodes, and we release
+the per-episode records. \textbf{2)~Evidence that a reported effect can be a
+property of the configuration.} A candidate window the specifications leave
+open moves one result by $45.9$ points, and one intervention reverses sign
+across backbones with both directions individually significant.
 \textbf{3)~Evidence that compute saved does not predict success change.} The
 intervention behind our largest gain saves almost no compute and helps most
 when it discards nothing, while the one whose compute saving barely moves
 shifts success by $45.9$ points. \textbf{4)~A measurement procedure} for this
-class of claim, comprising matched episodes, an explicit determinism check and
-a requirement that every cell run the same conditions. Of the five
-training-free methods we survey~\cite{efficientvla, vlacache, fastv, shortgpt,
-vlapruner}, every one sweeps its own configuration and none publishes
-per-episode outcomes or tests a difference for significance.
+class of claim. We match episodes, check determinism explicitly, and require
+every cell to run the same conditions. Of the five training-free methods we
+survey~\cite{efficientvla, vlacache, fastv, shortgpt, vlapruner}, every one
+sweeps its own configuration and none publishes per-episode outcomes or tests
+a difference for significance.
 
 We propose no new efficiency method, and we do not claim that these
-interventions fail in general. Every change above is measured against its own
-cell's baseline, so none of them depends on our absolute rates matching anyone
-else's. Four of our five baseline cells do sit above the published figures,
-one of them by a wide margin, and the fifth is $4.2$ points below, which is
-the wrong direction for a broken setup. Our claim is narrower. As results are
-reported now, the evidence does not separate a property of the method from a
-property of the configuration it was measured in.
+interventions fail in general. We measure every change against its own cell's
+baseline, so no result depends on our absolute rates matching anyone else's.
+Four of our five baseline cells do sit above the published figures, one of
+them by a wide margin, and the fifth is $4.2$ points below, which is the wrong
+direction for a broken setup. Our claim is narrower. As results are reported
+now, the evidence does not separate a property of the method from a property
+of the configuration it was measured in.
