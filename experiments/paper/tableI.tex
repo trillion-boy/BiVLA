@@ -1,0 +1,49 @@
+% ---------------------------------------------------------------------------
+% Table I -- what prior work reports.
+%
+% Place it in the Introduction, floated to the top of page 2 ([t]).
+% It spans both columns, so it must be table* and not table.
+%
+% NO EXTRA PACKAGES NEEDED. The markers are $\bullet$ and $\circ$, both plain
+% TeX. booktabs (\toprule etc.) is already loaded by most IEEE templates; if
+% the compile complains about \toprule, add \usepackage{booktabs}.
+%
+% Every cell is sourced page-by-page with quotes in
+% experiments/paper/TableI_Cells.md. Do not edit a cell without reading it.
+% ---------------------------------------------------------------------------
+
+\begin{table*}[t]
+\centering
+\caption{What the training-free methods we re-measure actually report.
+$\bullet$ reported, $\circ$ not reported. Every method specifies its own
+configuration and sweeps it, so the field is careful here. Not one releases
+per-episode outcomes or tests a difference for significance, which is what our
+protocol adds. The selection constraint is the column the specifications leave
+open, and the two prescriptions on record contradict each other.}
+\label{tab:reporting}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lllccccc@{}}
+\toprule
+& & & & Setting & Per-task & Per-episode & Paired \\
+Method & Candidate scope & Selection constraint & Default setting & swept & split & records & test \\
+\midrule
+ShortGPT~\cite{shortgpt}      & all layers          & none, top-$n$ by BI            & $25\%$ of $40$          & $\bullet$ & $\circ^{\dag}$ & $\circ$ & $\circ$ \\
+EfficientVLA~\cite{efficientvla} & all layers       & none, ``non-contiguous''       & $L{=}28/22$, $T{=}112/56$ & $\bullet$ & $\bullet$ & $\circ$ & $\circ$ \\
+FastV~\cite{fastv}            & start layer $K$     & ---$^{\ddag}$                  & $R \in \{50,75,90\}\%$  & $\bullet$ & $\bullet$ & $\circ$ & $\circ$ \\
+VLA-Cache~\cite{vlacache}     & layer-adaptive      & $\tau_{\text{task}}{=}0.5$     & $\tau{=}0.996$, $k{=}100$ & $\bullet$ & $\bullet$ & $\circ$ & $\circ$ \\
+VLA-Pruner~\cite{vlapruner}   & token budget        & semantic and action, dual      & $50/75/87.5\%$          & $\bullet$ & $\bullet$ & $\circ$ & $\circ$ \\
+\midrule
+Gromov et al.~\cite{gromov}$^{\S}$ & deepest layers only & contiguous, final layer kept & sweep over depth    & $\bullet$ & $\circ^{\dag}$ & $\circ$ & $\circ$ \\
+\midrule
+\textbf{Ours}                 & \textbf{swept}      & \textbf{swept}                 & \textbf{eight conditions} & $\bullet$ & $\bullet$ & $\bullet$ & $\bullet$ \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+{\footnotesize $^{\dag}$Reports per benchmark rather than per task, being an
+LLM rather than a robot evaluation.
+$^{\ddag}$Prunes on the token axis, so a layer constraint does not apply.
+$^{\S}$Not training-free. It heals with finetuning and is listed only because
+it is the one work that states the opposite layer constraint.}
+\end{table*}
