@@ -85,10 +85,9 @@ published tables. The task \texttt{pick coke can} holds up better than
 \texttt{move near} in fourteen of the fifteen configurations printed in two
 comparison tables~\cite{efficientvla, vlapruner}, spanning four method
 families.\footnote{Twelve rows from~\cite{efficientvla} and three
-from~\cite{vlapruner}. We exclude the first table's two random-dropping rows,
-which are a control rather than a proposed method and which break the pattern.
-Three of the four families are independent sources here. The FastV rows are
-comparisons run by others, not results FastV reports itself.} The exception is
+from~\cite{vlapruner}, excluding two random-dropping control rows that break
+the pattern. Three of the four families are independent sources, since the
+FastV rows are reproductions run by others.} The exception is
 the one method built to preserve action-relevant tokens~\cite{vlapruner},
 which is what its own mechanism predicts. Those tables do print the per-task
 numbers. What none of them does is discuss the split.
@@ -104,9 +103,10 @@ sign across backbones with both directions individually significant.
 intervention with the largest effect in our grid saves almost none of it, and
 helps most when it discards nothing. \textbf{4)~A measurement procedure} for
 this class of claim, comprising matched episodes, an explicit determinism
-check and a grid uniformity rule, together with Table~\ref{tab:reporting}.
-Every method listed there sweeps its own configuration, and none publishes
-per-episode outcomes or tests a difference for significance.
+check and a grid uniformity rule. Of the five training-free methods we
+survey~\cite{efficientvla, vlacache, fastv, shortgpt, vlapruner}, every one
+sweeps its own configuration and none publishes per-episode outcomes or tests
+a difference for significance.
 
 We propose no new efficiency method, and we do not claim that these
 interventions fail in general. Four of our five baseline cells sit above the

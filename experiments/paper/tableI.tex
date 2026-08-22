@@ -1,7 +1,36 @@
 % ---------------------------------------------------------------------------
-% Table I -- what prior work reports.
+% NOT IN THE PAPER. Kept as a draft for the discussion with the mentor.
 %
-% Place it in the Introduction, floated to the top of page 2 ([t]).
+% Decided against on 2026-08-22, for three reasons.
+%
+%   1. The row criterion does not survive a question. Two of the six rows are
+%      LLM papers, one is a VLM paper, and one is not training-free. Only
+%      three are training-free VLA methods, and we re-measure the method of
+%      only one of them, ShortGPT's Block Influence.
+%   2. Five of the eight columns are almost uniformly present, so a reader
+%      scanning it concludes the field is thorough. The two columns that
+%      carry our thesis read as a minor omission rather than a hole.
+%   3. What it can say at full strength is one sentence, and contribution 4
+%      is already that sentence.
+%
+% The framing worth keeping lives in TableI_Cells.md section 4(d): the two
+% layer prescriptions contradict each other and neither has been settled on a
+% robot policy. That belongs with our 45.9-point measurement, so it is a
+% Results table, not an Introduction one. When building it, do NOT label the
+% -30.4 setting as Gromov's rule. Gromov keeps the final layer and our
+% window875 deletes it, so we measured the case Gromov predicts fails, not
+% Gromov's own prescription.
+%
+% If it is revived: place it in the Introduction, floated to the top of
+% page 2 ([t]), and restore the two pointers to \ref{tab:reporting}, one at
+% the end of contribution 4 and one at the end of the Related Work paragraph
+% beginning "How these claims are evaluated". Both sections currently stand
+% without it.
+%
+% The caption below still says "the training-free methods we re-measure",
+% which is wrong and must be fixed before any reuse. We re-measure three
+% interventions, and only depth pruning corresponds to a method in this
+% table.
 % It spans both columns, so it must be table* and not table.
 %
 % NO EXTRA PACKAGES NEEDED. The markers are $\bullet$ and $\circ$, both plain
