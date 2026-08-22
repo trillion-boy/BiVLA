@@ -83,8 +83,9 @@ comparisons**, so α ≈ 0.0012, of which **7** survive.
 
 Inside one cell (OpenVLA × Fractal, 135 episodes, baseline 38.5%), holding
 **everything** fixed — backbone, benchmark, method, number of layers removed
-(four), compute saved (−11%) — and changing only which layers were *eligible*
-to be removed:
+(four) — and changing only which layers were *eligible* to be removed. Compute
+saved is not a single fixed value but a range, −10.6% to −11.9%, whose spread
+is the noise on re-running the same measurement (`Report.md` §7.1):
 
 | eligible window | success change |
 |---|---:|
@@ -302,10 +303,13 @@ different cards.)*
 We do not propose a new efficiency method, and we do not claim that any of the
 three interventions fails in general.
 
-Our baselines reproduce published numbers in four of five cells and fall 4.2
-points short in the fifth (SpatialVLA/Bridge, 30.2% against a published 34.4%).
+Four of our five baseline cells sit **above** the published numbers and the
+fifth is 4.2 points below (SpatialVLA/Bridge, 30.2% against a published 34.4%).
 A systematic setup error would push *all* of them down, so that pattern does
-not fit one.
+not fit one. Do **not** write that the baselines "match" or "reproduce" the
+published numbers — OpenVLA/Bridge is 15.6% against a reported 1.0%, and the
+argument works because our numbers are mostly *higher*, not because they agree
+(`Report.md` §3.8 c①).
 
 The claim is narrower, and we think more useful: **the evidence currently
 offered for these methods does not distinguish a property of the method from a
