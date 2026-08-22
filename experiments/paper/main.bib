@@ -1,0 +1,353 @@
+% ---------------------------------------------------------------------------
+% Bibliography for introduction.tex and relatedwork.tex.
+%
+% Fields marked TODO were not verifiable from here: arXiv and HuggingFace are
+% blocked by this environment's egress policy, so anything not readable off a
+% PDF we hold is left for you to fill. Everything else came off the paper's own
+% first page and is safe.
+%
+% Provenance for what each entry is cited FOR: paper/RelatedWork_Sources.md
+% ---------------------------------------------------------------------------
+
+% ===================== the interventions we re-measure =====================
+
+@inproceedings{shortgpt,
+  author    = {Men, Xin and Xu, Mingyu and Zhang, Qingyu and Wang, Bingning and
+               Lin, Hongyu and Lu, Yaojie and Han, Xianpei and Chen, Weipeng},
+  title     = {{ShortGPT}: Layers in Large Language Models are More Redundant
+               Than You Expect},
+  journal   = {arXiv preprint arXiv:2403.03853},
+  year      = {2024},
+  note      = {v3}
+}
+
+@inproceedings{gromov,
+  author    = {Gromov, Andrey and Tirumala, Kushal and Shapourian, Hassan and
+               Glorioso, Paolo and Roberts, Daniel A.},
+  title     = {The Unreasonable Ineffectiveness of the Deeper Layers},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2025},
+  note      = {arXiv:2403.17887}
+}
+
+@article{efficientvla,
+  author    = {Yang, Yantai and Wang, Yuhao and Wen, Zichen and Luo, Zhongwei
+               and Chen, Chang and TODO},
+  title     = {{EfficientVLA}: Training-Free Acceleration and Compression for
+               Vision-Language-Action Models},
+  journal   = {arXiv preprint arXiv:2506.10100},
+  year      = {2025},
+  note      = {TODO complete the author list; NeurIPS 2025 per VLA-Pruner's
+               description, confirm the venue}
+}
+
+@article{molevla,
+  author    = {Zhang, Rongyu and Dong, Menghang and Zhang, Yuan and
+               Heng, Liang and TODO},
+  title     = {{MoLe-VLA}: Dynamic Layer-skipping Vision Language Action Model
+               via Mixture-of-Layers for Efficient Robot Manipulation},
+  journal   = {arXiv preprint arXiv:2503.20384},
+  year      = {2025},
+  note      = {TODO complete the author list}
+}
+
+@article{vlacache,
+  author    = {Xu, Siyu and Wang, Yunke and Xia, Chenghao and Zhu, Dihao and
+               Huang, Tao and Xu, Chang},
+  title     = {{VLA-Cache}: Efficient Vision-Language-Action Manipulation via
+               Adaptive Token Caching},
+  journal   = {arXiv preprint arXiv:2502.02175},
+  year      = {2025}
+}
+
+@article{vlapruner,
+  author    = {Liu, Ziyan and Chen, Yeqiu and Cai, Hongyi and Lin, Tao and
+               Yang, Shuo and Liu, Zheng and Zhao, Bo},
+  title     = {{VLA-Pruner}: Temporal-Aware Dual-Level Visual Token Pruning for
+               Efficient Vision-Language-Action Inference},
+  journal   = {arXiv preprint},
+  year      = {2025},
+  note      = {TODO the version we read carries no arXiv stamp. A sibling
+               version titled "Bridging the Semantic-Action Gap in Visual Token
+               Pruning for Efficient VLA Inference" is arXiv:2511.16449, same
+               method and same numbers. Pick whichever you cite and match the
+               title to it}
+}
+
+@inproceedings{fastv,
+  author    = {Chen, Liang and Zhao, Haozhe and Liu, Tianyu and Bai, Shuang and
+               Lin, Junyang and Zhou, Chang and Chang, Baobao},
+  title     = {An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play
+               Acceleration for {VLLM} Inference},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2024},
+  note      = {arXiv:2403.06764}
+}
+
+@article{sparsevlm,
+  author    = {Zhang, Yuan and Fan, Chun-Kai and Ma, Junpeng and
+               Zheng, Wenzhao and TODO},
+  title     = {{SparseVLM}: Visual Token Sparsification for Efficient
+               Vision-Language Model Inference},
+  journal   = {arXiv preprint arXiv:2410.04417},
+  year      = {2024},
+  note      = {v4. TODO complete the author list}
+}
+
+@inproceedings{tome,
+  author    = {Bolya, Daniel and Fu, Cheng-Yang and Dai, Xiaoliang and
+               Zhang, Peizhao and Feichtenhofer, Christoph and Hoffman, Judy},
+  title     = {Token Merging: Your {ViT} but Faster},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023}
+}
+
+% ===================== foveation lineage =====================
+
+@article{schwartz,
+  author    = {Schwartz, Eric L.},
+  title     = {Computational anatomy and functional architecture of striate
+               cortex: A spatial mapping approach to perceptual coding},
+  journal   = {Vision Research},
+  volume    = {20},
+  number    = {8},
+  pages     = {645--669},
+  year      = {1980},
+  doi       = {10.1016/0042-6989(80)90090-5}
+}
+
+@article{traver,
+  author    = {Traver, V. Javier and Bernardino, Alexandre},
+  title     = {A review of log-polar imaging for visual perception in robotics},
+  journal   = {Robotics and Autonomous Systems},
+  volume    = {58},
+  number    = {4},
+  pages     = {378--398},
+  year      = {2010}
+}
+
+@article{gazereg,
+  author    = {TODO},
+  title     = {Gaze-Regularized Vision-Language-Action Models for Robotic
+               Manipulation},
+  journal   = {arXiv preprint arXiv:2603.23202},
+  year      = {2026},
+  note      = {TODO author list, we read the PDF but did not record it}
+}
+
+@article{lookfocusact,
+  author    = {TODO},
+  title     = {Look, Focus, Act},
+  journal   = {arXiv preprint arXiv:2507.15833},
+  year      = {2025},
+  note      = {TODO author list and the full title}
+}
+
+% ===================== compact VLAs =====================
+
+@article{flower,
+  author    = {Reuss, Moritz and Zhou, Hongyi and R{\"u}hle, Marcel and
+               Ya{\u{g}}murlu, {\"O}mer Erdin{\c{c}} and Otto, Fabian and
+               Lioutikov, Rudolf},
+  title     = {{FLOWER}: Democratizing Generalist Robot Policies with Efficient
+               Vision-Language-Action Flow Policies},
+  journal   = {arXiv preprint arXiv:2509.04996},
+  year      = {2025}
+}
+
+@article{smolvla,
+  author    = {Shukor, Mustafa and Aubakirova, Dana and Capuano, Francesco and
+               Kooijmans, Pepijn and TODO},
+  title     = {{SmolVLA}: A vision-language-action model for affordable and
+               efficient robotics},
+  journal   = {arXiv preprint arXiv:2506.01844},
+  year      = {2025},
+  note      = {TODO complete the author list}
+}
+
+@article{turbovla,
+  author    = {Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying
+               and Liang, Dingkang and Bai, Xiang and Ding, Han},
+  title     = {{TurboVLA}: Real-Time Vision-Language-Action Model at 32 {Hz} on
+               an {RTX} 4090 with $<$1 {GB} {VRAM}},
+  journal   = {arXiv preprint arXiv:2607.27205},
+  year      = {2026}
+}
+
+% ===================== evaluation practice =====================
+
+@article{vlaeval,
+  author    = {Choi, Suhwan and Lee, Yunsung and Park, Yubeen and
+               Kim, Chris Dongjoo and Krishna, Ranjay and Fox, Dieter and
+               Yu, Youngjae},
+  title     = {vla-eval: A Unified Evaluation Harness for Vision-Language-Action
+               Models},
+  journal   = {arXiv preprint},
+  year      = {2026},
+  note      = {TODO arXiv number}
+}
+
+@article{starvla,
+  author    = {{StarVLA Community and Von Neumann Institute, HKUST}},
+  title     = {{StarVLA}: A Lego-like Codebase for Vision-Language-Action Model
+               Developing},
+  journal   = {arXiv preprint arXiv:2604.05014},
+  year      = {2026}
+}
+
+@article{specprune,
+  author    = {Wang, Hanzhen and Xu, Jiaming and Xiang, Yushun and Pan, Jiayi
+               and Zhou, Yongkang and Li, Yong-Lu and TODO},
+  title     = {{SpecPrune-VLA}: Accelerating Vision-Language-Action Models via
+               Action-Aware Self-Speculative Pruning},
+  journal   = {arXiv preprint arXiv:2509.05614},
+  year      = {2025},
+  note      = {TODO complete the author list}
+}
+
+@article{vlaiap,
+  author    = {Cheng, Jintao and Wang, Haozhe and Li, Weibin and Wang, Gang and
+               Zhang, Yipu and Tang, Xiaoyu and TODO},
+  title     = {{VLA-IAP}: Training-Free Visual Token Pruning via Interaction
+               Alignment for Vision-Language-Action Models},
+  journal   = {arXiv preprint arXiv:2603.22991},
+  year      = {2026},
+  note      = {TODO complete the author list}
+}
+
+@article{effvlasurvey1,
+  author    = {Guan, Weifan and Hu, Qinghao and Li, Aosheng and Cheng, Jian},
+  title     = {Efficient Vision-Language-Action Models for Embodied
+               Manipulation: A Systematic Survey},
+  journal   = {arXiv preprint arXiv:2510.17111},
+  year      = {2025},
+  note      = {v3, 23 Oct 2025}
+}
+
+@article{effvlasurvey2,
+  author    = {Yu, Zhaoshu and Wang, Bo and Zeng, Pengpeng and Zhang, Haonan and
+               Zhang, Ji and Wang, Zheng and Gao, Lianli and Song, Jingkuan and
+               Sebe, Nicu and Shen, Heng Tao},
+  title     = {A Survey on Efficient Vision-Language-Action Models},
+  journal   = {arXiv preprint arXiv:2510.24795},
+  year      = {2025},
+  note      = {v2, 2 Feb 2026},
+  doi       = {10.48550/arXiv.2510.24795}
+}
+
+% ===================== the genre =====================
+
+@inproceedings{bagoftricks_cnn,
+  author    = {He, Tong and Zhang, Zhi and Zhang, Hang and Zhang, Zhongyue and
+               Xie, Junyuan and Li, Mu},
+  title     = {Bag of Tricks for Image Classification with Convolutional Neural
+               Networks},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition
+               (CVPR)},
+  year      = {2019},
+  note      = {arXiv:1812.01187. TODO confirm the venue}
+}
+
+@article{bagoftricks_llm,
+  author    = {Liu, Fan and Chao, Wen-Shuo and Tan, Naiqiang and Liu, Hao},
+  title     = {Bag of Tricks for Inference-time Computation of {LLM} Reasoning},
+  journal   = {arXiv preprint},
+  year      = {2025},
+  note      = {TODO arXiv number}
+}
+
+% ===================== axis 1 lineage =====================
+
+@article{dqn,
+  author    = {Mnih, Volodymyr and Kavukcuoglu, Koray and Silver, David and
+               Rusu, Andrei A. and Veness, Joel and Bellemare, Marc G. and
+               Graves, Alex and Riedmiller, Martin and Fidjeland, Andreas K. and
+               Ostrovski, Georg and others},
+  title     = {Human-level control through deep reinforcement learning},
+  journal   = {Nature},
+  volume    = {518},
+  number    = {7540},
+  pages     = {529--533},
+  year      = {2015},
+  note      = {TODO not read, cited for frame skip as lineage only}
+}
+
+@inproceedings{act,
+  author    = {Zhao, Tony Z. and Kumar, Vikash and Levine, Sergey and Finn,
+               Chelsea},
+  title     = {Learning Fine-Grained Bimanual Manipulation with Low-Cost
+               Hardware},
+  booktitle = {Robotics: Science and Systems (RSS)},
+  year      = {2023},
+  note      = {TODO not read, cited for action chunking as lineage only}
+}
+
+@inproceedings{diffusionpolicy,
+  author    = {Chi, Cheng and Feng, Siyuan and Du, Yilun and Xu, Zhenjia and
+               Cousineau, Eric and Burchfiel, Benjamin and Song, Shuran},
+  title     = {Diffusion Policy: Visuomotor Policy Learning via Action
+               Diffusion},
+  booktitle = {Robotics: Science and Systems (RSS)},
+  year      = {2023},
+  note      = {TODO not read, cited for action chunking as lineage only}
+}
+
+@article{openvlaoft,
+  author    = {Kim, Moo Jin and Finn, Chelsea and Liang, Percy},
+  title     = {Fine-Tuning Vision-Language-Action Models: Optimizing Speed and
+               Success},
+  journal   = {arXiv preprint},
+  year      = {2025},
+  note      = {TODO arXiv number}
+}
+
+% ===================== our backbones and benchmarks =====================
+
+@article{openvla,
+  author    = {Kim, Moo Jin and Pertsch, Karl and Karamcheti, Siddharth and
+               Xiao, Ted and Balakrishna, Ashwin and Nair, Suraj and
+               Rafailov, Rafael and Foster, Ethan and Lam, Grace and
+               Sanketi, Pannag and others},
+  title     = {{OpenVLA}: An Open-Source Vision-Language-Action Model},
+  journal   = {arXiv preprint arXiv:2406.09246},
+  year      = {2024},
+  note      = {TODO confirm}
+}
+
+@article{spatialvla,
+  author    = {TODO},
+  title     = {{SpatialVLA}},
+  journal   = {arXiv preprint},
+  year      = {2025},
+  note      = {TODO the whole entry. We run this backbone, so its citation
+               should be exact}
+}
+
+@article{univla,
+  author    = {TODO},
+  title     = {{UniVLA}},
+  journal   = {arXiv preprint},
+  year      = {2025},
+  note      = {TODO the whole entry. We run this backbone, so its citation
+               should be exact}
+}
+
+@inproceedings{simplerenv,
+  author    = {Li, Xuanlin and Hsu, Kyle and Gu, Jiayuan and Pertsch, Karl and
+               Mees, Oier and Walke, Homer Rich and Fu, Chuyuan and
+               Lunawat, Ishikaa and Sieh, Isabel and Kirmani, Sean and others},
+  title     = {Evaluating Real-World Robot Manipulation Policies in Simulation},
+  booktitle = {Conference on Robot Learning (CoRL)},
+  year      = {2024},
+  note      = {TODO confirm}
+}
+
+@inproceedings{libero,
+  author    = {Liu, Bo and Zhu, Yifeng and Gao, Chongkai and Feng, Yihao and
+               Liu, Qiang and Zhu, Yuke and Stone, Peter},
+  title     = {{LIBERO}: Benchmarking Knowledge Transfer for Lifelong Robot
+               Learning},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2023},
+  note      = {TODO confirm}
+}
