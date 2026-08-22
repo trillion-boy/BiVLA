@@ -11,6 +11,18 @@ more. Whether a section is well written is decided by whether its claims are
 sourced, its sentences parse, its terms are consistent and its argument closes,
 none of which a word count measures.
 
+The checks were themselves tested, by injecting a known defect of each kind and
+confirming the audit reports it: unbalanced braces, unclosed math, an unescaped
+percent both inside math and mid-sentence, a doubled word, an em-dash, a
+semicolon, a prose colon, a number with no source, a malformed citation key, a
+citation after a period, a citation without a non-breaking space, a footnote
+marker before its punctuation, a sentence over 45 words, a sentence opening on
+a bare connective, and a weasel word. Fourteen of fifteen were caught first
+time. The percent test was not, and was structurally unable to be: it ran after
+comment stripping, which eats everything following an unescaped percent, so it
+could never see one. It now runs on the raw text and distinguishes a comment
+line from a stray percent inside a sentence.
+
 Run:  python3 experiments/paper/audit_sections.py
 Exit: 0 clean, 1 findings.
 """
@@ -104,21 +116,31 @@ for name, tex in raw.items():
     if body.count("$") % 2:
         finding("A2 math", f"{name}: odd number of $ ({body.count('$')})")
 
-    # A3 unescaped specials that change meaning or break the build
+    # A3 unescaped specials that change meaning or break the build.
+    # The % test must run on the RAW text: strip_comments() eats everything
+    # after an unescaped %, so a check downstream of it can never see one.
+    # Distinguish a real comment line from a stray % inside a sentence.
+    for i, line in enumerate(tex.split("\n"), 1):
+        if line.lstrip().startswith("%"):
+            continue                      # a deliberate comment line
+        code = re.sub(r"\\%", "", line)   # drop escaped percents
+        j = code.find("%")
+        if j >= 0 and code[:j].strip():    # text before it, so mid-sentence
+            finding("A3 escaping", f"{name}:{i}: unescaped '%' comments out the rest of the line: {line.strip()[:60]!r}")
+
     # keys inside \\cite/\\ref/\\label are never typeset, so their underscores are fine
     scannable = re.sub(r"\\(cite|ref|label)\{[^}]*\}", " ", body)
-    for ch, why in [("%", "comments out the rest of the line"),
-                    ("&", "column separator"),
+    for ch, why in [("&", "column separator"),
                     ("#", "macro parameter"),
                     ("_", "math subscript outside math mode")]:
         bad = []
         for m in re.finditer(re.escape(ch), scannable):
-            i = m.start()
-            if i and scannable[i - 1] == "\\":
+            k = m.start()
+            if k and scannable[k - 1] == "\\":
                 continue
-            if ch == "_" and scannable.count("$", 0, i) % 2:
+            if ch == "_" and scannable.count("$", 0, k) % 2:
                 continue          # inside math, legitimate
-            bad.append(scannable[max(0, i - 30):i + 5].replace("\n", " "))
+            bad.append(scannable[max(0, k - 30):k + 5].replace("\n", " "))
         if bad:
             finding("A3 escaping", f"{name}: unescaped {ch!r} ({why}): {bad[:3]}")
 
