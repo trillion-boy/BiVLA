@@ -85,13 +85,13 @@ the token count changes. The gain is largest where only the round trip is
 left, and it is an input transformation rather than an efficiency technique.
 
 \textbf{The same intervention reverses sign across backbones.} Under depth
-pruning of four layers, OpenVLA gains $+15.6$ on the same $135$ Fractal
-episodes while SpatialVLA loses $-17.8$, each surviving correction on its own
+pruning of four layers, OpenVLA gains $15.6$ points on the same $135$ Fractal
+episodes while SpatialVLA loses $17.8$, each surviving correction on its own
 and differing from the other. Average the two cells and the effect nearly
 vanishes. The cell mean hides a split of its own, since \texttt{pick coke can}
-comes out ahead of \texttt{move near} in ten of the fourteen conditions our
-two Fractal cells ran, and published SimplerEnv comparisons print the same
-split without discussing it~\cite{efficientvla, vlapruner}.
+comes out ahead of \texttt{move near} in ten of the fourteen intervention
+conditions our two Fractal cells ran, and published SimplerEnv comparisons
+print the same split without discussing it~\cite{efficientvla, vlapruner}.
 
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} We run three
 training-free interventions over a $3 \times 2$ backbone-benchmark grid, five
