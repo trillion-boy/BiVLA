@@ -1,15 +1,15 @@
 # Introduction
 
-*Reading draft. Same content as `introduction.tex`, written to be read rather
-than compiled — citations are spelled out, and every number is one that
-`experiments/verify_all.py` recomputes from the per-episode records.*
+*Reading companion. `introduction.tex` is authoritative and this file lags it
+where the tex was edited later — trust the tex on wording. Every number is one
+that `experiments/verify_all.py` recomputes from the per-episode records.*
 
 ---
 
 ## The claim we are testing
 
-Vision-language-action policies are slow. In our own runs, one forward pass
-costs **UniVLA 2.81 s** and **SpatialVLA 0.90 s**, averaged over the 96
+Vision-language-action policies are slow. In our own runs, one policy call
+costs **UniVLA 2.81 s** and **SpatialVLA 0.90 s** of model time, averaged over the 96
 baseline episodes of the WidowX-Bridge suite. (Model time only, excluding
 simulator stepping, on Colab T4/L4-class hardware. We give these as a scale
 rather than a comparable benchmark: our result files do not record *which* card
@@ -60,7 +60,12 @@ Three open backbones × two SimplerEnv suites:
 
 Five filled cells — UniVLA's public checkpoint is Bridge-only — with eight
 conditions each: baseline, action repeat 2 and 4, foveation log-polar and
-blur, and depth pruning of 1, 2 and 4 layers. **7,198 episodes in total.**
+blur, and depth pruning of 1, 2 and 4 layers. The grid alone is **4,464
+episodes**; with the eligibility-window controls, the keep sweep and the
+determinism re-runs, the campaign totals **7,198** over 255 result files
+(`verify_all.py` reproduces both). Never attach 7,198 directly to "eight
+conditions", because five cells times eight conditions is 4,464 and a
+reviewer will do that arithmetic.
 
 ### The measurement is paired
 
@@ -113,7 +118,10 @@ Run in all five cells, the same two-row contrast spans **2.1 to 50.4 points**.
 So the sensitivity to layer choice is itself a property of the configuration,
 not of the method.
 
-### 2. A gain attributed to compression does not come from compression
+### 2. Compute saved does not predict what happens to success
+
+*(An earlier heading here, "a gain attributed to compression does not come
+from compression", attributed that position to nobody and is retired.)*
 
 Foveation keeps a fraction of the observation and discards the rest; the
 efficiency argument is that the discarding is what buys you something. Sweeping
@@ -140,13 +148,16 @@ We are careful about the scope here. This cell has a 15.6% baseline, and the
 same intervention scores −19.3 on Fractal. The claim is not "foveation helps"
 but **"this gain cannot be explained by compression."**
 
-### 3. Changing the backbone moves results more than changing the benchmark
+### 3. The same intervention reverses sign across backbones
 
 Results 1 and 2 look inside one cell. This one compares cells directly, asking
 whether an intervention keeps its direction across conditions.
 
-**One** benchmark-axis comparison passes correction. **Six** backbone-axis
-comparisons do, five of them at *p* < 10⁻⁴.
+⚠️ **The axis-ranking claim is retired.** "The backbone matters more than the
+benchmark" rested on 1 of 14 against 6 of 29, and Fisher on those counts gives
+p = 0.40, so our grid cannot separate the axes (`AxisClaim.md`). The counts
+belong in Results next to that p-value. What survives, tested end to end, is
+the sign reversal below.
 
 | held fixed | changed | one side | other side | *p* |
 |---|---|---|---|---:|
