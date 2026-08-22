@@ -71,8 +71,9 @@ Introduction is a good model. Its shape:
    `1) Evaluation of Key Tricks: … 2) Combination of Techniques: …` — not a
    bulleted list.
 
-Total: about 900 words plus a table. Ours is now **762 rendered words**, which
-in IEEEtran two-column is roughly three-quarters of the first column.
+Their Introduction is **698 rendered words**, measured from the PDF, plus a
+table. (An earlier note here said "about 900" from memory; 698 is the count.)
+Ours is **834 body words**, about 20% longer, plus two footnotes.
 
 ### Two things worth copying
 
@@ -127,7 +128,7 @@ Six pages of content, two of references, IEEEtran two-column.
 | Title, abstract, Introduction | 0.75 | intro ≈ ¾ column; Fig. 1 takes the rest of page 1 |
 | **Fig. 1** — the grid as a signed heat map | (in the above) | 7 conditions × 5 cells; the reader should see signs disagreeing within a row before reading a word |
 | **Table I** — what prior work reports | 0.25 | see above |
-| Related Work | **0.5** | three run-in paragraphs, ~500 words — measured against *Bag of Tricks*' 429 (`RelatedWork_Plan.md`) |
+| Related Work | **0.5** | three run-in paragraphs, **614 words** as written, against *Bag of Tricks*' 429 (`RelatedWork_Plan.md`). The 0.5 page rests on an unverified words-per-column estimate, so compile before cutting |
 | Setup and protocol | 1.0 | backbones, benchmarks, the eight conditions, pairing, determinism, the correction family |
 | Results | **2.25** | the three results; four tables. Takes the 0.25 freed from Related Work |
 | What breaks (failure typing) | 0.5 | the one table with five buckets |
@@ -159,3 +160,50 @@ file, which is why it has seven tables. In the paper they scatter:
 
 Nothing is lost by keeping the Introduction table-free; the same content
 appears once, in the section that owns it.
+
+---
+
+## 5. What changes when the mentor's five models land
+
+Asked because the expansion tables for TurboVLA, CoTinyVLA, FLOWER, MiniVLA and
+SmolVLA are still empty, and it was not obvious whether Introduction and
+Related Work could be written before the runs come back. Checked against the
+files rather than guessed.
+
+**Related Work needs no change at all.** Its closing sentence says *"a complete
+backbone $\times$ benchmark grid"* with **no numbers in it**, deliberately, so
+it claims a method rather than a coverage record and survives any change of
+scope. Three of the five models are cited exactly once, in the sentence about
+compact VLAs building reductions in by design, and that claim rests on their
+own papers' architecture descriptions, not on any result:
+
+| model | what the draft asserts | source |
+|---|---|---|
+| FLOWER | prunes 30–50% of its VLM layers by design | *"we prune between 30% and 50% of the pretrained VLM's layers"* |
+| SmolVLA | keeps only the first sixteen layers | *"We use only the first 16 layers of the LLM within the VLM"* |
+| TurboVLA | drops the language model from the action path | *"without autoregressive action-token generation"* |
+
+CoTinyVLA and MiniVLA do not appear in either section.
+
+**The Introduction has exactly two places to update**, both reporting the size
+of our own grid and neither carrying an argument:
+
+| where | what it says now |
+|---|---|
+| the setup paragraph | "three open backbones", "two SimplerEnv suites", "Five of the six cells", "$7{,}198$ episodes" |
+| contribution 1 | "a $3 \times 2$ backbone-benchmark grid, with five filled cells, eight conditions each, $7{,}198$ episodes" |
+
+**The three results are unaffected.** They come from our five cells. New cells
+would add evidence rather than revise it, and the 45.9-point window contrast is
+a within-cell result that more backbones cannot disturb.
+
+**So the real question is scope, not data.** If the five models go into *this*
+paper, those two blocks get new numbers and the grid becomes 8 × 3. If they are
+a follow-up, nothing changes. Either way the two sections can be written,
+reviewed and sent now, which is what the mentor asked for.
+
+One thing to carry forward: `FiveModels_Read.md` already records that depth
+pruning is only applicable to two of the five, since FLOWER and SmolVLA prune
+layers as part of their architecture and TurboVLA has no language model in the
+action path. So an 8 × 3 grid would not fill uniformly, and the Setup section
+has to say so rather than implying a complete expansion.
