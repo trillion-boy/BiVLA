@@ -23,7 +23,8 @@ paper's PDF, not its abstract.*
 | 11 | those with both axes leave the crossing cell empty | Gaze-Reg (A.5); VLA-Pruner (LIBERO has OpenVLA + OpenVLA-OFT, SIMPLER has OpenVLA only) |
 | 12 | the tables we cite report mean success rates over independent runs, without matched-episode outcomes | grep over every PDF read: *paired* 0, *McNemar* 0, and in vla-eval also *significance* 0, *statistic* 0, *confidence* 0, *error bar* 0. The draft says **"the tables we cite,"** not "no prior work" — see the re-check note below |
 | 13 | FastV, SparseVLM and ToMe were developed for VLMs | all three PDFs read this session |
-| 14 | OpenVLA-OFT uses parallel decoding and action chunking | stated in the VLA-Pruner PDF describing its own baseline |
+| 14 | OpenVLA-OFT uses parallel decoding and action chunking | **upgraded from second-hand to primary, 2026-08-22.** Was verified only from VLA-Pruner's description of its own baseline; now from the paper itself (Kim, Finn & Liang, *Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success*), abstract p1: *"an Optimized Fine-Tuning (OFT) recipe that integrates **parallel decoding, action chunking**, a continuous action representation, and a simple L1 regression-based learning objective"* |
+| 20 | our three axes are the field's own categories, not our invention | **PDF read 2026-08-22.** The CAS systematic survey (arXiv 2510.17111) divides efficiency work into §3.2 *Dynamic Computation Pathways*, §4 *Efficient Perception Feature*, §5 *Efficient Action Generation* — our axes 3, 2 and 1 — and populates them with the same papers we cite (§3.2 names SmolVLA and FLOWER; §4.1 names FastV and EfficientVLA; §4.2 names VLA-Cache) |
 | 15 | foveation has been applied to VLAs by gaze-conditioned policies | `RelatedWork.md` A.5 (Gaze-Reg, arXiv 2603.23202) and A.6 (Look Focus Act, arXiv 2507.15833), both marked *원문 확인* — the two PDFs were opened and their tables cross-checked |
 | 17 | log-polar was adopted in robot vision to cut data while preserving central resolution | **PDF read 2026-08-22**, Traver & Bernardino p3: *"Elegant trade-off solution between these three mutually opposing criteria: wide field of view, high visual resolution and little data to process … the reduced size of log-polar images (as much as 30 times smaller than uniformly-sampled Cartesian images have been reported) hugely facilitates real-time visual data processing. On the other hand, the radially logarithmic sampling entails that a higher resolution is devoted to the center of the scene (fovea area)"* — both halves of our clause, verbatim, with a number |
 | 18 | layer redundancy in language models is well established (the `gromov` half) | **PDF read 2026-08-22**: *"we can remove a substantial fraction of the deepest layers from models with minimal degradation … for Llama-2-70B we can eliminate up to roughly half of the layers before the performance collapses."* **ICLR 2025**, not an arXiv preprint — fix the `.bib` |
@@ -38,7 +39,7 @@ and that should not be forgotten before the bibliography is finalised.
 
 | citation | what the draft asserts about it | risk |
 |---|---|---|
-| the two efficient-VLA surveys (arXiv 2510.17111, 2510.24795) | only that such surveys *"are now appearing"* | low — an existence claim |
+| `effvlasurvey2` — arXiv 2510.24795, *A Survey on Efficient VLA Models* | only that such surveys exist | low — an existence claim. **The last remaining unread citation in the section** |
 | Gromov et al., *The Unreasonable Ineffectiveness of the Deeper Layers* | grouped with ShortGPT as establishing layer redundancy | low, but it is a substantive grouping; read before submission |
 | DQN (frame skip) | the origin of executing one decision over several steps | low — textbook lineage |
 | ACT, Diffusion Policy | action chunking in imitation learning | low — textbook lineage |
@@ -100,6 +101,40 @@ was ambiguous; recording the resolution here so it does not resurface.
 (`gromov`, `traver`, `bagoftricks_cnn`, plus `starvla` which had been left
 uncited). Nothing in the section is now cited unread except the two
 efficient-VLA surveys, whose only claim is that they exist.
+
+### Three times in a row, a paper was under-rated before being read
+
+Worth recording as a pattern rather than three separate slips, because the
+next "low priority, existence claim only" judgement should be distrusted.
+
+| paper | rated before reading | what it turned out to be |
+|---|---|---|
+| Gromov | *"low risk, a substantive grouping — read before submission"* | the mechanism that explains our worst cell (−30.4), and the paper that makes Table I's constraint column **contested** rather than empty |
+| Bag of Tricks (CNN) | *"a genre claim, no number attached"* | states our thesis eleven years early — *"only visible in source code"* |
+| CAS survey (2510.17111) | *"an existence claim"* | supplies our three axes as **its own** section headings, with our own citations inside them |
+
+The common error: rating a paper by the **weight of the claim we currently
+hang on it**, rather than by what it might let us claim. One survey remains
+unread on exactly that reasoning (`effvlasurvey2`), and its expected value
+should be treated as unknown, not low.
+
+### Held in reserve — the survey's §7.5, for Limitations
+
+Not cited in Related Work, but directly usable where we discuss the GPU-model
+gap. From *Future Prospects*, p19:
+
+> *"Current VLA studies report heterogeneous metrics, rely on diverse
+> datasets, and employ **varied hardware**, making cross-comparison difficult
+> and obscuring true efficiency gains."*
+
+This is a **third** independent 2025–26 source stating our motivation
+(vla-eval and StarVLA are the other two), and it is the only one that names
+hardware, which is the limitation we have to declare anyway.
+
+⚠️ **OpenVLA-OFT is not training-free** — it is a fine-tuning recipe. We cite
+it only as an example within axis 1 (*when the policy runs*), which the
+section's structure already separates from the training-free interventions in
+paragraph 2. Keep it that way; same rule as MoLe-VLA and Gromov.
 
 **`bagoftricks_cnn` was undervalued and the assessment above was wrong.** It
 was filed as *"a genre claim, no number attached — low priority, do not bother

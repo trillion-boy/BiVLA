@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex` — citations spelled out, same content.
-582 rendered words in the LaTeX, against a 450–560 target and *Bag of Tricks*'
+590 rendered words in the LaTeX, against a 450–560 target and *Bag of Tricks*'
 429. Provenance for every claim: `RelatedWork_Sources.md`.*
 
 ---
@@ -13,8 +13,9 @@ interventions we re-measure, and how such interventions are evaluated.
 
 VLA policies adapt pretrained vision-language models to output robot actions,
 inheriting their size and latency; the resulting efficiency literature already
-has surveys of its own. It falls into three families by the resource each
-spends:
+has surveys of its own. We divide it by the resource each method spends,
+recovering the categories a recent systematic survey (CAS, arXiv 2510.17111)
+draws between dynamic computation, perception and action generation:
 
 1. **when the policy runs** — executing a predicted chunk over several control
    steps, from frame skip in RL through action chunking (ACT, Diffusion Policy)
@@ -22,16 +23,15 @@ spends:
 2. **what it is shown** — reducing or reweighting visual tokens;
 3. **how much network each call uses** — skipping decoder layers.
 
-We treat these as axes rather than as competing methods, because a claim about
-efficiency is a claim about one of these resources being spent differently.
+We treat these as axes rather than competing methods: a claim about efficiency
+is a claim about one of these resources being spent differently.
 
 ### The interventions we re-measure
 
 Layer redundancy in language models is well established (ShortGPT, Gromov et
 al.); the Block Influence criterion we adopt is ShortGPT's. EfficientVLA
 carries it into VLAs without training, while MoLe-VLA pursues layer skipping
-**with** a learned router and distillation, which places it outside what we
-test.
+**with** a learned router and distillation, placing it outside what we test.
 
 On the visual axis, methods developed for VLMs (FastV, SparseVLM, ToMe) have
 been reported to transfer poorly to VLAs: VLA-Cache attributes this to VLAs
@@ -40,24 +40,24 @@ while latency rises, and VLA-Pruner reproduces the degradation on a third
 setting.
 
 Our own visual intervention, foveation, comes from the other direction: the
-log-polar retinotopic mapping of Schwartz, adopted in robot vision to cut data
-while preserving central resolution (Traver & Bernardino), and applied to VLAs
-by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). We include it because
+log-polar mapping of Schwartz, taken up in robot vision to cut data while
+preserving central resolution (Traver & Bernardino) and applied to VLAs by
+gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). We include it because
 it edits the observation *before* the encoder, which is what makes it
 comparable across backbones: however the encoders differ, each splits the image
 into a **uniform** grid, so empty background receives the same budget as the
 region where the gripper meets the object.
 
-Notably, recent compact VLAs no longer apply these reductions at inference but
-**build them in** — FLOWER prunes 30–50% of its VLM layers by design, SmolVLA
-retains only the first sixteen, and TurboVLA removes the language model from
-the action path entirely — which makes whether such a reduction transfers a
+Notably, recent compact VLAs **build these reductions in** rather than applying
+them at inference — FLOWER prunes 30–50% of its VLM layers by design, SmolVLA
+keeps only the first sixteen, TurboVLA drops the language model from the action
+path — which makes whether such a reduction transfers a
 question about architecture, not only about a switch.
 
 ### How these claims are evaluated
 
 Results are reported on SimplerEnv and LIBERO, and recent work addresses the
-surrounding infrastructure: vla-eval unifies fourteen benchmarks and documents
+infrastructure: vla-eval unifies fourteen benchmarks and documents
 previously undocumented evaluation pitfalls, and StarVLA describes the field as
 fragmented across incompatible codebases and protocols.
 
@@ -90,7 +90,7 @@ three bold run-in paragraphs, each ending on our position rather than on a
 summary, and a closing "Unique to this paper" sentence. No tables — theirs is
 in the Introduction, and so is ours.
 
-**Length.** 582 rendered words against the 450–560 target set in
+**Length.** 590 rendered words against the 450–560 target set in
 `RelatedWork_Plan.md`. The target itself rests on an *unverified* rule of thumb
 (≈500–550 words per IEEEtran column); compile one real column before treating
 either number as binding. If it runs long, the first sentence to cut is the
