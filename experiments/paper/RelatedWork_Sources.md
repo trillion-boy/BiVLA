@@ -43,8 +43,58 @@ and that should not be forgotten before the bibliography is finalised.
 | DQN (frame skip) | the origin of executing one decision over several steps | low — textbook lineage |
 | ACT, Diffusion Policy | action chunking in imitation learning | low — textbook lineage |
 | SimplerEnv, LIBERO | the benchmarks results are reported on | none — we run them |
-| `schwartz` — log-polar retinotopic mapping | that log-polar is his | **settled 2026-08-22 without needing his PDF.** Traver's bibliography gives the citable entry: *Schwartz, "Computational anatomy and functional architecture of the striate cortex," Vision Research 20 (1980) 645–669.* Cite **1980**; drop the 1977/1980 conflation. Traver Fig. 1 also confirms the model form — *"The retinal plane is mapped onto the cortical plane via w = log(z)"*, with a central circle omitted to handle the singularity, which is where the `+a` variant comes from |
+| `schwartz` — log-polar retinotopic mapping | that log-polar is his | **settled 2026-08-22 from the published abstract + Traver.** See the box below; no PDF purchase needed |
 | `bagoftricks_llm` — *Bag of Tricks for Inference-time Computation of LLM Reasoning* | that re-measuring is an established form | none — PDF read and measured (`RelatedWork_Plan.md` §5) |
+
+### Schwartz — closed, and the paywalled PDF is not needed
+
+The draft's only claim is an **attribution of the idea**: *"the log-polar
+retinotopic mapping of Schwartz."* The published abstract states exactly that:
+
+> *"The logarithm of retinal eccentricity provides a good fit to the integrated
+> cortical magnification factor. Under the assumption that the cortical map is
+> analytic (conformal), this implies that a **complex logarithmic function of
+> retinal coordinates** describes the two-dimensional structure of the cortical
+> representation of a visual stimulus."*
+
+An abstract is weak evidence for what a paper *did* (the MoLe-VLA lesson), but
+this is not that kind of claim — no number, table or characterisation of the
+method hangs on it. Buying the PDF would buy nothing.
+
+**Bibliographic entry, authoritative version.** The DOI page gives a longer
+title than Traver's bibliography does; use the DOI page.
+
+| field | value |
+|---|---|
+| author | Eric L. Schwartz |
+| title | Computational anatomy and functional architecture of striate cortex: A spatial mapping approach to perceptual coding |
+| journal | Vision Research **20** (1980) 645–669 |
+| doi | `10.1016/0042-6989(80)90090-5` |
+
+⚠️ Traver ref [24] renders it as *"…functional architecture of **the** striate
+cortex"* and drops the subtitle. Do not copy the entry out of Traver.
+
+**And `w = log(z + a)` really is Schwartz's — checked, because it looked like
+it might not be.** The abstract says only "complex logarithmic function,"
+i.e. `log(z)`, so the `+a` offset in `RelatedWork.md` §2.3 (a) looked like a
+later engineering fix wrongly attributed to him. It is not. Traver §2.3:
+
+> *"either using a different mapping for the fovea … or applying the
+> **log(z + a)** model. This other model was proposed in **[24]** as a better
+> approximation to the retino-topic mapping of monkeys and cats."*
+
+and Traver's `[24]` is Schwartz 1980. Our note stands as written.
+
+### Gromov — nothing further needed either
+
+The PDF supplied **is** the camera-ready: *"Published as a conference paper at
+ICLR 2025"* is printed on every page. *".bib needs fixing"* meant our own
+bibliography entry should read **ICLR 2025**, not an arXiv preprint — a
+one-line edit in a `.bib` we have not written yet, not a request for another
+copy of the paper. Phrasing it as "fix the .bib" without saying who fixes it
+was ambiguous; recording the resolution here so it does not resurface.
+
+---
 
 **All four of the remaining unread citations were read on 2026-08-22**
 (`gromov`, `traver`, `bagoftricks_cnn`, plus `starvla` which had been left
