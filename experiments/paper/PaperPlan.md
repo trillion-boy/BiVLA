@@ -71,9 +71,10 @@ Introduction is a good model. Its shape:
    `1) Evaluation of Key Tricks: … 2) Combination of Techniques: …` — not a
    bulleted list.
 
-Their Introduction is **698 rendered words**, measured from the PDF, plus a
-table. (An earlier note here said "about 900" from memory; 698 is the count.)
-Ours is **834 body words**, about 20% longer, plus two footnotes.
+Their Introduction is **688 words of prose**, measured from the PDF with
+citations excluded, plus a table. Ours is **857** on the same basis, about 25%
+longer, plus two footnotes. (Two earlier notes here were wrong: "about 900"
+was from memory, and 698/834 counted citation markers as words.)
 
 ### Two things worth copying
 
@@ -128,7 +129,7 @@ Six pages of content, two of references, IEEEtran two-column.
 | Title, abstract, Introduction | 0.75 | intro ≈ ¾ column; Fig. 1 takes the rest of page 1 |
 | **Fig. 1** — the grid as a signed heat map | (in the above) | 7 conditions × 5 cells; the reader should see signs disagreeing within a row before reading a word |
 | **Table I** — what prior work reports | 0.25 | see above |
-| Related Work | **0.5** | three run-in paragraphs, **614 words** as written, against *Bag of Tricks*' 429 (`RelatedWork_Plan.md`). The 0.5 page rests on an unverified words-per-column estimate, so compile before cutting |
+| Related Work | **0.5** | three run-in paragraphs, **616 words of prose** against the model paper's **350** on the same basis (`RelatedWork_Plan.md` §0; the 429 this project used for months was a miscount). The 0.5 page rests on an unverified words-per-column estimate, so compile before cutting |
 | Setup and protocol | 1.0 | backbones, benchmarks, the eight conditions, pairing, determinism, the correction family |
 | Results | **2.25** | the three results; four tables. Takes the 0.25 freed from Related Work |
 | What breaks (failure typing) | 0.5 | the one table with five buckets |
