@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex` — citations spelled out, same content.
-566 rendered words in the LaTeX, against a 450–560 target and *Bag of Tricks*'
+582 rendered words in the LaTeX, against a 450–560 target and *Bag of Tricks*'
 429. Provenance for every claim: `RelatedWork_Sources.md`.*
 
 ---
@@ -58,7 +58,8 @@ question about architecture, not only about a switch.
 
 Results are reported on SimplerEnv and LIBERO, and recent work addresses the
 surrounding infrastructure: vla-eval unifies fourteen benchmarks and documents
-previously undocumented evaluation pitfalls.
+previously undocumented evaluation pitfalls, and StarVLA describes the field as
+fragmented across incompatible codebases and protocols.
 
 What infrastructure cannot supply is **the comparison itself.** Papers that use
 several backbones change the benchmark at the same time (VLA-Cache,
@@ -72,8 +73,8 @@ average over (Table I).
 ---
 
 We do not cover quantisation, KV-cache compression or learned early exit, which
-spend resources our three axes do not. Re-measuring methods one did not invent
-is itself an established form (the image-classification and the
+spend resources our three axes do not. Measuring the settings that papers leave
+to their source code is an established form (the image-classification and the
 inference-time-computation *bag of tricks* studies). Unique to this paper, we
 measure the same interventions over a complete backbone × benchmark grid and
 test each result on matched episodes rather than on aggregate rates, so that
@@ -89,7 +90,7 @@ three bold run-in paragraphs, each ending on our position rather than on a
 summary, and a closing "Unique to this paper" sentence. No tables — theirs is
 in the Introduction, and so is ours.
 
-**Length.** 566 rendered words against the 450–560 target set in
+**Length.** 582 rendered words against the 450–560 target set in
 `RelatedWork_Plan.md`. The target itself rests on an *unverified* rule of thumb
 (≈500–550 words per IEEEtran column); compile one real column before treating
 either number as binding. If it runs long, the first sentence to cut is the
@@ -97,13 +98,14 @@ Schwartz/Traver lineage clause in paragraph two — the foveation rationale
 survives without it, since the load-bearing part is "edits the observation
 before the encoder," not who invented log-polar mapping.
 
-**Four things deliberately left out.**
+**Three things deliberately left out, and one that changed.**
 
 1. **The per-task split** (`RelatedWork.md` §2.5 of the long version) gets one
    clause, not a paragraph. It is a finding; its evidence is Table I in the
    Introduction and its statement is in Results.
-2. **StarVLA**, whose stated problem supports our motivation, is not cited —
-   we have a search snippet, not the PDF.
+2. ~~**StarVLA** is not cited — we have a search snippet, not the PDF.~~
+   **Now cited.** The PDF was read 2026-08-22; the snippet we had been
+   carrying turned out not to appear in the paper, so the caution was right.
 3. **The ten training-free papers** in `Survey_2026-08.md` §4 are not cited.
    Abstract-level only.
 4. **The 8 × 3 scale statement** (eight backbones once the mentor's five runs

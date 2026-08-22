@@ -2,7 +2,7 @@
 % Related Work -- ICRA form, modelled on Bag of Tricks (429 words, three
 % bold run-in paragraphs, no tables, each paragraph ending on our position).
 %
-% 566 rendered words against a 450--560 target / ~0.5 page.
+% 582 rendered words against a 450--560 target / ~0.5 page.
 % Reading copy: paper/RelatedWork.md
 % Provenance for every factual claim: paper/RelatedWork_Sources.md
 % ---------------------------------------------------------------------------
@@ -57,8 +57,10 @@ question about architecture, not only about a switch.
 Results are reported on SimplerEnv~\cite{simplerenv} and
 LIBERO~\cite{libero}, and recent work addresses the surrounding
 infrastructure: vla-eval unifies fourteen benchmarks and documents previously
-undocumented evaluation pitfalls~\cite{vlaeval}. What infrastructure cannot
-supply is the comparison itself. Papers that use several backbones change the
+undocumented evaluation pitfalls~\cite{vlaeval}, and StarVLA describes the
+field as fragmented across incompatible codebases and
+protocols~\cite{starvla}. What infrastructure cannot supply is the comparison
+itself. Papers that use several backbones change the
 benchmark at the same time~\cite{vlacache, specprune, vlaiap}, and those with
 both axes present leave the crossing cell empty~\cite{gazereg, vlapruner}; the
 tables we cite report mean success rates over independent runs, without
@@ -67,9 +69,9 @@ when the backbone or the benchmark changes cannot be read off these tables, nor
 can the per-task disagreements they average over (Table~\ref{tab:reporting}).
 
 We do not cover quantisation, KV-cache compression or learned early exit, which
-spend resources our three axes do not. Re-measuring methods one did not invent
-is itself an established form~\cite{bagoftricks_cnn, bagoftricks_llm}.
-Unique to this paper, we measure the same interventions over a complete
+spend resources our three axes do not. Measuring the settings that papers leave
+to their source code is an established form~\cite{bagoftricks_cnn,
+bagoftricks_llm}. Unique to this paper, we measure the same interventions over a complete
 backbone $\times$ benchmark grid and test each result on matched episodes
 rather than on aggregate rates, so that the direction of an effect --- not
 only its size --- is something the evidence can decide.

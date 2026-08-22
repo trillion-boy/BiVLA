@@ -198,6 +198,62 @@ last layer — and `Report_EN.md` §6 records that this collision produced a
 false counterexample we had to retract. That is first-hand evidence that the
 choice is easy to get wrong, which is the claim we can actually defend.
 
+**(d) The best framing, and it only became available with Gromov. The
+constraint column is not empty — it is *contested*, and nobody has settled it
+on a VLA.**
+
+Gromov et al., *The Unreasonable Ineffectiveness of the Deeper Layers*,
+**ICLR 2025**, takes the opposite position to both VLA layer papers on both
+knobs:
+
+| | ShortGPT / EfficientVLA | Gromov et al. |
+|---|---|---|
+| candidate set | all layers | **deepest layers only** |
+| contiguity | none — top-*n* by BI, explicitly *"non-contiguous"* | **contiguous block**, and non-contiguity argued against |
+| final layer | no special treatment | **excluded by rule** |
+
+Quotes, with pages:
+
+- **Contiguous, and non-contiguity rejected** (p17):
+  > *"Liu et al. (2023a) considered non-contiguous pruning proposals, e.g.
+  > dropping alternate layers. Our intuition for layer pruning predicts that
+  > this shouldn't work as well … as it creates multiple mismatches, one with
+  > each block of layers removed."*
+
+- **The final layer is excluded by construction** (p5):
+  > *"drop the deepest layers, excluding the final layer before the LLM head …
+  > if we are pruning n layers from an L-layer model, then we would remove
+  > layers (L−n) to (L−1), inclusive."*
+
+- **And it is stated as a finding, not a convention** (p16):
+  > *"for all pruning sizes keeping the very last layer is essential."*
+
+- **With the mechanism** (p8, Fig. 4):
+  > *"the deeper layers tend to be very similar, though the deepest blocks
+  > that include the final layer … are (near-)maximally dissimilar."*
+
+**This explains our worst cell.** `window875` restricts OpenVLA/UniVLA to
+L28–31 — exactly four candidates for four deletions, so BI does nothing and
+the final layer L31 is removed by force — and it scores **−30.4**
+(`Report_EN.md` §4.4(b)). Gromov predicts that outcome and gives the reason.
+Our −30.4 is not an anomaly to explain away; it is an independent
+confirmation, on a VLA, of an ICLR 2025 result about LLMs. And SpatialVLA,
+the one backbone whose implementation protects the last layer, is the one
+that could not run the condition at all.
+
+So Table I's second column becomes the most interesting one in the table: two
+groups specify **opposite** constraints, each on its own evidence, neither on
+a robot policy. That is a gap no amount of re-reporting closes — it needs the
+measurement, and we have it.
+
+⚠️ **Gromov is not training-free.** `training-free` 0, `without training` 0;
+the method heals with QLoRA finetuning, *"non-optionally"* for the simple
+variant. It publishes no-healing curves throughout (Figs. 2–3), which is what
+makes it comparable to us, but it must **never** appear in a training-free
+cite list. Our current use — `\cite{shortgpt, gromov}` for *"layer redundancy
+is well established"* — is a redundancy claim, not a training-free one, and is
+safe as written.
+
 **(c) ShortGPT's Table 9 — the nicest single piece of evidence.** The
 specification says all layers are candidates; the method's own published
 selection is 21–29 of 32, never the final two. So even the paper that reports

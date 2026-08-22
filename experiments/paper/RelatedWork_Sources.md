@@ -25,6 +25,9 @@ paper's PDF, not its abstract.*
 | 13 | FastV, SparseVLM and ToMe were developed for VLMs | all three PDFs read this session |
 | 14 | OpenVLA-OFT uses parallel decoding and action chunking | stated in the VLA-Pruner PDF describing its own baseline |
 | 15 | foveation has been applied to VLAs by gaze-conditioned policies | `RelatedWork.md` A.5 (Gaze-Reg, arXiv 2603.23202) and A.6 (Look Focus Act, arXiv 2507.15833), both marked *원문 확인* — the two PDFs were opened and their tables cross-checked |
+| 17 | log-polar was adopted in robot vision to cut data while preserving central resolution | **PDF read 2026-08-22**, Traver & Bernardino p3: *"Elegant trade-off solution between these three mutually opposing criteria: wide field of view, high visual resolution and little data to process … the reduced size of log-polar images (as much as 30 times smaller than uniformly-sampled Cartesian images have been reported) hugely facilitates real-time visual data processing. On the other hand, the radially logarithmic sampling entails that a higher resolution is devoted to the center of the scene (fovea area)"* — both halves of our clause, verbatim, with a number |
+| 18 | layer redundancy in language models is well established (the `gromov` half) | **PDF read 2026-08-22**: *"we can remove a substantial fraction of the deepest layers from models with minimal degradation … for Llama-2-70B we can eliminate up to roughly half of the layers before the performance collapses."* **ICLR 2025**, not an arXiv preprint — fix the `.bib` |
+| 19 | re-measuring methods one did not invent is an established form | **PDF read 2026-08-22**, Bag of Tricks (CNN) abstract: *"most refinements are either briefly mentioned as implementation details or only visible in source code. In this paper, we will examine a collection of such refinements and empirically evaluate their impact on the final model accuracy through ablation study."* Stronger than a genre claim — see the note below |
 | 16 | every encoder splits the image into a uniform grid, so foveation is the one axis whose meaning does not change with the backbone | property of the patch tokenisers we run, not a claim about a cited paper; the corresponding statement in `RelatedWork.md` §2.3 (d) is what it compresses |
 
 ## Cited but **not** read — lineage only, no specific claim attached
@@ -40,15 +43,41 @@ and that should not be forgotten before the bibliography is finalised.
 | DQN (frame skip) | the origin of executing one decision over several steps | low — textbook lineage |
 | ACT, Diffusion Policy | action chunking in imitation learning | low — textbook lineage |
 | SimplerEnv, LIBERO | the benchmarks results are reported on | none — we run them |
-| `schwartz` — Schwartz (1977/1980), log-polar retinotopic mapping | that log-polar is his | **low, but note it**: title and gist confirmed only (`RelatedWork.md` opening note: *"이들은 제목과 요지만 확인한 것"*), and §2.3 (a) attributes `w = log(z + a)` to him. Two papers are conflated under one key — settle 1977 vs 1980 when the `.bib` is written |
-| `traver` — Traver & Bernardino, *Robotics and Autonomous Systems* 58(4), 2010 | that log-polar was adopted in robot vision to cut data while preserving central resolution | **low, but note it**: same status — title, venue and gist confirmed, contents not read |
-| `bagoftricks_cnn` — *Bag of Tricks for Image Classification with CNNs* | only that re-measuring others' methods is an established form | low — a genre claim, no number attached. **Unread.** |
-| `bagoftricks_llm` — *Bag of Tricks for Inference-time Computation of LLM Reasoning* | same genre claim | none — PDF read this session and measured (`RelatedWork_Plan.md` §5) |
+| `schwartz` — log-polar retinotopic mapping | that log-polar is his | **settled 2026-08-22 without needing his PDF.** Traver's bibliography gives the citable entry: *Schwartz, "Computational anatomy and functional architecture of the striate cortex," Vision Research 20 (1980) 645–669.* Cite **1980**; drop the 1977/1980 conflation. Traver Fig. 1 also confirms the model form — *"The retinal plane is mapped onto the cortical plane via w = log(z)"*, with a central circle omitted to handle the singularity, which is where the `+a` variant comes from |
+| `bagoftricks_llm` — *Bag of Tricks for Inference-time Computation of LLM Reasoning* | that re-measuring is an established form | none — PDF read and measured (`RelatedWork_Plan.md` §5) |
 
-**Deliberately not cited:** StarVLA. Its stated problem — inconsistent
-preprocessing and evaluation protocols across VLA papers — supports our
-motivation and would be worth citing, but we have only a search snippet, not
-the PDF. It is left out rather than paraphrased from a snippet.
+**All four of the remaining unread citations were read on 2026-08-22**
+(`gromov`, `traver`, `bagoftricks_cnn`, plus `starvla` which had been left
+uncited). Nothing in the section is now cited unread except the two
+efficient-VLA surveys, whose only claim is that they exist.
+
+**`bagoftricks_cnn` was undervalued and the assessment above was wrong.** It
+was filed as *"a genre claim, no number attached — low priority, do not bother
+reading."* Its abstract states our thesis directly, eleven years early:
+*"most refinements are either briefly mentioned as implementation details or
+only visible in source code."* That is precisely what we found about the
+candidate-window choice. It is a **precedent for the specific claim**, not
+just for the format, and the Related Work sentence citing it can say so.
+
+**~~Deliberately not cited:~~ Now citable — StarVLA.** It was left out because
+we had only a search snippet. The PDF was read on 2026-08-22 and it is now
+cited alongside vla-eval. Verbatim, from the abstract:
+
+> *"VLA methods remain fragmented across incompatible architectures,
+> codebases, and evaluation protocols, hindering principled comparison and
+> reproducibility."*
+
+and from §1: *"results are reported on disjoint subsets of benchmarks with
+inconsistent protocols, making fair comparison infeasible,"* creating a
+*"Tower of Babel"* for VLA research.
+
+⚠️ **The caution was justified.** The snippet we had been carrying —
+*"most existing VLA methods are evaluated on limited environments with
+substantially different preprocessing pipelines, policy interfaces, and
+evaluation protocols"* — **does not appear in the paper.**
+`Survey_2026-08.md` §3 had it inside quotation marks. The substance was right
+and the quotation was not, which is the exact failure mode refusing to cite
+from a snippet was meant to prevent. Corrected there.
 
 **Deliberately not cited:** the ten training-free papers in
 `Survey_2026-08.md` §4. Abstract-level only. The MoLe-VLA lesson applies.
