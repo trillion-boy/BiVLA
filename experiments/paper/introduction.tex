@@ -41,8 +41,9 @@ test.
 Such papers converge on one form of claim. \emph{Applying method $M$ to
 backbone $A$ on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$
 points, so $M$ is efficient.} That last step holds only if the effect belongs
-to the method rather than to the single configuration it was measured in. The
-premise is what we test, not any individual method.
+to the method rather than to the configuration it was measured in, and telling
+those apart needs a grid that moves the backbone and the benchmark
+independently. The premise is what we test, not any individual method.
 
 We re-measured three interventions under one protocol, on three open backbones
 (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla}, UniVLA~\cite{univla})
@@ -53,8 +54,8 @@ log-polar warp and its inverse) changes what it is shown, and network depth
 pruning changes how much of the model each call uses. Five of the six cells
 are filled, since UniVLA releases a Bridge-only checkpoint, and each carries
 eight conditions, for $7{,}198$ episodes in all (Fig.~\ref{fig:grid}). Every
-condition replays the initial states of its cell's baseline. We count only the
-episodes whose outcome flipped, and test those with McNemar's exact test.
+condition replays the initial states of its cell's baseline, and we test the
+episodes whose outcome flipped with McNemar's exact test.
 
 Three results follow, and each has the same shape. What a reported number was
 credited to is not what moved it.
@@ -75,13 +76,13 @@ loses $30.4$ points is the one that confines it far enough to delete the final
 layer. Across all five cells the contrast spans $2.1$ to $50.4$ points, so
 even the sensitivity is a property of the configuration.
 
-\textbf{Our visual intervention helps most when it discards nothing.} Sweeping
-how much of the observation foveation keeps, we find the best setting discards
-nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$
-at $10\%$. Measured compute moved between $-3.1\%$ and $+2.7\%$, because
-neither the image size nor the token count changes. The gain is reproducible
-and tracks the log-polar round trip, but it is an input transformation and not
-an efficiency technique.
+\textbf{What saves compute is not what changes success.} Sweeping how much of
+the observation foveation keeps, we find the best setting discards nothing,
+giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$ at
+$10\%$. Measured compute moved between $-3.1\%$ and $+2.7\%$, because neither
+the image size nor the token count changes. The gain is reproducible and
+tracks the log-polar round trip, but it is an input transformation and not an
+efficiency technique.
 
 \textbf{In our grid the backbone matters more than the benchmark.} One of the
 fourteen benchmark-axis comparisons survives correction, against six of the
@@ -102,10 +103,11 @@ often properties of the configuration.} A candidate window the specifications
 leave open moves one result by $45.9$ points, and one intervention reverses
 sign across backbones with both directions individually significant.
 \textbf{3)~Evidence that compute saved does not predict success change.} The
-intervention with the largest effect in our grid saves almost none of it, and
-helps most when it discards nothing. \textbf{4)~A measurement procedure} for
-this class of claim, comprising matched episodes, an explicit determinism
-check and a grid uniformity rule. Of the five training-free methods we
+intervention behind our largest gain saves almost no compute and helps most
+when it discards nothing, while the one whose compute saving we hold fixed
+moves success by $45.9$ points. \textbf{4)~A measurement procedure} for this
+class of claim, comprising matched episodes, an explicit determinism check and
+a grid uniformity rule. Of the five training-free methods we
 survey~\cite{efficientvla, vlacache, fastv, shortgpt, vlapruner}, every one
 sweeps its own configuration and none publishes per-episode outcomes or tests
 a difference for significance.

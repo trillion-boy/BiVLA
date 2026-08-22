@@ -189,3 +189,32 @@ field has been averaging over this for years." It is worth four lines.
 The honesty cost is the footnote, which has to say that two rows were removed
 and that the FastV rows are reproductions rather than FastV's own results.
 Both disclosures are in it.
+
+---
+
+## 5. One claim in the Introduction with no provenance in this repository
+
+Found 2026-08-22 during a reviewer pass, and recorded here because there is
+nowhere else it belongs yet.
+
+The opening paragraph says:
+
+> OpenVLA-OFT reports autoregressive OpenVLA at $3$ to $5$~Hz where its
+> control tasks want $25$ to $50$~Hz~\cite{openvlaoft}.
+
+**No file in this repository sources either figure.** A grep for `Hz` across
+every Markdown document returns one unrelated line, from `Hardware.md`, which
+quotes MoLe-VLA rather than OpenVLA-OFT. The sentence was written from the
+PDF, the PDF is not in the repository, and the flattened text used at the time
+lived in a session scratchpad that no longer exists.
+
+It is very likely correct, since the whole premise of OpenVLA-OFT is that
+autoregressive decoding is too slow for real control. But *likely correct* is
+not *sourced*, and it is a numeric claim about someone else's paper sitting in
+our first paragraph, which is the sentence a reviewer reads most carefully.
+
+**Action for the author.** Open the OpenVLA-OFT PDF, find both figures, and
+either paste the sentence they come from into this file or correct the numbers.
+It is one lookup. Until then this is the least defensible sentence in the
+Introduction, and the paragraph does not need it, since our own $2.81$~s and
+$0.90$~s already establish the scale.
