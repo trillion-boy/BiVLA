@@ -20,11 +20,14 @@
 Running a vision-language-action (VLA) policy is expensive. In our own runs a
 single forward pass took UniVLA~\cite{univla} $2.80$~s and
 SpatialVLA~\cite{spatialvla} $0.90$~s.\footnote{Model time only, averaged over
-96 baseline episodes on WidowX-Bridge, on Colab T4/L4-class hardware. This is a
-scale rather than a benchmark, since our files do not record which card each
-run used (Sec.~\ref{sec:limitations}). Published figures agree on the scale.
-OpenVLA-OFT reports autoregressive OpenVLA at $3$ to $5$~Hz against the $25$ to
-$50$~Hz its control tasks want~\cite{openvlaoft}.} A literature has grown
+96 baseline episodes on WidowX-Bridge. Each backbone ran on the Colab GPU its
+weights fit, an L4 for UniVLA and T4s for the other two, so UniVLA is three
+times slower than SpatialVLA on the faster of the two cards. The result files
+do not record the card, which is why the grid carries a bound on run-to-run
+variation rather than a controlled hardware comparison
+(Sec.~\ref{sec:limitations}). Published figures agree on the scale, with
+OpenVLA-OFT reporting autoregressive OpenVLA at $3$ to $5$~Hz against the $25$
+to $50$~Hz its control tasks want~\cite{openvlaoft}.} A literature has grown
 up around fixing this without retraining. The idea is to leave the checkpoint
 alone and make inference cheaper by skipping decoder layers, by pruning or
 caching visual tokens, or by holding one predicted action across several

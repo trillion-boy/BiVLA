@@ -24,7 +24,7 @@ paper's PDF, not its abstract.*
 | 12 | the tables we cite report mean success rates over independent runs, without matched-episode outcomes | grep over every PDF read: *paired* 0, *McNemar* 0, and in vla-eval also *significance* 0, *statistic* 0, *confidence* 0, *error bar* 0. The draft says **"the tables we cite,"** not "no prior work" — see the re-check note below |
 | 13 | FastV, SparseVLM and ToMe were developed for VLMs | all three PDFs read this session |
 | 14 | OpenVLA-OFT uses parallel decoding and action chunking | **upgraded from second-hand to primary, 2026-08-22.** Was verified only from VLA-Pruner's description of its own baseline; now from the paper itself (Kim, Finn & Liang, *Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success*), abstract p1: *"an Optimized Fine-Tuning (OFT) recipe that integrates **parallel decoding, action chunking**, a continuous action representation, and a simple L1 regression-based learning objective"* |
-| 20 | our three axes are the field's own categories, not our invention | **PDF read 2026-08-22.** The CAS systematic survey (Guan et al., Institute of Automation; its arXiv number is still unconfirmed, see the note below) divides efficiency work into §3.2 *Dynamic Computation Pathways*, §4 *Efficient Perception Feature*, §5 *Efficient Action Generation* — our axes 3, 2 and 1 — and populates them with the same papers we cite (§3.2 names SmolVLA and FLOWER; §4.1 names FastV and EfficientVLA; §4.2 names VLA-Cache) |
+| 20 | our three axes are the field's own categories, not our invention | **PDF read 2026-08-22.** The CAS systematic survey (Guan et al., Institute of Automation, arXiv 2510.17111, confirmed from the listing page) divides efficiency work into §3.2 *Dynamic Computation Pathways*, §4 *Efficient Perception Feature*, §5 *Efficient Action Generation* — our axes 3, 2 and 1 — and populates them with the same papers we cite (§3.2 names SmolVLA and FLOWER; §4.1 names FastV and EfficientVLA; §4.2 names VLA-Cache) |
 | 15 | foveation has been applied to VLAs by gaze-conditioned policies | `RelatedWork.md` A.5 (Gaze-Reg, arXiv 2603.23202) and A.6 (Look Focus Act, arXiv 2507.15833), both marked *원문 확인* — the two PDFs were opened and their tables cross-checked |
 | 17 | log-polar was adopted in robot vision to cut data while preserving central resolution | **PDF read 2026-08-22**, Traver & Bernardino p3: *"Elegant trade-off solution between these three mutually opposing criteria: wide field of view, high visual resolution and little data to process … the reduced size of log-polar images (as much as 30 times smaller than uniformly-sampled Cartesian images have been reported) hugely facilitates real-time visual data processing. On the other hand, the radially logarithmic sampling entails that a higher resolution is devoted to the center of the scene (fovea area)"* — both halves of our clause, verbatim, with a number |
 | 18 | layer redundancy in language models is well established (the `gromov` half) | **PDF read 2026-08-22**: *"we can remove a substantial fraction of the deepest layers from models with minimal degradation … for Llama-2-70B we can eliminate up to roughly half of the layers before the performance collapses."* **ICLR 2025**, not an arXiv preprint — fix the `.bib` |
@@ -60,12 +60,14 @@ below.
 > Shen. Submitted 27 Oct 2025 (v1), revised 2 Feb 2026 (v2). 28 pages, 8
 > figures. `doi:10.48550/arXiv.2510.24795`. Use **v2** if the number is pinned.
 >
-> `effvlasurvey1` is the CAS survey we read, *Efficient Vision-Language-Action
-> Models for Embodied Manipulation: A Systematic Survey* (Guan, Hu, Li, Cheng,
-> Institute of Automation). Its PDF carries no arXiv stamp, so **2510.17111 is
-> still unconfirmed as its number** and should be looked up before the `.bib`
-> is finalised. What is now certain is that the two are **different papers**,
-> which was the actual risk, since only `effvlasurvey1` carries a claim.
+> `effvlasurvey1` = **arXiv 2510.17111**, *Efficient Vision-Language-Action
+> Models for Embodied Manipulation: A Systematic Survey*, Weifan Guan, Qinghao
+> Hu, Aosheng Li, Jian Cheng (Institute of Automation, CAS). Submitted 20 Oct
+> 2025 (v1), revised 23 Oct 2025 (v3). cs.RO.
+> `doi:10.48550/arXiv.2510.17111`. **Confirmed 2026-08-22 from the arXiv
+> listing page**, which also matches its abstract's four dimensions, namely
+> model architecture, perception feature, action generation and
+> training/inference strategies. Both survey numbers are now settled.
 >
 > **And the two taxonomies differ, which confirms we cited the right one.**
 > 2510.24795 organises the field by pipeline stage, namely efficient model
