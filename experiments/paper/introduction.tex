@@ -26,17 +26,17 @@
 \section{Introduction}
 
 Vision-language-action (VLA) policies are becoming capable of general-purpose
-robotic control, and running one is expensive. In our own runs a single
-forward pass averaged $2.81$~s of model time for UniVLA~\cite{univla} and
+robotic control, and running one is expensive. In our own runs a single call
+to the policy averaged $2.81$~s of model time for UniVLA~\cite{univla} and
 $0.90$~s for SpatialVLA~\cite{spatialvla} over 96 baseline WidowX-Bridge
 episodes. OpenVLA-OFT reports autoregressive OpenVLA at $3$ to $5$~Hz, below
 the $25$ to $50$~Hz it says real-time deployment needs~\cite{openvlaoft}. A
 literature has grown up around fixing this without retraining. The idea is to
 leave the checkpoint alone and make inference cheaper by skipping decoder
-layers, by pruning or caching visual tokens, or by holding one predicted
-action across several control steps~\cite{efficientvla, vlacache, fastv,
-shortgpt}. MoLe-VLA learns which layers to skip~\cite{molevla} and is outside
-what we test.
+layers~\cite{shortgpt, efficientvla}, by pruning visual tokens~\cite{fastv},
+or by caching what the previous step already computed~\cite{vlacache,
+efficientvla}. MoLe-VLA learns which layers to skip~\cite{molevla} and is
+outside what we test.
 
 Such papers share one form of claim. \emph{Applying method $M$ to backbone $A$
 on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$ points, so $M$
@@ -76,13 +76,13 @@ enough to delete the final layer. Across all five cells the contrast spans
 $2.1$ to $50.4$ points, so even the sensitivity is a property of the
 configuration.
 
-\textbf{Compute saved does not predict what happens to success.} Sweeping how
-much of the observation foveation keeps, we find the best setting discards
-nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$
-at $10\%$. Across every foveation condition we ran, measured compute stayed
-within $3.1\%$ of baseline, because neither the image size nor the token count
-changes. The gain is largest where only the round trip is left, and it is an
-input transformation rather than an efficiency technique.
+\textbf{Compute saved does not predict what happens to success.} In one cell
+we swept how much of the observation foveation keeps, and the best setting
+discards nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$
+and $+4.2$ at $10\%$. Across every foveation condition we ran, measured
+compute stayed within $3.1\%$ of baseline, because neither the image size nor
+the token count changes. The gain is largest where only the round trip is
+left, and it is an input transformation rather than an efficiency technique.
 
 \textbf{The same intervention reverses sign across backbones.} Under depth
 pruning of four layers, OpenVLA gains $+15.6$ on the same $135$ Fractal
@@ -114,7 +114,7 @@ We propose no new efficiency method, and we do not claim that these
 interventions fail in general. We measure every change against its own cell's
 baseline, so no result depends on our absolute rates matching anyone else's.
 Four of our five baseline cells do sit above the published figures, one of
-them by a wide margin, and the fifth is $4.2$ points below, which is the wrong
-direction for a broken setup. Our claim is narrower. As results are reported
-now, the evidence does not separate a property of the method from a property
-of the configuration it was measured in.
+them by a wide margin, and the fifth is $4.2$ points below. A broken setup
+would push all five down. Our claim is narrower. As results are reported now,
+the evidence does not separate a property of the method from a property of the
+configuration it was measured in.

@@ -126,3 +126,36 @@ Sweep compute, measured for row 26: `keep10` $+0.3\%$, `keep40` $-0.6\%$,
 `keep100` $-0.4\%$ against the 96-episode baseline mean of $517.7$~ms.
 `keep20` has no millisecond records of its own, since that cell is the
 imported foveation campaign.
+
+---
+
+## 5. Pass six, 2026-08-22, fresh read
+
+**A verdict in section 2 was itself wrong.** Row 5 claimed the action-holding
+mechanism was covered by "EfficientVLA's cache interval". Re-reading the PDF,
+that cache reuses intermediate attention and MLP features across
+\emph{denoising} steps inside one action generation, and VLA-Cache reuses
+token computation across frames. Neither holds a predicted action across
+control steps, and nothing in the four-paper cite list does. The sentence now
+lists the three mechanisms those papers actually use, with a citation on each,
+and the chunk-execution lineage stays where Related Work already cites it
+correctly.
+
+| sentence | class | defect | fix |
+|---|---|---|---|
+| 2 | B | "a single forward pass averaged $2.81$~s". One autoregressive call runs one forward pass per generated token, and the harness measures ms per call | "a single call to the policy" |
+| 5 | B | action-holding attributed to four papers, none of which does it | per-mechanism citations, temporal caching named instead |
+| 25 | J | the keep sweep ran in one cell and the sentence did not say so | "In one cell we swept" |
+| 38 | K | "the fifth is $4.2$ points below, which is the wrong direction for a broken setup" anchors the clause to the low cell, and a low cell is exactly what a broken setup produces | "A broken setup would push all five down." |
+
+**Closed rather than changed.** Sentence 35's grep never covered plain
+statistics vocabulary, so "none tests a difference for significance" was
+verified against `McNemar`/`paired`/`std` but not against `significant`,
+`p-value` or `t-test`. Re-grepped all five PDFs with the wider set. Every hit
+is colloquial or citation noise, so the sentence stands, and `TableI_Cells.md`
+§3 records the term list.
+
+**Checked and kept.** "Re-measured" stays. All three intervention families
+have prior proposals, Related Work frames each lineage with its own
+citations, and the framing is the paper's premise. The mentor's abstract uses
+"study three representative approaches" for the same content.

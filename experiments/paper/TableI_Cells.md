@@ -152,6 +152,15 @@ Verified by grep over the **complete** extracted text of all five papers:
 any of the five.** This is the one claim the table can carry at full strength,
 and it is the one our method contribution rests on.
 
+**Re-verified 2026-08-22 with a wider term set**, because the first grep never
+covered plain statistics vocabulary. `significan*`, `p-value`, `p < 0.`,
+`t-test`, `chi-square`, `wilcoxon`, `bootstrap`, `confidence interval`,
+`error bar`, `standard deviation`, `std`, `seed`, `statistically` over the
+complete text of all five PDFs. Every hit is either the colloquial
+"significantly reduces" or citation noise, namely "Bootstrapping" inside BLIP
+titles and "Seed-Bench". Zero statistical tests of any kind, in any of the
+five, under both term sets.
+
 ---
 
 ## 4. What Table I should become
