@@ -42,11 +42,14 @@ detail the paper does not report, and the direction of the result should hold.
 Three existing interventions, re-measured under one protocol. They were chosen
 because each spends a different resource:
 
-| axis | what it changes | our intervention |
-|---|---|---|
-| time | how **often** the policy is called | action repeat *k* |
-| vision | what the policy is **shown** | foveation (log-polar / blur) |
-| compute | how much of the **network** each call uses | depth pruning *k* |
+| axis | what it changes | our intervention | condition names |
+|---|---|---|---|
+| time | how **often** the policy is called | action repetition | `action repeat` *k* |
+| vision | what the policy is **shown** | visual foveation | `log-polar`, `blur` |
+| compute | how much of the **model** each call uses | network depth pruning | `depth prune` *k* |
+
+The three family names follow the abstract. The right-hand column is what the
+result files call each condition, and those labels are unchanged.
 
 Three open backbones × two SimplerEnv suites:
 

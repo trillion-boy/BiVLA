@@ -16,7 +16,8 @@
 
 \section{Introduction}
 
-Running a vision-language-action (VLA) policy is expensive. In our own runs a
+Vision-language-action (VLA) policies are becoming capable of general-purpose
+robotic control, and running one is expensive. In our own runs a
 single forward pass took UniVLA~\cite{univla} $2.81$~s and
 SpatialVLA~\cite{spatialvla} $0.90$~s.\footnote{Model time only, averaged over
 96 baseline episodes on WidowX-Bridge. Each backbone ran on the Colab GPU its
@@ -41,10 +42,11 @@ We re-measured three interventions under one protocol, on three open backbones
 (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla}, UniVLA~\cite{univla})
 and two SimplerEnv~\cite{simplerenv} suites (WidowX-Bridge, Google
 Robot/Fractal). We chose them because each spends a different resource. Action
-repeat changes how often the policy runs, foveation (a log-polar warp and its
-inverse) changes what it is shown, and depth pruning changes how much of the
-network each call uses. Five of the six cells are filled, since UniVLA
-releases a Bridge-only checkpoint, and each carries eight conditions, for
+repetition changes how often the policy runs, visual foveation (a log-polar
+warp and its inverse) changes what it is shown, and network depth pruning
+changes how much of the model each call uses. Five of the six cells are
+filled, since UniVLA releases a Bridge-only checkpoint, and each carries
+eight conditions, for
 $7{,}198$ episodes in all (Fig.~\ref{fig:grid}). Every condition replays the
 initial states of its cell's baseline. We count only the episodes whose
 outcome flipped, and test those with McNemar's exact test.
