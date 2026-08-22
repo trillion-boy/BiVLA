@@ -1,7 +1,7 @@
 % ---------------------------------------------------------------------------
 % Introduction -- ICRA form (IEEEtran, two-column, 6 pages + 2 of references)
 %
-% ~834 body words, about 3/4 of a column, plus Fig. 1 (teaser) and a pointer
+% ~831 body words, about 3/4 of a column, plus Fig. 1 (teaser) and a pointer
 % to Table I. Every number here is reproduced by experiments/verify_all.py.
 % Reading copy: experiments/paper/Introduction.md
 %
@@ -42,8 +42,9 @@ We re-measured three interventions under one protocol, on three open backbones
 (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla}, UniVLA~\cite{univla})
 and two SimplerEnv~\cite{simplerenv} suites (WidowX-Bridge, Google
 Robot/Fractal). We chose them because each spends a different resource. Action
-repeat changes how often the policy runs, foveation changes what it is shown,
-and depth pruning changes how much of the network each call uses. Five of the
+repeat changes how often the policy runs, foveation (a log-polar warp and its
+inverse) changes what it is shown, and depth pruning changes how much of the
+network each call uses. Five of the
 six cells are filled, since UniVLA releases a Bridge-only checkpoint, and each
 carries eight conditions, for $7{,}198$ episodes in all (Fig.~\ref{fig:grid}).
 Every condition replays the initial states of its cell's baseline. We count
@@ -64,7 +65,7 @@ agree on how to set it. The methods we re-measure rank every layer and
 constrain nothing~\cite{shortgpt, efficientvla}, while a competing
 prescription removes a contiguous block and reports that the final layer must
 be kept~\cite{gromov}.
-The worse of our two settings is the one that deletes it. Run in all five cells
+The worse of our two settings is the one that deletes it. Across all five cells
 the contrast spans $2.1$ to $50.4$ points, so even the sensitivity is a
 property of the configuration.
 
@@ -114,9 +115,8 @@ its own configuration, and none publishes episode-level outcomes or tests a
 difference for significance.
 
 We propose no new efficiency method, and we do not claim that these
-interventions fail in general. A broken setup would put our numbers
-consistently below the published ones, and it does not. Four of our five
-baseline cells sit above the reported figures and the fifth is $4.2$ points
-below. The claim is narrower than that. As results are reported now, the
-evidence does not separate a property of the method from a property of the
-configuration it was measured in.
+interventions fail in general. Four of our five baseline cells sit above the
+published figures and the fifth is $4.2$ points below, which is not the pattern
+a broken setup would produce. Our claim is narrower. As results are reported
+now, the evidence does not separate a property of the method from a property of
+the configuration it was measured in.
