@@ -785,7 +785,11 @@ DrawerApple). 비교군은 Random Dropping, FastV, VLA-Cache. 대표 결과는
 ablation 자체는 성실하다. Random Dropping이 74.8 → **20.9**로 크게 떨어지는 것을
 보여 "무엇을 남기느냐가 지배적"임을 확인하고, 층 수와 토큰 수를 격자로 훑는다.
 
-그런데 **보고 단위가 4-태스크 평균이다.** 그 평균을 태스크별로 펼치면 Table 2의
+그런데 **서술의 단위가 4-태스크 평균이다.** (per-task 수치 자체는 표에 있다 —
+SIMPLER 표는 `PickCan | MoveNear | Drawer | DrawerApple | Average` 열을 갖는다.
+없는 것은 숫자가 아니라 **그 숫자에 대한 논의**다. 논문 밖에 인용할 때 "평균만
+보고한다"고 쓰면 틀린다. 원문 확인: `paper/TableI_Cells.md` §2.)
+그 평균을 태스크별로 펼치면 Table 2의
 12개 설정 **전부**에서 `PickCan`은 오르고 `MoveNear`는 내린다. EfficientVLA
 자신의 네 구성만 봐도 용량 순으로 `+4.0 → +3.4 → +2.7 → +2.0` 대
 `−1.7 → −2.6 → −2.9 → −3.7`로 **단조롭게 벌어진다.** 저자들은 이 설정을

@@ -82,12 +82,27 @@ configuration knobs each one uses, showing that the field does not standardise
 them. We have the identical move available and it is directly on thesis:
 
 > **Table I — What prior work reports.** Rows: EfficientVLA, VLA-Cache,
-> FastV, ShortGPT (the training-free ones). Columns: layer candidate window · selection constraint ·
-> foveation/keep value · per-task split · per-episode records. Mostly empty
-> cells, and each empty cell is one of the values we show changes the answer.
+> FastV, ShortGPT, VLA-Pruner (the training-free ones). Columns: candidate
+> scope · selection constraint · keep value · **knob ablated?** · per-task
+> split · **per-episode records** · **paired test**.
 
-That table earns its space because our first result *is* "the unreported value
-decides the outcome" — the table is the evidence that it is unreported.
+⚠️ **Corrected 2026-08-22, against the five PDFs.** This entry used to read
+*"mostly empty cells, and each empty cell is one of the values we show changes
+the answer,"* and to justify the table as evidence that the knob is
+**unreported**. That is false. All five papers report their knob and **all
+five ablate it** — FastV even publishes a K×R grid showing the same
+interaction we find. Building the table from our notes would have shipped a
+wrong claim.
+
+What is uniformly empty is the last two columns: **no episode-level records
+and no paired test in any of the five** (`TableI_Cells.md` §3, verified by
+grep over the complete text of each). So the table's thesis moves from
+*"they hide the configuration"* to *"the field is careful about configuration
+and silent about uncertainty."* That is a smaller claim and a true one, and it
+is the claim our method contribution actually rests on.
+
+Full cell-by-cell provenance, with page numbers and quotes, plus two
+reframings the evidence does support: **`paper/TableI_Cells.md`.**
 
 **Contributions as a numbered paragraph, not `itemize`.** A four-item
 `itemize` costs roughly eight lines of vertical space in two columns; the same
