@@ -6,6 +6,11 @@ new each time. The point of one file is that the list stops growing silently:
 whatever gets checked, gets checked here, and a clean run means the whole list
 passed rather than whichever slice was on my mind.
 
+Word count is deliberately NOT a check. It is reported as context and nothing
+more. Whether a section is well written is decided by whether its claims are
+sourced, its sentences parse, its terms are consistent and its argument closes,
+none of which a word count measures.
+
 Run:  python3 experiments/paper/audit_sections.py
 Exit: 0 clean, 1 findings.
 """
@@ -297,7 +302,7 @@ if rw:
     note("H2 structure", f"{runins} run-in paragraphs, {len(blocks)} blocks, 0 tables")
 
 for name, tex in raw.items():
-    note("H3 length", f"{name}: {wordcount(tex)} body words")
+    note("H3 context", f"{name}: {wordcount(tex)} words (context only, not a criterion)")
 
 
 # =========================================================== I. promises
@@ -309,6 +314,82 @@ if intro:
         else:
             note("I promises", f"per-episode release backed by {len(list(d.iterdir()))} result directories")
 
+
+
+# =========================================================== J. terminology
+# One idea should have one name. Drift between synonyms is the commonest way a
+# reader loses the thread across two sections.
+TERM_SETS = [
+    ("the eligible-layer knob", ["candidate window", "eligibility", "eligible"]),
+    ("the intervention family", ["training-free", "training free"]),
+    ("the unit of pairing", ["matched episode", "episode-level", "per-episode"]),
+    ("the thing being spent", ["compute saved", "compute", "FLOPs"]),
+]
+joined = " ".join(rendered(t, drop_footnotes=False) for t in raw.values()).lower()
+for label, variants in TERM_SETS:
+    used = {v: joined.count(v.lower()) for v in variants if joined.count(v.lower())}
+    if len(used) > 1:
+        note("J terminology", f"{label}: {used}")
+
+# =========================================================== K. hedging and vagueness
+WEASEL = ["very", "quite", "somewhat", "arguably", "clearly", "obviously",
+          "of course", "it is well known", "significantly better", "a number of",
+          "several studies", "many works", "in recent years", "state-of-the-art",
+          "it should be noted", "notably better", "fairly", "relatively"]
+for name, tex in raw.items():
+    text = rendered(tex, drop_footnotes=False).lower()
+    # word boundaries, so "every" does not match "very"
+    hits = [w for w in WEASEL if re.search(r"\b" + re.escape(w) + r"\b", text)]
+    # "rather" is fine in "rather than"; only a bare adverbial use is vague
+    if re.search(r"\brather\b(?!\s+than)", text):
+        hits.append("rather (adverbial)")
+    if hits:
+        finding("K vagueness", f"{name}: {hits}")
+
+
+# =========================================================== L. unsupported quantifiers
+# A quantified claim about other people's work needs a citation in the same sentence.
+for name, tex in raw.items():
+    body = strip_comments(tex)
+    for s in re.split(r"(?<=[.!?])\s+", body):
+        if re.search(r"\b(all|none|every|no|never|always|only)\b", s, re.I):
+            hostile = re.search(r"\b(papers|methods|work|studies|literature|tables)\b", s, re.I)
+            if hostile and "\\cite{" not in s and "\\ref{" not in s:
+                finding("L quantifier", f"{name}: universal claim about others with no citation or pointer: {rendered(s)[:80]!r}")
+
+# =========================================================== M. passive voice density
+for name, tex in raw.items():
+    text = rendered(tex, drop_footnotes=True)
+    sents = [s for s in re.split(r"(?<=[.!?])\s+", text) if len(s.split()) > 3]
+    passive = [s for s in sents if re.search(r"\b(is|are|was|were|be|been|being)\s+\w+(ed|en)\b", s)]
+    frac = len(passive) / max(1, len(sents))
+    if frac > 0.45:
+        finding("M passive", f"{name}: {frac:.0%} of sentences passive")
+    note("M passive", f"{name}: {frac:.0%} passive, {len(passive)}/{len(sents)}")
+
+# =========================================================== N. argument closure
+# Every result announced in a bold run-in must be picked up by a contribution,
+# and every contribution must rest on something stated.
+if intro:
+    r_heads = re.findall(r"\\textbf\{([A-Z][^}]*?\.)\}", strip_comments(intro))
+    r_heads = [h for h in r_heads if not re.match(r"^\d\)", h) and h != "Contributions."]
+    contribs = re.findall(r"\\textbf\{\d\)[^}]*\}([^\\]*)", strip_comments(intro))
+    note("N closure", f"{len(r_heads)} result headings, {len(contribs)} contributions")
+    if len(r_heads) < 3:
+        finding("N closure", f"only {len(r_heads)} result headings found")
+
+# =========================================================== O. orphan concepts
+# A term used once and never explained or reused is usually a leftover.
+for name, tex in raw.items():
+    text = rendered(tex, drop_footnotes=True)
+    caps = re.findall(r"\b([A-Z][a-zA-Z0-9-]{3,})\b", text)
+    once = [c for c, n in Counter(caps).items() if n == 1 and c not in
+            {"Running", "Such", "Applying", "That", "Three", "What", "Inside", "Success",
+             "Across", "Sweeping", "Measured", "Every", "Because", "Contributions",
+             "Evidence", "Four", "Layer", "VLA", "Whether", "Notably", "Results",
+             "Papers", "Which", "Their", "This", "These", "There", "When", "Neither"}]
+    if once:
+        note("O orphans", f"{name}: capitalised terms used once: {sorted(once)[:14]}")
 
 # =========================================================== report
 print("=" * 68)
