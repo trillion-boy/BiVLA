@@ -186,13 +186,23 @@ own papers' architecture descriptions, not on any result:
 
 CoTinyVLA and MiniVLA do not appear in either section.
 
-**The Introduction has exactly two places to update**, both reporting the size
-of our own grid and neither carrying an argument:
+**The Introduction has exactly four places to update**, all reporting the size
+of our own grid and none carrying an argument. ⚠️ *Corrected 2026-08-22: this
+said two. The tex gained two more grid-size figures during the review passes.*
 
 | where | what it says now |
 |---|---|
-| the setup paragraph | "three open backbones", "two SimplerEnv suites", "Five of the six cells", "$7{,}198$ episodes" |
-| contribution 1 | "a $3 \times 2$ backbone-benchmark grid, with five filled cells, eight conditions each, $7{,}198$ episodes" |
+| the setup paragraph | "three open backbones", "two SimplerEnv suites", "five of the six cells", "eight conditions", "$7{,}198$ episodes" |
+| result 1, last sentence | "Across all five cells the contrast spans $2.1$ to $50.4$ points" |
+| result 3, last sentence | "ten of the fourteen intervention conditions our two Fractal cells ran" |
+| contribution 1 | "a $3 \times 2$ backbone-benchmark grid, five filled cells with eight conditions each" |
+
+**Paragraph 2 needs no change and that is deliberate.** It says separating
+method from configuration *"takes a grid that moves the backbone and the
+benchmark independently."* That justifies **crossing the axes**, not the
+number $3 \times 2$, so it stays true at $8 \times 3$ or at $2 \times 2$. The
+smallest grid that crosses both axes is $2 \times 2$; ours is the largest we
+could run. Do not write that $3 \times 2$ was necessary, because it was not.
 
 **The three results are unaffected.** They come from our five cells. New cells
 would add evidence rather than revise it, and the 45.9-point window contrast is
@@ -208,3 +218,84 @@ pruning is only applicable to two of the five, since FLOWER and SmolVLA prune
 layers as part of their architecture and TurboVLA has no language model in the
 action path. So an 8 × 3 grid would not fill uniformly, and the Setup section
 has to say so rather than implying a complete expansion.
+
+---
+
+## 6. The five-model expansion, and whether the Introduction can be written now
+
+Asked 2026-08-22, when the mentor listed TurboVLA, CoTinyVLA, SmolVLA, FLOWER
+and MiniVLA to be run on Bridge and Fractal. Answered from `FiveModels_Read.md`,
+which read all five sources.
+
+### The short answer
+
+**Yes. Write it now.** All three results are within-cell or two-cell
+comparisons, so no number of new backbones can revise them.
+
+| result | scope | what new cells do to it |
+|---|---|---|
+| 1, the $45.9$-point window | one cell, OpenVLA/Fractal | nothing. New backbones cannot reach inside it |
+| 2, the keep sweep | one cell, OpenVLA/Bridge | nothing |
+| 3, the sign reversal | two cells, both Fractal | nothing |
+
+New cells **add** evidence for the thesis rather than revising it. The claim is
+that an effect *can* be a property of the configuration, and every backbone
+added is another configuration.
+
+### One correction to the model list
+
+The list circulated as SmolVLA 4B. **SmolVLA is 450M**, from its own paper:
+*"Our main model contains 450 million parameters."* A factor of nine. This
+changes the framing, since the new models are 0.2--1B and our current grid is
+4--8.5B, so the expansion is two clusters with a hole between 1B and 4B rather
+than a scale sweep.
+
+### Why the expansion will not give a clean $8 \times 3$ grid
+
+`FiveModels_Read.md` §2 and §3, from the five sources:
+
+| | depth pruning applies | SimplerEnv Bridge | SimplerEnv Fractal |
+|---|:--:|:--:|:--:|
+| TurboVLA | ✗ no LLM in the action path | ✗ | ✗ |
+| CoTinyVLA | ✓ | ✗ | ✗ |
+| MiniVLA | ✓ | ✓ our exact four tasks | ✗ |
+| FLOWER | ✗ prunes 30--50\% by design | ✓ | ✓ |
+| SmolVLA | ✗ first 16 layers only | ✗ | ✗ |
+
+Two of five take depth pruning. Two have published Bridge numbers and one has
+Fractal, so for the other three there is **no published figure to validate the
+setup against on SimplerEnv**, which is the check that catches `unnorm_key` and
+gripper errors before the intervention rows are spent. Action repeat is also
+not comparable down a column, since native chunk lengths run 1, 1, 5 for ours
+against 8, 20--50 and 50 for theirs.
+
+**So the honest expanded grid is ragged**, and that raggedness collides with
+contribution 4, which requires every cell to run the same conditions.
+
+### The resolution, and it is not a fudge
+
+The uniformity rule is a rule about **what may be compared**, not a claim that
+our grid is complete. A cell that cannot run a condition gets reported as
+inapplicable by architecture, with the reason. That is itself the paper's
+point in stronger form: FLOWER and SmolVLA have built our depth intervention
+into the architecture, and TurboVLA removed the language model outright, so
+whether a reduction transfers has already become a question about architecture
+rather than about a switch. `relatedwork.tex` already says this and cites all
+three.
+
+### Recommendation for this submission
+
+**Keep this paper at the current grid and treat the five as a follow-up.**
+Three reasons, in order of weight.
+
+1. Three of the five have no SimplerEnv baseline to validate against, so those
+   rows would carry a setup risk the current five cells do not.
+2. Depth pruning, which carries results 1 and 3, applies to two of the five. An
+   expansion that cannot run the headline intervention on most of its new rows
+   buys coverage rather than evidence.
+3. Six pages. `Setup` and `Results` are already the tight sections.
+
+If the mentor wants them in, the expansion is **LIBERO-primary**, since all
+five have LIBERO and only FLOWER has both SimplerEnv suites, and FLOWER is the
+first to run because it is the only cell where a wrong setup gets caught.
+Either way the four spots in §5 take new numbers and nothing else moves.
