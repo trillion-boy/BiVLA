@@ -236,3 +236,46 @@ needed, and the published figure that agrees on the scale. That is what makes
 and the confirmation in §3 that no backbone changed card mid-campaign, since
 the hardware-controlled claim in §2 rests on it and the Introduction no longer
 says it.
+
+---
+
+## 9. The compute figures, and whether the window contrast really holds compute fixed
+
+Measured 2026-08-22 because the Introduction says the $-10.6$ to $-11.9\%$
+spread is *"no wider than repeating the same measurement produces"* and
+nothing in `verify_all.py` checked that. The determinism checks there are on
+**success outcomes** (85/85 and 24/24 episodes identical), not on time.
+
+**What compute is.** `build_grid_report.discover_cost` reads
+`model_ms_per_infer`, so the compute column is **milliseconds, not FLOPs**.
+That is why a spread can be noise at all. A FLOP count would be deterministic
+and a $1.3$ point gap would have to mean something.
+
+**The two window settings, OpenVLA/Fractal, 135 episodes each.**
+
+| condition | mean ms per call | sd | against baseline |
+|---|---:|---:|---:|
+| baseline | 515.5 | 3.9 | |
+| `depth_prune4` | 454.3 | 7.5 | $-11.9\%$ |
+| `window875` | 460.8 | 4.1 | $-10.6\%$ |
+
+The two settings differ by $6.5$~ms, which is $1.3\%$ of the baseline.
+
+**What repeating the same measurement produces.**
+
+| pair | mean ms | mean ms | difference |
+|---|---:|---:|---:|
+| SpatialVLA/Fractal `baseline` vs `baseline_rerun` | 936.8 | 914.4 | $-2.4\%$ |
+| UniVLA/Bridge `baseline` vs `baseline_l4` | 2801.5 | 2811.5 | $+0.4\%$ |
+
+**So the sentence holds.** Re-running the same condition moved the mean by
+$2.4\%$ in one case, which is larger than the $1.3\%$ separating the two
+window settings. The claim that compute is held fixed across the $45.9$-point
+contrast survives.
+
+**Two caveats worth keeping.** The $2.4\%$ comes from a different backbone and
+benchmark, since OpenVLA/Fractal has no re-run of its own, so it is a proxy
+rather than a direct bound. And the within-condition sd is only $4$ to $8$~ms,
+so the variation lives between sessions rather than inside one. The honest
+form of the claim is that the gap is smaller than what a session change moves,
+which is what the Introduction says.

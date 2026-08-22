@@ -28,22 +28,22 @@
 Vision-language-action (VLA) policies are becoming capable of general-purpose
 robotic control, and running one is expensive. In our own runs a single
 forward pass of model time averaged $2.81$~s for UniVLA~\cite{univla} and
-$0.90$~s for SpatialVLA~\cite{spatialvla} over 96 baseline episodes, and
-OpenVLA-OFT reports autoregressive OpenVLA at $3$ to $5$~Hz where its control
-tasks want $25$ to $50$~Hz~\cite{openvlaoft}. A literature has grown up around
-fixing this without retraining. The idea is to leave the checkpoint alone and
-make inference cheaper by skipping decoder layers, by pruning or caching
-visual tokens, or by holding one predicted action across several control
-steps~\cite{efficientvla, vlacache, fastv, shortgpt}. Layer skipping has also
-been pursued \emph{with} training~\cite{molevla}, which is outside what we
-test.
+$0.90$~s for SpatialVLA~\cite{spatialvla} over 96 baseline episodes.
+OpenVLA-OFT measures autoregressive OpenVLA at $3$ to $5$~Hz, below the $25$
+to $50$~Hz it reports real-time deployment needs~\cite{openvlaoft}. A
+literature has grown up around fixing this without retraining. The idea is to
+leave the checkpoint alone and make inference cheaper by skipping decoder
+layers, by pruning or caching visual tokens, or by holding one predicted
+action across several control steps~\cite{efficientvla, vlacache, fastv,
+shortgpt}. Layer skipping has also been pursued \emph{with}
+training~\cite{molevla}, which is outside what we test.
 
-Such papers converge on one form of claim. \emph{Applying method $M$ to
-backbone $A$ on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$
-points, so $M$ is efficient.} That last step holds only if the effect belongs
-to the method rather than to the configuration it was measured in, and telling
-those apart needs a grid that moves the backbone and the benchmark
-independently. The premise is what we test, not any individual method.
+Such papers share one form of claim. \emph{Applying method $M$ to backbone $A$
+on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$ points, so $M$
+is efficient.} That last step holds only if the effect belongs to the method
+rather than to the configuration it was measured in, and telling those apart
+needs a grid that moves the backbone and the benchmark independently. The
+premise is what we test, not any individual method.
 
 We re-measured three interventions under one protocol, on three open backbones
 (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla}, UniVLA~\cite{univla})
@@ -71,18 +71,18 @@ on record disagree about it. The methods we re-measure rank every layer and
 constrain nothing~\cite{shortgpt, efficientvla}, while a competing one
 restricts removal to a contiguous block at the deep end and reports that the
 final layer must be kept~\cite{gromov}. Confining removal to the deep end is a
-guard an implementer would add without recording it, and the setting that
-loses $30.4$ points is the one that confines it far enough to delete the final
-layer. Across all five cells the contrast spans $2.1$ to $50.4$ points, so
-even the sensitivity is a property of the configuration.
+restriction an implementation can add without recording it, and ours did. The
+setting that loses $30.4$ points is the one that confines it far enough to
+delete the final layer. Across all five cells the contrast spans $2.1$ to
+$50.4$ points, so even the sensitivity is a property of the configuration.
 
-\textbf{What saves compute is not what changes success.} Sweeping how much of
-the observation foveation keeps, we find the best setting discards nothing,
-giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$ at
-$10\%$. Measured compute moved between $-3.1\%$ and $+2.7\%$, because neither
-the image size nor the token count changes. The gain is reproducible and
-tracks the log-polar round trip, but it is an input transformation and not an
-efficiency technique.
+\textbf{Compute saved does not predict what happens to success.} Sweeping how
+much of the observation foveation keeps, we find the best setting discards
+nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$
+at $10\%$. Measured compute moved between $-3.1\%$ and $+2.7\%$, because
+neither the image size nor the token count changes. The gain tracks the
+log-polar round trip, but it is an input transformation and not an efficiency
+technique.
 
 \textbf{In our grid the backbone matters more than the benchmark.} One of the
 fourteen benchmark-axis comparisons survives correction, against six of the
@@ -98,8 +98,8 @@ discussing it~\cite{efficientvla, vlapruner}.
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} Three
 training-free VLA interventions over a $3 \times 2$ backbone-benchmark grid,
 with five filled cells, eight conditions each, $7{,}198$ episodes, and
-per-episode records released. \textbf{2)~Evidence that reported effects are
-often properties of the configuration.} A candidate window the specifications
+per-episode records released. \textbf{2)~Evidence that a reported effect can
+be a property of the configuration.} A candidate window the specifications
 leave open moves one result by $45.9$ points, and one intervention reverses
 sign across backbones with both directions individually significant.
 \textbf{3)~Evidence that compute saved does not predict success change.} The
@@ -116,7 +116,7 @@ We propose no new efficiency method, and we do not claim that these
 interventions fail in general. Every contrast above is paired inside its own
 cell, so none of them depends on our absolute rates matching anyone else's.
 Four of our five baseline cells do sit above the published figures, one of
-them by a wide margin, and the fifth is $4.2$ points below, which is not the
-pattern a broken setup would produce. Our claim is narrower. As results are
-reported now, the evidence does not separate a property of the method from a
-property of the configuration it was measured in.
+them by a wide margin, and the fifth is $4.2$ points below, which is the wrong
+direction for a broken setup. Our claim is narrower. As results are reported
+now, the evidence does not separate a property of the method from a property
+of the configuration it was measured in.
