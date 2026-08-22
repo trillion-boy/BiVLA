@@ -194,3 +194,45 @@ imports it deliberately and checks at load time that the borrowed campaign's
 own baseline is episode-for-episode identical to the grid's, which it is at
 15/96. And `keep_percent: 20.0` appears in every run's config because it is the
 flag's default, not because every run foveates.
+
+---
+
+## 8. What the Introduction handed to Setup, and why
+
+Measured across the 21 papers in this session's reading set, taking each one's
+Introduction:
+
+| | papers doing it |
+|---|---|
+| reporting a p-value in the Introduction | **0 of 21** |
+| using a footnote in the Introduction | **0 of 21** |
+| naming a GPU in the Introduction | several, but as scale or to make a latency figure legible |
+
+The last row is the useful distinction. MoLe-VLA writes *"a 7B VLA model
+running on a commercial-grade GPU like the RTX 4090 generally achieves an
+inference frequency of approximately 5−12 Hz"*, and Bag of Tricks writes *"over
+20,000 A100-80G GPU hours"*. Naming a card so a number can be read is normal.
+Explaining the assignment is not.
+
+**Moved out of the Introduction.**
+
+| what | now belongs in |
+|---|---|
+| $p = 0.0011$, $p = 1.8\times10^{-4}$, $p = 4.3\times10^{-7}$, $p < 10^{-4}$ | Results |
+| that the latency figures come from the runs the grid pairs against | Setup |
+| that the result files record no card, and that this is why the grid carries a bound on run-to-run variation rather than a controlled hardware comparison | Limitations |
+
+**Kept, and why.** The three claims those p-values supported all survive
+without them: one benchmark-axis comparison passes correction, six
+backbone-axis comparisons do, and the two Fractal cells each pass on their own
+while differing from each other. An Introduction states what was found. The
+tests belong with the results.
+
+The footnote keeps model-time-only, the episode count, which card each backbone
+needed, and the published figure that agrees on the scale. That is what makes
+2.81 s and 0.90 s readable, and it is the same job MoLe-VLA's sentence does.
+
+**Setup must now carry** the memory table in §1, the per-backbone assignment,
+and the confirmation in §3 that no backbone changed card mid-campaign, since
+the hardware-controlled claim in §2 rests on it and the Introduction no longer
+says it.

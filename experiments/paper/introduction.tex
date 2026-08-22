@@ -19,19 +19,16 @@
 Running a vision-language-action (VLA) policy is expensive. In our own runs a
 single forward pass took UniVLA~\cite{univla} $2.81$~s and
 SpatialVLA~\cite{spatialvla} $0.90$~s.\footnote{Model time only, averaged over
-96 baseline episodes on WidowX-Bridge, from the same runs the grid pairs
-against. Each backbone ran on the Colab GPU its weights fit, an L4 for UniVLA
-and T4s for the other two, so UniVLA is three times slower than SpatialVLA on
-the faster of the two cards. The result files do not record the card, which is
-why the grid carries a bound on run-to-run variation rather than a controlled
-hardware comparison (Sec.~\ref{sec:limitations}). Published figures agree on
-the scale, with OpenVLA-OFT reporting autoregressive OpenVLA at $3$ to $5$~Hz
-against the $25$ to $50$~Hz its control tasks want~\cite{openvlaoft}.} A
-literature has grown up around fixing this without retraining. The idea is to
-leave the checkpoint alone and make inference cheaper by skipping decoder
-layers, by pruning or caching visual tokens, or by holding one predicted
-action across several control steps~\cite{efficientvla, vlacache, fastv,
-shortgpt}. Layer skipping has also been pursued \emph{with}
+96 baseline episodes on WidowX-Bridge. Each backbone ran on the Colab GPU its
+weights fit, an L4 for UniVLA and T4s for the other two, so the gap is the
+model's rather than the hardware's (Sec.~\ref{sec:setup}). Published figures
+agree on the scale, with OpenVLA-OFT reporting autoregressive OpenVLA at $3$
+to $5$~Hz against the $25$ to $50$~Hz its control tasks
+want~\cite{openvlaoft}.} A literature has grown up around fixing this without
+retraining. The idea is to leave the checkpoint alone and make inference
+cheaper by skipping decoder layers, by pruning or caching visual tokens, or by
+holding one predicted action across several control steps~\cite{efficientvla,
+vlacache, fastv, shortgpt}. Layer skipping has also been pursued \emph{with}
 training~\cite{molevla}, which is outside what we test.
 
 Such papers converge on one form of claim. \emph{Applying method $M$ to
@@ -79,22 +76,20 @@ transformation and not an efficiency technique.
 
 \textbf{In our grid the backbone matters more than the benchmark.} One
 benchmark-axis comparison survives correction. Six backbone-axis comparisons
-do, five of them at $p < 10^{-4}$. On the same $135$ Fractal episodes under
-the same intervention, OpenVLA gains $+15.6$ while SpatialVLA loses $-17.8$.
-Each survives correction on its own, at $p = 0.0011$ and $p = 1.8 \times
-10^{-4}$, and the two differ from each other at $p = 4.3 \times 10^{-7}$. The
-same split is already sitting in published tables. The task \texttt{pick coke
-can} holds up better than \texttt{move near} in fourteen of the fifteen
-configurations printed in two comparison tables~\cite{efficientvla,
-vlapruner}, spanning four method families.\footnote{Twelve rows
-from~\cite{efficientvla} and three from~\cite{vlapruner}. We exclude the first
-table's two random-dropping rows, which are a control rather than a proposed
-method and which break the pattern. Three of the four families are independent
-sources here. The FastV rows are comparisons run by others, not results FastV
-reports itself.} The exception is the one method built to preserve
-action-relevant tokens~\cite{vlapruner}, which is what its own mechanism
-predicts. Those tables do print the per-task numbers. What none of them does
-is discuss the split.
+do. On the same $135$ Fractal episodes under the same intervention, OpenVLA
+gains $+15.6$ while SpatialVLA loses $-17.8$, each surviving correction on its
+own and differing from the other. The same split is already sitting in
+published tables. The task \texttt{pick coke can} holds up better than
+\texttt{move near} in fourteen of the fifteen configurations printed in two
+comparison tables~\cite{efficientvla, vlapruner}, spanning four method
+families.\footnote{Twelve rows from~\cite{efficientvla} and three
+from~\cite{vlapruner}. We exclude the first table's two random-dropping rows,
+which are a control rather than a proposed method and which break the pattern.
+Three of the four families are independent sources here. The FastV rows are
+comparisons run by others, not results FastV reports itself.} The exception is
+the one method built to preserve action-relevant tokens~\cite{vlapruner},
+which is what its own mechanism predicts. Those tables do print the per-task
+numbers. What none of them does is discuss the split.
 
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} Three
 training-free VLA interventions over a $3 \times 2$ backbone-benchmark grid,
