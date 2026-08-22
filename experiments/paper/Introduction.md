@@ -171,12 +171,21 @@ action-critical tokens (97.0% of baseline preserved on `move near` against
 94.9% on `pick coke can`). The pattern holding for the salience-based methods
 and breaking for the method built to fix it is what its mechanism predicts.
 
-None of those papers discusses the split. All of them report only the
-four-task average, which is exactly the operation that hides it.
+None of those papers discusses the split. The per-task numbers **are** printed
+— EfficientVLA's SIMPLER table has `PickCan | MoveNear | Drawer | DrawerApple |
+Average` columns, and VLA-Pruner's Table 2 has `Move Near | Pick Coke Can |
+Open/Close Drawer | Overall`. What is average-only is the *discussion*: every
+summary sentence in those papers quotes the aggregate, which is the operation
+that hides the split. Do not write "they report only the average" — it is false
+and a reviewer with the PDF will catch it.
 
-*(Stated precisely: two author groups, three method families, twelve
-configurations. Not "three papers independently agree" — the FastV rows are
-EfficientVLA's own comparison, not an independent source.)*
+*(Stated precisely: fifteen configurations printed in **two** tables —
+twelve in EfficientVLA's, three in VLA-Pruner's — spanning four method
+families, of which only **three** are independent sources. FastV never reports
+SimplerEnv itself; its rows in both tables are comparisons run by others. Do
+not write "four author groups." Two random-dropping rows are excluded from the
+twelve as a control rather than a proposed method, and that exclusion has to be
+disclosed wherever the count appears.)*
 
 ---
 

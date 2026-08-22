@@ -596,8 +596,11 @@ SIMPLER의 Google Robot 태스크군을 태스크별로 갈라 보면, **선행 
 > 확인된다.**
 
 EfficientVLA, VLA-Cache, FastV에 걸쳐 **12개 구성 전부**가 이렇다(Visual
-Matching 6 + Variant Aggregation 6). 그런데 어느 논문도 이를 언급하지 않는다.
-**전부 4-태스크 평균만 보고하기 때문이다.**
+Matching 6 + Variant Aggregation 6). 그런데 어느 논문도 이를 **논의**하지 않는다.
+**평균만 보고해서가 아니다 — per-task 수치는 표에 인쇄돼 있다**(`PickCan |
+MoveNear | Drawer | DrawerApple | Average`). 평균뿐인 것은 **서술**이다: 요약
+문장이 전부 총계를 인용하고, 그것이 분할을 가린다. "평균만 보고한다"고 쓰면
+**틀린다**(원문 확인: `paper/TableI_Cells.md` §2).
 
 **출처.** 12행 전부 EfficientVLA Table 2에 있다. 그중 VLA-Cache 2행은
 EfficientVLA가 재현한 것이 아니라 **VLA-Cache 자신의 Table 3과 소수점까지

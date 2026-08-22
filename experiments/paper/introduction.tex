@@ -1,9 +1,10 @@
 % ---------------------------------------------------------------------------
 % Introduction  -- ICRA form (IEEEtran, two-column, 6 pages + 2 of references)
 %
-% Budget: ~800 words, about 3/4 of a column, plus Fig. 1 (teaser) and a
-% pointer to Table I. Everything with a number in it is reproduced by
-% experiments/verify_all.py; the reading copy is experiments/paper/Introduction.md.
+% 809 body words (913 with the two footnotes), about 3/4 of a column, plus
+% Fig. 1 (teaser) and a pointer to Table I. Everything with a number in it is
+% reproduced by experiments/verify_all.py.
+% Reading copy: experiments/paper/Introduction.md
 %
 % Citation keys and \label targets are placeholders -- replace with the .bib
 % keys and the real section labels.
@@ -16,10 +17,12 @@ forward pass costs UniVLA~\cite{univla} $2.80$~s and
 SpatialVLA~\cite{spatialvla} $0.90$~s.\footnote{Model time only, averaged over
 96 baseline episodes on WidowX-Bridge; Colab T4/L4-class hardware. A scale, not
 a benchmark: our files do not record which card each run used
-(Sec.~\ref{sec:limitations}).} This has motivated a growing set of
-\emph{training-free} interventions that leave the checkpoint untouched and make
-inference cheaper --- skipping decoder layers, pruning or caching visual
-tokens, and reusing a predicted action across several control
+(Sec.~\ref{sec:limitations}). Published figures agree on the scale ---
+OpenVLA-OFT reports autoregressive OpenVLA at $3$--$5$~Hz against the
+$25$--$50$~Hz its control tasks want~\cite{openvlaoft}.} This has motivated a
+growing set of \emph{training-free} interventions that leave the checkpoint
+untouched and make inference cheaper --- skipping decoder layers, pruning or
+caching visual tokens, and reusing a predicted action across several control
 steps~\cite{efficientvla, vlacache, fastv, shortgpt}. Layer skipping has also
 been pursued \emph{with} training~\cite{molevla}, which is outside the scope
 we test here.
@@ -45,14 +48,18 @@ reported $p$-values are the whole of the uncertainty rather than part of it.
 
 Three results follow, and they have the same shape.
 
-\textbf{An unreported implementation choice moves a result by 45.9 points.}
+\textbf{A choice the specifications leave open moves a result by 45.9 points.}
 Holding backbone, benchmark, method, layers removed (four) and compute saved
 ($-11\%$) fixed inside one cell, and changing only which layers were
 \emph{eligible} for removal, success moves from $+15.6$ to $-30.4$ against the
 same baseline. The ranking criterion is identical throughout; what differs is
-the candidate window, a value the papers in Table~\ref{tab:reporting} do not
-report. Repeated in all five cells the same contrast spans $2.1$ to $50.4$
-points, so the sensitivity is itself a property of the configuration.
+the candidate window --- and the literature does not agree on it. The methods
+we re-measure rank every layer and constrain
+nothing~\cite{shortgpt, efficientvla}; a competing prescription removes a
+contiguous block and reports that the final layer must be kept~\cite{gromov}.
+The worse of our two settings is the one that deletes it. Repeated in all five
+cells the same contrast spans $2.1$ to $50.4$ points, so
+the sensitivity is itself a property of the configuration.
 
 \textbf{A gain attributed to compression does not come from compression.}
 Sweeping how much of the observation foveation keeps, the best setting is the
@@ -68,27 +75,33 @@ comparisons do, five at $p < 10^{-4}$. On the same $135$ Fractal episodes with
 the same intervention, OpenVLA gains $+15.6$ and SpatialVLA loses $-17.8$, each
 significant alone ($p = 4.3 \times 10^{-7}$). The same split is already visible
 in published tables: \texttt{pick coke can} holds up better than
-\texttt{move near} in fourteen of the fifteen configurations reported across
-four author groups~\cite{efficientvla, vlacache, fastv, vlapruner}. The single
+\texttt{move near} in fourteen of the fifteen configurations printed in two
+comparison tables~\cite{efficientvla, vlapruner}, spanning four method
+families.\footnote{Twelve rows from~\cite{efficientvla} and three
+from~\cite{vlapruner}. We exclude that first table's two random-dropping rows,
+which are a control rather than a proposed method and which break the pattern.
+Only three of the four families are independent sources here: the FastV rows
+are comparisons run by others, not results FastV reports itself.} The single
 exception is the one method explicitly designed to preserve action-relevant
-tokens~\cite{vlapruner} --- which is what its own mechanism predicts. None of
-these papers discusses the split.
+tokens~\cite{vlapruner} --- which is what its own mechanism predicts. These
+tables print the per-task numbers; none of the papers discusses the split.
 
 \textbf{Contributions.}
 \textbf{1)~A uniform re-measurement} of three training-free VLA interventions
 over a $3 \times 2$ backbone-benchmark grid --- five filled cells, eight
 conditions each, $7{,}198$ episodes --- with per-episode records released.
 \textbf{2)~Evidence that reported effects are often properties of the
-configuration}: an unreported eligibility flag moves one result by $45.9$
-points, and one intervention reverses sign across backbones with both
-directions individually significant.
+configuration}: an eligibility choice the specifications leave open moves one
+result by $45.9$ points, and one intervention reverses sign across backbones
+with both directions individually significant.
 \textbf{3)~Evidence that compute saved does not predict success change}: the
 intervention with the largest effect in our grid saves approximately none, and
 helps most when it discards nothing.
 \textbf{4)~A measurement procedure} for this class of claim --- episode-level
 pairing, an explicit determinism check, and a grid uniformity rule --- together
-with the reporting gaps in Table~\ref{tab:reporting} that make such claims
-unreproducible.
+with Table~\ref{tab:reporting}, which shows that every method we compare
+ablates its own configuration, and that none releases per-episode outcomes or
+tests whether a difference could be chance.
 
 We propose no new efficiency method and do not claim these interventions fail
 in general; our baselines match published numbers in four of five cells and
