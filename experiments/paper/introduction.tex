@@ -48,15 +48,15 @@ premise is what we test, not any individual method.
 We re-measured three interventions under one protocol, on three open backbones
 (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla}, UniVLA~\cite{univla})
 and two SimplerEnv~\cite{simplerenv} suites (WidowX-Bridge, Google
-Robot/Fractal). We chose these three because each spends a different resource.
-Action repetition changes how often the policy runs, visual foveation (a
-log-polar warp and its inverse) changes what it is shown, and network depth
-pruning changes how much of the model each call uses. UniVLA releases a
-Bridge-only checkpoint, so we fill five of the six cells, each with eight
-conditions (Fig.~\ref{fig:grid}), and the campaign comes to $7{,}198$ episodes
-once its control runs, sweeps and re-runs are counted. Every condition replays
-the initial states of its cell's baseline, and we test the episodes whose
-outcome flipped with McNemar's exact test.
+Robot/Fractal). We chose these interventions because each spends a different
+resource. Action repetition changes how often the policy runs, visual
+foveation (a log-polar warp and its inverse) changes what it is shown, and
+network depth pruning changes how much of the model each call uses. UniVLA
+releases a Bridge-only checkpoint, so we fill five of the six cells, each with
+eight conditions (Fig.~\ref{fig:grid}), and the campaign comes to $7{,}198$
+episodes once its control runs, sweeps and re-runs are counted. Every
+condition replays the initial states of its cell's baseline, and we test the
+episodes whose outcome flipped with McNemar's exact test.
 
 Three results follow, and each has the same shape. The factor that would get
 the credit is not the factor that moved the number.
@@ -104,8 +104,8 @@ result by $45.9$ points, and one intervention reverses sign across backbones
 with both directions individually significant. \textbf{3)~Evidence that
 compute saved does not predict success change.} The intervention behind our
 largest gain saves almost no compute and helps most when it discards nothing,
-while the one whose compute saving barely moves shifts success by $45.9$
-points. \textbf{4)~A measurement procedure} for this class of claim. We match
+while the one whose compute saving barely moves swings success from a gain to
+a loss. \textbf{4)~A measurement procedure} for this class of claim. We match
 episodes, check determinism explicitly, and require every cell to run the same
 conditions. Of the five training-free methods we survey~\cite{efficientvla,
 vlacache, fastv, shortgpt, vlapruner}, every one sweeps its own configuration
