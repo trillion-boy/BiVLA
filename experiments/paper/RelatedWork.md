@@ -1,7 +1,9 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-614 rendered words in the LaTeX. *Bag of Tricks*' Related Work is 429.
+616 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
+so ours is 1.76x its length. (This file previously said 429, which was a
+miscount, see `RelatedWork_Plan.md` §0.)
 Provenance for every claim: `RelatedWork_Sources.md`.*
 
 **Regenerate this file whenever `relatedwork.tex` changes.** It has fallen
@@ -39,8 +41,8 @@ Influence, the criterion we adopt, and constrains nothing further, while Gromov
 et al. remove a contiguous block of the deepest layers and find the final layer
 must be kept. EfficientVLA carries the unconstrained form into VLAs without
 training, and MoLe-VLA needs a learned router and distillation, placing it
-outside what we test. **Which rule holds for a policy is open, and our depth
-results turn on it.** Notably, the newest compact VLAs **build such
+outside what we test. **The two rules have not been compared on a robot policy,
+and our depth results turn on which one holds.** Notably, the newest compact VLAs **build such
 reductions in by design** rather than applying them at inference (FLOWER,
 SmolVLA, TurboVLA), which makes whether a reduction transfers a question about
 architecture and not only about a switch.
@@ -105,19 +107,21 @@ included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
 2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
 none of those.)
 
-**Length — 614 words, and not currently a problem.** The 450–560 figure came
-from `RelatedWork_Plan.md` §5, which states plainly that it rests on an
-*unverified* rule of thumb (≈500–550 words per IEEEtran column). **Do not cut
-against an estimate.** Compile one real column; only if that overruns does any
-of the following apply.
+**Length — 616 words of prose, which is 1.76x the model paper's 350.** That
+ratio is larger than this file used to claim, because the 429 it compared
+against was a miscount (`RelatedWork_Plan.md` §0). The page budget still rests
+on an *unverified* rule of thumb (≈500–550 words per IEEEtran column), so
+**compile one real column before cutting anything.** Only if that overruns does
+the following apply.
 
-Paragraph 2 is 260 words against *Bag of Tricks*' 99 for the equivalent
+Paragraph 2 is 260 words against *Bag of Tricks*' 80 for the equivalent
 paragraph, because it carries four topics: the layer-rule disagreement, the
 VLM→VLA transfer failure, foveation's lineage and rationale, and the compact
 VLAs. Everything that could be compressed without losing an argument already
-has been. (An earlier note in this file said 586 and then 589. Both were
-miscounts of mine; 614 is what two independent formulas and three commits
-agree on, and `check_reading_copies.py` now asserts it.)
+has been. (Earlier notes here said 586, then 589, then 614. The first two were
+miscounts; 614 counts citation markers as tokens and 616 is the prose count
+used for the comparison above. `check_reading_copies.py` asserts the header
+figure so it cannot drift again.)
 
 If a real compile says it must shrink, the two candidates and their costs:
 

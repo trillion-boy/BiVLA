@@ -5,16 +5,49 @@ self-check is §5.*
 
 ---
 
+## 0. Correction, 2026-08-22 — the 429 was wrong, and it was the benchmark
+
+This file said *Bag of Tricks*' Related Work is **429 words**, with paragraphs
+of 156 / 99 / 114, and said it was measured from the PDF. It is not
+reproducible. The section runs from the "2 Related Work" heading to
+"3 Preliminares", it opens on its roadmap sentence and closes on "Unique to
+this paper, we are the first to…", and measured between those two points it is:
+
+| basis | words |
+|---|---|
+| prose only, citations removed | **350** |
+| as rendered, citation markers counted | 359 |
+
+The earlier count almost certainly came from a truncated span. A regex looking
+for the next section matched a fragment of a table caption partway through
+paragraph 1, and PDF extraction had also interleaved Figure 1's internal text
+into that paragraph, so the section boundaries were wrong in both directions.
+
+**This matters because 429 was the number every length decision in this project
+was measured against.** On the honest basis the comparison is:
+
+| section | *Bag of Tricks* (prose) | ours (prose) | ratio |
+|---|---:|---:|---:|
+| Introduction | 688 | 857 | 1.25x |
+| Related Work | 350 | 616 | **1.76x** |
+
+So Related Work is not 43% longer than the model paper, as this file implied.
+It is **76% longer**. That is still not a defect on its own, since the page
+budget rests on an unverified words-per-column estimate and only a real compile
+settles it, but the comparison should be stated correctly wherever it appears.
+
+---
+
 ## 1. What their Related Work actually is
 
 Measured from the paper:
 
 | | |
 |---|---|
-| total length | **429 words** |
+| total length | **350 words of prose**, 359 as rendered with its citation markers. See the correction box below |
 | structure | one roadmap sentence + **three** paragraphs + one closing sentence |
 | paragraph headings | bold run-in, no numbering: *Reasoning with LLMs.* / *Inference-Time Computation of LLM Reasoning.* / *Benchmarks of LLM Reasoning.* |
-| paragraph lengths | 156 / 99 / 114 words |
+| paragraph lengths | **125 / 80 / 85 words** of prose |
 | closing | 39 words, starting *"Unique to this paper, we are the first to…"* |
 | **tables inside Related Work** | **none** — Table 1 sits in the Introduction, before this section |
 | taxonomy | given as *"1) Prompt engineering – … 2) Post-training techniques – … 3) Search-based methods – …"* **inside a paragraph**, not as a list |

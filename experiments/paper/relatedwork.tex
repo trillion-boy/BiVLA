@@ -1,8 +1,11 @@
 % ---------------------------------------------------------------------------
-% Related Work -- ICRA form, modelled on Bag of Tricks (429 words, three
-% bold run-in paragraphs, no tables, each paragraph ending on our position).
+% Related Work -- ICRA form, modelled on Bag of Tricks (350 words of prose,
+% three bold run-in paragraphs, no tables, each paragraph ending on our
+% position).
 %
-% 614 rendered words. The 450--560 "target" is an estimate, not a measurement
+% 616 words of prose, against 350 for the Bag of Tricks section it copies
+% (see RelatedWork_Plan.md 0; the 429 this project used was a miscount).
+% The 450--560 "target" is an estimate, not a measurement
 % (see RelatedWork_Plan.md 5), so do not cut against it. Compile one real
 % column first. If that says the section overruns, RelatedWork.md lists the
 % two candidates and what each costs.
@@ -42,7 +45,8 @@ Gromov et al.\ remove a contiguous block of the deepest layers and find the
 final layer must be kept~\cite{gromov}. EfficientVLA carries the unconstrained
 form into VLAs without training~\cite{efficientvla}, and MoLe-VLA needs a
 learned router and distillation~\cite{molevla}, placing it outside what we
-test. Which rule holds for a policy is open, and our depth results turn on it.
+test. The two rules have not been compared on a robot policy, and our depth
+results turn on which one holds.
 Notably, the newest compact VLAs build such reductions in by design rather
 than applying them at inference~\cite{flower, smolvla, turbovla}, which makes
 whether a reduction transfers a question about architecture and not only about

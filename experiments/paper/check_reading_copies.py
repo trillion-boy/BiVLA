@@ -61,8 +61,8 @@ def measure(tex: str) -> int:
     """Rendered word count, same formula used throughout the paper notes."""
     t = re.sub(r"(?m)^%.*$", "", tex)
     t = re.sub(r"\\section\{[^}]*\}", "", t)
-    t = re.sub(r"\\cite\{[^}]*\}", "X", t)
-    t = re.sub(r"\\ref\{[^}]*\}", "X", t)
+    t = re.sub(r"\\cite\{[^}]*\}", " ", t)
+    t = re.sub(r"\\ref\{[^}]*\}", " ", t)
     t = re.sub(r"\\(textbf|emph|texttt)\{([^}]*)\}", r"\2", t)
     t = t.replace("~", " ").replace("\\%", "%").replace("$\\times$", "x")
     return len(t.split())
@@ -101,7 +101,7 @@ def main() -> int:
 
         # the .md header should quote the current word count
         wc = measure(tex_path.read_text())
-        claimed = re.findall(r"(\d{3}) rendered words", md_raw)
+        claimed = re.findall(r"(\d{3}) words of prose", md_raw)
         if claimed and abs(int(claimed[0]) - wc) > 5:
             failures.append(
                 f"{md_name} says {claimed[0]} rendered words, {tex_name} measures ~{wc}"
