@@ -2,69 +2,72 @@
 % Related Work -- ICRA form, modelled on Bag of Tricks (429 words, three
 % bold run-in paragraphs, no tables, each paragraph ending on our position).
 %
-% 602 rendered words. The 450--560 "target" is an estimate, not a measurement
-% (see RelatedWork_Plan.md 5) -- do not cut against it. Compile one real
-% column first; if that says the section overruns, RelatedWork.md lists the
+% ~586 rendered words. The 450--560 "target" is an estimate, not a measurement
+% (see RelatedWork_Plan.md 5), so do not cut against it. Compile one real
+% column first. If that says the section overruns, RelatedWork.md lists the
 % two candidates and what each costs.
+%
+% Punctuation matches introduction.tex. No em-dashes, no semicolons, no prose
+% colons. See the note at the head of that file for what was measured.
+%
 % Reading copy: paper/RelatedWork.md
 % Provenance for every factual claim: paper/RelatedWork_Sources.md
 % ---------------------------------------------------------------------------
 
 \section{Related Work}
 
-We cover three strands: the cost of VLA inference, the training-free
+We cover three strands, namely the cost of VLA inference, the training-free
 interventions we re-measure, and how such interventions are evaluated.
 
 \textbf{Inference cost in VLA policies.}
 VLA policies adapt pretrained vision-language models to output robot actions,
-inheriting their size and latency; the resulting efficiency literature already
-has surveys of its own~\cite{effvlasurvey2}. We divide it by the resource each
-method spends, recovering a recent survey's categories of dynamic computation,
-perception and action generation~\cite{effvlasurvey1}:
-1)~\emph{when the policy runs} --- executing a predicted chunk over several
+inheriting their size and latency, and the resulting efficiency literature
+already has surveys of its own~\cite{effvlasurvey2}. We divide it by the
+resource each method spends, which recovers a recent survey's categories of
+dynamic computation, perception and action generation~\cite{effvlasurvey1}.
+1)~\emph{When the policy runs}. A predicted chunk is executed over several
 control steps, a lineage running from frame skip in RL to parallel
-decoding~\cite{dqn, act, diffusionpolicy, openvlaoft};
-2)~\emph{what it is shown} --- reducing or reweighting visual tokens;
-3)~\emph{how much network each call uses} --- skipping decoder layers. We
-treat these as axes rather than competing methods: a claim about efficiency is
-a claim about one of these resources being spent differently.
+decoding~\cite{dqn, act, diffusionpolicy, openvlaoft}.
+2)~\emph{What it is shown}. Visual tokens are reduced or reweighted.
+3)~\emph{How much network each call uses}. Decoder layers are skipped.
+We treat these as axes rather than competing methods, because a claim about
+efficiency is a claim about one of these resources being spent differently.
 
 \textbf{The interventions we re-measure.}
 Layer redundancy in language models is well established, but its two recipes
 disagree on which layers may go. ShortGPT ranks every layer by Block Influence
-and constrains nothing~\cite{shortgpt} --- the criterion we adopt --- while
+and constrains nothing~\cite{shortgpt}, which is the criterion we adopt, while
 Gromov et al.\ remove a contiguous block of the deepest layers and find the
 final layer must be kept~\cite{gromov}. EfficientVLA carries the unconstrained
-form into VLAs without training~\cite{efficientvla}; MoLe-VLA needs a learned
-router and distillation~\cite{molevla}, placing it outside what we test. Which
-rule holds for a policy is open, and our depth results turn on it.
+form into VLAs without training~\cite{efficientvla}, and MoLe-VLA needs a
+learned router and distillation~\cite{molevla}, placing it outside what we
+test. Which rule holds for a policy is open, and our depth results turn on it.
 On the visual axis, methods developed for VLMs~\cite{fastv, sparsevlm, tome}
-have been reported to transfer poorly to
-VLAs: VLA-Cache attributes this to their short action sequences and measures
-FastV leaving FLOPs unchanged while latency rises~\cite{vlacache}, and
-VLA-Pruner reproduces the degradation on a third setting~\cite{vlapruner}. Our
-own visual intervention, foveation, comes from
-the other direction: Schwartz's log-polar mapping~\cite{schwartz}, taken up in
-robot vision to cut data while preserving central resolution~\cite{traver} and
-applied to VLAs by gaze-conditioned policies~\cite{gazereg, lookfocusact}. We
-include it because it edits the
+have been reported to transfer poorly to VLAs. VLA-Cache attributes this to
+their short action sequences and measures FastV leaving FLOPs unchanged while
+latency rises~\cite{vlacache}, and VLA-Pruner reproduces the degradation on a
+third setting~\cite{vlapruner}. Our own visual intervention, foveation, comes
+from the other direction. It descends from Schwartz's log-polar
+mapping~\cite{schwartz}, taken up in robot vision to cut data while preserving
+central resolution~\cite{traver} and applied to VLAs by gaze-conditioned
+policies~\cite{gazereg, lookfocusact}. We include it because it edits the
 observation \emph{before} the encoder, which is what makes it comparable across
-backbones: however the encoders differ, each splits the image into a
+backbones. However the encoders differ, each splits the image into a
 \emph{uniform} grid, so empty background gets the same budget as the region
-where the gripper meets the object. Notably, the newest compact VLAs
-build such reductions in by design rather than applying them at
+where the gripper meets the object. Notably, the newest compact VLAs build such
+reductions in by design rather than applying them at
 inference~\cite{flower, smolvla, turbovla}, which makes whether a reduction
 transfers a question about architecture and not only about a switch.
 
 \textbf{How these claims are evaluated.}
-Results are reported on SimplerEnv~\cite{simplerenv} and
-LIBERO~\cite{libero}, and recent work addresses the infrastructure: vla-eval
-unifies fourteen benchmarks and documents previously undocumented evaluation
+Results are reported on SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero},
+and recent work addresses the infrastructure around them. vla-eval unifies
+fourteen benchmarks and documents previously undocumented evaluation
 pitfalls~\cite{vlaeval}, and StarVLA describes the field as fragmented across
 incompatible codebases and protocols~\cite{starvla}. What infrastructure cannot
 supply is the comparison itself. Papers using several backbones change the
-benchmark at the same time~\cite{vlacache, specprune, vlaiap}, and those with
-both axes present leave the crossing cell empty~\cite{gazereg, vlapruner}; the
+benchmark at the same time~\cite{vlacache, specprune, vlaiap}, those with both
+axes present leave the crossing cell empty~\cite{gazereg, vlapruner}, and the
 tables we cite report mean success rates over independent runs, without
 matched-episode outcomes. So whether an intervention keeps its \emph{direction}
 when the backbone or the benchmark changes cannot be read off these tables, nor
@@ -75,5 +78,5 @@ spend resources our axes do not. Measuring the settings papers leave to their
 source code is an established form~\cite{bagoftricks_cnn, bagoftricks_llm}.
 Unique to this paper, we measure the same interventions over a complete
 backbone $\times$ benchmark grid and test each on matched episodes rather than
-aggregate rates, so that the direction of an effect --- not only its size ---
-is something the evidence can decide.
+aggregate rates, so that the direction of an effect, and not only its size, is
+something the evidence can decide.

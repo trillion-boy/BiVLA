@@ -1,9 +1,15 @@
 % ---------------------------------------------------------------------------
 % Introduction -- ICRA form (IEEEtran, two-column, 6 pages + 2 of references)
 %
-% ~815 body words, about 3/4 of a column, plus Fig. 1 (teaser) and a pointer
+% ~830 body words, about 3/4 of a column, plus Fig. 1 (teaser) and a pointer
 % to Table I. Every number here is reproduced by experiments/verify_all.py.
 % Reading copy: experiments/paper/Introduction.md
+%
+% Punctuation: no em-dashes, no semicolons, no prose colons. Measured against
+% 23 papers we hold: prose semicolons run at a median of 1.0 per 1000 words
+% and 11 of the 23 use none, so zero is normal. Colons are NOT rare (median
+% 5.2 per 1000, only 2 of 23 use none) -- dropping them is a house choice, not
+% a convention. Restoring three or four would be unremarkable.
 %
 % Citation keys and \label targets are placeholders -- replace with the .bib
 % keys and the real section labels.
@@ -14,19 +20,19 @@
 Running a vision-language-action (VLA) policy is expensive. In our own runs a
 single forward pass took UniVLA~\cite{univla} $2.80$~s and
 SpatialVLA~\cite{spatialvla} $0.90$~s.\footnote{Model time only, averaged over
-96 baseline episodes on WidowX-Bridge, on Colab T4/L4-class hardware. A scale
-rather than a benchmark: our files do not record which card each run used
-(Sec.~\ref{sec:limitations}). Published figures agree on the scale, with
-OpenVLA-OFT reporting autoregressive OpenVLA at $3$--$5$~Hz against the
+96 baseline episodes on WidowX-Bridge, on Colab T4/L4-class hardware. This is a
+scale rather than a benchmark, since our files do not record which card each
+run used (Sec.~\ref{sec:limitations}). Published figures agree on the scale.
+OpenVLA-OFT reports autoregressive OpenVLA at $3$--$5$~Hz against the
 $25$--$50$~Hz its control tasks want~\cite{openvlaoft}.} A literature has grown
-up around fixing this without retraining: leave the checkpoint alone and make
-inference cheaper by skipping decoder layers, pruning or caching visual tokens,
-or holding one predicted action across several control
-steps~\cite{efficientvla, vlacache, fastv, shortgpt}. Layer skipping has also
-been pursued \emph{with} training~\cite{molevla}, which is outside what we
-test.
+up around fixing this without retraining. The idea is to leave the checkpoint
+alone and make inference cheaper by skipping decoder layers, by pruning or
+caching visual tokens, or by holding one predicted action across several
+control steps~\cite{efficientvla, vlacache, fastv, shortgpt}. Layer skipping
+has also been pursued \emph{with} training~\cite{molevla}, which is outside
+what we test.
 
-Such papers converge on one form of claim: \emph{applying method $M$ to
+Such papers converge on one form of claim. \emph{Applying method $M$ to
 backbone $A$ on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$
 points, so $M$ is efficient.} That last step holds only if the effect belongs
 to the method rather than to the single configuration it was measured in. The
@@ -35,18 +41,18 @@ premise is what we test, not any individual method.
 We re-measured three interventions under one protocol, on three open backbones
 (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla}, UniVLA~\cite{univla})
 and two SimplerEnv~\cite{simplerenv} suites (WidowX-Bridge, Google
-Robot/Fractal). We chose them because each spends a different resource:
-\emph{action repeat} changes how often the policy runs, \emph{foveation}
-changes what it is shown, and \emph{depth pruning} changes how much of the
-network each call uses. Five of the six cells are filled, since UniVLA releases
-a Bridge-only checkpoint, and each carries eight conditions, for $7{,}198$
-episodes in all (Fig.~\ref{fig:grid}). Every condition replays the initial
-states of its cell's baseline; we count only the episodes whose outcome
-flipped, and test those with McNemar's exact test. Because the simulator is
-deterministic and the initial states are shared, the resulting $p$-values cover
-the sampling of episodes rather than that plus run-to-run drift.
+Robot/Fractal). We chose them because each spends a different resource. Action
+repeat changes how often the policy runs, foveation changes what it is shown,
+and depth pruning changes how much of the network each call uses. Five of the
+six cells are filled, since UniVLA releases a Bridge-only checkpoint, and each
+carries eight conditions, for $7{,}198$ episodes in all (Fig.~\ref{fig:grid}).
+Every condition replays the initial states of its cell's baseline. We count
+only the episodes whose outcome flipped, and test those with McNemar's exact
+test. Because the simulator is deterministic and the initial states are
+shared, the resulting $p$-values cover the sampling of episodes rather than
+that plus run-to-run drift.
 
-Three results follow, and each has the same shape: what a reported number was
+Three results follow, and each has the same shape. What a reported number was
 credited to is not what moved it.
 
 \textbf{A choice the specifications leave open moves a result by 45.9 points.}
@@ -54,7 +60,7 @@ Inside one cell we held the backbone, the benchmark, the method, the number of
 layers removed (four) and the compute saved ($-11\%$) fixed, and varied only
 which layers were \emph{eligible} for removal. Success went from $+15.6$ to
 $-30.4$ against the same baseline. The ranking criterion never changed. The
-candidate window did, and the literature does not agree on how to set it: the
+candidate window did, and the literature does not agree on how to set it. The
 methods we re-measure rank every layer and constrain
 nothing~\cite{shortgpt, efficientvla}, while a competing prescription removes a
 contiguous block and reports that the final layer must be kept~\cite{gromov}.
@@ -64,49 +70,50 @@ property of the configuration.
 
 \textbf{A gain attributed to compression does not come from compression.}
 Sweeping how much of the observation foveation keeps, the best setting discards
-nothing: $+30.2$ points at $100\%$, against $+18.8$ at $20\%$ and $+4.2$ at
-$10\%$. Measured compute moved between
-$-3.1\%$ and $+2.7\%$, because neither the image size nor the token count
-changes. The gain is reproducible and tracks the log-polar round trip, but it
-is an input transformation and not an efficiency technique.
+nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$
+at $10\%$. Measured compute moved between $-3.1\%$ and $+2.7\%$, because
+neither the image size nor the token count changes. The gain is reproducible
+and tracks the log-polar round trip, but it is an input transformation and not
+an efficiency technique.
 
 \textbf{In our grid the backbone matters more than the benchmark.} One
-benchmark-axis comparison survives correction; six backbone-axis comparisons
-do, five of them at $p < 10^{-4}$. On the same $135$ Fractal episodes under the
-same intervention, OpenVLA gains $+15.6$ while SpatialVLA loses $-17.8$, each
-significant on its own ($p = 4.3 \times 10^{-7}$). The same split is already
-sitting in published tables: \texttt{pick coke can} holds up better than
-\texttt{move near} in fourteen of the fifteen configurations printed in two
-comparison tables~\cite{efficientvla, vlapruner}, spanning four method
+benchmark-axis comparison survives correction, while six backbone-axis
+comparisons do, five of them at $p < 10^{-4}$. On the same $135$ Fractal
+episodes under the same intervention, OpenVLA gains $+15.6$ while SpatialVLA
+loses $-17.8$, each significant on its own ($p = 4.3 \times 10^{-7}$). The same
+split is already sitting in published tables. The task \texttt{pick coke can}
+holds up better than \texttt{move near} in fourteen of the fifteen
+configurations printed in two comparison
+tables~\cite{efficientvla, vlapruner}, spanning four method
 families.\footnote{Twelve rows from~\cite{efficientvla} and three
 from~\cite{vlapruner}. We exclude the first table's two random-dropping rows,
 which are a control rather than a proposed method and which break the pattern.
-Three of the four families are independent sources here; the FastV rows are
+Three of the four families are independent sources here. The FastV rows are
 comparisons run by others, not results FastV reports itself.} The exception is
 the one method built to preserve action-relevant tokens~\cite{vlapruner}, which
 is what its own mechanism predicts. Those tables do print the per-task numbers.
 What none of them does is discuss the split.
 
 \textbf{Contributions.}
-\textbf{1)~A uniform re-measurement} of three training-free VLA interventions
-over a $3 \times 2$ backbone-benchmark grid: five filled cells, eight
-conditions each, $7{,}198$ episodes, with per-episode records released.
+\textbf{1)~A uniform re-measurement.} Three training-free VLA interventions
+over a $3 \times 2$ backbone-benchmark grid, with five filled cells, eight
+conditions each, $7{,}198$ episodes, and per-episode records released.
 \textbf{2)~Evidence that reported effects are often properties of the
-configuration}: an eligibility choice the specifications leave open moves one
+configuration.} An eligibility choice the specifications leave open moves one
 result by $45.9$ points, and one intervention reverses sign across backbones
 with both directions individually significant.
-\textbf{3)~Evidence that compute saved does not predict success change}: the
+\textbf{3)~Evidence that compute saved does not predict success change.} The
 intervention with the largest effect in our grid saves almost none of it, and
 helps most when it discards nothing.
 \textbf{4)~A measurement procedure} for this class of claim, comprising
 episode-level pairing, an explicit determinism check and a grid uniformity
-rule, together with Table~\ref{tab:reporting}: every method listed there sweeps
+rule, together with Table~\ref{tab:reporting}. Every method listed there sweeps
 its own configuration, and none publishes episode-level outcomes or tests a
 difference for significance.
 
 We propose no new efficiency method, and we do not claim that these
 interventions fail in general. Our baselines match published numbers in four of
 the five cells and fall $4.2$ points short in the fifth, a gap we could not
-trace to a setup error. The claim is narrower: as results are reported now, the
-evidence does not separate a property of the method from a property of the
-configuration it was measured in.
+trace to a setup error. The claim is narrower than that. As results are
+reported now, the evidence does not separate a property of the method from a
+property of the configuration it was measured in.

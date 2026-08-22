@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex` — citations spelled out, same content.
-602 rendered words in the LaTeX; *Bag of Tricks*' Related Work is 429.
+586 rendered words in the LaTeX; *Bag of Tricks*' Related Work is 429.
 Provenance for every claim: `RelatedWork_Sources.md`.*
 
 ---
@@ -92,7 +92,17 @@ three bold run-in paragraphs, each ending on our position rather than on a
 summary, and a closing "Unique to this paper" sentence. No tables — theirs is
 in the Introduction, and so is ours.
 
-**Length — 602 words, and not currently a problem.** The 450–560 figure came
+**Punctuation.** Both `.tex` files use no em-dashes, no semicolons and no
+prose colons. That was measured against the 23 papers we hold: prose semicolons
+run at a median of **1.0 per 1000 words** and **11 of 23 use none**, so zero is
+normal. Colons are a different story — median **5.2 per 1000**, and only 2 of
+23 use none — so dropping them is a house choice rather than a convention, and
+restoring three or four would be unremarkable. (First count was wrong: it
+included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
+2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
+none of those.)
+
+**Length — 586 words, and not currently a problem.** The 450–560 figure came
 from `RelatedWork_Plan.md` §5, which states plainly that it rests on an
 *unverified* rule of thumb (≈500–550 words per IEEEtran column). **Do not cut
 against an estimate.** Compile one real column; only if that overruns does any
@@ -102,7 +112,7 @@ Paragraph 2 is 260 words against *Bag of Tricks*' 99 for the equivalent
 paragraph, because it carries four topics: the layer-rule disagreement, the
 VLM→VLA transfer failure, foveation's lineage and rationale, and the compact
 VLAs. Everything that could be compressed without losing an argument already
-has been (646 → 602).
+has been (646 → 586).
 
 If a real compile says it must shrink, the two candidates and their costs:
 
