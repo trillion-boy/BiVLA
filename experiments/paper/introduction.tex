@@ -106,11 +106,11 @@ compute saved does not predict success change.} The intervention behind our
 largest gain saves almost no compute and helps most when it discards nothing,
 while the one whose compute saving barely moves swings success from a gain to
 a loss. \textbf{4)~A measurement procedure} for this class of claim. We match
-episodes, check determinism explicitly, and require every cell to run the same
-conditions. Of the five training-free methods we survey~\cite{efficientvla,
-vlacache, fastv, shortgpt, vlapruner}, every one sweeps its own configuration
-and none publishes per-episode outcomes or tests a difference for
-significance.
+episodes, check determinism explicitly, and hold the condition set fixed
+across the cells we compare. Of the five training-free methods we
+survey~\cite{efficientvla, vlacache, fastv, shortgpt, vlapruner}, every one
+sweeps its own configuration and none publishes per-episode outcomes or tests
+a difference for significance.
 
 We propose no new efficiency method, and we do not claim that these
 interventions fail in general. We measure every change against its own cell's
