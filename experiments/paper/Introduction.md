@@ -171,9 +171,10 @@ tokeniser cause from a training-distribution one.)*
 
 This is not only visible in our grid. Splitting the Google Robot results that
 prior work already prints, `pick coke can` holds up better than `move near` in
-**fourteen of fifteen configurations** reported across four author groups
-(EfficientVLA, VLA-Cache, FastV, VLA-Pruner). Where a capacity ladder exists,
-the direction is monotone in eight of them.
+**fourteen of fifteen configurations** spanning four method families
+(EfficientVLA, VLA-Cache, FastV, VLA-Pruner) in two independently authored
+tables. Where a capacity ladder exists, the direction is monotone in eight of
+them.
 
 **The one exception is informative rather than damaging.** It is VLA-Pruner —
 the single method in the set designed specifically to stop pruning
@@ -190,12 +191,15 @@ that hides the split. Do not write "they report only the average" — it is fals
 and a reviewer with the PDF will catch it.
 
 *(Stated precisely: fifteen configurations printed in **two** tables —
-twelve in EfficientVLA's, three in VLA-Pruner's — spanning four method
-families, of which only **three** are independent sources. FastV never reports
-SimplerEnv itself; its rows in both tables are comparisons run by others. Do
-not write "four author groups." Two random-dropping rows are excluded from the
-twelve as a control rather than a proposed method, and that exclusion has to be
-disclosed wherever the count appears.)*
+twelve in EfficientVLA's Table 2, six in each of its two blocks, and three in
+VLA-Pruner's Table 2 — spanning four method families, of which only **two**
+are their own authors' results. Both FastV and VLA-Cache appear in both tables
+as comparisons run by others, neither having reported SimplerEnv itself. Do
+not write "four author groups," and do not write "three independent sources"
+either, which is a correction made on 2026-08-22 after reading VLA-Pruner's
+Table 2. Two random-dropping rows are excluded from the twelve as a control
+rather than a proposed method, and that exclusion has to be disclosed wherever
+the count appears. Every row's arithmetic is in `PerTaskRows.md`.)*
 
 ---
 

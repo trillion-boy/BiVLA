@@ -83,21 +83,63 @@ and discount the claim themselves.
 
 ## 3. The other three rows, and the one exception
 
-Three rows come from **VLA-Pruner**, giving fifteen rows and four method
-families. Fourteen of the fifteen hold, so the single exception is in these
-three.
+**VLA-Pruner, Table 2**, at a 75\% token pruning ratio, against `OpenVLA` at
+the head of the table. This table prints a preservation ratio next to each
+rate, so the comparison can be read straight off it.
 
-The Introduction attributes it to the one method built to preserve
-action-relevant tokens, which is what VLA-Pruner's own dual-level mechanism
-predicts, and `TableI_Cells.md` records that mechanism from the paper.
+| row | Move Near | Pick Coke Can | margin | holds |
+|---|---:|---:|---:|:-:|
+| FastV | 71.7% | 79.4% | +7.7 | ✓ |
+| VLA-Cache | 76.3% | 76.9% | +0.6 | ✓ |
+| VLA-Pruner | 97.0% | 94.9% | −2.1 | ✗ |
 
-⚠️ **These three rows are not re-derived here.** They were checked against the
-PDF when the sentence was written, but the flattened text used for that check
-lived in a session scratchpad and is gone, and the PDF is not in the
-repository. The twelve rows in §1 are re-derived above from the table itself.
-**Before submission, re-open VLA-Pruner's Table 2 and confirm the three rows
-and the identity of the exception.** It is the one number in this footnote
-that rests on a note rather than on arithmetic anyone can repeat.
+Raw points give the same verdict. Against `OpenVLA` at Move Near $54.0$ and
+Pick Coke Can $52.8$, FastV drops $-15.3$ against $-10.9$, VLA-Cache $-12.8$
+against $-12.2$, and VLA-Pruner $-1.6$ against $-1.7$.
+
+**The exception is VLA-Pruner itself**, which is what the Introduction says
+and what its own dual-level mechanism predicts, since it is built to keep
+action-relevant tokens.
+
+**12 + 2 = 14 of 15. The sentence is confirmed.**
+
+### The soft spot, which the sentence does not hide but does not surface either
+
+The margins are not uniform, and the two smallest are in this table.
+
+| source | rows | margin range |
+|---|---:|---|
+| EfficientVLA Table 2 | 12 | $+2.4$ to $+8.7$ |
+| VLA-Pruner Table 2 | 3 | $+7.7$, $+0.6$, $-2.1$ |
+
+So thirteen rows carry a clear margin, and two are close enough to a tie that
+a reviewer could call them one. Both of those sit in the same table, and there
+is a coherent reason. At 75\% retention VLA-Pruner preserves $96.8\%$ of
+overall performance, so those rows barely degrade at all, and a row that does
+not degrade cannot show how degradation splits across tasks.
+
+That reason is real, but turning it into an exclusion rule would add a second
+filter to a footnote that already has one, which is worse than living with the
+margins. *"Fourteen of the fifteen"* is accurate as written. If a reviewer
+raises it, the answer is this table.
+
+### A correction to the footnote, found while checking these rows
+
+The footnote used to say *"three of the four families are independent
+sources, since the FastV rows are reproductions run by others."* That is
+wrong. VLA-Cache is a reproduction in both tables exactly as FastV is.
+
+| family | appears in | its own authors' results |
+|---|---|:-:|
+| EfficientVLA | EfficientVLA Table 2 | ✓ |
+| VLA-Pruner | VLA-Pruner Table 2 | ✓ |
+| FastV | both | ✗ |
+| VLA-Cache | both | ✗ |
+
+Two of four, not three. The defensible claim is the one the footnote now
+makes, that the fifteen rows come from **two independently authored tables**
+and span **four method families**, and that neither paper remarks on the
+split.
 
 ---
 

@@ -50,13 +50,22 @@ what the mechanism predicts.
 
 The claim should become:
 
-> Across fifteen published configurations from four author groups, `pick coke
-> can` holds up better than `move near` in fourteen. The single exception is
-> the one method explicitly designed to preserve action-relevant tokens.
+> Across fifteen published configurations spanning four method families,
+> `pick coke can` holds up better than `move near` in fourteen. The single
+> exception is the one method explicitly designed to preserve action-relevant
+> tokens.
 
 That is stronger than 12/12, because it now has a mechanism attached rather
 than just a count. **The Introduction and Related Work both currently say
 "twelve" and must be updated.**
+
+⚠️ **Corrected 2026-08-22.** This block said *"from four author groups."* There
+are **two** author groups, not four. The fifteen rows come from two tables,
+EfficientVLA's and VLA-Pruner's, and both the FastV and the VLA-Cache rows in
+them are reproductions rather than results those papers report themselves. An
+intermediate correction that said *"three independent sources"* was also
+wrong, catching FastV but not VLA-Cache. Row-by-row arithmetic, and the
+margins, are in `PerTaskRows.md`.
 
 ---
 
