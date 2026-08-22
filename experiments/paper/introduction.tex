@@ -1,8 +1,17 @@
 % ---------------------------------------------------------------------------
 % Introduction -- ICRA form (IEEEtran, two-column, 6 pages + 2 of references)
 %
-% to Table I. Every number here is reproduced by experiments/verify_all.py.
+% Every number here is reproduced by experiments/verify_all.py, and every cell
+% of Fig. 1 by experiments/make_grid_figure.py.
 % Reading copy: experiments/paper/Introduction.md
+%
+% NO FOOTNOTES, deliberately. Of the 21 comparable papers in our reading set,
+% 0 use a footnote in the Introduction. Two earlier drafts had one each, and
+% both grew every time a reader asked what a number meant, which is the signal
+% that the material belonged in a later section. The qualifiers that had to
+% survive are inline; the GPU assignment moved to Setup; the row-by-row
+% provenance for the per-task claim lives in paper/PerTaskRows.md and in the
+% per-episode records we release, not in the paper.
 %
 % Punctuation: no em-dashes, no semicolons, no prose colons. Measured against
 % 23 papers we hold: prose semicolons run at a median of 1.0 per 1000 words
@@ -17,20 +26,17 @@
 \section{Introduction}
 
 Vision-language-action (VLA) policies are becoming capable of general-purpose
-robotic control, and running one is expensive. In our own runs a
-single forward pass took UniVLA~\cite{univla} $2.81$~s and
-SpatialVLA~\cite{spatialvla} $0.90$~s.\footnote{Model time only, averaged over
-96 baseline episodes on WidowX-Bridge. Each backbone ran on the Colab GPU its
-weights fit, an L4 for UniVLA and T4s for the other two, so the gap is the
-model's rather than the hardware's (Sec.~\ref{sec:setup}). Published figures
-agree on the scale, with OpenVLA-OFT reporting autoregressive OpenVLA at $3$
-to $5$~Hz against the $25$ to $50$~Hz its control tasks
-want~\cite{openvlaoft}.} A literature has grown up around fixing this without
-retraining. The idea is to leave the checkpoint alone and make inference
-cheaper by skipping decoder layers, by pruning or caching visual tokens, or by
-holding one predicted action across several control steps~\cite{efficientvla,
-vlacache, fastv, shortgpt}. Layer skipping has also been pursued \emph{with}
-training~\cite{molevla}, which is outside what we test.
+robotic control, and running one is expensive. Averaged over 96 baseline
+episodes of our own, a single forward pass of model time took
+UniVLA~\cite{univla} $2.81$~s and SpatialVLA~\cite{spatialvla} $0.90$~s, and
+OpenVLA-OFT reports autoregressive OpenVLA at $3$ to $5$~Hz against the $25$
+to $50$~Hz its control tasks want~\cite{openvlaoft}. A literature has grown up
+around fixing this without retraining. The idea is to leave the checkpoint
+alone and make inference cheaper by skipping decoder layers, by pruning or
+caching visual tokens, or by holding one predicted action across several
+control steps~\cite{efficientvla, vlacache, fastv, shortgpt}. Layer skipping
+has also been pursued \emph{with} training~\cite{molevla}, which is outside
+what we test.
 
 Such papers converge on one form of claim. \emph{Applying method $M$ to
 backbone $A$ on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$
@@ -45,11 +51,10 @@ Robot/Fractal). We chose them because each spends a different resource. Action
 repetition changes how often the policy runs, visual foveation (a log-polar
 warp and its inverse) changes what it is shown, and network depth pruning
 changes how much of the model each call uses. Five of the six cells are
-filled, since UniVLA releases a Bridge-only checkpoint, and each carries
-eight conditions, for
-$7{,}198$ episodes in all (Fig.~\ref{fig:grid}). Every condition replays the
-initial states of its cell's baseline. We count only the episodes whose
-outcome flipped, and test those with McNemar's exact test.
+filled, since UniVLA releases a Bridge-only checkpoint, and each carries eight
+conditions, for $7{,}198$ episodes in all (Fig.~\ref{fig:grid}). Every
+condition replays the initial states of its cell's baseline. We count only the
+episodes whose outcome flipped, and test those with McNemar's exact test.
 
 Three results follow, and each has the same shape. What a reported number was
 credited to is not what moved it.
@@ -80,21 +85,10 @@ transformation and not an efficiency technique.
 benchmark-axis comparison survives correction. Six backbone-axis comparisons
 do. On the same $135$ Fractal episodes under the same intervention, OpenVLA
 gains $+15.6$ while SpatialVLA loses $-17.8$, each surviving correction on its
-own and differing from the other. The same split is already sitting in
-published tables. The task \texttt{pick coke can} holds up better than
-\texttt{move near} in fourteen of the fifteen configurations printed in two
-comparison tables~\cite{efficientvla, vlapruner}, spanning four method
-families.\footnote{Twelve intervention rows from Table~2
-of~\cite{efficientvla}, six in each of its two blocks and each read against
-the unmodified backbone at the head of its block, together with three rows
-from Table~2 of~\cite{vlapruner}. We exclude the first table's two
-random-dropping rows, which it defines as a control rather than a proposed
-method and which break the pattern. The two tables come from different author
-groups, and the FastV and VLA-Cache rows in both are reproductions rather than
-results those papers report themselves.} The exception is
-the one method built to preserve action-relevant tokens~\cite{vlapruner},
-which is what its own mechanism predicts. Those tables do print the per-task
-numbers. What none of them does is discuss the split.
+own and differing from the other. The split runs deeper than the cell average.
+\texttt{pick coke can} degrades less than \texttt{move near} under almost
+every intervention we ran, and published SimplerEnv comparisons print the same
+per-task difference without discussing it~\cite{efficientvla, vlapruner}.
 
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} Three
 training-free VLA interventions over a $3 \times 2$ backbone-benchmark grid,

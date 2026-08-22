@@ -1,3 +1,34 @@
+# The per-task split, and the fifteen published rows that show it too
+
+> **Status, 2026-08-22.** The Introduction no longer carries the count or the
+> footnote. It now says only that `pick coke can` degrades less than `move
+> near` under almost every intervention we ran, and that published SimplerEnv
+> comparisons print the same difference without discussing it. The reason is
+> in `introduction.tex`'s header: a claim that needs five lines of disclosure
+> to be honest is not an Introduction claim. This file is where the
+> disclosure lives instead, and the count belongs in Results if it is used at
+> all.
+>
+> **Our own grid supports the sentence on its own.** Paired per-task deltas on
+> the 135 Fractal episodes, computed through the same `paired()` the report
+> uses:
+>
+> | backbone | condition | `pick coke can` | `move near` |
+> |---|---|---:|---:|
+> | OpenVLA | depth pruning 4 | $+21.3$ | $+8.3$ |
+> | OpenVLA | foveation log-polar | $-1.3$ | $-41.7$ |
+> | OpenVLA | action repetition 2 | $+9.3$ | $0.0$ |
+> | OpenVLA | action repetition 4 | $+5.3$ | $-10.0$ |
+> | SpatialVLA | depth pruning 4 | $-6.7$ | $-31.7$ |
+> | SpatialVLA | foveation log-polar | $+1.3$ | $0.0$ |
+> | SpatialVLA | action repetition 2 | $+1.3$ | $-1.7$ |
+> | SpatialVLA | action repetition 4 | $-41.3$ | $-38.3$ |
+>
+> Seven of eight, and the exception is the condition that destroys both tasks.
+> That is what *"almost every intervention we ran"* rests on.
+
+---
+
 # The fifteen rows behind "fourteen of the fifteen configurations"
 
 Written 2026-08-22 because the footnote said *"twelve rows
