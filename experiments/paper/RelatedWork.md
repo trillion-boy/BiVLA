@@ -1,76 +1,79 @@
 # Related Work
 
-*Reading draft of `relatedwork.tex` — citations spelled out, same content.
-586 rendered words in the LaTeX; *Bag of Tricks*' Related Work is 429.
+*Reading draft of `relatedwork.tex`, citations spelled out, same content.
+614 rendered words in the LaTeX. *Bag of Tricks*' Related Work is 429.
 Provenance for every claim: `RelatedWork_Sources.md`.*
+
+**Regenerate this file whenever `relatedwork.tex` changes.** It has fallen
+behind three times, once carrying a sentence whose meaning had been inverted in
+the `.tex` and fixed there but not here. `check_reading_copies.py` now tests
+for that.
 
 ---
 
-We cover three strands: the cost of VLA inference, the training-free
+We cover three strands, namely the cost of VLA inference, the training-free
 interventions we re-measure, and how such interventions are evaluated.
 
 ### Inference cost in VLA policies
 
 VLA policies adapt pretrained vision-language models to output robot actions,
-inheriting their size and latency; the resulting efficiency literature already
-has surveys of its own. We divide it by the resource each method spends,
-recovering a recent survey's categories of dynamic computation, perception and
-action generation (CAS, arXiv 2510.17111):
+inheriting their size and latency, and the resulting efficiency literature
+already has surveys of its own. We divide it by the resource each method
+spends, which recovers a recent survey's categories of dynamic computation,
+perception and action generation (the CAS systematic survey).
 
-1. **when the policy runs** — executing a predicted chunk over several control
+1. **When the policy runs.** A predicted chunk is executed over several control
    steps, a lineage running from frame skip in RL to parallel decoding (DQN,
-   ACT, Diffusion Policy, OpenVLA-OFT);
-2. **what it is shown** — reducing or reweighting visual tokens;
-3. **how much network each call uses** — skipping decoder layers.
+   ACT, Diffusion Policy, OpenVLA-OFT).
+2. **What it is shown.** Visual tokens are reduced or reweighted.
+3. **How much network each call uses.** Decoder layers are skipped.
 
-We treat these as axes rather than competing methods: a claim about efficiency
-is a claim about one of these resources being spent differently.
+We treat these as axes rather than competing methods, because a claim about
+efficiency is a claim about one of these resources being spent differently.
 
 ### The interventions we re-measure
 
 Layer redundancy in language models is well established, **but its two recipes
 disagree on which layers may go.** ShortGPT ranks every layer by Block
-Influence and constrains nothing — the criterion we adopt — while Gromov et al.
-remove a contiguous block of the deepest layers and find the final layer must
-be kept. EfficientVLA carries the unconstrained form into VLAs without
-training; MoLe-VLA needs a learned router and distillation, placing it outside
-what we test. **Which rule holds for a policy is open, and our depth results
-turn on it.**
+Influence, the criterion we adopt, and constrains nothing further, while Gromov
+et al. remove a contiguous block of the deepest layers and find the final layer
+must be kept. EfficientVLA carries the unconstrained form into VLAs without
+training, and MoLe-VLA needs a learned router and distillation, placing it
+outside what we test. **Which rule holds for a policy is open, and our depth
+results turn on it.** Notably, the newest compact VLAs **build such
+reductions in by design** rather than applying them at inference (FLOWER,
+SmolVLA, TurboVLA), which makes whether a reduction transfers a question about
+architecture and not only about a switch.
 
 On the visual axis, methods developed for VLMs (FastV, SparseVLM, ToMe) have
-been reported to transfer poorly to VLAs: VLA-Cache attributes this to their
+been reported to transfer poorly to VLAs. VLA-Cache attributes this to their
 short action sequences and measures FastV leaving FLOPs unchanged while latency
 rises, and VLA-Pruner reproduces the degradation on a third setting.
 
-Our own visual intervention, foveation, comes from the other direction:
-Schwartz's log-polar mapping, taken up in robot vision to cut data while
-preserving central resolution (Traver & Bernardino) and applied to VLAs by
-gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). We include it because it
-edits the observation *before* the encoder, which is what makes it comparable
-across backbones: however the encoders differ, each splits the image into a
-**uniform** grid, so empty background gets the same budget as the region where
-the gripper meets the object.
-
-Notably, the newest compact VLAs **build such reductions in by design** rather
-than applying them at inference (FLOWER, SmolVLA, TurboVLA), which makes
-whether a reduction transfers a question about architecture and not only about
-a switch.
+Our own visual intervention, foveation, comes from the other direction. It
+descends from Schwartz's log-polar mapping, taken up in robot vision to cut
+data while preserving central resolution (Traver & Bernardino) and applied to
+VLAs by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). We include it
+because it edits the observation *before* the encoder, which is what makes it
+comparable across backbones. **No matter how the encoders differ**, each splits
+the image into a **uniform** grid, so empty background gets the same budget as
+the region where the gripper meets the object.
 
 ### How these claims are evaluated
 
 Results are reported on SimplerEnv and LIBERO, and recent work addresses the
-infrastructure: vla-eval unifies fourteen benchmarks and documents previously
-undocumented evaluation pitfalls, and StarVLA describes the field as fragmented
-across incompatible codebases and protocols.
+infrastructure around them. The vla-eval harness unifies fourteen benchmarks
+and documents previously undocumented evaluation pitfalls, and StarVLA
+describes the field as fragmented across incompatible codebases and protocols.
 
 What infrastructure cannot supply is **the comparison itself.** Papers using
 several backbones change the benchmark at the same time (VLA-Cache,
-SpecPrune-VLA, VLA-IAP), and those with both axes present leave the crossing
-cell empty (Gaze-Reg, VLA-Pruner); the tables we cite report mean success rates
-over independent runs, without matched-episode outcomes. So whether an
+SpecPrune-VLA, VLA-IAP), those with both axes present leave the crossing cell
+empty (Gaze-Reg, VLA-Pruner), and the tables we cite report mean success rates
+over independent runs, without matched-episode outcomes. Whether an
 intervention keeps its *direction* when the backbone or the benchmark changes
-cannot be read off these tables, nor can the per-task disagreements they
-average over (Table I).
+therefore cannot be read off these tables, nor can the per-task disagreements
+they average over (Table I).
 
 ---
 
@@ -80,7 +83,7 @@ source code is an established form (the image-classification and the
 inference-time-computation *bag of tricks* studies). Unique to this paper, we
 measure the same interventions over a complete backbone × benchmark grid and
 test each on matched episodes rather than aggregate rates, so that the
-direction of an effect — not only its size — is something the evidence can
+direction of an effect, and not only its size, is something the evidence can
 decide.
 
 ---
@@ -102,7 +105,7 @@ included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
 2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
 none of those.)
 
-**Length — 586 words, and not currently a problem.** The 450–560 figure came
+**Length — 614 words, and not currently a problem.** The 450–560 figure came
 from `RelatedWork_Plan.md` §5, which states plainly that it rests on an
 *unverified* rule of thumb (≈500–550 words per IEEEtran column). **Do not cut
 against an estimate.** Compile one real column; only if that overruns does any
@@ -112,7 +115,9 @@ Paragraph 2 is 260 words against *Bag of Tricks*' 99 for the equivalent
 paragraph, because it carries four topics: the layer-rule disagreement, the
 VLM→VLA transfer failure, foveation's lineage and rationale, and the compact
 VLAs. Everything that could be compressed without losing an argument already
-has been (646 → 586).
+has been. (An earlier note in this file said 586 and then 589. Both were
+miscounts of mine; 614 is what two independent formulas and three commits
+agree on, and `check_reading_copies.py` now asserts it.)
 
 If a real compile says it must shrink, the two candidates and their costs:
 

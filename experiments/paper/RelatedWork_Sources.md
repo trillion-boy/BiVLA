@@ -42,7 +42,8 @@ and that should not be forgotten before the bibliography is finalised.
 | `effvlasurvey2` — arXiv 2510.24795, *A Survey on Efficient Vision-Language-Action Models* | only that such surveys exist | low — an existence claim. **The only remaining unread citation in the section.** Full bibliographic data verified, see below |
 | DQN (frame skip) | the origin of executing one decision over several steps | low — textbook lineage |
 | ACT, Diffusion Policy | action chunking in imitation learning | low — textbook lineage |
-| SimplerEnv, LIBERO | the benchmarks results are reported on | none — we run them |
+| SimplerEnv | the benchmark results are reported on | none — we run it, all 24 result directories are SimplerEnv |
+| LIBERO | named alongside SimplerEnv as where the field reports | low — a statement about the field's practice, not about us. **We do not run LIBERO in this paper.** The five-model expansion would, and `notebooks/05` supports it, but no LIBERO run exists in `results/`. Do not let this citation drift into implying we evaluated on it |
 
 **Read since this table was first written**, and therefore no longer on it:
 `gromov` (see claim 18 and the Table I reframing in `TableI_Cells.md` §4d),

@@ -2,7 +2,7 @@
 % Related Work -- ICRA form, modelled on Bag of Tricks (429 words, three
 % bold run-in paragraphs, no tables, each paragraph ending on our position).
 %
-% ~586 rendered words. The 450--560 "target" is an estimate, not a measurement
+% 614 rendered words. The 450--560 "target" is an estimate, not a measurement
 % (see RelatedWork_Plan.md 5), so do not cut against it. Compile one real
 % column first. If that says the section overruns, RelatedWork.md lists the
 % two candidates and what each costs.
@@ -23,9 +23,9 @@ interventions we re-measure, and how such interventions are evaluated.
 VLA policies adapt pretrained vision-language models to output robot actions,
 inheriting their size and latency, and the resulting efficiency literature
 already has surveys of its own~\cite{effvlasurvey1, effvlasurvey2}. We divide
-it by the
-resource each method spends, which recovers a recent survey's categories of
-dynamic computation, perception and action generation~\cite{effvlasurvey1}.
+it by the resource each method spends, which recovers a recent survey's
+categories of dynamic computation, perception and action
+generation~\cite{effvlasurvey1}.
 1)~\emph{When the policy runs}. A predicted chunk is executed over several
 control steps, a lineage running from frame skip in RL to parallel
 decoding~\cite{dqn, act, diffusionpolicy, openvlaoft}.
@@ -43,6 +43,10 @@ final layer must be kept~\cite{gromov}. EfficientVLA carries the unconstrained
 form into VLAs without training~\cite{efficientvla}, and MoLe-VLA needs a
 learned router and distillation~\cite{molevla}, placing it outside what we
 test. Which rule holds for a policy is open, and our depth results turn on it.
+Notably, the newest compact VLAs build such reductions in by design rather
+than applying them at inference~\cite{flower, smolvla, turbovla}, which makes
+whether a reduction transfers a question about architecture and not only about
+a switch.
 On the visual axis, methods developed for VLMs~\cite{fastv, sparsevlm, tome}
 have been reported to transfer poorly to VLAs. VLA-Cache attributes this to
 their short action sequences and measures FastV leaving FLOPs unchanged while
@@ -55,10 +59,7 @@ policies~\cite{gazereg, lookfocusact}. We include it because it edits the
 observation \emph{before} the encoder, which is what makes it comparable across
 backbones. No matter how the encoders differ, each splits the image into a
 \emph{uniform} grid, so empty background gets the same budget as the region
-where the gripper meets the object. Notably, the newest compact VLAs build such
-reductions in by design rather than applying them at
-inference~\cite{flower, smolvla, turbovla}, which makes whether a reduction
-transfers a question about architecture and not only about a switch.
+where the gripper meets the object.
 
 \textbf{How these claims are evaluated.}
 Results are reported on SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero},
