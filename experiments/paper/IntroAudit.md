@@ -159,3 +159,30 @@ is colloquial or citation noise, so the sentence stands, and `TableI_Cells.md`
 have prior proposals, Related Work frames each lineage with its own
 citations, and the framing is the paper's premise. The mentor's abstract uses
 "study three representative approaches" for the same content.
+
+---
+
+## 6. The published baseline figures, author-confirmed 2026-08-22
+
+The one verification this repository could not repeat is closed. The author
+confirms **OpenVLA/Bridge 1.0\%, SpatialVLA/Bridge 34.4\%, UniVLA/Bridge
+69.8\%** against the papers, and adds one fact the hand-check had not
+recorded: **34.4\% is SpatialVLA's zero-shot figure, and its fine-tuned
+figure is 42.7\%.**
+
+Which comparator is honest depends on which checkpoint we ran. The campaign
+scripts pin it: `run_spatialvla_fractal_grid.sh` and
+`run_spatialvla_foveation.sh` both default to
+`IPEC-COMMUNITY/spatialvla-4b-224-pt`, the zero-shot release, and no script
+or config in the repository loads the mix or fine-tuned variant. So our
+30.2\% is a zero-shot evaluation, 34.4\% is the like-for-like published
+figure, and the $-4.2$ comparison stands.
+
+The Introduction now says "the figures published **for the checkpoints we
+run**" instead of "the published figures", so a reader who knows the 42.7
+cannot read the sentence as comparing against the wrong number.
+
+**For Setup or Results**: when the baseline-comparison table appears, print
+the checkpoint id next to each published figure and label SpatialVLA's
+comparator zero-shot, with the fine-tuned 42.7 in a note. That is the full
+answer to the reviewer who asks.
