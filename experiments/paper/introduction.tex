@@ -28,9 +28,9 @@
 Vision-language-action (VLA) policies are becoming capable of general-purpose
 robotic control, and running one is expensive. In our own runs a single
 forward pass of model time averaged $2.81$~s for UniVLA~\cite{univla} and
-$0.90$~s for SpatialVLA~\cite{spatialvla} over 96 baseline episodes.
-OpenVLA-OFT measures autoregressive OpenVLA at $3$ to $5$~Hz, below the $25$
-to $50$~Hz it reports real-time deployment needs~\cite{openvlaoft}. A
+$0.90$~s for SpatialVLA~\cite{spatialvla} over 96 baseline WidowX-Bridge
+episodes. OpenVLA-OFT measures autoregressive OpenVLA at $3$ to $5$~Hz, below
+the $25$ to $50$~Hz it reports real-time deployment needs~\cite{openvlaoft}. A
 literature has grown up around fixing this without retraining. The idea is to
 leave the checkpoint alone and make inference cheaper by skipping decoder
 layers, by pruning or caching visual tokens, or by holding one predicted
@@ -57,8 +57,8 @@ eight conditions, for $7{,}198$ episodes in all (Fig.~\ref{fig:grid}). Every
 condition replays the initial states of its cell's baseline, and we test the
 episodes whose outcome flipped with McNemar's exact test.
 
-Three results follow, and each has the same shape. What a reported number was
-credited to is not what moved it.
+Three results follow, and each has the same shape. The factor a result would
+be credited to is not the one that moved it.
 
 \textbf{A choice the specifications leave open moves a result by 45.9 points.}
 Inside one cell we held the backbone, the benchmark, the method and the number
@@ -80,9 +80,9 @@ configuration.
 much of the observation foveation keeps, we find the best setting discards
 nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$
 at $10\%$. Measured compute moved between $-3.1\%$ and $+2.7\%$, because
-neither the image size nor the token count changes. The gain tracks the
-log-polar round trip, but it is an input transformation and not an efficiency
-technique.
+neither the image size nor the token count changes. The gain is largest where
+only the round trip is left, and it is an input transformation rather than an
+efficiency technique.
 
 \textbf{The same intervention reverses sign across backbones.} On the same
 $135$ Fractal episodes under the same intervention, OpenVLA gains $+15.6$
@@ -102,19 +102,19 @@ leave open moves one result by $45.9$ points, and one intervention reverses
 sign across backbones with both directions individually significant.
 \textbf{3)~Evidence that compute saved does not predict success change.} The
 intervention behind our largest gain saves almost no compute and helps most
-when it discards nothing, while the one whose compute saving we hold fixed
-moves success by $45.9$ points. \textbf{4)~A measurement procedure} for this
+when it discards nothing, while the one whose compute saving barely moves
+shifts success by $45.9$ points. \textbf{4)~A measurement procedure} for this
 class of claim, comprising matched episodes, an explicit determinism check and
-a grid uniformity rule. Of the five training-free methods we
-survey~\cite{efficientvla, vlacache, fastv, shortgpt, vlapruner}, every one
-sweeps its own configuration and none publishes per-episode outcomes or tests
-a difference for significance.
+a requirement that every cell run the same conditions. Of the five
+training-free methods we survey~\cite{efficientvla, vlacache, fastv, shortgpt,
+vlapruner}, every one sweeps its own configuration and none publishes
+per-episode outcomes or tests a difference for significance.
 
 We propose no new efficiency method, and we do not claim that these
-interventions fail in general. Every contrast above is paired inside its own
-cell, so none of them depends on our absolute rates matching anyone else's.
-Four of our five baseline cells do sit above the published figures, one of
-them by a wide margin, and the fifth is $4.2$ points below, which is the wrong
-direction for a broken setup. Our claim is narrower. As results are reported
-now, the evidence does not separate a property of the method from a property
-of the configuration it was measured in.
+interventions fail in general. Every change above is measured against its own
+cell's baseline, so none of them depends on our absolute rates matching anyone
+else's. Four of our five baseline cells do sit above the published figures,
+one of them by a wide margin, and the fifth is $4.2$ points below, which is
+the wrong direction for a broken setup. Our claim is narrower. As results are
+reported now, the evidence does not separate a property of the method from a
+property of the configuration it was measured in.
