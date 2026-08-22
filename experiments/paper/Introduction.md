@@ -9,7 +9,7 @@ than compiled — citations are spelled out, and every number is one that
 ## The claim we are testing
 
 Vision-language-action policies are slow. In our own runs, one forward pass
-costs **UniVLA 2.80 s** and **SpatialVLA 0.90 s**, averaged over the 96
+costs **UniVLA 2.81 s** and **SpatialVLA 0.90 s**, averaged over the 96
 baseline episodes of the WidowX-Bridge suite. (Model time only, excluding
 simulator stepping, on Colab T4/L4-class hardware. We give these as a scale
 rather than a comparable benchmark: our result files do not record *which* card
@@ -321,7 +321,7 @@ property of the one configuration it was measured in.**
 
 | claim | source |
 |---|---|
-| 2.80 s / 0.90 s per forward | `results/univla_bridge_0805/baseline`, `results/spatialvla_bridge_0805/baseline`, 96 episodes each |
+| 2.81 s / 0.90 s per forward | `results/univla_bridge_0805/**baseline_l4**` (2811.5 ms, the run the grid pairs against, not `baseline` at 2801.5 ms), `results/spatialvla_bridge_0805/baseline` (902.1 ms), 96 episodes each |
 | 45.9-point window contrast | `Report.md` §4.4 (c) |
 | keep sweep | `Report.md` §4.3 (b); reproduce with `experiments/measure_foveation_roundtrip.py` |
 | cross-cell comparisons | `Report.md` §5.1 (benchmark axis), §5.2 (backbone axis) |

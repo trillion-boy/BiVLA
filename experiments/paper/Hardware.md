@@ -156,3 +156,41 @@ the published figures and one is 4.2 points below.
 
 **The distinction to keep**: our numbers are settled, and what is unconfirmed
 is the explanation for a difference with someone else's number.
+---
+
+## 7. Every number in the two sections, recomputed from `results/`
+
+Done 2026-08-22 because tracing the `.tex` to `Report.md` only shows the two
+agree, and both could be wrong together. This goes back to the episode records.
+
+| claim in the `.tex` | recomputed | |
+|---|---|---|
+| 7,198 episodes | 7198 | ✓ |
+| five baselines 15.6 / 38.5 / 30.2 / 84.4 / 81.2% | identical | ✓ |
+| OpenVLA/Fractal prune4 $+15.6$, $p=0.0011$ | $+15.6$, McNemar $p=1.07\times10^{-3}$ | ✓ |
+| SpatialVLA/Fractal prune4 $-17.8$, $p=1.8\times10^{-4}$ | $-17.8$, $p=1.82\times10^{-4}$ | ✓ |
+| window875 $-30.4$ | $-30.4$, $p=5.89\times10^{-11}$ | ✓ |
+| the 45.9-point contrast | $15.6-(-30.4)=45.9$ | ✓ |
+| span 2.1 to 50.4 over five cells | 2.1 / 5.2 / 6.2 / 45.9 / 50.4 | ✓ |
+| keep sweep $+30.2$ / $+18.8$ / $+4.2$ | identical, and 40% fills in at $+19.8$ | ✓ |
+| the two cells differ at $p=4.3\times10^{-7}$ | Fisher 2×2 on (30,9) vs (8,32) gives $4.30\times10^{-7}$ | ✓ |
+| compute saved $-11.9\%$ | $-11.9\%$ from `discover_cost` | ✓ |
+| SpatialVLA 0.90 s | 902.1 ms | ✓ |
+| four baselines above, one 4.2 below | +14.6 / +3.7 / +15.5 / +4.3 / +13.7 / +11.4 and −4.2 | ✓ |
+| **UniVLA 2.80 s** | **2811.5 ms = 2.81 s** | **✗ fixed** |
+
+**The one error.** The Introduction took UniVLA's latency from `baseline`
+(2801.5 ms) while taking its success rate from `baseline_l4` (81.2%), which is
+the run the grid actually pairs against and which averages 2811.5 ms. Two
+numbers in the same sentence came from two different runs. `Report.md` §7.1 had
+already standardised on 2.81 s; the `.tex` was carrying the older value.
+Corrected in `introduction.tex` and `Introduction.md`, and the footnote now
+says the figures come from the runs the grid pairs against.
+
+**Two things that looked wrong and were not.** The OpenVLA/Bridge foveation
+cell is not under `results/` at all, but in
+`RetinaBased/GoogleColab/results_reproduction_eager/`. `build_grid_report.py`
+imports it deliberately and checks at load time that the borrowed campaign's
+own baseline is episode-for-episode identical to the grid's, which it is at
+15/96. And `keep_percent: 20.0` appears in every run's config because it is the
+flag's default, not because every run foveates.

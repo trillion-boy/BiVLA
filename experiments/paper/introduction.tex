@@ -18,9 +18,10 @@
 \section{Introduction}
 
 Running a vision-language-action (VLA) policy is expensive. In our own runs a
-single forward pass took UniVLA~\cite{univla} $2.80$~s and
+single forward pass took UniVLA~\cite{univla} $2.81$~s and
 SpatialVLA~\cite{spatialvla} $0.90$~s.\footnote{Model time only, averaged over
-96 baseline episodes on WidowX-Bridge. Each backbone ran on the Colab GPU its
+96 baseline episodes on WidowX-Bridge, from the same runs the grid pairs
+against. Each backbone ran on the Colab GPU its
 weights fit, an L4 for UniVLA and T4s for the other two, so UniVLA is three
 times slower than SpatialVLA on the faster of the two cards. The result files
 do not record the card, which is why the grid carries a bound on run-to-run
