@@ -127,3 +127,32 @@ should move together with it.
 into every result file.** One line at write time would have made this whole
 document unnecessary. The five-model expansion should do it from the first run,
 and `notebooks/05` writes a `gpu` field for exactly this reason.
+
+---
+
+## 6. The UniVLA baseline is settled, and a note on how it was described
+
+Recorded because a summary of this file called it "undetermined", which was
+wrong and alarming.
+
+There are two UniVLA/Bridge baseline runs and the grid uses the second:
+
+| run | successes | rate |
+|---|---:|---:|
+| `baseline` | 75 / 96 | 78.1% |
+| **`baseline_l4`** | **78 / 96** | **81.2%**, and `Report.md` §3.4.0 names it as the value the grid uses |
+
+They differ on 11 of 96 episodes, which is the 3.1 points that section bounds.
+Every condition was tested against **both**, and no conclusion changes. So
+**81.2% is our measurement and it is not in question.**
+
+What is a guess is something else entirely: why the UniVLA paper's own table
+reports 69.8% where we get 81.2%. §3.8(c)③ traces most of that gap to one task,
+`stack_cube` at 75.0% against 33.3%, and suspects a checkpoint difference, but
+we could not confirm which checkpoint their table used. That guess is confined
+to `Report.md`. Neither 81.2 nor 69.8 appears in `introduction.tex` or
+`relatedwork.tex`, which say only that four of five baseline cells sit above
+the published figures and one is 4.2 points below.
+
+**The distinction to keep**: our numbers are settled, and what is unconfirmed
+is the explanation for a difference with someone else's number.
