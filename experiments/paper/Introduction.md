@@ -79,7 +79,7 @@ comparisons**, so α ≈ 0.0012, of which **7** survive.
 
 ## Three results, and they have the same shape
 
-### 1. An unreported implementation choice moves the result by 45.9 points
+### 1. A choice the specifications leave open moves the result by 45.9 points
 
 Inside one cell (OpenVLA × Fractal, 135 episodes, baseline 38.5%), holding
 **everything** fixed — backbone, benchmark, method, number of layers removed
@@ -94,8 +94,14 @@ to be removed:
 | last four layers only (L28–31) | **−30.4** |
 
 The ranking criterion is the same in all four rows. What differs is the
-candidate window and the spacing constraint — values the papers we surveyed
-generally do not report. The last row is the sharpest: with only four
+candidate window and the spacing constraint. **These are reported — and the
+literature disagrees about them.** ShortGPT ranks every layer and constrains
+nothing; EfficientVLA §3.2.2 does the same and calls it "non-contiguous";
+Gromov et al. (ICLR 2025) instead remove a contiguous block and find that
+"keeping the very last layer is essential." Nobody has compared the two
+prescriptions on a robot policy. (Do **not** write "the papers do not report
+this" — it was checked against the PDFs and it is false; see
+`paper/TableI_Cells.md`.) The last row is the sharpest: with only four
 candidates and four layers to remove, the ranking does nothing at all, so
 −30.4 is the score of a condition with **no selection in it**.
 
@@ -231,7 +237,8 @@ field.
    7,198 episodes — with the per-episode records released.
 
 2. **Evidence that reported effects are often properties of the configuration,
-   not of the method.** An unreported eligibility flag moves one result by 45.9
+   not of the method.** An eligibility choice the specifications leave open
+   moves one result by 45.9
    points, and the same intervention reverses sign across backbones with both
    directions individually significant.
 

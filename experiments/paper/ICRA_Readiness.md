@@ -22,10 +22,11 @@ They are §5 below.
 
 These are not things most submissions have.
 
-**1. A quantified, reproducible finding that nobody has reported.**
-An unreported eligibility flag moves one cell's result by 45.9 points, with
-everything else — backbone, benchmark, method, layer count, compute saved —
-held fixed. That is a clean, single-variable result. Reviewers respond to
+**1. A quantified, reproducible finding on a question the literature has left
+open.** An eligibility choice that the layer-pruning specifications do not fix
+— and that ShortGPT/EfficientVLA and Gromov et al. answer in opposite ways —
+moves one cell's result by 45.9 points, with everything else (backbone,
+benchmark, method, layer count, compute saved) held fixed. That is a clean, single-variable result. Reviewers respond to
 single-variable results.
 
 **2. Sign reversals where both sides individually survive correction.**
