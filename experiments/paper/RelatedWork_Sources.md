@@ -24,7 +24,7 @@ paper's PDF, not its abstract.*
 | 12 | the tables we cite report mean success rates over independent runs, without matched-episode outcomes | grep over every PDF read: *paired* 0, *McNemar* 0, and in vla-eval also *significance* 0, *statistic* 0, *confidence* 0, *error bar* 0. The draft says **"the tables we cite,"** not "no prior work" — see the re-check note below |
 | 13 | FastV, SparseVLM and ToMe were developed for VLMs | all three PDFs read this session |
 | 14 | OpenVLA-OFT uses parallel decoding and action chunking | **upgraded from second-hand to primary, 2026-08-22.** Was verified only from VLA-Pruner's description of its own baseline; now from the paper itself (Kim, Finn & Liang, *Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success*), abstract p1: *"an Optimized Fine-Tuning (OFT) recipe that integrates **parallel decoding, action chunking**, a continuous action representation, and a simple L1 regression-based learning objective"* |
-| 20 | our three axes are the field's own categories, not our invention | **PDF read 2026-08-22.** The CAS systematic survey (arXiv 2510.17111) divides efficiency work into §3.2 *Dynamic Computation Pathways*, §4 *Efficient Perception Feature*, §5 *Efficient Action Generation* — our axes 3, 2 and 1 — and populates them with the same papers we cite (§3.2 names SmolVLA and FLOWER; §4.1 names FastV and EfficientVLA; §4.2 names VLA-Cache) |
+| 20 | our three axes are the field's own categories, not our invention | **PDF read 2026-08-22.** The CAS systematic survey (Guan et al., Institute of Automation; arXiv number unverified, see the warning below) divides efficiency work into §3.2 *Dynamic Computation Pathways*, §4 *Efficient Perception Feature*, §5 *Efficient Action Generation* — our axes 3, 2 and 1 — and populates them with the same papers we cite (§3.2 names SmolVLA and FLOWER; §4.1 names FastV and EfficientVLA; §4.2 names VLA-Cache) |
 | 15 | foveation has been applied to VLAs by gaze-conditioned policies | `RelatedWork.md` A.5 (Gaze-Reg, arXiv 2603.23202) and A.6 (Look Focus Act, arXiv 2507.15833), both marked *원문 확인* — the two PDFs were opened and their tables cross-checked |
 | 17 | log-polar was adopted in robot vision to cut data while preserving central resolution | **PDF read 2026-08-22**, Traver & Bernardino p3: *"Elegant trade-off solution between these three mutually opposing criteria: wide field of view, high visual resolution and little data to process … the reduced size of log-polar images (as much as 30 times smaller than uniformly-sampled Cartesian images have been reported) hugely facilitates real-time visual data processing. On the other hand, the radially logarithmic sampling entails that a higher resolution is devoted to the center of the scene (fovea area)"* — both halves of our clause, verbatim, with a number |
 | 18 | layer redundancy in language models is well established (the `gromov` half) | **PDF read 2026-08-22**: *"we can remove a substantial fraction of the deepest layers from models with minimal degradation … for Llama-2-70B we can eliminate up to roughly half of the layers before the performance collapses."* **ICLR 2025**, not an arXiv preprint — fix the `.bib` |
@@ -39,13 +39,34 @@ and that should not be forgotten before the bibliography is finalised.
 
 | citation | what the draft asserts about it | risk |
 |---|---|---|
-| `effvlasurvey2` — arXiv 2510.24795, *A Survey on Efficient VLA Models* | only that such surveys exist | low — an existence claim. **The last remaining unread citation in the section** |
-| Gromov et al., *The Unreasonable Ineffectiveness of the Deeper Layers* | grouped with ShortGPT as establishing layer redundancy | low, but it is a substantive grouping; read before submission |
+| `effvlasurvey2` — *A Survey on Efficient VLA Models* | only that such surveys exist | low — an existence claim. **The only remaining unread citation in the section** |
 | DQN (frame skip) | the origin of executing one decision over several steps | low — textbook lineage |
 | ACT, Diffusion Policy | action chunking in imitation learning | low — textbook lineage |
 | SimplerEnv, LIBERO | the benchmarks results are reported on | none — we run them |
-| `schwartz` — log-polar retinotopic mapping | that log-polar is his | **settled 2026-08-22 from the published abstract + Traver.** See the box below; no PDF purchase needed |
-| `bagoftricks_llm` — *Bag of Tricks for Inference-time Computation of LLM Reasoning* | that re-measuring is an established form | none — PDF read and measured (`RelatedWork_Plan.md` §5) |
+
+**Read since this table was first written**, and therefore no longer on it:
+`gromov` (see claim 18 and the Table I reframing in `TableI_Cells.md` §4d),
+`traver` (claim 17), `bagoftricks_cnn` (claim 19), `openvlaoft` (claim 14),
+`starvla`, `effvlasurvey1` (claim 20), and `bagoftricks_llm`
+(`RelatedWork_Plan.md` §5). `schwartz` is settled from the published abstract,
+below.
+
+> ⚠️ **Neither survey's arXiv number is verified, and one of them carries a
+> substantive claim.** The PDF we read is titled *"Efficient Vision-Language-
+> Action Models for Embodied Manipulation: A Systematic Survey"* (Weifan Guan,
+> Qinghao Hu, Aosheng Li, Jian Cheng, Institute of Automation, CAS) and it
+> carries **no arXiv stamp of its own** — the identifiers found inside it all
+> belong to its bibliography. The numbers 2510.17111 and 2510.24795 come from
+> the search sweep in `Survey_2026-08.md` §4, which that document marks ⚠
+> throughout, and arXiv is unreachable from this environment (403 at the
+> proxy), so the mapping could not be checked.
+>
+> The `.tex` is unaffected, since it cites by key and the number lives in the
+> `.bib`. **Before the `.bib` is written, look both numbers up and confirm
+> which title belongs to which.** `effvlasurvey1` is the one that carries the
+> taxonomy claim, so pointing it at the wrong paper would be a real citation
+> error. What we can defend without the number is the title and author list
+> above, which came off the PDF's own first page.
 
 ### Schwartz — closed, and the paywalled PDF is not needed
 

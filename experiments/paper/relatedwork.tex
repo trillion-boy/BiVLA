@@ -22,7 +22,8 @@ interventions we re-measure, and how such interventions are evaluated.
 \textbf{Inference cost in VLA policies.}
 VLA policies adapt pretrained vision-language models to output robot actions,
 inheriting their size and latency, and the resulting efficiency literature
-already has surveys of its own~\cite{effvlasurvey2}. We divide it by the
+already has surveys of its own~\cite{effvlasurvey1, effvlasurvey2}. We divide
+it by the
 resource each method spends, which recovers a recent survey's categories of
 dynamic computation, perception and action generation~\cite{effvlasurvey1}.
 1)~\emph{When the policy runs}. A predicted chunk is executed over several
@@ -35,8 +36,8 @@ efficiency is a claim about one of these resources being spent differently.
 
 \textbf{The interventions we re-measure.}
 Layer redundancy in language models is well established, but its two recipes
-disagree on which layers may go. ShortGPT ranks every layer by Block Influence
-and constrains nothing~\cite{shortgpt}, which is the criterion we adopt, while
+disagree on which layers may go. ShortGPT ranks every layer by Block Influence,
+the criterion we adopt, and constrains nothing further~\cite{shortgpt}, while
 Gromov et al.\ remove a contiguous block of the deepest layers and find the
 final layer must be kept~\cite{gromov}. EfficientVLA carries the unconstrained
 form into VLAs without training~\cite{efficientvla}, and MoLe-VLA needs a
@@ -52,7 +53,7 @@ mapping~\cite{schwartz}, taken up in robot vision to cut data while preserving
 central resolution~\cite{traver} and applied to VLAs by gaze-conditioned
 policies~\cite{gazereg, lookfocusact}. We include it because it edits the
 observation \emph{before} the encoder, which is what makes it comparable across
-backbones. However the encoders differ, each splits the image into a
+backbones. No matter how the encoders differ, each splits the image into a
 \emph{uniform} grid, so empty background gets the same budget as the region
 where the gripper meets the object. Notably, the newest compact VLAs build such
 reductions in by design rather than applying them at
@@ -61,17 +62,18 @@ transfers a question about architecture and not only about a switch.
 
 \textbf{How these claims are evaluated.}
 Results are reported on SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero},
-and recent work addresses the infrastructure around them. vla-eval unifies
-fourteen benchmarks and documents previously undocumented evaluation
+and recent work addresses the infrastructure around them. The vla-eval harness
+unifies fourteen benchmarks and documents previously undocumented evaluation
 pitfalls~\cite{vlaeval}, and StarVLA describes the field as fragmented across
 incompatible codebases and protocols~\cite{starvla}. What infrastructure cannot
 supply is the comparison itself. Papers using several backbones change the
 benchmark at the same time~\cite{vlacache, specprune, vlaiap}, those with both
 axes present leave the crossing cell empty~\cite{gazereg, vlapruner}, and the
 tables we cite report mean success rates over independent runs, without
-matched-episode outcomes. So whether an intervention keeps its \emph{direction}
-when the backbone or the benchmark changes cannot be read off these tables, nor
-can the per-task disagreements they average over (Table~\ref{tab:reporting}).
+matched-episode outcomes. Whether an intervention keeps its \emph{direction}
+when the backbone or the benchmark changes therefore cannot be read off these
+tables, nor can the per-task disagreements they average over
+(Table~\ref{tab:reporting}).
 
 We do not cover quantisation, KV-cache compression or learned early exit, which
 spend resources our axes do not. Measuring the settings papers leave to their
