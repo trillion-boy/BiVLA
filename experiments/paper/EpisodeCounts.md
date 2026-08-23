@@ -54,26 +54,50 @@ rather than by a total.
 `results/` and it is still right about that. It was never a claim about the
 campaign's size, and the paper should not have borrowed it as one.
 
-## 4. What "re-run" means, since it was ambiguous
+## 4. What "re-run" means, and what it actually found
 
-**The same condition executed a second time, to confirm the simulator returns
-the same outcomes.** All 205 episodes:
+⚠️ **Corrected 2026-08-22.** An earlier version of this section filed
+`baseline_l4` and `action_repeat2_l4` as diagnostic re-runs. They are the
+opposite. `build_grid_report.py` lines 146--153 remap them:
 
-| run | episodes | what was repeated |
-|---|---:|---|
-| `spatialvla_fractal_0806/baseline_rerun` | 85 | the SpatialVLA/Fractal baseline. `verify_all` checks all 85 shared episodes match outcome for outcome |
-| `univla_bridge_0805/baseline_l4` | 96 | the UniVLA/Bridge baseline, run again on the other card. 11 of 96 episodes differ, which is the 3.1-point bound `Report.md` §3.4.0 quotes |
-| `univla_recheck_0810/foveate_blur` | 24 | one task of UniVLA foveation blur. All 24 match |
+```python
+RENAME = {("UniVLA", "Bridge"): {
+    "baseline": None, "action_repeat2": None,        # the July card, dropped
+    "baseline_l4": "baseline",                        # the grid's baseline
+    "action_repeat2_l4": "action_repeat2"}}
+```
 
-So yes, identical conditions on identical initial states. Nothing is averaged
-across a run and its re-run. The re-runs exist to answer "would we get this
-again", and contribution 4's *"check determinism explicitly"* is this.
+**The L4 pair is the grid. The July pair is the diagnostic.** The comment
+above that map gives the reason: UniVLA/Bridge was measured on two cards, and
+subtracting across that boundary would put a hardware component inside every
+delta, so the column was rebuilt around the L4 runs and the July runs dropped
+out of the grid without being deleted.
 
-`univla_bridge_0805/action_repeat2_l4` is a fourth re-run of the same kind, 96
-episodes, filed above under extra conditions rather than under re-runs.
+### The three repeats, recomputed
 
+| pair | shared episodes | differ |
+|---|---:|---:|
+| SpatialVLA/Fractal `baseline` vs `baseline_rerun`, same environment | 85 | **0** |
+| UniVLA/Bridge `foveate_blur` vs `recheck_0810`, same L4 | 24 | **0** |
+| UniVLA/Bridge July `baseline` vs `baseline_l4`, **different card** | 96 | **11** |
 
----
+### So the conclusion is not "it is deterministic"
+
+Repeat a condition **in the same environment** and every episode reproduces,
+85 of 85 and 24 of 24. Move to a different card and **11 of 96 episodes
+flip**, which is the 3.1-point gap `Report.md` §3.4.0 quotes.
+
+That second row is why the repeats exist and what they changed. They did not
+end in "fine, it is deterministic, carry on." They found a boundary the grid
+could not subtract across, and the UniVLA/Bridge column was **restructured**
+so that every delta in it is computed within one card. Contribution 4's
+*"check determinism explicitly"* is this, and the paper's rule that a
+condition and its baseline must come from the same environment comes from
+here rather than from an assumption.
+
+`Hardware.md` §3 carries the related finding, that the policy itself is
+numerically stable across cards while the **foveation image path** is not,
+which points at a `cv2` build difference rather than at the GPU.
 
 ## 5. The rule, and the number the paper reports
 
@@ -104,11 +128,16 @@ is *not* this campaign is a different intervention.
 
 which splits as:
 
-| | episodes | what it is |
+| bucket | episodes | which claim needs it |
 |---|---:|---|
-| the grid | 4,464 | $3\times96\times8$ on Bridge plus $2\times135\times8$ on Fractal, and what Fig. 1 shows |
-| controls and diagnostics | 2,446 | window controls, depth variants, the keep sweep, the determinism re-runs, the `move_near` probe |
-| **total** | **6,910** | |
+| the grid | 4,464 | Fig. 1, result 3, result 2's foveation cells |
+| eligibility-window controls | 867 | **result 1.** `window875` and friends are one arm of the $45.9$-point contrast |
+| extra depth variants | 750 | **result 1.** `prune4_early`, `_mid`, `_back`, `prune8`, `prune2_repeat2` |
+| the keep sweep | 288 | **result 2.** The four-point curve peaking at $100\%$ |
+| same-environment re-runs | 109 | **contribution 4.** 85 of 85 and 24 of 24 reproduce |
+| the July-vs-L4 pair | 192 | **contribution 4.** 11 of 96 differ, the 3.1-point hardware bound |
+| `move_near` mechanism and task-version probe | 240 | the failure-typing section |
+| **campaign** | **6,910** | |
 
 ### Why the 384 stay out
 
