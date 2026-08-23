@@ -27,16 +27,16 @@
 
 Vision-language-action (VLA) policies are becoming capable of general-purpose
 robotic control, and running one is expensive. In our own runs, a single call
-to the policy averaged $2.81$~s of model time for UniVLA~\cite{univla} and
-$0.90$~s for SpatialVLA~\cite{spatialvla} over 96 baseline WidowX-Bridge
-episodes. OpenVLA-OFT reports autoregressive OpenVLA at $3$ to $5$~Hz, below
-the $25$ to $50$~Hz it says real-time deployment needs~\cite{openvlaoft}. A
-literature has grown up around fixing this without retraining. The idea is to
-leave the checkpoint alone and make inference cheaper by skipping decoder
-layers~\cite{shortgpt, efficientvla}, by pruning visual tokens~\cite{fastv},
-or by caching what the previous step already computed~\cite{vlacache,
-efficientvla}. MoLe-VLA learns which layers to skip~\cite{molevla} and is
-outside what we test.
+to the policy averaged $2.81$~s of model time for UniVLA~\cite{univla} on an
+L4 and $0.90$~s for SpatialVLA~\cite{spatialvla} on a T4, over 96 baseline
+WidowX-Bridge episodes each. OpenVLA-OFT reports autoregressive OpenVLA at $3$
+to $5$~Hz, below the $25$ to $50$~Hz it says real-time deployment
+needs~\cite{openvlaoft}. A literature has grown up around fixing this without
+retraining. The idea is to leave the checkpoint alone and make inference
+cheaper by skipping decoder layers~\cite{shortgpt, efficientvla}, by pruning
+visual tokens~\cite{fastv}, or by caching what the previous step already
+computed~\cite{vlacache, efficientvla}. MoLe-VLA learns which layers to
+skip~\cite{molevla} and is outside what we test.
 
 Such papers share one form of claim. \emph{Applying method $M$ to backbone $A$
 on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$ points, so $M$
@@ -53,7 +53,7 @@ resource. Action repetition changes how often the policy runs, visual
 foveation (a log-polar warp and its inverse) changes what it is shown, and
 network depth pruning changes how much of the model each call uses. UniVLA
 releases a Bridge-only checkpoint, so we fill five of the six cells, each with
-eight conditions (Fig.~\ref{fig:grid}). With the control and diagnostic runs
+eight conditions (Fig.~\ref{fig:grid}). Counting the control runs and sweeps
 the results below rest on, the campaign comes to $6{,}910$ episodes. Every
 condition replays the initial states of its cell's baseline, and we run
 McNemar's exact test on the episodes whose outcome flipped.
@@ -65,17 +65,20 @@ the credit is not the factor that moved the number.
 Inside one cell, we held the backbone, the benchmark, the method and the
 number of layers removed (four) fixed, and varied only which layers were
 \emph{eligible} for removal. Success went from $+15.6$ to $-30.4$ against the
-same baseline, while model time per call stayed $10.6$ to $11.9\%$ below it.
-The ranking criterion never changed. The candidate window did, and the
-prescriptions on record disagree about it. The methods we re-measure rank
+same baseline, while model time per call stayed $10.6$ to $11.9\%$ below
+baseline. The ranking criterion never changed. The candidate window did, and
+the prescriptions on record disagree about it. The methods we re-measure rank
 every layer and constrain nothing~\cite{shortgpt, efficientvla}, while a
 competing one restricts removal to a contiguous block at the deep end and
 reports that the final layer must be kept~\cite{gromov}. Confining removal to
 the deep end is a restriction an implementation can add without any
-specification calling for it, and ours did. The setting that loses $30.4$
-points narrows the window so far that the final layer goes with it. Across all
-five cells, the same contrast spans $2.1$ to $50.4$ points. How much the
-choice matters is itself a property of the configuration.
+specification calling for it, and ours did. It stays inert while it is loose.
+Widening it from the back half of the stack to the back three quarters selects
+the same four layers and returns the same $+15.6$. The setting that loses
+$30.4$ points narrows it instead, far enough that only four layers remain
+eligible, so the ranking has nothing left to choose and the final layer goes
+with the rest. Across all five cells, the same contrast spans $2.1$ to $50.4$
+points. How much the choice matters is itself a property of the configuration.
 
 \textbf{What foveation discards is not what makes it help.} In one cell, we
 swept how much of the observation foveation keeps, and the best setting

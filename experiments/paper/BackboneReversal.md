@@ -123,3 +123,55 @@ The Introduction stays as written. It reports the reversal, the two p-values,
 and the cell average that hides it. It promises no mechanism and claims no
 fraction control, so nothing in it becomes false when Setup and Limitations
 add these two passages.
+
+
+---
+
+## Objection 3. "You deviated from the specification, so this is your bug"
+
+Raised 2026-08-22, and the strongest objection the paper has faced.
+
+> *"ShortGPT and EfficientVLA say **constrain nothing**. You added a deep-end
+> restriction they never asked for, the losing arm then deletes the final
+> layer, and you call the result a configuration problem. That is an
+> implementation error, not a finding about the field."*
+
+### The control runs answer it
+
+| setting | eligible window | layers Block Influence removed | delta |
+|---|---|---|---:|
+| grid `depth_prune4` | back half, L16--31 | **[17, 23, 25, 27]** | **$+15.6$** |
+| `window25` | back three quarters, L8--31 | **[17, 23, 25, 27]** | **$+15.6$** |
+| `prune4_gap3` | back half plus a spacing rule | [17, 23, 27, 31] | $+1.5$ |
+| `window875` | last eighth, L28--31 | [28, 29, 30, 31] | $-30.4$ |
+
+**The restriction is inert while it is loose.** Doubling the eligible window
+selects the identical four layers and returns the identical $+15.6$, because
+Block Influence already ranks 17, 23, 25 and 27 at the top and they sit well
+inside any window that reaches back that far. So the winning arm is not a
+deviation with consequences. It is what an unconstrained implementation would
+also produce.
+
+**It binds only at the extreme.** At $0.875$ exactly four layers are eligible
+and four must go, so the ranking is disabled and the removal is forced. The
+$-30.4$ is not Block Influence choosing badly. It is the score of a condition
+with no selection left in it.
+
+### What the Introduction now says, and what Setup should add
+
+The Introduction carries the two-line version, that the window stays inert
+while loose and binds only when narrowed to four candidates. Setup should print
+the full table above, since the `prune4_gap3` row adds a second inert-to-binding
+example: a spacing rule inside the same window costs $14.1$ points by forcing
+L31 into the selection.
+
+### What we must not say
+
+**Do not** write that open-source implementations commonly add this
+restriction. `TableI_Cells.md` §4(b) records that we have no evidence about
+anyone else's code, and softening our own admission with invented evidence is
+worse than the admission.
+
+**Do not** drop *"and ours did."* It is what makes the paper the existence
+proof rather than a speculation, and with the inert-window sentences in front
+of it, it no longer reads as a confession of error.

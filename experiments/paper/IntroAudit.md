@@ -359,3 +359,58 @@ papers we cite.
 So the concession is not a retreat. It is the boundary that makes the claim
 defensible, and it costs nothing, because the paper's subject is the
 training-free case throughout.
+
+
+---
+
+## 11. Pass eleven, 2026-08-22, four reviewer objections
+
+### 1. The GPU vanished with the footnotes
+
+Removing both footnotes took the card assignment with them, so $2.81$~s had no
+scale. Naming the card in an Introduction is normal, `Hardware.md` §8 measured
+several comparable papers doing it to make a latency figure legible, and here
+it **strengthens** the sentence, since UniVLA is three times slower than
+SpatialVLA while running on the **faster** of the two cards. Now reads *"for
+UniVLA on an L4 and $0.90$~s for SpatialVLA on a T4."*
+
+### 2. "This is your bug, not the field's configuration problem"
+
+The sharpest objection raised so far. ShortGPT and EfficientVLA specify
+*constrain nothing*; we added a deep-end restriction; the losing arm deletes
+the final layer. So the $45.9$ points look like the distance between two of
+our own wrong implementations rather than a fact about the literature.
+
+**Our own control runs answer it, and the paper was not using them.**
+
+| setting | eligible | layers removed | delta |
+|---|---|---|---:|
+| grid `depth_prune4` | back half, L16--31 | **[17, 23, 25, 27]** | **$+15.6$** |
+| `window25` | back three quarters, L8--31 | **[17, 23, 25, 27]** | **$+15.6$** |
+| `window875` | last eighth, L28--31 | [28, 29, 30, 31] | $-30.4$ |
+
+**Widening the window changes nothing.** Block Influence already ranks those
+four highest, so the restriction is not binding at the winning setting and the
+arm behaves as an unconstrained implementation would. It binds only at
+$0.875$, where four candidates remain for four removals, the ranking is
+disabled, and the final layer goes because nothing else is left.
+
+Three sentences now say this. The reframing matters: *"and ours did"* stops
+reading as a confession of deviation and starts reading as the dial being
+described, since the paper now shows the dial doing nothing over most of its
+range.
+
+**Not adopted:** packaging the restriction as *"open-source implementations
+commonly do this."* `TableI_Cells.md` §4(b) records that we have no evidence
+about anyone else's implementation, and inventing that evidence to soften our
+own admission is the failure this audit exists to prevent.
+
+### 3 and 4. Two readability fixes
+
+*"With the control and diagnostic runs the results below rest on"* wedged a
+relative clause into the middle of a sentence, and *diagnostic runs* was a term
+the paper never defines. Now *"Counting the control runs and sweeps the results
+below rest on."*
+
+*"stayed $10.6$ to $11.9\%$ below **it**"* made the reader resolve a pronoun
+back to *the same baseline*. Now *"below baseline."*
