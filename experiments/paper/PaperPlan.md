@@ -202,7 +202,7 @@ said two. The tex gained two more grid-size figures during the review passes.*
 
 | where | what it says now |
 |---|---|
-| the setup paragraph | "three open backbones", "two SimplerEnv suites", "five of the six cells", "eight conditions", "$4{,}464$ episodes" |
+| the setup paragraph | "three open backbones", "two SimplerEnv suites", "five of the six cells", "eight conditions", "$6{,}910$ episodes" |
 | result 1, last sentence | "Across all five cells the contrast spans $2.1$ to $50.4$ points" |
 | result 3, last sentence | "ten of the fourteen intervention conditions our two Fractal cells ran" |
 | contribution 1 | "a $3 \times 2$ backbone-benchmark grid, five filled cells with eight conditions each" |

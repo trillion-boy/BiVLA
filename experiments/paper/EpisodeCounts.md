@@ -205,8 +205,11 @@ between them and the 08-10 pair, so a claim rests on them.
 count, `openvla_foveated`, the OpenVLA/Bridge foveation cell. The other two
 are that campaign's own baseline and an unused `openvla_retina` run.
 
-`build_grid_report.py` admits the import only if the borrowed campaign's
-baseline matches the grid's baseline episode for episode. Recomputed today:
+The `openvla_retina` directory is **not** counted and not used anywhere. The
+`openvla` directory is not counted either. It exists only so the import can be
+checked, because `build_grid_report.py` admits the borrowed condition solely
+when that campaign's own baseline matches the grid's baseline episode for
+episode. Recomputed today:
 
 | | episodes | differ |
 |---|---:|---:|
