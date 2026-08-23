@@ -235,3 +235,68 @@ from a snippet was meant to prevent. Corrected there.
   quantisation, KV-cache compression and learned early exit as out of scope.
   That is not a citation claim; it forecloses the obvious "why not X" without
   spending a paragraph on each.
+
+---
+
+## Foveated tokenization, and why a training-free study cannot use it
+
+Added 2026-08-22 from two PDFs the author supplied. This is the provenance for
+the clause *"Methods that foveate inside the encoder give distant patches a
+coarser resolution and so shed tokens, but they give up the pretrained
+weights, which were fitted to a uniform patch grid."*
+
+### The two papers foveate at the tokenizer, not in pixels
+
+**Look, Focus, Act** (GIAVA), abstract:
+
+> *"we integrate gaze information into ViTs using a **foveated patch
+> tokenization scheme**. Compared to uniform patch tokenization, this
+> significantly **reduces the number of tokens**, and thus computation."*
+
+**Segment This Thing** (Meta, arXiv 2506.11131), abstract:
+
+> *"a novel **variable-resolution patch tokenization** in which patches are
+> downsampled at a rate that increases with increased distance from the
+> prompt. This approach yields **far fewer image tokens** than uniform patch
+> tokenization."*
+
+Its Fig. 2 caption states the pattern: *"A patch from the center maintains its
+original resolution. A patch from the outer ring gets **downsampled by a factor
+of 8**."*
+
+### The sentence the clause rests on
+
+Look, Focus, Act says outright what it costs, and what they had to do instead:
+
+> *"One downside of using a foveated tokenization scheme is that **open-source
+> pretrained ViT weights**, commonly used in robot learning for their
+> significant performance benefits, **cannot be directly applied** as
+> pretraining is done on fixed, uniform tokenization patterns. To address
+> this, **we pretrain our own ViT-B models from scratch** using the Masked
+> Autoencoder (MAE) objective."*
+
+Segment This Thing records the same wall hit by a third system:
+
+> *"GazeGPT ... This model was **pre-trained on uniform resolution images,
+> which constrains** the GazeGPT foveation model (it uses three overlapping
+> images of the same size but varying receptive field)."*
+
+### Why this matters to us
+
+Both papers train. LFA pretrains ViT-B from scratch on 60,000 images for 1,000
+epochs, and STT trains each instance of its model. Our study is training-free
+by construction, so the tokenizer is fixed, so the token count is fixed, so
+foveation for us can only be a pixel-space edit.
+
+**That is the reason our foveation saves no compute**, measured at within
+$3.1\%$ of baseline in every condition we ran. It is not an implementation
+oversight and it would not be fixed by skipping the resize back to full size,
+because the backbones' own preprocessors resize to their fixed input anyway
+(`inference_spatialvla_libero.py:121`).
+
+### The claim boundary
+
+The clause says foveating inside the encoder *sheds tokens* and *gives up the
+pretrained weights*. Both halves are quoted above. It does **not** claim our
+pixel-space variant is better, and it does not claim these papers should have
+done otherwise. They train, so the trade is available to them and not to us.

@@ -57,9 +57,13 @@ Schwartz's log-polar mapping~\cite{schwartz}, taken up in robot vision to cut
 data while preserving central resolution~\cite{traver} and applied to VLAs by
 gaze-conditioned policies~\cite{gazereg, lookfocusact}. We include it because
 it edits the observation \emph{before} the encoder, which is what makes it
-comparable across backbones. No matter how the encoders differ, each splits
-the image into a \emph{uniform} grid, so empty background gets the same budget
-as the region where the gripper meets the object.
+comparable across backbones. Methods that foveate \emph{inside} the encoder
+give distant patches a coarser resolution and so shed tokens, but they give up
+the pretrained weights, which were fitted to a uniform patch
+grid~\cite{lookfocusact}. A training-free study therefore edits pixels and
+keeps the token count its backbone already has. No matter how the encoders
+differ, each splits the image into a \emph{uniform} grid, so empty background
+gets the same budget as the region where the gripper meets the object.
 
 \textbf{How these claims are evaluated.} Results are reported on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work

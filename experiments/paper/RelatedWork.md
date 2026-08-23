@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-616 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
-so ours is 1.76x its length. (This file previously said 429, which was a
+661 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
+so ours is 1.89x its length. (This file previously said 429, which was a
 miscount, see `RelatedWork_Plan.md` §0.)
 Provenance for every claim: `RelatedWork_Sources.md`.*
 
@@ -57,7 +57,11 @@ descends from Schwartz's log-polar mapping, taken up in robot vision to cut
 data while preserving central resolution (Traver & Bernardino) and applied to
 VLAs by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). We include it
 because it edits the observation *before* the encoder, which is what makes it
-comparable across backbones. **No matter how the encoders differ**, each splits
+comparable across backbones. Methods that foveate *inside* the encoder give distant
+patches a coarser resolution and so shed tokens, but they give up the
+pretrained weights, which were fitted to a uniform patch grid
+(Look-Focus-Act). A training-free study therefore edits pixels and keeps the
+token count its backbone already has. **No matter how the encoders differ**, each splits
 the image into a **uniform** grid, so empty background gets the same budget as
 the region where the gripper meets the object.
 
@@ -106,9 +110,10 @@ included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
 2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
 none of those.)
 
-**Length — 616 words of prose, which is 1.76x the model paper's 350.** That
+**Length — 661 words of prose, which is 1.89x the model paper's 350.** That
 ratio is larger than this file used to claim, because the 429 it compared
-against was a miscount (`RelatedWork_Plan.md` §0). The page budget still rests
+against was a miscount (`RelatedWork_Plan.md` §0). The 2026-08-22 clause on
+foveated tokenization added 45 of those words. The page budget still rests
 on an *unverified* rule of thumb (≈500–550 words per IEEEtran column), so
 **compile one real column before cutting anything.** Only if that overruns does
 the following apply.
