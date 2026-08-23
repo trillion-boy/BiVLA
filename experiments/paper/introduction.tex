@@ -77,13 +77,14 @@ enough to delete the final layer. Across all five cells the contrast spans
 $2.1$ to $50.4$ points, so even the sensitivity is a property of the
 configuration.
 
-\textbf{Compute saved does not predict what happens to success.} In one cell
-we swept how much of the observation foveation keeps, and the best setting
+\textbf{What foveation discards is not what makes it help.} In one cell we
+swept how much of the observation foveation keeps, and the best setting
 discards nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$
 and $+4.2$ at $10\%$. Across every foveation condition we ran, measured
-compute stayed within $3.1\%$ of baseline, because neither the image size nor
-the token count changes. The gain is largest where only the round trip is
-left, and it is an input transformation rather than an efficiency technique.
+compute stayed within $3.1\%$ of baseline, since neither the image size nor
+the token count changes, so the discarding buys nothing. The gain is largest
+where only the round trip is left, and it is an input transformation rather
+than an efficiency technique.
 
 \textbf{The same intervention reverses sign across backbones.} Under depth
 pruning of four layers, OpenVLA gains $15.6$ points on the same $135$ Fractal

@@ -26,6 +26,8 @@ class here and re-run section 2. That is the only way this converges.**
 | J | scope overreach | one case stated as a general rule | "needs a grid" |
 | K | logic | dangling antecedent, ambiguous pronoun, non-sequitur | "the same hiding", "we chose **them**" |
 | L | promise | something committed to that Setup or Results must deliver | per-episode records, determinism check |
+| M | sampled verification | a check that sampled instead of enumerating, so the verdict itself was wrong | "7 of 8" for the per-task split, which had tested 4 of 7 conditions per cell |
+| N | heading unsupported by its own paragraph | a result heading whose claim the paragraph beneath it cannot establish | "compute saved does not predict success" over a paragraph where compute never varies |
 
 ---
 
@@ -186,3 +188,41 @@ cannot read the sentence as comparing against the wrong number.
 the checkpoint id next to each published figure and label SpatialVLA's
 comparator zero-shot, with the fine-tuned 42.7 in a note. That is the full
 answer to the reviewer who asks.
+
+
+---
+
+## 7. Pass seven, 2026-08-22, raised by the author
+
+**Class N, a heading its own paragraph cannot support.** Result 2 was headed
+*"Compute saved does not predict what happens to success."* Foveation saves
+nothing, which the paragraph itself says at within $3.1\%$ of baseline, so
+compute never varies inside that paragraph and there is no variation for a
+"does not predict" claim to rest on. The heading also invited the reader to
+expect that foveation had saved something.
+
+The finding the paragraph actually establishes is that the gain runs opposite
+to how much is discarded, peaking at $100\%$ keep. That is a
+credit-misattribution result, which is exactly what the transition sentence
+two paragraphs earlier promises, so the heading is now **"What foveation
+discards is not what makes it help."**
+
+The paragraph also now states the no-saving result outright, *"so the
+discarding buys nothing,"* instead of leaving it as an aside explaining a
+number. It is a finding about the intervention, not a caveat.
+
+**Contribution 3 was checked and kept.** *"Evidence that compute saved does not
+predict success change"* rests on two results, not one. Foveation saves nothing
+and gains up to $30.2$ points, and depth pruning holds its saving near $11\%$
+while success swings from $+15.6$ to $-30.4$. Across both, the compute figure
+carries no information about the success figure, which is what the
+contribution claims.
+
+**Earlier headings for this paragraph, and why each went.** *"A gain
+attributed to compression does not come from compression"* attributed a
+position to nobody in particular (class G). *"Our visual intervention helps
+most when it discards nothing"* was accurate but sat below the altitude of the
+other two headings. *"What saves compute is not what changes success"* is
+refuted by our own action repetition, which saves compute and costs UniVLA
+$81.2$ points (class F). The current heading is accurate, at altitude, and
+about our own intervention rather than someone's claim.
