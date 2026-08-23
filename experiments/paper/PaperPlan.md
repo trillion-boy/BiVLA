@@ -17,7 +17,6 @@ commands' braces hold text and some hold labels.
 | `\emph{action repeat}` | *action repeat* | action repeat (italic) |
 | `\textbf{Contributions.}` | **Contributions.** | Contributions. (bold) |
 | `\texttt{move near}` | `move near` | move near (monospace) |
-| `\footnote{Model time only...}` | ¹ + a note at the page bottom | the note |
 | `$+15.6$` | +15.6 | +15.6 — `$…$` is just math mode |
 | `$p < 10^{-4}$` | *p* < 10⁻⁴ | p less than ten to the minus four |
 
@@ -42,12 +41,16 @@ commands' braces hold text and some hold labels.
 So this:
 
 ```latex
-Vision-language-action (VLA) policies are slow. In our own runs a single
-forward pass costs UniVLA~\cite{univla} $2.80$~s.
+In our own runs a single call to the policy averaged $2.81$~s of model time
+for UniVLA~\cite{univla}.
 ```
 
-reads as: *Vision-language-action (VLA) policies are slow. In our own runs a
-single forward pass costs UniVLA [12] 2.80 s.*
+reads as: *In our own runs a single call to the policy averaged 2.81 s of
+model time for UniVLA [12].*
+
+(`\footnote{...}` would render as a superscript number plus a note at the page
+bottom. Neither section uses one. See the header of `introduction.tex` for
+why.)
 
 Nothing in the current file changes the **font size**. `\textbf` is weight,
 `\texttt` is a monospace face, `\emph` is italics — all normal in a paper, and
@@ -72,16 +75,19 @@ Introduction is a good model. Its shape:
    bulleted list.
 
 Their Introduction is **688 words of prose**, measured from the PDF with
-citations excluded, plus a table. Ours is **857** on the same basis, about 25%
-longer, plus two footnotes. (Two earlier notes here were wrong: "about 900"
-was from memory, and 698/834 counted citation markers as words.)
+citations excluded, plus a table. Ours is **972** on the same basis, about 41%
+longer, with no table and no footnotes. (Earlier notes here said "about 900",
+from memory, then 698/834, which counted citation markers as words, then 857,
+before the review passes added the qualifiers that took it to 972.)
 
 ### Two things worth copying
 
 **A table right after the introduction is normal — if it is about prior work,
 not about our results.** Their Table 1 lists six prior methods against the
 configuration knobs each one uses, showing that the field does not standardise
-them. We have the identical move available and it is directly on thesis:
+them. We built the identical move and then **dropped it on 2026-08-22**; the
+draft, the three reasons and the revival instructions are in `tableI.tex`. The
+record below is why it looked attractive:
 
 > **Table I — What prior work reports.** Rows: EfficientVLA, VLA-Cache,
 > FastV, ShortGPT, VLA-Pruner (the training-free ones). Columns: candidate
@@ -128,10 +134,10 @@ Six pages of content, two of references, IEEEtran two-column.
 |---|---:|---|
 | Title, abstract, Introduction | 0.75 | intro ≈ ¾ column; Fig. 1 takes the rest of page 1 |
 | **Fig. 1** — the grid as a signed heat map | (in the above) | 7 conditions × 5 cells; the reader should see signs disagreeing within a row before reading a word |
-| **Table I** — what prior work reports | 0.25 | see above |
+| ~~**Table I** — what prior work reports~~ | ~~0.25~~ | **dropped 2026-08-22** (`tableI.tex`). Its 0.25 page returns to Results |
 | Related Work | **0.5** | three run-in paragraphs, **616 words of prose** against the model paper's **350** on the same basis (`RelatedWork_Plan.md` §0; the 429 this project used for months was a miscount). The 0.5 page rests on an unverified words-per-column estimate, so compile before cutting |
 | Setup and protocol | 1.0 | backbones, benchmarks, the eight conditions, pairing, determinism, the correction family |
-| Results | **2.25** | the three results; four tables. Takes the 0.25 freed from Related Work |
+| Results | **2.5** | the three results; four tables. Takes the 0.25 freed from Related Work and the 0.25 freed by dropping Table I, which the five-model rows will need |
 | What breaks (failure typing) | 0.5 | the one table with five buckets |
 | Limitations and conclusion | 0.75 | GPU recording, third benchmark, single-cell mechanism |
 | **total** | **6.0** | |
@@ -152,7 +158,7 @@ file, which is why it has seven tables. In the paper they scatter:
 | table in `Introduction.md` | destination |
 |---|---|
 | the three axes | Intro body text (already prose in the `.tex`) |
-| grid coverage 3 × 2 | Setup, **Table II** |
+| grid coverage | Setup, **Table II** (3 × 2 today, larger once the five land) |
 | eligible-window contrast (4 rows) | Results, **Table III** |
 | foveation keep sweep | Results, **Table IV** |
 | cross-cell comparisons | Results, **Table V** |
@@ -171,10 +177,14 @@ SmolVLA are still empty, and it was not obvious whether Introduction and
 Related Work could be written before the runs come back. Checked against the
 files rather than guessed.
 
-**Related Work needs no change at all.** Its closing sentence says *"a complete
-backbone $\times$ benchmark grid"* with **no numbers in it**, deliberately, so
-it claims a method rather than a coverage record and survives any change of
-scope. Three of the five models are cited exactly once, in the sentence about
+**Related Work needed three changes, not none.** ⚠️ *Corrected 2026-08-22.*
+This paragraph used to argue it needed no change, because its closing sentence
+carried no numbers. That reasoning was wrong: the sentence said *"a **complete**
+backbone $\times$ benchmark grid"*, and a word can be a coverage claim without
+being a number. It contradicted the Introduction's *"five of the six cells"*
+even before any expansion. See the "Related Work under the expansion" note at
+the end of §6 for all three fixes. Three of the five models are cited exactly
+once, in the sentence about
 compact VLAs building reductions in by design, and that claim rests on their
 own papers' architecture descriptions, not on any result:
 
@@ -208,10 +218,11 @@ could run. Do not write that $3 \times 2$ was necessary, because it was not.
 would add evidence rather than revise it, and the 45.9-point window contrast is
 a within-cell result that more backbones cannot disturb.
 
-**So the real question is scope, not data.** If the five models go into *this*
-paper, those two blocks get new numbers and the grid becomes 8 × 3. If they are
-a follow-up, nothing changes. Either way the two sections can be written,
-reviewed and sent now, which is what the mentor asked for.
+**Decided 2026-08-22: the five go into *this* paper.** So the four blocks above
+get new numbers when the runs land, and both sections can still be written,
+reviewed and sent now, which is what the mentor asked for. §6 works through
+what that decision costs, and the note below §6 records the one methodological
+sentence that had to be written in its final form rather than renumbered.
 
 One thing to carry forward: `FiveModels_Read.md` already records that depth
 pruning is only applicable to two of the five, since FLOWER and SmolVLA prune
@@ -269,8 +280,10 @@ gripper errors before the intervention rows are spent. Action repeat is also
 not comparable down a column, since native chunk lengths run 1, 1, 5 for ours
 against 8, 20--50 and 50 for theirs.
 
-**So the honest expanded grid is ragged**, and that raggedness collides with
-contribution 4, which requires every cell to run the same conditions.
+**So the honest expanded grid is ragged**, which is why contribution 4 was
+rewritten. It used to require every cell to run the same conditions. It now
+holds the condition set fixed *across the cells we compare*, which the ragged
+grid satisfies.
 
 ### The resolution, and it is not a fudge
 
@@ -283,19 +296,61 @@ whether a reduction transfers has already become a question about architecture
 rather than about a switch. `relatedwork.tex` already says this and cites all
 three.
 
-### Recommendation for this submission
+### How to run the expansion
 
-**Keep this paper at the current grid and treat the five as a follow-up.**
-Three reasons, in order of weight.
+**Decided: the five go into this paper.** The recommendation here used to be to
+keep them as a follow-up, and the reasons behind it are now risks to manage
+rather than reasons to decline.
 
 1. Three of the five have no SimplerEnv baseline to validate against, so those
-   rows would carry a setup risk the current five cells do not.
-2. Depth pruning, which carries results 1 and 3, applies to two of the five. An
-   expansion that cannot run the headline intervention on most of its new rows
-   buys coverage rather than evidence.
-3. Six pages. `Setup` and `Results` are already the tight sections.
+   rows carry a setup risk the current five cells do not. **Run FLOWER first.**
+   It is the only model with published numbers on both suites, so it is the
+   only cell where a wrong setup gets caught before intervention rows are
+   spent. MiniVLA is second, on our exact four Bridge tasks.
+2. Depth pruning, which carries results 1 and 3, applies to two of the five.
+   Those new rows add breadth on the other two axes and the inapplicability
+   itself is a finding, but they do not add evidence to the headline result.
+3. Six pages. `Setup` and `Results` are already the tight sections, so the new
+   rows need to arrive as figure area rather than as prose.
 
-If the mentor wants them in, the expansion is **LIBERO-primary**, since all
-five have LIBERO and only FLOWER has both SimplerEnv suites, and FLOWER is the
-first to run because it is the only cell where a wrong setup gets caught.
-Either way the four spots in §5 take new numbers and nothing else moves.
+**LIBERO is the natural primary for the expansion**, since all five have it and
+only FLOWER has both SimplerEnv suites. Whatever the coverage ends up being,
+the four spots in §5 take new numbers and nothing else moves.
+
+### Related Work under the expansion
+
+Checked 2026-08-22. **Three phrases needed changing, and one of them was
+already contradicting the Introduction.**
+
+**1) "a complete backbone $\times$ benchmark grid" was false today.** The
+Introduction says we fill *five of the six cells*, so the two sections
+disagreed about our own coverage, and the expanded grid will be far more
+ragged since depth pruning applies to two of the five new models. It now reads
+*"on both axes of a backbone $\times$ benchmark grid"*, which claims the
+crossing rather than the coverage. That is the thing we actually do, and it
+stays true at any grid size.
+
+⚠️ This corrects §5 of this file, which argued Related Work needed no change
+because its closing sentence carried no numbers. A word can be a coverage
+claim without being a number.
+
+**2) "its two recipes" and "The two rules"** presupposed the record holds
+exactly two prescriptions for layer pruning. The Introduction dropped the same
+presupposition earlier. Now *"its recipes"* and *"These rules"*.
+
+**3) "the newest compact VLAs"** dates the sentence, and reads oddly once
+FLOWER, SmolVLA and TurboVLA are our own experimental subjects rather than a
+trend we observe. Now *"several recent compact VLAs"*.
+
+**What needs no change, and why that is the point.** Related Work carries
+**zero numbers**, confirmed by `audit_sections.py`, so nothing in it has to be
+recomputed when the runs land. The three models cited for building reductions
+in by design stay correct when we also evaluate them, since Related Work
+describes them as prior art and Results measures them. And the axis framing in
+paragraph 1 is defined by the resource each method spends, not by how many
+backbones we hold, so new models slot into the existing three axes.
+
+**One item still needs the mentor.** *"These rules have not been compared on a
+robot policy"* is a negative claim about the whole literature. We searched and
+found no counterexample, but absence of a counterexample in our reading is not
+proof. Ask whether anyone knows of one.
