@@ -53,10 +53,10 @@ resource. Action repetition changes how often the policy runs, visual
 foveation (a log-polar warp and its inverse) changes what it is shown, and
 network depth pruning changes how much of the model each call uses. UniVLA
 releases a Bridge-only checkpoint, so we fill five of the six cells, each with
-eight conditions (Fig.~\ref{fig:grid}). With its control runs, sweeps and
-re-runs, the campaign comes to $7{,}198$ episodes. Every condition replays the
-initial states of its cell's baseline, and we run McNemar's exact test on the
-episodes whose outcome flipped.
+eight conditions, for $4{,}464$ episodes (Fig.~\ref{fig:grid}). Control runs
+and sweeps beyond the grid support the results below. Every condition replays
+the initial states of its cell's baseline, and we run McNemar's exact test on
+the episodes whose outcome flipped.
 
 Three results follow, and each has the same shape. The factor that would get
 the credit is not the factor that moved the number.
@@ -97,21 +97,22 @@ split without discussing it~\cite{efficientvla, vlapruner}.
 
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} We run three
 training-free interventions over a $3 \times 2$ backbone-benchmark grid. Five
-cells are filled, each with eight conditions, and the campaign totals
-$7{,}198$ episodes with its controls, sweeps and re-runs. We release the
-per-episode records. \textbf{2)~Evidence that a reported effect can be a
-property of the configuration.} A candidate window the specifications leave
-open moves one result by $45.9$ points, and one intervention reverses sign
-across backbones with both directions individually significant.
-\textbf{3)~Evidence that compute saved does not predict success change.} The
-intervention behind our largest gain saves almost no compute and helps most
-when it discards nothing. Depth pruning saves the same amount either way and
-still swings success from a gain to a loss. \textbf{4)~A measurement
-procedure} for this class of claim. We match episodes, check determinism
-explicitly, and hold the condition set fixed across the cells we compare. Of
-the five training-free methods we survey~\cite{efficientvla, vlacache, fastv,
-shortgpt, vlapruner}, every one sweeps its own configuration and none
-publishes per-episode outcomes or tests a difference for significance.
+cells are filled, each with eight conditions, for $4{,}464$ episodes. We
+release the per-episode records for the grid and for every control run, sweep
+and re-run behind the results below. \textbf{2)~Evidence that a reported
+effect can be a property of the configuration.} A candidate window the
+specifications leave open moves one result by $45.9$ points, and one
+intervention reverses sign across backbones with both directions individually
+significant. \textbf{3)~Evidence that compute saved does not predict success
+change.} The intervention behind our largest gain saves almost no compute and
+helps most when it discards nothing. Depth pruning saves the same amount
+either way and still swings success from a gain to a loss. \textbf{4)~A
+measurement procedure} for this class of claim. We match episodes, check
+determinism explicitly, and hold the condition set fixed across the cells we
+compare. Of the five training-free methods we survey~\cite{efficientvla,
+vlacache, fastv, shortgpt, vlapruner}, every one sweeps its own configuration
+and none publishes per-episode outcomes or tests a difference for
+significance.
 
 We propose no new efficiency method, and we do not claim that these
 interventions fail in general. We measure every change against its own cell's

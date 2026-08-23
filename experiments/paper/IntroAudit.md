@@ -50,7 +50,7 @@ uses, not against `Report.md`, since the two could be wrong together.
 | 10 | three backbones, two suites | A | correct |
 | 11 | chose these three because each spends a different resource | K | was "chose **them**", which attached to the suites |
 | 12 | the three axes | — | fine |
-| 13 | five of six cells, eight conditions each, $7{,}198$ episodes | A | **counted per cell: 8, 8, 8, 8, 8.** Episodes $7198$ |
+| 13 | five of six cells, eight conditions each, $4{,}464$ episodes | A | **counted per cell: 8, 8, 8, 8, 8.** $3\times96\times8 + 2\times135\times8 = 4464$. **Was $7{,}198$, which counts 384 LatentSaccade episodes and a 240-episode mechanism probe that are not this campaign. See `EpisodeCounts.md`.** |
 | 14 | pairing and McNemar | A, K | was *"we count only the episodes whose outcome flipped"*, which misdescribes the delta. The delta is over every paired episode |
 | 15 | three results, same shape | — | fine |
 | 16 | the factor a result would be credited to is not the one that moved it | G | was *"what a reported number was credited to"*, which reads as an accusation when all three results are our own measurements |

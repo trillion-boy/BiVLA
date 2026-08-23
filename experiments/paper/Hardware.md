@@ -165,7 +165,7 @@ agree, and both could be wrong together. This goes back to the episode records.
 
 | claim in the `.tex` | recomputed | |
 |---|---|---|
-| 7,198 episodes | 7198 | ✓ |
+| 7,198 episodes under `results/` | 7198 | ✓, but the paper now reports the **grid's** 4,464 instead, since 624 of the 7,198 are a different study and a mechanism probe (`EpisodeCounts.md`) |
 | five baselines 15.6 / 38.5 / 30.2 / 84.4 / 81.2% | identical | ✓ |
 | OpenVLA/Fractal prune4 $+15.6$, $p=0.0011$ | $+15.6$, McNemar $p=1.07\times10^{-3}$ | ✓ |
 | SpatialVLA/Fractal prune4 $-17.8$, $p=1.8\times10^{-4}$ | $-17.8$, $p=1.82\times10^{-4}$ | ✓ |

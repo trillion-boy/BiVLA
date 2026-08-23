@@ -60,12 +60,13 @@ Three open backbones × two SimplerEnv suites:
 
 Five filled cells — UniVLA's public checkpoint is Bridge-only — with eight
 conditions each: baseline, action repeat 2 and 4, foveation log-polar and
-blur, and depth pruning of 1, 2 and 4 layers. The grid alone is **4,464
-episodes**; with the eligibility-window controls, the keep sweep and the
-determinism re-runs, the campaign totals **7,198** over 255 result files
-(`verify_all.py` reproduces both). Never attach 7,198 directly to "eight
-conditions", because five cells times eight conditions is 4,464 and a
-reviewer will do that arithmetic.
+blur, and depth pruning of 1, 2 and 4 layers. **The grid is 4,464 episodes**,
+which is 3 × 96 × 8 on Bridge plus 2 × 135 × 8 on Fractal.
+
+⚠️ **The paper reports 4,464, not 7,198.** 7,198 is every episode in the 255
+files under `results/`, and 624 of those belong to the LatentSaccade study and
+to a `move_near` mechanism probe, neither of which is part of this campaign.
+Full decomposition in `EpisodeCounts.md`.
 
 ### The measurement is paired
 
@@ -253,7 +254,7 @@ field.
 
 1. **A uniform re-measurement** of three training-free VLA interventions over a
    3 × 2 backbone-benchmark grid — five filled cells, eight conditions each,
-   7,198 episodes — with the per-episode records released.
+   4,464 grid episodes — with the per-episode records released.
 
 2. **Evidence that reported effects are often properties of the configuration,
    not of the method.** An eligibility choice the specifications leave open
