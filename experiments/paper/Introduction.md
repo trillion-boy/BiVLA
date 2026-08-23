@@ -141,8 +141,13 @@ that fraction on OpenVLA/Bridge:
 | **100% (discard nothing)** | **+30.2** | **4.2 × 10⁻⁷** |
 
 **The best setting is the one that discards nothing**, and the benefit shrinks
-monotonically as more is discarded. Measured compute moves by −3.1% to +2.7%
-across the five cells, because the image size and the token count never change.
+monotonically as more is discarded. **Compute here is `model_ms_per_infer`,
+milliseconds of model time per policy call** — say so, because a reader who
+assumes FLOPs will read the band as a real saving. It moves by −3.1% to +2.7%
+across the five cells. The reason is that OpenVLA, SpatialVLA and UniVLA each
+tokenize a **fixed patch grid**, so any image handed to them becomes the same
+number of tokens. Do **not** write that editing pixels cannot save compute in
+general — a dynamic-resolution encoder would shed tokens on fewer pixels.
 
 ⚠️ **Scope this claim to the training-free form.** Look-Focus-Act and Segment
 This Thing foveate *inside* the encoder, giving distant patches a coarser

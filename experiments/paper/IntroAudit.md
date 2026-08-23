@@ -269,3 +269,41 @@ any general claim is made.
 The two sections were written weeks apart and checked separately, which is how
 this survived seven passes. When Related Work gains a sentence about what a
 method family can do, re-read the results for a sentence that denies it.
+
+
+---
+
+## 9. Pass nine, 2026-08-22, three questions from the author
+
+**1. "3.1\% of what?"** The word *compute* never said what was measured.
+It is `model_ms_per_infer`, milliseconds of model time per policy call, read
+from the episode records by `discover_cost`. That matters, because wall clock
+carries run-to-run noise where a FLOP count would not, and a reader who
+assumed FLOPs would read a $3.1\%$ band as a real saving rather than as
+nothing. Both results now say **model time per call**, so they agree with each
+other and with what the files hold.
+
+**2. "Is it true that editing pixels cannot save compute?"** Not in general,
+and the sentence overstated. A backbone with a dynamic-resolution encoder
+turns fewer pixels into fewer tokens, so a pixel-space edit *would* save there.
+What is true is about **our** backbones: OpenVLA, SpatialVLA and UniVLA each
+tokenize a fixed patch grid, so whatever image they are handed becomes the same
+number of tokens. The sentence now says that, and it also answers in the paper
+the question that prompted it, *why not skip the resize and shed tokens*.
+
+**3. "Is the heading too aggressive?"** The concern was that *"what foveation
+discards is not what makes it help"* reads as calling the whole premise false
+when in fact retraining makes it work.
+
+The heading is kept, and it is accurate. It is about the **discarding** being
+the cause of the **gain**, not about efficiency, and our sweep shows the gain
+peaking where nothing is discarded. It also does not conflict with the two
+papers we cite, whose benefit comes from where the gaze looks rather than from
+what is thrown away.
+
+What was fixed instead is the last sentence, which said *"in this form"* and
+left the reader to guess which other form exists. It now says **"foveation
+without retraining"**, which names the condition and concedes in three words
+that retraining changes the answer. That is where the perceived aggression
+lived, since a naked *"is not a way to spend less"* sounds like a verdict on
+foveation rather than on the training-free case.
