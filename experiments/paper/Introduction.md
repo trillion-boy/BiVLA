@@ -60,13 +60,16 @@ Three open backbones × two SimplerEnv suites:
 
 Five filled cells — UniVLA's public checkpoint is Bridge-only — with eight
 conditions each: baseline, action repeat 2 and 4, foveation log-polar and
-blur, and depth pruning of 1, 2 and 4 layers. **The grid is 4,464 episodes**,
-which is 3 × 96 × 8 on Bridge plus 2 × 135 × 8 on Fractal.
+blur, and depth pruning of 1, 2 and 4 layers. **The campaign is 6,910 episodes.** The grid itself is **4,464**, which is
+3 × 96 × 8 on Bridge plus 2 × 135 × 8 on Fractal, and the control and
+diagnostic runs the results rest on add **2,446** more.
 
-⚠️ **The paper reports 4,464, not 7,198.** 7,198 is every episode in the 255
-files under `results/`, and 624 of those belong to the LatentSaccade study and
-to a `move_near` mechanism probe, neither of which is part of this campaign.
-Full decomposition in `EpisodeCounts.md`.
+⚠️ **Do not report 7,198, and do not report 4,464 either.** 7,198 counts every
+file under `results/`, including 384 episodes of the LatentSaccade study,
+which is a different intervention. 4,464 is the grid alone, and result 1's
+losing arm (`window875`, −30.4) is a control run that sits *outside* the grid,
+so that number would exclude the evidence for the paper's biggest claim. Full
+arithmetic in `EpisodeCounts.md` §5.
 
 ### The measurement is paired
 

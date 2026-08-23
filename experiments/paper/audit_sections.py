@@ -43,6 +43,9 @@ SOURCE_DOCS = [
     "experiments/paper/RelatedWork_Sources.md",
     "experiments/paper/Introduction.md",
     "experiments/paper/FiveModels_Read.md",
+    "experiments/paper/EpisodeCounts.md",
+    "experiments/paper/PerTaskRows.md",
+    "experiments/paper/AxisClaim.md",
 ]
 
 findings = []

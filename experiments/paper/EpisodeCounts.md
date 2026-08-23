@@ -75,50 +75,58 @@ episodes, filed above under extra conditions rather than under re-runs.
 
 ---
 
-## 5. The rule, since "which folder" is the wrong question
+## 5. The rule, and the number the paper reports
 
-Asked 2026-08-22. The folder is not the criterion. **An episode belongs in the
-paper's total when a claim in the paper rests on it.** Three candidate rules,
-each counted from the files:
+⚠️ **Corrected 2026-08-22, second time.** This section first recommended
+**4,464**, the grid alone. That was wrong, and the author caught it. Result 1's
+losing arm, `window875` at $-30.4$, is a **control run and sits outside the
+grid**, so a reader who tried to locate the $45.9$-point headline result inside
+4,464 episodes could not. Reporting a total that excludes the evidence for the
+paper's biggest claim is worse than reporting nothing.
 
-| rule | episodes | what it is |
+### The rule
+
+The folder is not the criterion. **An episode belongs in the paper's total when
+a claim in the paper rests on it.** `Report.md` line 585 already draws exactly
+the right line, between the **grid** and the **control and diagnostic runs**,
+and puts `baseline_rerun`, `depth_prune4_early`, `_mid`, `move_near_v1` and the
+determinism re-runs in the second column. Both columns are this campaign. What
+is *not* this campaign is a different intervention.
+
+### The arithmetic
+
+| | episodes |
+|---|---:|
+| every file under `results/` | 7,198 |
+| minus LatentSaccade, a different study | $-384$ |
+| plus the OpenVLA/Bridge foveation cell, imported from `RetinaBased/` | $+96$ |
+| **this campaign** | **6,910** |
+
+which splits as:
+
+| | episodes | what it is |
 |---|---:|---|
-| **1. What Fig. 1 shows** | **4,464** | the grid, five cells at eight conditions |
-| **2. What this paper's claims rest on** | **6,670** | rule 1 plus the runs each result needs |
-| 3. Every file under `results/` | 7,198 | rule 2 plus a different study and a probe |
+| the grid | 4,464 | $3\times96\times8$ on Bridge plus $2\times135\times8$ on Fractal, and what Fig. 1 shows |
+| controls and diagnostics | 2,446 | window controls, depth variants, the keep sweep, the determinism re-runs, the `move_near` probe |
+| **total** | **6,910** | |
 
-### Rule 2 in full, and why each row is in
+### Why the 384 stay out
 
-| episodes | which claim needs it |
-|---:|---|
-| 4,464 | Fig. 1, result 3's sign reversal, result 2's foveation cells |
-| 867 | **result 1.** The window controls *are* the $45.9$-point result, not scaffolding around it |
-| 750 | **result 1.** `depth_prune4_early`, `prune4_mid`, `prune4_back`, `prune8`, `prune2_repeat2`, the rest of the layer-choice evidence |
-| 288 | **result 2.** The keep sweep that shows the gain peaks at $100\%$ |
-| 301 | **contribution 4.** The determinism re-runs the procedure promises |
-| **6,670** | |
+Their files say what they are: `model: SpatialVLA+LatentSaccade[OFF
+(baseline)]`. LatentSaccade is a different intervention, from the
+`RetinaBased` line of work, and no sentence in this paper reports it. Counting
+it would inflate the campaign by a study the paper does not describe.
 
-### Why rule 3 is wrong
+### What the sections say
 
-**384 episodes are LatentSaccade**, a different intervention. Their files say
-so: `model: SpatialVLA+LatentSaccade[OFF (baseline)]`. **240 are a `move_near`
-mechanism probe** that no sentence in the Introduction uses. Counting them
-inflates the paper by 624 episodes of work it does not report.
-
-`Report.md` line 2201 quotes 7,198 as a file-integrity figure, "255 result
-files and 7,198 episodes recounted and correct". That is the right use of it.
-It is a statement about the archive, not about the campaign.
+| number | where | why |
+|---|---|---|
+| **6,910** | Introduction, both places | the campaign, including the runs result 1 needs |
+| 4,464 and the split above | Setup | the grid against its controls, which needs the table to mean anything |
+| 7,198 | nowhere in the paper | it stays in `verify_all.py` as an archive check, which is how `Report.md` line 2201 uses it |
 
 ### The answer to "should the layer-selection runs count"
 
-**Yes.** They are result 1. The paper's headline claim is that the eligibility
-window moves a result by $45.9$ points, and the runs that establish it are the
-window controls and the depth variants. They are evidence, not exploration.
-
-### Where each number goes
-
-| number | section | why |
-|---|---|---|
-| **4,464** | Introduction | it is what Fig. 1 shows, and a reader can derive it from figures already in the paragraph, $3\times96\times8 + 2\times135\times8$ |
-| **6,670** | Setup, with the table above | the honest size of the campaign, but it needs the breakdown to be meaningful, and the Introduction has no room for that |
-| 7,198 | nowhere in the paper | keep it in `verify_all.py`, where it checks the archive |
+**Yes, and that is the whole point.** They are result 1, not exploration around
+it. The headline claim is that the eligibility window moves a result by $45.9$
+points, and the window controls are one of the two arms of that contrast.
