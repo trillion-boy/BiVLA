@@ -307,3 +307,55 @@ without retraining"**, which names the condition and concedes in three words
 that retraining changes the answer. That is where the perceived aggression
 lived, since a naked *"is not a way to spend less"* sounds like a verdict on
 foveation rather than on the training-free case.
+
+
+---
+
+## 10. Pass ten, 2026-08-22, two reviewer objections raised on the draft
+
+### Objection 1, and it was a real gap
+
+*"You said the token count cannot change. If the work is identical, why does
+the time move at all? Is the log-polar warp inside the timed call?"*
+
+**It is not**, and the paper did not say so. `eval.py` lines 558--571:
+
+```python
+policy_image = apply_foveation(image, args, fov_gaze)   # warp happens here
+_t_model = time.time()                                  # timer starts after
+raw_actions, env_actions = model.step(policy_image, ...)
+model_time += time.time() - _t_model
+```
+
+So `model_ms_per_infer` measures `model.step` alone. The residual band is
+wall-clock variance, and re-running a condition unchanged moves a mean by
+$2.4\%$ on SpatialVLA/Fractal and $0.4\%$ on UniVLA/Bridge
+(`EpisodeCounts.md` §4), which brackets the $3.1\%$.
+
+The sentence now says **"which excludes the warp itself"**, four words that
+answer the objection before it is raised. They also make the figure the
+**charitable** reading for foveation, since counting the warp would make it
+look worse rather than better, and a reviewer who notices that sees a
+conservative measurement rather than a flattering one.
+
+**Not adopted:** tightening `and` into `so`. The suggestion was to make the
+$3.1\%$ follow causally from the fixed token count. It does not. A fixed token
+count implies the *work* is identical, and the $3.1\%$ is what the clock does
+on identical work, so a causal connective would claim the wrong thing. The two
+facts now sit in two sentences instead.
+
+### Objection 2, and the reading is correct
+
+*"'Foveation without retraining' concedes that retraining it into a
+token-dropping scheme would make it a real efficiency technique. Is that
+intended?"*
+
+**Yes, and it is the position the paper should hold.** Look-Focus-Act and
+Segment This Thing demonstrate exactly that, and Related Work now says so with
+their citations. The alternative stance, that foveation is bad regardless of
+training, is not something our grid can support and is contradicted by two
+papers we cite.
+
+So the concession is not a retreat. It is the boundary that makes the claim
+defensible, and it costs nothing, because the paper's subject is the
+training-free case throughout.

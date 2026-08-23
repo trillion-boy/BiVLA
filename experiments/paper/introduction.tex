@@ -81,11 +81,11 @@ choice matters is itself a property of the configuration.
 swept how much of the observation foveation keeps, and the best setting
 discards nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$
 and $+4.2$ at $10\%$. Our three backbones tokenize a fixed patch grid, so a
-pixel-space edit cannot change how many tokens they process, and model time
-per call stayed within $3.1\%$ of baseline in every condition we ran. The gain
-peaks where nothing is discarded and only the log-polar round trip remains, so
-foveation without retraining is an input transformation and not a way to spend
-less.
+pixel-space edit cannot change how many tokens they process. Model time per
+call, which excludes the warp itself, stayed within $3.1\%$ of baseline in
+every condition we ran. The gain peaks where nothing is discarded and only the
+log-polar round trip remains, so foveation without retraining is an input
+transformation and not a way to spend less.
 
 \textbf{The same intervention reverses sign across backbones.} Under depth
 pruning of four layers, OpenVLA gains $15.6$ points on the same $135$ Fractal
