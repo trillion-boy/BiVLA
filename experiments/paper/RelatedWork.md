@@ -35,17 +35,17 @@ efficiency is a claim about one of these resources being spent differently.
 
 ### The interventions we re-measure
 
-Layer redundancy in language models is well established, **but its two recipes
+Layer redundancy in language models is well established, **but its recipes
 disagree on which layers may go.** ShortGPT ranks every layer by Block
 Influence, the criterion we adopt, and constrains nothing further, while Gromov
 et al. remove a contiguous block of the deepest layers and find the final layer
 must be kept. EfficientVLA carries the unconstrained form into VLAs without
 training, and MoLe-VLA needs a learned router and distillation, placing it
-outside what we test. **The two rules have not been compared on a robot policy,
-and our depth results turn on which one holds.** Notably, the newest compact VLAs **build such
-reductions in by design** rather than applying them at inference (FLOWER,
-SmolVLA, TurboVLA), which makes whether a reduction transfers a question about
-architecture and not only about a switch.
+outside what we test. **These rules have not been compared on a robot policy,
+and our depth results turn on which one holds.** Notably, several recent compact
+VLAs **build such reductions in by design** rather than applying them at
+inference (FLOWER, SmolVLA, TurboVLA), which makes whether a reduction transfers
+a question about architecture and not only about a switch.
 
 On the visual axis, methods developed for VLMs (FastV, SparseVLM, ToMe) have
 been reported to transfer poorly to VLAs. VLA-Cache attributes this to their
@@ -75,7 +75,7 @@ empty (Gaze-Reg, VLA-Pruner), and the tables we cite report mean success rates
 over independent runs, without matched-episode outcomes. Whether an
 intervention keeps its *direction* when the backbone or the benchmark changes
 therefore cannot be read off these tables, nor can the per-task disagreements
-they average over (Table I).
+they average over.
 
 ---
 
@@ -83,10 +83,9 @@ We do not cover quantisation, KV-cache compression or learned early exit, which
 spend resources our axes do not. Measuring the settings papers leave to their
 source code is an established form (the image-classification and the
 inference-time-computation *bag of tricks* studies). Unique to this paper, we
-measure the same interventions over a complete backbone × benchmark grid and
-test each on matched episodes rather than aggregate rates, so that the
-direction of an effect, and not only its size, is something the evidence can
-decide.
+measure the same interventions on both axes of a backbone × benchmark grid, and
+we test each on matched episodes rather than aggregate rates. The direction of
+an effect, and not only its size, then becomes something the evidence can decide.
 
 ---
 
@@ -135,17 +134,21 @@ Neither is a free cut. Prefer taking the overrun out of a section with slack.
 **Three things deliberately left out, and one that changed.**
 
 1. **The per-task split** (`RelatedWork.md` §2.5 of the long version) gets one
-   clause, not a paragraph. It is a finding; its evidence is Table I in the
-   Introduction and its statement is in Results.
+   clause, not a paragraph. It is a finding, its evidence is in
+   `PerTaskRows.md`, and its statement is in Results. (Table I was dropped on
+   2026-08-22, see `tableI.tex`.)
 2. ~~**StarVLA** is not cited — we have a search snippet, not the PDF.~~
    **Now cited.** The PDF was read 2026-08-22; the snippet we had been
    carrying turned out not to appear in the paper, so the caution was right.
 3. **The ten training-free papers** in `Survey_2026-08.md` §4 are not cited.
    Abstract-level only.
-4. **The 8 × 3 scale statement** (eight backbones once the mentor's five runs
-   land, three benchmarks) belongs in **Setup**, not here. Related Work claims
-   a *method* — complete grid plus matched episodes — not a coverage record,
-   because vla-eval already publishes 14 benchmarks × 6 model servers.
+4. **The grid's size** belongs in **Setup**, not here. Related Work claims a
+   *method* — crossing both axes plus matched episodes — not a coverage
+   record, because vla-eval already publishes 14 benchmarks × 6 model servers.
+   The closing sentence said "a **complete** backbone × benchmark grid" until
+   2026-08-22, which contradicted the Introduction's "five of the six cells"
+   and would have broken outright on the expanded grid, since depth pruning
+   applies to two of the five new models. It now claims the crossing.
 
 **Two sentences a reviewer will test.** The matched-episode claim is scoped to
 "the tables we cite," not to the field — keep it that way. And the
