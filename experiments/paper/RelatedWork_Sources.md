@@ -200,6 +200,30 @@ from a snippet was meant to prevent. Corrected there.
 
 ---
 
+## Two negative claims that had no entry here, fixed 2026-08-23
+
+Claim 12 above was written with care: the draft says *"the tables we cite,"*
+not *"no prior work,"* because a search that finds nothing is evidence about
+the search, not about the world. Two other sentences broke that same rule and
+never got a row in this table, which is how they survived several passes.
+
+| was | now | why |
+|---|---|---|
+| *"These rules have not been compared on a robot policy"* | *"We find no comparison of these rules on a robot policy"* | a claim about the entire literature, resting on our reading set. One reviewer who knows of a comparison ends it. The new form is a claim about our search, which is true and which we can defend |
+| *"Unique to this paper, we measure the same interventions on both axes…"* | *"We measure the same interventions on both axes…"* | a priority claim, and the weakest kind, since it asserts a negative about everything unread. It was also redundant: the preceding three sentences already name three specific gaps, each with citations |
+
+Neither change costs anything. The first still says the comparison is missing
+and still says our depth results turn on it. The second still says what we do.
+What both drop is the part a reviewer could refute with a single citation.
+
+⚠️ `RelatedWork_Plan.md` still lists the *"one item that needs the mentor,"*
+namely whether anyone knows of a counterexample to the first claim. That
+question is now **optional rather than blocking**, since the sentence no
+longer depends on the answer. Ask it anyway if there is a chance to, because a
+known comparison would be worth citing.
+
+---
+
 ## Two claims worth re-checking before submission
 
 1. **The matched-episode claim.** This is a negative claim over the papers we

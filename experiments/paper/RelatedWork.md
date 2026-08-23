@@ -13,8 +13,8 @@ for that.
 
 ---
 
-We cover three strands, namely the cost of VLA inference, the training-free
-interventions we re-measure, and how such interventions are evaluated.
+We cover the cost of VLA inference, the training-free interventions we
+re-measure, and how the literature evaluates them.
 
 ### Inference cost in VLA policies
 
@@ -41,29 +41,30 @@ Influence, the criterion we adopt, and constrains nothing further, while Gromov
 et al. remove a contiguous block of the deepest layers and find the final layer
 must be kept. EfficientVLA carries the unconstrained form into VLAs without
 training, and MoLe-VLA needs a learned router and distillation, placing it
-outside what we test. **These rules have not been compared on a robot policy,
-and our depth results turn on which one holds.** Notably, several recent compact
+outside what we test. **We find no comparison of these rules on a robot policy,
+and our depth results turn on which one holds.** Several recent compact
 VLAs **build such reductions in by design** rather than applying them at
-inference (FLOWER, SmolVLA, TurboVLA), which makes whether a reduction transfers
-a question about architecture and not only about a switch.
+inference (FLOWER, SmolVLA, TurboVLA). Whether a reduction transfers is
+therefore a question about architecture and not only about a switch.
 
-On the visual axis, methods developed for VLMs (FastV, SparseVLM, ToMe) have
-been reported to transfer poorly to VLAs. VLA-Cache attributes this to their
+On the visual axis, two papers report that methods developed for VLMs (FastV,
+SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this to their
 short action sequences and measures FastV leaving FLOPs unchanged while latency
 rises, and VLA-Pruner reproduces the degradation on a third setting.
 
 Our own visual intervention, foveation, comes from the other direction. It
 descends from Schwartz's log-polar mapping, taken up in robot vision to cut
 data while preserving central resolution (Traver & Bernardino) and applied to
-VLAs by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). We include it
-because it edits the observation *before* the encoder, which is what makes it
-comparable across backbones. Methods that foveate *inside* the encoder give distant
-patches a coarser resolution and so shed tokens, but they give up the
-pretrained weights, which were fitted to a uniform patch grid
-(Look-Focus-Act). A training-free study therefore edits pixels and keeps the
-token count its backbone already has. **No matter how the encoders differ**, each splits
-the image into a **uniform** grid, so empty background gets the same budget as
-the region where the gripper meets the object.
+VLAs by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). **No matter how
+the encoders differ**, each splits the image into a **uniform** grid, so empty
+background gets the same budget as the region where the gripper meets the
+object. Methods that foveate *inside* the encoder change that grid, giving
+distant patches a coarser resolution and so shedding tokens, but they give up
+the pretrained weights, which were fitted to a uniform grid (Look-Focus-Act).
+We include foveation because ours stays *before* the encoder, which is what
+makes it comparable across backbones. Editing pixels leaves the token count the
+backbone already has, and that is the constraint a training-free study works
+under.
 
 ### How these claims are evaluated
 
@@ -74,9 +75,9 @@ describes the field as fragmented across incompatible codebases and protocols.
 
 What infrastructure cannot supply is **the comparison itself.** Papers using
 several backbones change the benchmark at the same time (VLA-Cache,
-SpecPrune-VLA, VLA-IAP), those with both axes present leave the crossing cell
-empty (Gaze-Reg, VLA-Pruner), and the tables we cite report mean success rates
-over independent runs, without matched-episode outcomes. Whether an
+SpecPrune-VLA, VLA-IAP). Those with both axes present leave the crossing cell
+empty (Gaze-Reg, VLA-Pruner). The tables we cite report mean success rates
+over independent runs, not matched-episode outcomes. Whether an
 intervention keeps its *direction* when the backbone or the benchmark changes
 therefore cannot be read off these tables, nor can the per-task disagreements
 they average over.
@@ -86,8 +87,8 @@ they average over.
 We do not cover quantisation, KV-cache compression or learned early exit, which
 spend resources our axes do not. Measuring the settings papers leave to their
 source code is an established form (the image-classification and the
-inference-time-computation *bag of tricks* studies). Unique to this paper, we
-measure the same interventions on both axes of a backbone × benchmark grid, and
+inference-time-computation *bag of tricks* studies). We measure the same
+interventions on both axes of a backbone × benchmark grid, and
 we test each on matched episodes rather than aggregate rates. The direction of
 an effect, and not only its size, then becomes something the evidence can decide.
 
@@ -97,8 +98,15 @@ an effect, and not only its size, then becomes something the evidence can decide
 
 **Structure copied from *Bag of Tricks*, measured:** one roadmap sentence,
 three bold run-in paragraphs, each ending on our position rather than on a
-summary, and a closing "Unique to this paper" sentence. No tables — theirs is
-in the Introduction, and so is ours.
+summary, and a closing paragraph that states what we do differently. No tables
+— theirs is in the Introduction, and so is ours.
+
+That closing paragraph used to open on *"Unique to this paper."* Dropped
+2026-08-23: it is a priority claim over the whole literature, and one
+counterexample kills it. The three sentences just above it already name three
+specific gaps with citations, so the close reads stronger without it. Same
+rule as claim 12 in `RelatedWork_Sources.md`, which was careful to say *"the
+tables we cite"* rather than *"no prior work."*
 
 **Punctuation.** Both `.tex` files use no em-dashes, no semicolons and no
 prose colons. That was measured against the 23 papers we hold: prose semicolons
