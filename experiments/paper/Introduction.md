@@ -122,10 +122,12 @@ Run in all five cells, the same two-row contrast spans **2.1 to 50.4 points**.
 So the sensitivity to layer choice is itself a property of the configuration,
 not of the method.
 
-### 2. Compute saved does not predict what happens to success
+### 2. What foveation discards is not what makes it help
 
-*(An earlier heading here, "a gain attributed to compression does not come
-from compression", attributed that position to nobody and is retired.)*
+*(Two earlier headings are retired. "A gain attributed to compression does not
+come from compression" attributed that position to nobody. "Compute saved does
+not predict what happens to success" cannot be shown by a paragraph in which
+compute never varies, since our foveation saves nothing.)*
 
 Foveation keeps a fraction of the observation and discards the rest; the
 efficiency argument is that the discarding is what buys you something. Sweeping
@@ -142,15 +144,27 @@ that fraction on OpenVLA/Bridge:
 monotonically as more is discarded. Measured compute moves by −3.1% to +2.7%
 across the five cells, because the image size and the token count never change.
 
+⚠️ **Scope this claim to the training-free form.** Look-Focus-Act and Segment
+This Thing foveate *inside* the encoder, giving distant patches a coarser
+resolution, and they really do shed tokens. What that costs is the pretrained
+weights, so LFA pretrains its own ViT-B from scratch. We are training-free, so
+the tokenizer is fixed, so the token count is fixed. **Never write that
+foveation is not an efficiency technique** — write that *in this form* it is an
+input transformation and not a way to spend less. Related Work now says the
+tokenizer variant sheds tokens, so an unscoped claim here would contradict our
+own section. Quotes in `RelatedWork_Sources.md`.
+
 The effect is real and we can trace it: the log-polar round trip is lossy
 asymmetrically. The centre is stretched across many columns and folded back
 without loss; the periphery is averaged down and cannot be recovered. So the
 transform already produces "sharp centre, soft surround" **before anything is
-subsampled**. What it is not is an efficiency technique.
+subsampled**. Measured on a 640×480 frame, the innermost radius band spreads
+one source pixel over 49 columns (0.02 px per column) while the outermost
+compresses 3.06 px into each column.
 
 We are careful about the scope here. This cell has a 15.6% baseline, and the
 same intervention scores −19.3 on Fractal. The claim is not "foveation helps"
-but **"this gain cannot be explained by compression."**
+but **"this gain does not come from what was discarded."**
 
 ### 3. The same intervention reverses sign across backbones
 

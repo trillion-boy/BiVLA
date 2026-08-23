@@ -27,6 +27,7 @@ class here and re-run section 2. That is the only way this converges.**
 | K | logic | dangling antecedent, ambiguous pronoun, non-sequitur | "the same hiding", "we chose **them**" |
 | L | promise | something committed to that Setup or Results must deliver | per-episode records, determinism check |
 | M | sampled verification | a check that sampled instead of enumerating, so the verdict itself was wrong | "7 of 8" for the per-task split, which had tested 4 of 7 conditions per cell |
+| O | cross-section contradiction | a claim one section makes that another section of our own paper denies | "foveation is not an efficiency technique" against Related Work's "methods that foveate inside the encoder shed tokens" |
 | N | heading unsupported by its own paragraph | a result heading whose claim the paragraph beneath it cannot establish | "compute saved does not predict success" over a paragraph where compute never varies |
 
 ---
@@ -226,3 +227,45 @@ other two headings. *"What saves compute is not what changes success"* is
 refuted by our own action repetition, which saves compute and costs UniVLA
 $81.2$ points (class F). The current heading is accurate, at altitude, and
 about our own intervention rather than someone's claim.
+
+
+---
+
+## 8. Pass eight, 2026-08-22, raised by the author reading paragraph 6
+
+**Class O, a contradiction between our own two sections.** Result 2 ended with
+*"which makes **foveation** an input transformation rather than an efficiency
+technique."* That is a claim about foveation in general. Related Work, updated
+the same day from the Look-Focus-Act and Segment This Thing PDFs, now says
+*"Methods that foveate inside the encoder give distant patches a coarser
+resolution and **so shed tokens**."*
+
+**Both sentences cannot be true.** A reviewer reading them together finds our
+paper asserting that foveation both is and is not a way to spend less.
+
+The author found it by reading their own draft and glossing sentence 3 as
+*"other papers' efficiency framing is a fiction."* That gloss is exactly the
+misreading the sentence invited, and it would be unfair as well as wrong,
+since both papers really do reduce token counts.
+
+### What changed
+
+| before | after |
+|---|---|
+| "Across every foveation condition we ran, measured compute stayed within $3.1\%$ of baseline, since neither the image size nor the token count changes, so the discarding buys nothing." | "Training-free foveation edits pixels rather than the tokenizer, so the encoder sees its usual patch grid and the discarding buys no compute. Measured compute stayed within $3.1\%$ of baseline in every condition we ran." |
+| "which makes **foveation** an input transformation rather than an efficiency technique" | "so **in this form** foveation is an input transformation and not a way to spend less" |
+
+The first now gives the mechanism, which pre-empts *"why not just skip the
+resize and shed tokens"*, and scopes the claim in the same clause. The second
+scopes the definitional claim with three words.
+
+The heading stays. *"What foveation discards is not what makes it help"* is
+about the discarding, and the body establishes which kind of foveation before
+any general claim is made.
+
+### The rule this leaves behind
+
+**Every claim about an intervention in general has to survive Related Work.**
+The two sections were written weeks apart and checked separately, which is how
+this survived seven passes. When Related Work gains a sentence about what a
+method family can do, re-read the results for a sentence that denies it.

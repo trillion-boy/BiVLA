@@ -80,11 +80,12 @@ choice matters is itself a property of the configuration.
 \textbf{What foveation discards is not what makes it help.} In one cell, we
 swept how much of the observation foveation keeps, and the best setting
 discards nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$
-and $+4.2$ at $10\%$. Across every foveation condition we ran, measured
-compute stayed within $3.1\%$ of baseline, since neither the image size nor
-the token count changes, so the discarding buys nothing. The gain peaks when
-nothing is discarded and only the log-polar round trip remains, which makes
-foveation an input transformation rather than an efficiency technique.
+and $+4.2$ at $10\%$. Training-free foveation edits pixels rather than the
+tokenizer, so the encoder sees its usual patch grid and the discarding buys no
+compute. Measured compute stayed within $3.1\%$ of baseline in every condition
+we ran. The gain peaks where nothing is discarded and only the log-polar round
+trip remains, so in this form foveation is an input transformation and not a
+way to spend less.
 
 \textbf{The same intervention reverses sign across backbones.} Under depth
 pruning of four layers, OpenVLA gains $15.6$ points on the same $135$ Fractal
