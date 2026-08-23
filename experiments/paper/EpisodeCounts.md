@@ -71,3 +71,54 @@ again", and contribution 4's *"check determinism explicitly"* is this.
 
 `univla_bridge_0805/action_repeat2_l4` is a fourth re-run of the same kind, 96
 episodes, filed above under extra conditions rather than under re-runs.
+
+
+---
+
+## 5. The rule, since "which folder" is the wrong question
+
+Asked 2026-08-22. The folder is not the criterion. **An episode belongs in the
+paper's total when a claim in the paper rests on it.** Three candidate rules,
+each counted from the files:
+
+| rule | episodes | what it is |
+|---|---:|---|
+| **1. What Fig. 1 shows** | **4,464** | the grid, five cells at eight conditions |
+| **2. What this paper's claims rest on** | **6,670** | rule 1 plus the runs each result needs |
+| 3. Every file under `results/` | 7,198 | rule 2 plus a different study and a probe |
+
+### Rule 2 in full, and why each row is in
+
+| episodes | which claim needs it |
+|---:|---|
+| 4,464 | Fig. 1, result 3's sign reversal, result 2's foveation cells |
+| 867 | **result 1.** The window controls *are* the $45.9$-point result, not scaffolding around it |
+| 750 | **result 1.** `depth_prune4_early`, `prune4_mid`, `prune4_back`, `prune8`, `prune2_repeat2`, the rest of the layer-choice evidence |
+| 288 | **result 2.** The keep sweep that shows the gain peaks at $100\%$ |
+| 301 | **contribution 4.** The determinism re-runs the procedure promises |
+| **6,670** | |
+
+### Why rule 3 is wrong
+
+**384 episodes are LatentSaccade**, a different intervention. Their files say
+so: `model: SpatialVLA+LatentSaccade[OFF (baseline)]`. **240 are a `move_near`
+mechanism probe** that no sentence in the Introduction uses. Counting them
+inflates the paper by 624 episodes of work it does not report.
+
+`Report.md` line 2201 quotes 7,198 as a file-integrity figure, "255 result
+files and 7,198 episodes recounted and correct". That is the right use of it.
+It is a statement about the archive, not about the campaign.
+
+### The answer to "should the layer-selection runs count"
+
+**Yes.** They are result 1. The paper's headline claim is that the eligibility
+window moves a result by $45.9$ points, and the runs that establish it are the
+window controls and the depth variants. They are evidence, not exploration.
+
+### Where each number goes
+
+| number | section | why |
+|---|---|---|
+| **4,464** | Introduction | it is what Fig. 1 shows, and a reader can derive it from figures already in the paragraph, $3\times96\times8 + 2\times135\times8$ |
+| **6,670** | Setup, with the table above | the honest size of the campaign, but it needs the breakdown to be meaningful, and the Introduction has no room for that |
+| 7,198 | nowhere in the paper | keep it in `verify_all.py`, where it checks the archive |
