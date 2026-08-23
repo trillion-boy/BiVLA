@@ -344,23 +344,44 @@ if intro:
 # =========================================================== J. terminology
 # One idea should have one name. Drift between synonyms is the commonest way a
 # reader loses the thread across two sections.
-TERM_SETS = [
-    ("the eligible-layer knob", ["candidate window", "eligibility", "eligible"]),
-    ("the intervention family", ["training-free", "training free"]),
-    ("the unit of pairing", ["matched episode", "episode-level", "per-episode"]),
-    ("the thing being spent", ["compute saved", "compute", "FLOPs"]),
-]
+# Reviewed 2026-08-22, when the question came up of promoting every entry here
+# to a finding. Three of the four original entries were counting the wrong
+# thing, so promoting them unchanged would have produced three false failures
+# out of four, and a checker that cries wolf gets ignored. That is how this
+# section became decorative in the first place: it only ever noted, so nobody
+# acted on it.
+#
+# The split is now by whether drift is a DEFECT or a STYLE CHOICE, and whether
+# the detection is sound enough to fail a build on.
 
-# Concepts where two names for one thing is a defect rather than a style
-# choice, so drift is reported instead of noted. Added 2026-08-22, after
-# paragraph 3 and contribution 1 named the same set of runs "control runs and
-# sweeps" and "control and diagnostic runs", which reads as two different sets
-# of episodes behind the same total. Variants must not be substrings of one
-# another or the count double-reports.
+# Drift here is a defect and the match is exact, so these fail.
+# Rule: no variant may be a substring of another, and no variant may match
+# inside a different word or a quotation of someone else's terminology.
 NAMING_MUST_MATCH = [
     ("what the campaign total counts beyond the grid",
      ["control runs and sweeps", "control and diagnostic runs", "sweeps and re-runs"]),
+    ("the hyphenation of the intervention family",
+     ["training-free", "training free"]),
+    ("the noun for the eligible-layer knob",
+     ["candidate window", "eligibility window", "eligible-layer window", "candidate set"]),
 ]
+
+# Drift here is legitimate, so these only report. Each carries the reason it
+# cannot be a finding, because otherwise someone will promote it again.
+TERM_SETS = [
+    # "candidate window" is the noun, "eligible" is the adjective for membership
+    # in it. Both belong. The noun-only check above is the one that can fail.
+    ("the eligible-layer knob", ["candidate window", "eligibility", "eligible"]),
+    # "matched episodes" is how we test; "per-episode records" is what we
+    # release. Different things, not two names for one.
+    ("the unit of pairing", ["matched episode", "episode-level", "per-episode"]),
+    # "compute" is our measurement and "FLOPs" appears only where we quote the
+    # claim template and VLA-Cache. Counting them as rivals counts other
+    # people's vocabulary as our own. The count also over-reports: "compute"
+    # matches inside "compute saved" and inside the verb "computed".
+    ("the thing being spent", ["compute saved", "compute", "FLOPs"]),
+]
+
 joined = " ".join(rendered(t, drop_footnotes=False) for t in raw.values()).lower()
 for label, variants in TERM_SETS:
     used = {v: joined.count(v.lower()) for v in variants if joined.count(v.lower())}
