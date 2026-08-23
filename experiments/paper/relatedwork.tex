@@ -36,15 +36,15 @@ than competing methods, because a claim about efficiency is a claim about one
 of these resources being spent differently.
 
 \textbf{The interventions we re-measure.} Layer redundancy in language models
-is well established, but its two recipes disagree on which layers may go.
-ShortGPT ranks every layer by Block Influence, the criterion we adopt, and
-constrains nothing further~\cite{shortgpt}, while Gromov et al.\ remove a
-contiguous block of the deepest layers and find the final layer must be
+is well established, but its recipes disagree on which layers may go. ShortGPT
+ranks every layer by Block Influence, the criterion we adopt, and constrains
+nothing further~\cite{shortgpt}, while Gromov et al.\ remove a contiguous
+block of the deepest layers and find the final layer must be
 kept~\cite{gromov}. EfficientVLA carries the unconstrained form into VLAs
 without training~\cite{efficientvla}, and MoLe-VLA needs a learned router and
-distillation~\cite{molevla}, placing it outside what we test. The two rules
-have not been compared on a robot policy, and our depth results turn on which
-one holds. Notably, the newest compact VLAs build such reductions in by design
+distillation~\cite{molevla}, placing it outside what we test. These rules have
+not been compared on a robot policy, and our depth results turn on which one
+holds. Notably, several recent compact VLAs build such reductions in by design
 rather than applying them at inference~\cite{flower, smolvla, turbovla}, which
 makes whether a reduction transfers a question about architecture and not only
 about a switch. On the visual axis, methods developed for VLMs~\cite{fastv,
@@ -78,7 +78,7 @@ tables, nor can the per-task disagreements they average over.
 We do not cover quantisation, KV-cache compression or learned early exit,
 which spend resources our axes do not. Measuring the settings papers leave to
 their source code is an established form~\cite{bagoftricks_cnn,
-bagoftricks_llm}. Unique to this paper, we measure the same interventions over
-a complete backbone $\times$ benchmark grid and test each on matched episodes
-rather than aggregate rates, so that the direction of an effect, and not only
-its size, is something the evidence can decide.
+bagoftricks_llm}. Unique to this paper, we measure the same interventions on
+both axes of a backbone $\times$ benchmark grid, and we test each on matched
+episodes rather than aggregate rates. The direction of an effect, and not only
+its size, then becomes something the evidence can decide.
