@@ -350,11 +350,28 @@ TERM_SETS = [
     ("the unit of pairing", ["matched episode", "episode-level", "per-episode"]),
     ("the thing being spent", ["compute saved", "compute", "FLOPs"]),
 ]
+
+# Concepts where two names for one thing is a defect rather than a style
+# choice, so drift is reported instead of noted. Added 2026-08-22, after
+# paragraph 3 and contribution 1 named the same set of runs "control runs and
+# sweeps" and "control and diagnostic runs", which reads as two different sets
+# of episodes behind the same total. Variants must not be substrings of one
+# another or the count double-reports.
+NAMING_MUST_MATCH = [
+    ("what the campaign total counts beyond the grid",
+     ["control runs and sweeps", "control and diagnostic runs", "sweeps and re-runs"]),
+]
 joined = " ".join(rendered(t, drop_footnotes=False) for t in raw.values()).lower()
 for label, variants in TERM_SETS:
     used = {v: joined.count(v.lower()) for v in variants if joined.count(v.lower())}
     if len(used) > 1:
         note("J terminology", f"{label}: {used}")
+for label, variants in NAMING_MUST_MATCH:
+    used = {v: joined.count(v.lower()) for v in variants if joined.count(v.lower())}
+    if len(used) > 1:
+        finding("J naming", f"{label}: two names for one set, {used}")
+    elif used:
+        note("J naming", f"{label}: one name throughout, {used}")
 
 # =========================================================== K. hedging and vagueness
 WEASEL = ["very", "quite", "somewhat", "arguably", "clearly", "obviously",
