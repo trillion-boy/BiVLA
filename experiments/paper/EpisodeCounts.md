@@ -159,3 +159,60 @@ it would inflate the campaign by a study the paper does not describe.
 **Yes, and that is the whole point.** They are result 1, not exploration around
 it. The headline claim is that the eligibility window moves a result by $45.9$
 points, and the window controls are one of the two arms of that contrast.
+
+
+---
+
+## 6. The date rule, applied 2026-08-22
+
+The author's rule: **this paper's simulations are the late-July and August
+runs, and where the same run exists twice, the later one counts.** Applied by
+reading the date each file entered git, not the filesystem mtime, which is
+clone time in this container.
+
+### Every campaign directory by date
+
+| entered git | episodes | directory | verdict |
+|---|---:|---|---|
+| **2026-06-18** | 96 | `spatialvla_shared_compact_focus` | **out.** June |
+| **2026-06-18** | 96 | `univla_shared_compact_focus` | **out.** June |
+| **2026-06-18** | 192 | `vanilla_baselines` | **out.** June |
+| 2026-07-13 | 96 | the imported OpenVLA/Bridge foveation cell | **in**, see below |
+| 2026-08-05 to 08-12 | 6,814 | everything else under `results/` | in |
+| | **6,910** | **campaign** | |
+
+**The date rule and the different-study rule give the same answer.** The 384
+episodes the June rows hold are exactly the LatentSaccade files, identified
+independently by their `model: SpatialVLA+LatentSaccade[OFF (baseline)]`
+field. Two criteria, one answer, so 6,910 stands.
+
+### Same run twice, later one wins
+
+| pair | dates | which counts |
+|---|---|---|
+| UniVLA/Bridge `baseline` vs `baseline_l4` | 08-05, **08-10** | the **08-10** L4 run, which `RENAME` already installs as the grid's baseline. The rule and the code agree |
+| UniVLA/Bridge `action_repeat2` vs `_l4` | 08-05, **08-10** | the **08-10** run, same mechanism |
+| SpatialVLA/Fractal `baseline` vs `baseline_rerun` | **08-06** (135 eps), 08-07 (85 eps) | the **08-06** run. The later file is 85 of 135 episodes, a partial re-check rather than a replacement, so "later wins" does not apply |
+
+The two superseded 08-05 runs, 192 episodes, stay inside the 6,910. They are
+no longer grid cells, but the 3.1-point hardware bound is the comparison
+between them and the 08-10 pair, so a claim rests on them.
+
+### The one July file, and why it is admitted
+
+`RetinaBased/GoogleColab/results_reproduction_eager/` entered git on
+**2026-07-13** and holds 288 episodes in three directories. Only 96 enter the
+count, `openvla_foveated`, the OpenVLA/Bridge foveation cell. The other two
+are that campaign's own baseline and an unused `openvla_retina` run.
+
+`build_grid_report.py` admits the import only if the borrowed campaign's
+baseline matches the grid's baseline episode for episode. Recomputed today:
+
+| | episodes | differ |
+|---|---:|---:|
+| their July baseline against our August grid baseline | 96 shared | **0** |
+
+**A July run and an August run of the same condition agree on all 96
+episodes.** So the July date is not a cross-session risk here, and this is a
+fourth determinism data point alongside the 85 of 85, the 24 of 24 and the
+11 of 96 across cards.
