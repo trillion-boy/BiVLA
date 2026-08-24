@@ -21,7 +21,7 @@ paper's PDF, not its abstract.*
 | 9 | vla-eval unifies fourteen benchmarks and documents previously undocumented pitfalls | read this session: 14 simulation benchmarks, six model servers, *"documenting previously undocumented pitfalls"* |
 | 10 | papers using several backbones change the benchmark at the same time | VLA-Cache (A.2: LIBERO→OpenVLA, SIMPLER→CogACT); SpecPrune-VLA (Table 1: LIBERO→OpenVLA-OFT, SimplerEnv→DB-OFT); VLA-IAP (Table 1 caption: DreamVLA, π0 LIBERO, π0.5 VLABench) |
 | 11 | those with both axes leave the crossing cell empty | Gaze-Reg (A.5); VLA-Pruner (LIBERO has OpenVLA + OpenVLA-OFT, SIMPLER has OpenVLA only) |
-| 12 | the tables we cite report mean success rates over independent runs, without matched-episode outcomes | grep over every PDF read: *paired* 0, *McNemar* 0, and in vla-eval also *significance* 0, *statistic* 0, *confidence* 0, *error bar* 0. The draft says **"the tables we cite,"** not "no prior work" — see the re-check note below |
+| 12 | the tables we cite report mean success rates, not matched-episode outcomes | grep over every PDF read: *paired* 0, *McNemar* 0, and in vla-eval also *significance* 0, *statistic* 0, *confidence* 0, *error bar* 0. The draft says **"the tables we cite,"** not "no prior work" — see the re-check note below |
 | 13 | FastV, SparseVLM and ToMe were developed for VLMs | all three PDFs read this session |
 | 14 | OpenVLA-OFT uses parallel decoding and action chunking | **upgraded from second-hand to primary, 2026-08-22.** Was verified only from VLA-Pruner's description of its own baseline; now from the paper itself (Kim, Finn & Liang, *Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success*), abstract p1: *"an Optimized Fine-Tuning (OFT) recipe that integrates **parallel decoding, action chunking**, a continuous action representation, and a simple L1 regression-based learning objective"* |
 | 20 | our three axes are the field's own categories, not our invention | **PDF read 2026-08-22.** The CAS systematic survey (Guan et al., Institute of Automation, arXiv 2510.17111, confirmed from the listing page) divides efficiency work into §3.2 *Dynamic Computation Pathways*, §4 *Efficient Perception Feature*, §5 *Efficient Action Generation* — our axes 3, 2 and 1 — and populates them with the same papers we cite (§3.2 names SmolVLA and FLOWER; §4.1 names FastV and EfficientVLA; §4.2 names VLA-Cache) |
@@ -504,3 +504,46 @@ object and a participle, as in *"measured the beam bending."* It is not a
 garden path: *"measures FastV"* parses, and *"leaving FLOPs unchanged"* then
 says what was measured about it. The 0.1-second cost, if it is real, buys a
 word that a reviewer cannot ask us to justify.
+
+### "independent runs" was a claim about their setup that we never checked
+
+Claim 12 used to read *"mean success rates **over independent runs**, without
+matched-episode outcomes."* The evidence behind it is the grep in the right
+column: `paired` 0, `McNemar` 0, and no dispersion of any kind. That
+establishes **the absence of paired analysis**. It says nothing about whether
+their runs were independent.
+
+And SimplerEnv is deterministic given a seed and an initial state, which we
+know because our own determinism checks depend on it. So the likely truth is
+the opposite of what we wrote: those papers probably ran a fixed protocol and
+then pooled the outcomes without pairing them. Calling that "independent runs"
+mischaracterises the benchmark as much as the papers.
+
+The clause is gone. *"The tables we cite report mean success rates, not
+matched-episode outcomes"* is exactly what the grep supports, and it is the
+sharper criticism, because the failure is in the analysis rather than in the
+experiment.
+
+### "axes" was carrying two meanings, and one collision was inside one paragraph
+
+Paragraph 1 defines the term: *"We treat these as **axes** rather than
+competing methods, because a claim about efficiency is a claim about one of
+these **resources**."* After that, `axes` means resources. Two later sentences
+used it for the grid's dimensions instead:
+
+| where | was | now |
+|---|---|---|
+| paragraph 3 | *"Those with both **axes** present leave the crossing cell empty"* | *"both **factors**"* |
+| closing | *"on both **axes** of a backbone $\times$ benchmark grid"* | *"over a backbone $\times$ benchmark grid that **moves both factors**"* |
+
+The second is the worse of the two, and it was not the one raised. It sits
+**two sentences** after *"which spend resources our axes do not"*, so one
+paragraph used both senses of the same defined term. `factors` is the standard
+word for the dimensions of a crossed design, and the new closing phrase now
+echoes the Introduction's *"a grid that moves the backbone and the benchmark
+independently."*
+
+All three surviving uses of `axes`/`axis` are the resource sense.
+`audit_sections.py` now fails on any use of `axes` next to `backbone`,
+`benchmark` or `grid`, because the J-naming check could never have caught this
+one: it looks for two names for one idea, and this was one name for two ideas.

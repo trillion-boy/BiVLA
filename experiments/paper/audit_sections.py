@@ -394,6 +394,24 @@ for label, variants in NAMING_MUST_MATCH:
     elif used:
         note("J naming", f"{label}: one name throughout, {used}")
 
+# One name carrying two ideas, which is the mirror of the check above and could
+# never be caught by it. `axes` is DEFINED in Related Work paragraph 1 as the
+# resource a method spends. Two later sentences used it for the dimensions of
+# the backbone x benchmark grid instead, and one of those sat two sentences
+# after "which spend resources our axes do not", so a single paragraph carried
+# both senses. The grid dimensions are "factors" now. Flag any recurrence.
+OVERLOADED = [
+    ("axes", ["backbone", "benchmark", "grid", "crossing"], 60,
+     "'axes' is the resource axis. Call a grid dimension a factor."),
+]
+for term, collide, window, advice in OVERLOADED:
+    for m in re.finditer(r"\b" + term + r"\b", joined):
+        near = joined[max(0, m.start() - window):m.end() + window]
+        hits = [w for w in collide if w in near]
+        if hits:
+            finding("J overload",
+                    f"'{term}' used within {window} chars of {hits}. {advice}")
+
 # =========================================================== K. hedging and vagueness
 WEASEL = ["very", "quite", "somewhat", "arguably", "clearly", "obviously",
           "of course", "it is well known", "significantly better", "a number of",

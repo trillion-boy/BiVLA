@@ -76,9 +76,9 @@ describes the field as fragmented across incompatible codebases and protocols.
 
 What infrastructure cannot supply is **the comparison itself.** Papers using
 several backbones change the benchmark at the same time (VLA-Cache,
-SpecPrune-VLA, VLA-IAP). Those with both axes present leave the crossing cell
-empty (Gaze-Reg, VLA-Pruner). The tables we cite report mean success rates
-over independent runs, not matched-episode outcomes. Whether an
+SpecPrune-VLA, VLA-IAP). Those with both factors present leave the crossing cell
+empty (Gaze-Reg, VLA-Pruner). The tables we cite report mean success rates,
+not matched-episode outcomes. Whether an
 intervention keeps its *direction* when the backbone or the benchmark changes
 therefore cannot be read off these tables, nor can the per-task disagreements
 they average over.
@@ -89,7 +89,7 @@ We do not cover quantisation or KV-cache compression, which spend resources our
 axes do not, nor learned early exit, which is not training-free. Measuring the settings papers leave to their
 source code is an established form (the image-classification and the
 inference-time-computation *bag of tricks* studies). We measure the same
-interventions on both axes of a backbone × benchmark grid, and
+interventions over a backbone × benchmark grid that moves both factors, and
 we test each on matched episodes rather than aggregate rates. The direction of
 an effect, and not only its size, then becomes something the evidence can decide.
 
