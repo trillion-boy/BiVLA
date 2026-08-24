@@ -87,8 +87,8 @@ they average over.
 
 We do not cover quantisation or KV-cache compression, which operate outside
 the three axes above. We also exclude learned early exit, which is not
-training-free. Isolating the effect of choices that papers leave to their
-source code is an established practice (the image-classification and the
+training-free. Isolating the effect of choices that appear only in source code
+is an established practice (the image-classification and the
 inference-time-computation *bag of tricks* studies). We measure the same
 interventions over a backbone × benchmark grid that varies both factors
 independently, and we test each on matched episodes rather than aggregate rates. The direction of

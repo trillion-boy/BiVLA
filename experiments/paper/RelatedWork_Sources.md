@@ -643,3 +643,34 @@ quote says Bag of Tricks evaluates its refinements *"through ablation
 study,"* and isolating one choice at a time is exactly what an ablation does.
 The pair now reads as a distinction rather than a repetition. The genre
 isolates effects; we measure them on a grid.
+
+### "papers leave to their source code", 2026-08-24: agent removed, not swapped
+
+Third objection to the same sentence in three rounds, so by the rule recorded
+above it gets changed regardless of whether the objection is the strongest one
+raised. It is not: *"the paper leaves this to future work"* is unremarkable
+English, and *"papers leave X to source code"* is the same construction.
+
+The genuinely loose part was **`their`**. Papers do not own source code.
+
+Three repairs were offered and none was taken, because each swaps one problem
+for another.
+
+| offered | why not |
+|---|---|
+| *"choices that **authors** leave to their source code"* | fixes the possessive by naming people. This paper is careful not to blame anyone, and says so about itself: *"our implementation added it anyway."* Pointing at authors changes that posture for one word of grammar |
+| *"choices **omitted from papers and left to** source code"* | correct, and passive twice in one clause. Passive is 4 of 41 sentences and this would make it 5 |
+| *"choices that papers **relegate to** source code"* | already declined once. `Relegate` means demoted to a lesser place, which is a judgement claim 19's source does not make |
+
+Taken instead: **remove the agent.** *"Isolating the effect of choices that
+appear only in source code is an established practice."*
+
+No agent to personify, no possessive, no judgement, still active, one word
+shorter. And it is now almost the source's own wording. Claim 19 quotes Bag of
+Tricks: *"most refinements are either briefly mentioned as implementation
+details or **only visible in source code**."*
+
+The general lesson, since this is the second time in two rounds: when a phrase
+keeps drawing fire, check whether the contested element can be **deleted**
+before choosing among replacements. The previous round removed the word
+*resource*; this one removes the subject.
