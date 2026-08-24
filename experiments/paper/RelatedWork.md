@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-661 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
-so ours is 1.89x its length. (This file previously said 429, which was a
+671 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
+so ours is 1.92x its length. (This file previously said 429, which was a
 miscount, see `RelatedWork_Plan.md` §0.)
 Provenance for every claim: `RelatedWork_Sources.md`.*
 
@@ -20,8 +20,8 @@ re-measure, and how the literature evaluates them.
 
 VLA policies adapt pretrained vision-language models to output robot actions,
 inheriting their size and latency, and the resulting efficiency literature
-already has surveys of its own. We divide it by the resource each method
-spends, which recovers a recent survey's categories of dynamic computation,
+already has surveys of its own. We divide that literature by the resource
+each method spends, which recovers a recent survey's categories of dynamic computation,
 perception and action generation (the CAS systematic survey).
 
 1. **When the policy runs.** A predicted chunk is executed over several control
@@ -35,7 +35,7 @@ efficiency is a claim about one of these resources being spent differently.
 
 ### The interventions we re-measure
 
-Layer redundancy in language models is well established, **but its recipes
+Layer redundancy in language models is well established, **but the recipes built on it
 disagree on which layers may go.** ShortGPT ranks every layer by Block
 Influence, the criterion we adopt, and constrains nothing further, while Gromov
 et al. remove a contiguous block of the deepest layers and find the final layer
@@ -45,30 +45,31 @@ outside what we test. **We find no comparison of these rules on a robot policy,
 and our depth results turn on which one holds.** Several recent compact
 VLAs **build such reductions in by design** rather than applying them at
 inference (FLOWER, SmolVLA, TurboVLA). Whether a reduction transfers is
-therefore a question about architecture and not only about a switch.
+therefore a question about architecture and not only about an inference-time
+setting.
 
 On the visual axis, two papers report that methods developed for VLMs (FastV,
-SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this to their
-short action sequences and measures FastV leaving FLOPs unchanged while latency
-rises, and VLA-Pruner reproduces the degradation on a third setting.
+SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this to the short action
+sequences VLAs produce and measures FastV leaving FLOPs unchanged while latency
+rises, and VLA-Pruner reproduces the degradation on another setting.
 
-Our own visual intervention, foveation, comes from the other direction. It
+Our own visual intervention, foveation, comes from a different lineage. It
 descends from Schwartz's log-polar mapping, taken up in robot vision to cut
 data while preserving central resolution (Traver & Bernardino) and applied to
-VLAs by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). **No matter how
-the encoders differ**, each splits the image into a **uniform** grid, so empty
+VLAs by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). **The encoders we run differ in many
+ways**, but each splits the image into a **uniform** grid, so empty
 background gets the same budget as the region where the gripper meets the
 object. Methods that foveate *inside* the encoder change that grid, giving
 distant patches a coarser resolution and so shedding tokens, but they give up
 the pretrained weights, which were fitted to a uniform grid (Look-Focus-Act).
-We include foveation because ours stays *before* the encoder, which is what
-makes it comparable across backbones. Editing pixels leaves the token count the
-backbone already has, and that is the constraint a training-free study works
-under.
+Our foveation stays *before* the encoder, which is what makes it comparable
+across backbones, and that is why we include it. Editing pixels therefore
+leaves the backbone's token count unchanged, and that is the constraint a
+training-free study works under.
 
 ### How these claims are evaluated
 
-Results are reported on SimplerEnv and LIBERO, and recent work addresses the
+The field reports results on SimplerEnv and LIBERO, and recent work addresses the
 infrastructure around them. The vla-eval harness unifies fourteen benchmarks
 and documents previously undocumented evaluation pitfalls, and StarVLA
 describes the field as fragmented across incompatible codebases and protocols.
@@ -118,7 +119,7 @@ included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
 2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
 none of those.)
 
-**Length — 661 words of prose, which is 1.89x the model paper's 350.** That
+**Length — 671 words of prose, which is 1.92x the model paper's 350.** That
 ratio is larger than this file used to claim, because the 429 it compared
 against was a miscount (`RelatedWork_Plan.md` §0). The 2026-08-22 clause on
 foveated tokenization added 45 of those words. The page budget still rests

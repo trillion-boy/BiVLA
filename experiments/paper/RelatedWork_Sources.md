@@ -324,3 +324,66 @@ The clause says foveating inside the encoder *sheds tokens* and *gives up the
 pretrained weights*. Both halves are quoted above. It does **not** claim our
 pixel-space variant is better, and it does not claim these papers should have
 done otherwise. They train, so the trade is available to them and not to us.
+
+---
+
+## Pass on the prose, 2026-08-24: five pronouns and one scope
+
+Run after the Introduction's passes had built a defect list, applying the same
+classes here. Nothing in this pass changed a claim, a citation or a number.
+Related Work still carries zero numbers.
+
+### The scope defect, which contradicted the Introduction
+
+*"No matter how the encoders differ, each splits the image into a uniform
+grid."* That is a claim about **every** patch tokeniser ever built. Claim 16
+in this file says what the evidence actually is: *"property of the patch
+tokenisers we run, not a claim about a cited paper."* And the Introduction
+already scopes it correctly, saying *"Our three backbones tokenize a fixed
+patch grid."* So the two sections disagreed about how much we know.
+
+Now *"The encoders we run differ in many ways, but each splits the image into
+a uniform grid."* Same argument, same length, and it now claims exactly what
+claim 16 supports.
+
+### Five pronouns, the class that has bitten this paper twice
+
+| was | problem |
+|---|---|
+| *"We divide **it** by the resource each method spends"* | `it` was meant to be the literature; the nearer noun is *surveys*. Now *"that literature"* |
+| *"but **its** recipes disagree on which layers may go"* | `its` attaches to *layer redundancy*, and redundancy does not prescribe anything. Now *"the recipes built on it"*, which gives both nouns an owner |
+| *"attributes this to **their** short action sequences"* | resolves to *VLAs* by proximity, but *methods* is also in range and is the wrong reading. Now *"the short action sequences VLAs produce"* |
+| *"We include foveation because **ours** stays before the encoder"* | the same shape as the `ours` bug in the Introduction, where the antecedent had been edited away. Nearest nouns here are *grid*, *weights*, *Methods*. Recast as *"Our foveation stays before the encoder … and that is why we include it"* |
+| *"Editing pixels leaves the token count **the backbone already has**"* | a contact clause with no *that*, reading as *"leaves the token count the backbone"* on the way in. Now *"leaves the backbone's token count unchanged"* |
+
+### Two soft quantifiers, same family as the "two recipes" fix
+
+*"VLA-Pruner reproduces the degradation on a **third** setting"* counts
+settings the section never enumerates, so a reviewer can ask which three.
+Claim 5 supports the reproduction, not the count. Now *"another setting."*
+
+*"foveation comes from **the other direction**"* asked the reader to work out
+which two directions were on offer. Now *"a different lineage,"* and the next
+sentence delivers the lineage.
+
+### One vocabulary fix
+
+*"not only about a **switch**"* was a fourth synonym for the thing the paper
+calls a *configuration* or a *setting*. Now *"an inference-time setting,"*
+which is the Introduction's vocabulary.
+
+### Checked and deliberately left alone
+
+**The three passive axis definitions.** *"Visual tokens are reduced or
+reweighted"*, *"Decoder layers are skipped"*, *"A predicted chunk is
+executed"*. Active versions would have to name an agent (*"methods reduce…"*)
+three times in four lines, and the passive correctly foregrounds the resource,
+which is what an axis is. Passive is 5 of 39 sentences and three of those five
+are these.
+
+**"an established form"** is elliptical but idiomatic, and expanding it costs
+words for nothing.
+
+**"our depth results turn on which one holds"** presupposes a countable set,
+but the two rules are named in the two sentences directly above it, so the set
+is on the page.

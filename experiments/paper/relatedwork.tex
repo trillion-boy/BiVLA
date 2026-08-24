@@ -24,9 +24,9 @@ re-measure, and how the literature evaluates them.
 \textbf{Inference cost in VLA policies.} VLA policies adapt pretrained
 vision-language models to output robot actions, inheriting their size and
 latency, and the resulting efficiency literature already has surveys of its
-own~\cite{effvlasurvey1, effvlasurvey2}. We divide it by the resource each
-method spends, which recovers a recent survey's categories of dynamic
-computation, perception and action generation~\cite{effvlasurvey1}.
+own~\cite{effvlasurvey1, effvlasurvey2}. We divide that literature by the
+resource each method spends, which recovers a recent survey's categories of
+dynamic computation, perception and action generation~\cite{effvlasurvey1}.
 1)~\emph{When the policy runs}. A predicted chunk is executed over several
 control steps, a lineage running from frame skip in RL to parallel
 decoding~\cite{dqn, act, diffusionpolicy, openvlaoft}. 2)~\emph{What it is
@@ -36,10 +36,10 @@ than competing methods, because a claim about efficiency is a claim about one
 of these resources being spent differently.
 
 \textbf{The interventions we re-measure.} Layer redundancy in language models
-is well established, but its recipes disagree on which layers may go. ShortGPT
-ranks every layer by Block Influence, the criterion we adopt, and constrains
-nothing further~\cite{shortgpt}, while Gromov et al.\ remove a contiguous
-block of the deepest layers and find the final layer must be
+is well established, but the recipes built on it disagree on which layers may
+go. ShortGPT ranks every layer by Block Influence, the criterion we adopt, and
+constrains nothing further~\cite{shortgpt}, while Gromov et al.\ remove a
+contiguous block of the deepest layers and find the final layer must be
 kept~\cite{gromov}. EfficientVLA carries the unconstrained form into VLAs
 without training~\cite{efficientvla}, and MoLe-VLA needs a learned router and
 distillation~\cite{molevla}, placing it outside what we test. We find no
@@ -47,27 +47,27 @@ comparison of these rules on a robot policy, and our depth results turn on
 which one holds. Several recent compact VLAs build such reductions in by
 design rather than applying them at inference~\cite{flower, smolvla,
 turbovla}. Whether a reduction transfers is therefore a question about
-architecture and not only about a switch. On the visual axis, two papers
-report that methods developed for VLMs~\cite{fastv, sparsevlm, tome} transfer
-poorly to VLAs. VLA-Cache attributes this to their short action sequences and
-measures FastV leaving FLOPs unchanged while latency rises~\cite{vlacache},
-and VLA-Pruner reproduces the degradation on a third
-setting~\cite{vlapruner}. Our own visual
-intervention, foveation, comes from the other direction. It descends from
-Schwartz's log-polar mapping~\cite{schwartz}, taken up in robot vision to cut
-data while preserving central resolution~\cite{traver} and applied to VLAs by
-gaze-conditioned policies~\cite{gazereg, lookfocusact}. No matter how the
-encoders differ, each splits the image into a \emph{uniform} grid, so empty
+architecture and not only about an inference-time setting. On the visual axis,
+two papers report that methods developed for VLMs~\cite{fastv, sparsevlm,
+tome} transfer poorly to VLAs. VLA-Cache attributes this to the short action
+sequences VLAs produce and measures FastV leaving FLOPs unchanged while
+latency rises~\cite{vlacache}, and VLA-Pruner reproduces the degradation on
+another setting~\cite{vlapruner}. Our own visual intervention, foveation,
+comes from a different lineage. It descends from Schwartz's log-polar
+mapping~\cite{schwartz}, taken up in robot vision to cut data while preserving
+central resolution~\cite{traver} and applied to VLAs by gaze-conditioned
+policies~\cite{gazereg, lookfocusact}. The encoders we run differ in many
+ways, but each splits the image into a \emph{uniform} grid, so empty
 background gets the same budget as the region where the gripper meets the
 object. Methods that foveate \emph{inside} the encoder change that grid,
 giving distant patches a coarser resolution and so shedding tokens, but they
 give up the pretrained weights, which were fitted to a uniform
-grid~\cite{lookfocusact}. We include foveation because ours stays
-\emph{before} the encoder, which is what makes it comparable across backbones.
-Editing pixels leaves the token count the backbone already has, and that is
-the constraint a training-free study works under.
+grid~\cite{lookfocusact}. Our foveation stays \emph{before} the encoder, which
+is what makes it comparable across backbones, and that is why we include it.
+Editing pixels therefore leaves the backbone's token count unchanged, and that
+is the constraint a training-free study works under.
 
-\textbf{How these claims are evaluated.} Results are reported on
+\textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
 addresses the infrastructure around them. The vla-eval harness unifies
 fourteen benchmarks and documents previously undocumented evaluation
@@ -86,5 +86,5 @@ which spend resources our axes do not. Measuring the settings papers leave to
 their source code is an established form~\cite{bagoftricks_cnn,
 bagoftricks_llm}. We measure the same interventions on both axes of a backbone
 $\times$ benchmark grid, and we test each on matched episodes rather than
-aggregate rates. The direction of an effect, and not only
-its size, then becomes something the evidence can decide.
+aggregate rates. The direction of an effect, and not only its size, then
+becomes something the evidence can decide.
