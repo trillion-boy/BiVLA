@@ -597,3 +597,49 @@ one. The fix is to make the definition visible rather than to retreat to a
 vaguer claim: **"which change none of our three resources."** That points at
 the definition, asserts nothing about anyone's intent, and is checkable
 against paragraph 1.
+
+### The same sentence, attacked twice, 2026-08-24
+
+The exclusion clause has now drawn fire in two consecutive rounds, from two
+different angles, and it was defensible both times. That is the point worth
+recording: **a true sentence that keeps attracting the same objection is
+badly worded, not misunderstood.**
+
+| round | wording | objection |
+|---|---|---|
+| 1 | *"which spend resources our axes do not"* | KV-cache compression cuts memory bandwidth and attention cost, so it plainly spends a resource |
+| 2 | *"which change none of our three resources"* | axis 3 maps to the survey's *dynamic computation*, and KV-cache compression is a dynamic-computation optimisation |
+
+Round 1's fix was declined on good grounds and round 2's replacement is the
+better sentence anyway. The problem in both versions is the word
+**resource**. Paragraph 1 defines the axes *by* resource, so any sentence
+using that word invites the everyday reading, in which of course quantisation
+and KV-cache compression spend resources.
+
+Now: *"which operate outside the three axes above."* It makes the same
+definitional claim, points at where the definition lives, and never uses the
+contested noun. It also does not assert what those methods are for, which is
+the reason the round-1 alternative was refused, since neither is in our
+bibliography.
+
+⚠️ On the round-2 objection's premise: our record does **not** establish that
+the CAS survey files KV-cache compression under §3.2. Claim 20 records §3.2 as
+naming SmolVLA and FLOWER, both architectural layer reduction, and it records
+VLA-Cache under **§4.2, perception**, not under dynamic computation. So the
+mapping the objection assumes is unverified in either direction. The rewrite
+does not depend on it.
+
+### Two more, both taken
+
+**"an established form" was doing genre criticism.** `Form` belongs to
+discussions of poetry and painting. What we mean is that people do this and it
+is respectable, which is **practice**. Now *"an established practice."*
+
+**`Measuring` then `We measure` in consecutive sentences.** Sentence 4 keeps
+`measure`, because it is the paper's own verb: contribution 1 is *"A uniform
+re-measurement"* and contribution 4 is *"A measurement procedure."* Sentence 3
+takes **`Isolating`**, which is both a change and an improvement: claim 19's
+quote says Bag of Tricks evaluates its refinements *"through ablation
+study,"* and isolating one choice at a time is exactly what an ablation does.
+The pair now reads as a distinction rather than a repetition. The genre
+isolates effects; we measure them on a grid.
