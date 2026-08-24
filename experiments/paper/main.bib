@@ -357,13 +357,21 @@
 }
 
 @article{univla,
-  author    = {Bu, Qingwen and Yang, Yanting and Cai, Jisong and
-               Gao, Shenyuan and Ren, Guanghui and Yao, Maoqing and
-               Luo, Ping and Li, Hongyang},
-  title     = {{UniVLA}: Learning to Act Anywhere with Task-centric Latent
-               Actions},
-  journal   = {arXiv preprint arXiv:2505.06111},
-  year      = {2025}
+  author    = {Wang, Yuqi and Li, Xinghang and Wang, Wenxuan and
+               Zhang, Junbo and Li, Yingyan and Chen, Yuntao and
+               Wang, Xinlong and Zhang, Zhaoxiang},
+  title     = {Unified Vision-Language-Action Model},
+  journal   = {arXiv preprint arXiv:2506.19850},
+  year      = {2025},
+  %% Verified against the repo we actually run, not against a search result.
+  %% adaptive_sparse_vla/inference_libero.py:6-9 names the checkpoint source
+  %% as huggingface.co/Yuqi1997/UniVLA (baaivision/UniVLA) and warns in so
+  %% many words: "not to be confused with the unrelated OpenDriveLab/UniVLA
+  %% project of the same name". Yuqi1997 is Yuqi Wang, first author here.
+  %% Our backbone is UniVLA(-Emu3); Emu3 is BAAI's. OpenDriveLab's UniVLA
+  %% (Bu et al., arXiv 2505.06111) is a DIFFERENT paper and MUST NOT be
+  %% cited for this backbone. An earlier revision of this file had exactly
+  %% that error.
 }
 
 @inproceedings{simplerenv,
