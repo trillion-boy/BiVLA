@@ -68,11 +68,11 @@ number of layers removed (four) fixed, and varied only which layers were
 same baseline, while model time per call stayed $10.6$ to $11.9\%$ below
 baseline. The ranking criterion never changed. The candidate window did, and
 the prescriptions on record disagree about it. The methods we re-measure rank
-every layer and constrain nothing~\cite{shortgpt, efficientvla}, while a
-competing one restricts removal to a contiguous block at the deep end and
+every layer and constrain nothing further~\cite{shortgpt, efficientvla}, while
+a competing one restricts removal to a contiguous block at the deep end and
 reports that the final layer must be kept~\cite{gromov}. Confining removal to
-the deep end is a restriction an implementation can add without any
-specification calling for it, and ours did. It stays inert while it is loose.
+the deep end is a restriction neither method we implement asks for, and ours
+added it anyway. It stays inert while it is loose.
 Widening it from the back half of the stack to the back three quarters selects
 the same four layers and returns the same $+15.6$. The setting that loses
 $30.4$ points narrows it instead, far enough that only four layers remain
@@ -96,8 +96,9 @@ episodes while SpatialVLA loses $17.8$, each surviving correction on its own
 and differing from the other. Average the two cells and the effect nearly
 vanishes. The cell mean hides a split of its own. \texttt{pick coke can} comes
 out ahead of \texttt{move near} in ten of the fourteen intervention conditions
-our two Fractal cells ran, and published SimplerEnv comparisons print the same
-split without discussing it~\cite{efficientvla, vlapruner}.
+our two Fractal cells ran, and the two published SimplerEnv comparisons we
+cite print the same split without remarking on it~\cite{efficientvla,
+vlapruner}.
 
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} We run three
 training-free interventions over a $3 \times 2$ backbone-benchmark grid. Five
@@ -114,8 +115,8 @@ still swings success from a gain to a loss. \textbf{4)~A measurement
 procedure} for this class of claim. We match episodes, check determinism
 explicitly, and hold the condition set fixed across the cells we compare. Of
 the five training-free methods we survey~\cite{efficientvla, vlacache, fastv,
-shortgpt, vlapruner}, every one sweeps its own configuration and none
-publishes per-episode outcomes or tests a difference for significance.
+shortgpt, vlapruner}, every one sweeps its own configuration and none reports
+per-episode outcomes or tests a difference for significance.
 
 We propose no new efficiency method, and we do not claim that these
 interventions fail in general. We measure every change against its own cell's

@@ -414,3 +414,98 @@ below rest on."*
 
 *"stayed $10.6$ to $11.9\%$ below **it**"* made the reader resolve a pronoun
 back to *the same baseline*. Now *"below baseline."*
+
+---
+
+## 12. Pass twelve, 2026-08-23: every negative claim, under the Related Work rule
+
+Run because the same sweep on `relatedwork.tex` found two claims that had
+survived every earlier pass, and both failed the rule `RelatedWork_Sources.md`
+claim 12 had already written down: *a search that finds nothing is evidence
+about the search, not about the world.* If two got through there, the
+Introduction had to be swept the same way.
+
+**The rule, stated once.** A claim of the form *"nobody does X"* is safe only
+when the set it quantifies over is named and small enough to enumerate. *"Of
+the five methods we survey, none reports X"* is enumerable and defensible.
+*"No prior work reports X"* is neither, and one citation ends it.
+
+### Every negative claim in the section, and its verdict
+
+| # | claim | scope | verdict |
+|---|---|---|---|
+| 1 | *"an implementation can add without any specification calling for it"* | all specifications | ❌ **refuted by our own citation two sentences earlier** |
+| 2 | *"published SimplerEnv comparisons print the same split without discussing it"* | all published comparisons | ❌ unscoped plural, evidence covers two named papers |
+| 3 | *"none publishes per-episode outcomes or tests a difference for significance"* | the five we survey | ⚠️ scope fine, verb overreaches |
+| 4 | *"The methods we re-measure rank every layer and constrain nothing"* | two named papers | ⚠️ true of the candidate set, false as written |
+| 5 | *"Of the five training-free methods we survey ... every one sweeps its own configuration"* | the five we survey | ✅ enumerable, and enumerated |
+| 6 | *"a pixel-space edit cannot change how many tokens they process"* | our three backbones | ✅ scoped to models we run |
+| 7 | *"We propose no new efficiency method"* | us | ✅ |
+| 8 | *"no result depends on our absolute rates matching anyone else's"* | us | ✅ |
+| 9 | *"the evidence does not separate a property of the method from a property of the configuration"* | current reporting practice | ✅ **kept** — see below |
+
+### Number 1 was the real defect, and it is class F, not class D
+
+The draft said, of confining layer removal to the deep end, that it is *"a
+restriction an implementation can add without any specification calling for
+it."* Two sentences earlier the same paragraph cites Gromov et al., **a
+specification that calls for exactly that** — a contiguous block at the deep
+end. The paragraph refuted itself, in the space of three sentences, using a
+citation we put there ourselves.
+
+`TableI_Cells.md` §4(b) has the accurate scope and always did: *"Both layer
+papers specify all layers, rank by BI, cut the lowest n, no spacing rule.
+Neither says anything about restricting the candidate set"* — and *both* there
+means ShortGPT and EfficientVLA, the two we implement. Gromov is the third and
+is not among them.
+
+Now: *"a restriction neither method we implement asks for, and ours added it
+anyway."* This is not merely safer, it is the more interesting sentence. Our
+implementation drifted toward a **competing** published prescription without
+anyone choosing it, which is the paper's thesis happening to the authors.
+
+### Numbers 2, 3 and 4 were scope and verb, not substance
+
+**2.** `PerTaskRows.md` §3 ends on the defensible form: *"neither paper remarks
+on the split."* Two papers, both read, both tabulated row by row in that file.
+The Introduction had inflated this to a plural generic. Now *"the two published
+SimplerEnv comparisons we cite ... without remarking on it"*, which is what we
+checked and uses that file's own verb.
+
+**3.** *"publishes"* invites a reviewer to look at a GitHub repository. Our
+evidence is two greps over the five PDFs (`TableI_Cells.md` §3, both term
+sets). *"reports"* is a claim about the paper, which is what we read.
+
+**4.** *"constrain nothing"* reads as *no constraint whatsoever*, and both
+methods constrain n, the number of layers removed. `relatedwork.tex` already
+said *"constrains nothing further"*; the Introduction had dropped the word.
+Restored, and the two sections now agree.
+
+### Number 9 stays, and this is a decision rather than an oversight
+
+*"As results are reported now, the evidence does not separate a property of the
+method from a property of the configuration it was measured in."* This is a
+universal, and it is the paper's thesis. Three things keep it:
+
+1. **It is conditioned on reporting practice**, not on the existence of a
+   paper. The refuting move is not "here is one counterexample" but "here is
+   how the field reports," which is the argument we want.
+2. **Contribution 4 supplies the enumerable version** immediately above it, so
+   a reader reaches the universal already holding the count.
+3. **Two independent sources say the same of the field** — vla-eval on
+   undocumented evaluation pitfalls and StarVLA on fragmented protocols, both
+   cited in Related Work.
+
+Softening it to *"the evidence we surveyed"* would leave the paper with no
+thesis. A claim can be universal when it is the conclusion of an argument. It
+cannot be universal when it is a substitute for having read something.
+
+### What this pass leaves behind
+
+Every negative claim in either section now names the set it quantifies over,
+except number 9, which names the practice instead and is argued for rather
+than asserted. Three of the four defects had a correct, scoped version already
+written down in a provenance file. The draft was not short of evidence. It was
+losing the scope on the way from the provenance file into the prose, which is
+a copy-edit failure mode and not a research one, and it is worth checking for
+directly the next time a sentence is tightened.
