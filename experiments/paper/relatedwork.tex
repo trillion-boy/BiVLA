@@ -49,17 +49,17 @@ design rather than applying them at inference~\cite{flower, smolvla,
 turbovla}. Whether a reduction transfers is therefore a question about
 architecture and not only about an inference-time setting. On the visual axis,
 two papers report that methods developed for VLMs~\cite{fastv, sparsevlm,
-tome} transfer poorly to VLAs. VLA-Cache attributes this to the short action
-sequences VLAs produce and measures FastV leaving FLOPs unchanged while
-latency rises~\cite{vlacache}, and VLA-Pruner reproduces the degradation on
-another setting~\cite{vlapruner}. Our own visual intervention, foveation,
-comes from a different lineage. It descends from Schwartz's log-polar
-mapping~\cite{schwartz}, taken up in robot vision to cut data while preserving
-central resolution~\cite{traver} and applied to VLAs by gaze-conditioned
-policies~\cite{gazereg, lookfocusact}. The encoders we run differ in many
-ways, but each splits the image into a \emph{uniform} grid, so empty
-background gets the same budget as the region where the gripper meets the
-object. Methods that foveate \emph{inside} the encoder change that grid,
+tome} transfer poorly to VLAs. VLA-Cache attributes this poor transfer to the
+short action sequences VLAs produce, and measures FastV leaving FLOPs
+unchanged while latency rises~\cite{vlacache}. VLA-Pruner reproduces the
+degradation on another setting~\cite{vlapruner}. Our own visual intervention,
+foveation, comes from a different lineage. It descends from Schwartz's
+log-polar mapping~\cite{schwartz}, taken up in robot vision to cut data while
+preserving central resolution~\cite{traver} and applied to VLAs by
+gaze-conditioned policies~\cite{gazereg, lookfocusact}. The encoders we run
+differ in many ways, but each splits the image into a \emph{uniform} grid, so
+empty background gets the same budget as the region where the gripper meets
+the object. Methods that foveate \emph{inside} the encoder change that grid,
 giving distant patches a coarser resolution and so shedding tokens, but they
 give up the pretrained weights, which were fitted to a uniform
 grid~\cite{lookfocusact}. Our foveation stays \emph{before} the encoder, which

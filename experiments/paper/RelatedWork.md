@@ -49,9 +49,9 @@ therefore a question about architecture and not only about an inference-time
 setting.
 
 On the visual axis, two papers report that methods developed for VLMs (FastV,
-SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this to the short action
-sequences VLAs produce and measures FastV leaving FLOPs unchanged while latency
-rises, and VLA-Pruner reproduces the degradation on another setting.
+SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this poor transfer to the
+short action sequences VLAs produce, and measures FastV leaving FLOPs unchanged
+while latency rises. VLA-Pruner reproduces the degradation on another setting.
 
 Our own visual intervention, foveation, comes from a different lineage. It
 descends from Schwartz's log-polar mapping, taken up in robot vision to cut

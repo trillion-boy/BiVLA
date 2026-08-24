@@ -478,3 +478,29 @@ the passage that reveals it.**
 
 Passive in the section is now 4 of 39 sentences, down from 9 when these passes
 began. Prose is 678 words.
+
+### The VLA-Cache sentence, 2026-08-24: two of three taken
+
+**Taken: the bare `this`.** *"VLA-Cache attributes **this** to the short action
+sequences VLAs produce."* The referent is *poor transfer* one sentence back.
+This is the pronoun class that has been fixed four times in this paper already,
+so it goes the same way: *"attributes this poor transfer to."* The echo of
+*"transfer poorly"* is deliberate. Repeating the noun is what binds the
+reference, and claim 4 in this file uses the same words.
+
+**Taken: the split.** The sentence chained two `and`s across three facts. It is
+now two sentences, and the VLA-Pruner clause reads as its own corroboration
+rather than as a tail.
+
+**Declined: replacing `measures` with `finds that`.** The verb is carrying
+evidence. Claim 4 records what is behind it: VLA-Cache's own numbers, 1.864 T
+FLOPs unchanged and 51.91 to 53.28 ms. *"Finds that"* would state the same fact
+while dropping the fact that they **measured** it, and our use of the sentence
+depends on it being a measurement, since we cite it as evidence that FastV does
+not save what it is credited with saving.
+
+The construction itself is standard English, a measurement verb taking an
+object and a participle, as in *"measured the beam bending."* It is not a
+garden path: *"measures FastV"* parses, and *"leaving FLOPs unchanged"* then
+says what was measured about it. The 0.1-second cost, if it is real, buys a
+word that a reviewer cannot ask us to justify.
