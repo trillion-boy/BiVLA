@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-678 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
-so ours is 1.94x its length. (This file previously said 429, which was a
+682 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
+so ours is 1.95x its length. (This file previously said 429, which was a
 miscount, see `RelatedWork_Plan.md` §0.)
 Provenance for every claim: `RelatedWork_Sources.md`.*
 
@@ -85,12 +85,13 @@ they average over.
 
 ---
 
-We do not cover quantisation or KV-cache compression, which spend resources our
-axes do not, nor learned early exit, which is not training-free. Measuring the settings papers leave to their
+We do not cover quantisation or KV-cache compression, which change none of our
+three resources. We also exclude learned early exit, which is not
+training-free. Measuring the effect of choices that papers leave to their
 source code is an established form (the image-classification and the
 inference-time-computation *bag of tricks* studies). We measure the same
-interventions over a backbone × benchmark grid that moves both factors, and
-we test each on matched episodes rather than aggregate rates. The direction of
+interventions over a backbone × benchmark grid that varies both factors
+independently, and we test each on matched episodes rather than aggregate rates. The direction of
 an effect, and not only its size, then becomes something the evidence can decide.
 
 ---
@@ -119,7 +120,7 @@ included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
 2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
 none of those.)
 
-**Length — 678 words of prose, which is 1.94x the model paper's 350.** That
+**Length — 682 words of prose, which is 1.95x the model paper's 350.** That
 ratio is larger than this file used to claim, because the 429 it compared
 against was a miscount (`RelatedWork_Plan.md` §0). The 2026-08-22 clause on
 foveated tokenization added 45 of those words. The page budget still rests

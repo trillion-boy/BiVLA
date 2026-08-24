@@ -547,3 +547,53 @@ All three surviving uses of `axes`/`axis` are the resource sense.
 `audit_sections.py` now fails on any use of `axes` next to `backbone`,
 `benchmark` or `grid`, because the J-naming check could never have caught this
 one: it looks for two names for one idea, and this was one name for two ideas.
+
+### The closing paragraph, 2026-08-24: three of four, and one push-back
+
+**Taken: the verb-object mismatch.** *"Measuring the settings papers leave to
+their source code"* measures the wrong noun. We do not measure a setting, we
+measure what one does to a result. Now *"Measuring the effect of choices that
+papers leave to their source code."*
+
+*"Leave to"* stays, and *"relegate to"* was declined. Claim 19 records the Bag
+of Tricks wording we are echoing: *"only visible in source code."* Neutral
+description is what that sentence is doing, and *"relegate"* would import a
+judgement the citation does not carry. *"Choices"* rather than *"settings"*
+also ties to the Introduction's *"A choice the specifications leave open."*
+
+**Taken: `moves both factors`.** *"Varies"* is the term for a crossed design,
+and *"independently"* adds the property that makes it factorial. Changed in
+**both** sections: `introduction.tex` had *"a grid that moves the backbone and
+the benchmark independently"* and now says *"varies."* Changing only Related
+Work would have produced exactly the two-names-for-one-idea defect the
+J-naming check exists for.
+
+**Taken, differently: the `nor` chain.** Two relative clauses hanging off a
+`nor` was choppy. The suggestion repeated the verb; two sentences are cleaner
+still. *"We do not cover quantisation or KV-cache compression, which change
+none of our three resources. We also exclude learned early exit, which is not
+training-free."*
+
+**Declined: `which spend resources our axes do not` to `which target different
+computational bottlenecks`.** The objection is that KV-cache compression cuts
+memory bandwidth and attention cost, so calling that a different *resource* is
+loose.
+
+Two reasons the replacement is worse.
+
+1. It is a claim about **what those methods are for**, and we have read no
+   quantisation or KV-cache paper. Neither is in our bibliography. We would be
+   characterising an uncited literature to avoid a claim about our own
+   definitions.
+2. Our axes are **defined** two paragraphs earlier as when the policy runs,
+   what it is shown, and how much network each call uses. Quantisation changes
+   none of the three: same schedule, same input, same layers, different
+   arithmetic. KV-cache compression changes none of the three either: same
+   schedule, same input, same layers, different memory for the history.
+
+So the original claim was true under our own definition, and the objection
+comes from reading *resource* in the everyday sense rather than the defined
+one. The fix is to make the definition visible rather than to retreat to a
+vaguer claim: **"which change none of our three resources."** That points at
+the definition, asserts nothing about anyone's intent, and is checkable
+against paragraph 1.
