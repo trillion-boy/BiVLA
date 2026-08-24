@@ -2,7 +2,14 @@
 % Introduction -- ICRA form (IEEEtran, two-column, 6 pages + 2 of references)
 %
 % Every number here is reproduced by experiments/verify_all.py, and every cell
-% of Fig. 1 by experiments/make_grid_figure.py.
+% of Table I by experiments/make_grid_table.py.
+%
+% Table I was a heat map (experiments/make_grid_figure.py, still in the repo)
+% until 2026-08-24. It was dropped for a measured reason, not a taste one.
+% RdBu_r is symmetric in lightness about zero, so printed in greyscale +18.8
+% and -19.3 come out at luminance 0.570 and 0.579. A reviewer with a black and
+% white printer could not see the sign reversal, which is the one thing the
+% figure existed to show. Do not restore the heat map without also fixing that.
 % Reading copy: experiments/paper/Introduction.md
 %
 % NO FOOTNOTES, deliberately. Of the 21 comparable papers in our reading set,
@@ -53,7 +60,7 @@ resource. Action repetition changes how often the policy runs, visual
 foveation (a log-polar warp and its inverse) changes what it is shown, and
 network depth pruning changes how much of the model each call uses. UniVLA
 releases a Bridge-only checkpoint, so we fill five of the six cells, each with
-eight conditions (Fig.~\ref{fig:grid}). Counting the control runs and sweeps
+eight conditions (Table~\ref{tab:grid}). Counting the control runs and sweeps
 that the results below rest on, the campaign comes to $6{,}910$ episodes.
 Every condition replays the initial states of its cell's baseline, and we run
 McNemar's exact test on the episodes whose outcome flipped.
