@@ -104,16 +104,25 @@ def main():
     # and using the drawn count would make the threshold too generous.
     cols = sorted({(b, k) for b, k, _ in COLS
                    if any(x[0] == b and x[1] == k for x in data)})
-    alpha = 0.05 / max(1, grid_family(data, cols))
-    print(f"correction family {grid_family(data, cols)} tests, "
-          f"alpha {alpha:.4f}")
+    fam = grid_family(data, cols)
+    alpha = 0.05 / max(1, fam)
+    print(f"correction family {fam} tests, alpha {alpha:.4f}")
 
     # A diverging map centred on zero, so the sign is the first thing read, and
-    # symmetric so that -20 and +20 are equally dark. An asymmetric limit would
-    # put a slope in the figure that is not in the data.
+    # symmetric so that -20 and +20 are equally saturated. An asymmetric limit
+    # would put a slope in the figure that is not in the data.
+    #
+    # Every colour is then blended toward white. RdBu_r ends in navy and maroon,
+    # which are too dark for black text, and the previous version dealt with
+    # that by switching the number to white on the dark cells. That made the
+    # numbers look like two categories when they are one. Capping the darkness
+    # instead lets every number be the same colour, and the hue ordering, which
+    # is what the reader actually uses, survives the blend intact.
     limit = CLIP
     norm = mcolors.TwoSlopeNorm(vmin=-limit, vcenter=0.0, vmax=limit)
-    cmap = plt.get_cmap("RdBu_r").copy()
+    shades = plt.get_cmap("RdBu_r")(np.linspace(0.0, 1.0, 256))
+    shades[:, :3] = 1.0 - (1.0 - shades[:, :3]) * 0.62
+    cmap = mcolors.ListedColormap(shades)
 
     fig, ax = plt.subplots(figsize=(7.0, 3.3))
     ax.imshow(np.ma.masked_invalid(np.clip(grid, -limit, limit)),
@@ -129,18 +138,25 @@ def main():
                 ha="center", va="center", fontsize=7.5, color="0.45",
                 style="italic", linespacing=1.5)
 
+    # Significance is a box around the cell, not an asterisk on the number and
+    # not bold. An asterisk lengthens some numbers and not others, so a column
+    # of values stops aligning and the reader sees ragged text before seeing
+    # which cells survived correction. A box is read as a property of the cell,
+    # which is what significance is, and it leaves every number identical.
+    n_sig = 0
     for i in range(len(ROWS)):
         for j in range(len(COLS)):
             v = grid[i, j]
             if not np.isfinite(v):
                 continue
-            # Dark cells need light text. Judge by the value the cell was
-            # painted with, which is the clipped one, not by the raw value.
-            shade = "white" if min(abs(v), limit) > 0.62 * limit else "black"
-            mark = "*" if pval[i, j] < alpha else ""
-            ax.text(j, i, f"{v:+.1f}{mark}", ha="center", va="center",
-                    fontsize=8.5, color=shade,
-                    fontweight="bold" if mark else "normal")
+            if pval[i, j] < alpha:
+                n_sig += 1
+                ax.add_patch(plt.Rectangle(
+                    (j - 0.5, i - 0.5), 1, 1, fill=False,
+                    edgecolor="0.15", lw=1.9, zorder=4))
+            ax.text(j, i, f"{v:+.1f}", ha="center", va="center",
+                    fontsize=8.5, color="black", zorder=5)
+    print(f"{n_sig} cells clear the correction")
 
     ax.set_xticks(range(len(COLS)))
     ax.set_xticklabels([c[2] for c in COLS], fontsize=8)
@@ -150,17 +166,29 @@ def main():
     for side in ax.spines.values():
         side.set_visible(False)
 
-    # Rule between the two benchmarks, so the benchmark axis is visible as an
-    # axis rather than as six unrelated columns.
-    ax.axvline(2.5, color="0.25", lw=1.2)
-    # Rules between the three intervention families.
+    # Rules between the two benchmarks and between the three intervention
+    # families. They are grey, and lighter than the significance boxes, because
+    # the figure now uses dark line for exactly one thing. Structure and
+    # encoding drawn in the same ink would be read as the same kind of mark.
+    ax.axvline(2.5, color="0.55", lw=1.1)
     for y in (1.5, 3.5):
-        ax.axhline(y, color="0.25", lw=0.8)
+        ax.axhline(y, color="0.55", lw=0.9)
 
     ax.set_xticks(np.arange(-0.5, len(COLS), 1), minor=True)
     ax.set_yticks(np.arange(-0.5, len(ROWS), 1), minor=True)
     ax.grid(which="minor", color="white", lw=1.5)
     ax.tick_params(which="minor", length=0)
+    ax.set_axisbelow(True)  # else the white gridlines cut the boxes
+
+    # The box has to be decodable from the figure. A caption-only key means a
+    # reader who looks before reading sees an unexplained mark, which is the
+    # state the asterisk was in.
+    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, fill=False,
+                                     edgecolor="0.15", lw=1.9)],
+              labels=[f"clears Bonferroni, $\\alpha = 0.05/{fam}$"],
+              loc="upper left", bbox_to_anchor=(0.0, -0.16), frameon=False,
+              handlelength=1.4, handleheight=1.0, fontsize=7.5,
+              borderpad=0.0, handletextpad=0.6)
 
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     cb = fig.colorbar(sm, ax=ax, fraction=0.025, pad=0.015, extend="both")
