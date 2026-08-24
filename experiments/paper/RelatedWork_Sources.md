@@ -387,3 +387,39 @@ words for nothing.
 **"our depth results turn on which one holds"** presupposes a countable set,
 but the two rules are named in the two sentences directly above it, so the set
 is on the page.
+
+---
+
+## "Why these five?" — the one citation question with no written answer
+
+Asked 2026-08-24. Contribution 4 says *"Of the five training-free methods we
+survey~\cite{efficientvla, vlacache, fastv, shortgpt, vlapruner}, every one
+sweeps its own configuration and none reports per-episode outcomes or tests a
+difference for significance."* `Survey_2026-08.md` §4 lists **ten more** papers
+that claim training-free in their abstracts. A reviewer who has that list will
+ask why the count is five, and nothing in this repository answered it.
+
+**The answer is that the claim defines the sample, not the other way round.**
+It is a claim about **absence**. An abstract cannot show that a paper never
+runs a paired test, because absence is only visible in the full text. The five
+are exactly the training-free methods whose complete PDFs we read and grepped,
+twice, under two term sets (`TableI_Cells.md` §3). The other ten are
+abstract-only, and this file's standing rule, learned from MoLe-VLA, is that an
+abstract is not evidence for what a paper did.
+
+So the sample is not a convenience sample. It is the largest set for which the
+claim is checkable, and each member is named in the sentence.
+
+**What the sentence deliberately does not say** is *"no prior work reports
+per-episode outcomes."* That would be the unbounded version, and it is the form
+this file has refused twice already, at claim 12 and in the 2026-08-23 pass.
+Five named papers, read in full, is a claim a reviewer can verify or refute by
+opening five PDFs.
+
+**If a reviewer still wants breadth**, the answer is to read more PDFs and
+raise the number, not to cite the ten on abstract evidence. `Survey_2026-08.md`
+§4 already argues against adding them for a different reason: the token-pruning
+axis has ten-plus entries in eighteen months, so joining it as a competitor is
+not our contribution. We use FastV as an **object** of measurement precisely
+because two independent groups already report it differently on VLM versus
+VLA.
