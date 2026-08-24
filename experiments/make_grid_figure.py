@@ -108,23 +108,49 @@ def main():
     alpha = 0.05 / max(1, fam)
     print(f"correction family {fam} tests, alpha {alpha:.4f}")
 
-    # A diverging map centred on zero, so the sign is the first thing read, and
-    # symmetric so that -20 and +20 are equally saturated. An asymmetric limit
-    # would put a slope in the figure that is not in the data.
+    # ---------------------------------------------------------------- style
+    # The figure is set in the paper's own face. IEEEtran sets Times, and
+    # Liberation Serif is metric-compatible with it, so a reader does not see
+    # the figure switch typeface mid-page. Sizes are absolute: the figure is
+    # saved at the width it is printed at, so 7.5 pt here is 7.5 pt on paper.
     #
-    # Every colour is then blended toward white. RdBu_r ends in navy and maroon,
-    # which are too dark for black text, and the previous version dealt with
-    # that by switching the number to white on the dark cells. That made the
-    # numbers look like two categories when they are one. Capping the darkness
-    # instead lets every number be the same colour, and the hue ordering, which
-    # is what the reader actually uses, survives the blend intact.
+    # pdf.fonttype 42 is not cosmetic. Matplotlib defaults to Type 3, and IEEE
+    # PDF eXpress rejects Type 3 fonts outright, so the default would have
+    # failed at submission rather than at review.
+    plt.rcParams.update({
+        "font.family": "serif",
+        "font.serif": ["Liberation Serif", "Times New Roman", "DejaVu Serif"],
+        "mathtext.fontset": "stix",
+        "pdf.fonttype": 42,
+        "ps.fonttype": 42,
+        "axes.linewidth": 0.5,
+    })
+
+    # A diverging map centred on zero, so the sign is read first, and symmetric
+    # so that -20 and +20 are equally saturated. An asymmetric limit would put
+    # a slope in the figure that is not in the data.
+    #
+    # The map is RdBu_r with both ends TRUNCATED rather than blended toward
+    # white. Blending was the first attempt and it washed the whole figure out,
+    # because it desaturates the middle as hard as the ends, and the middle is
+    # where most cells sit. Truncation removes only the navy and maroon that
+    # black text cannot sit on, and leaves a -10 cell as legible as before.
+    #
+    # 0.24 is measured, not chosen by eye. At that cut the extremes are
+    # (0.38, 0.65, 0.81) and (0.89, 0.48, 0.38), whose contrast against black
+    # text is 7.9:1 and 7.2:1. WCAG's AAA threshold for body text is 7:1, so
+    # every number in the figure clears it and all of them can be black.
+    TRUNC = 0.24
     limit = CLIP
     norm = mcolors.TwoSlopeNorm(vmin=-limit, vcenter=0.0, vmax=limit)
-    shades = plt.get_cmap("RdBu_r")(np.linspace(0.0, 1.0, 256))
-    shades[:, :3] = 1.0 - (1.0 - shades[:, :3]) * 0.62
-    cmap = mcolors.ListedColormap(shades)
+    cmap = mcolors.ListedColormap(
+        plt.get_cmap("RdBu_r")(np.linspace(TRUNC, 1.0 - TRUNC, 256)))
 
-    fig, ax = plt.subplots(figsize=(7.0, 3.3))
+    # 7.16 in is IEEEtran's \textwidth on US Letter, which is what a figure*
+    # spans. Drawing at final size means nothing is scaled in LaTeX and the
+    # point sizes below are the point sizes on the page.
+    fig = plt.figure(figsize=(7.16, 3.05))
+    ax = fig.add_axes([0.215, 0.235, 0.778, 0.745])
     ax.imshow(np.ma.masked_invalid(np.clip(grid, -limit, limit)),
               cmap=cmap, norm=norm, aspect="auto", interpolation="nearest")
 
@@ -135,8 +161,8 @@ def main():
                   if not np.isfinite(grid[:, j]).any()}
     for j in empty_cols:
         ax.text(j, (len(ROWS) - 1) / 2, "no public\ncheckpoint",
-                ha="center", va="center", fontsize=7.5, color="0.45",
-                style="italic", linespacing=1.5)
+                ha="center", va="center", fontsize=7, color="0.5",
+                style="italic", linespacing=1.6)
 
     # Significance is a box around the cell, not an asterisk on the number and
     # not bold. An asterisk lengthens some numbers and not others, so a column
@@ -153,53 +179,77 @@ def main():
                 n_sig += 1
                 ax.add_patch(plt.Rectangle(
                     (j - 0.5, i - 0.5), 1, 1, fill=False,
-                    edgecolor="0.15", lw=1.9, zorder=4))
-            ax.text(j, i, f"{v:+.1f}", ha="center", va="center",
-                    fontsize=8.5, color="black", zorder=5)
+                    edgecolor="0.1", lw=1.1, zorder=4))
+            # U+2212 MINUS, not the hyphen f"{:+.1f}" emits. The colourbar
+            # ticks are mathtext and already use a real minus, so the hyphen
+            # made the two disagree inside one figure. An exact zero carries
+            # no sign, since "+0.0" claims a direction the number does not.
+            label = "0.0" if v == 0 else f"{v:+.1f}".replace("-", "\u2212")
+            ax.text(j, i, label, ha="center", va="center",
+                    fontsize=7.5, color="black", zorder=5)
     print(f"{n_sig} cells clear the correction")
 
     ax.set_xticks(range(len(COLS)))
-    ax.set_xticklabels([c[2] for c in COLS], fontsize=8)
+    ax.set_xticklabels([c[2] for c in COLS], fontsize=7.5, linespacing=1.35)
     ax.set_yticks(range(len(ROWS)))
-    ax.set_yticklabels([r[1] for r in ROWS], fontsize=8)
-    ax.tick_params(length=0)
+    ax.set_yticklabels([r[1] for r in ROWS], fontsize=7.5)
+    ax.tick_params(length=0, pad=3)
     for side in ax.spines.values():
         side.set_visible(False)
 
     # Rules between the two benchmarks and between the three intervention
     # families. They are grey, and lighter than the significance boxes, because
-    # the figure now uses dark line for exactly one thing. Structure and
-    # encoding drawn in the same ink would be read as the same kind of mark.
-    ax.axvline(2.5, color="0.55", lw=1.1)
+    # the figure uses dark line for exactly one thing. Structure and encoding
+    # drawn in the same ink would be read as the same kind of mark.
+    # The family rules stop at the last measured column instead of running to
+    # the axes edge. Past it there are no cells to separate, so the line was
+    # floating in the white space of the empty column and made the grid look
+    # unfinished rather than three columns short of a full one.
+    last = max(j for j in range(len(COLS)) if np.isfinite(grid[:, j]).any())
+    ax.axvline(2.5, color="0.45", lw=0.9)
     for y in (1.5, 3.5):
-        ax.axhline(y, color="0.55", lw=0.9)
+        ax.plot([-0.5, last + 0.5], [y, y], color="0.45", lw=0.7,
+                solid_capstyle="butt", zorder=3)
 
     ax.set_xticks(np.arange(-0.5, len(COLS), 1), minor=True)
     ax.set_yticks(np.arange(-0.5, len(ROWS), 1), minor=True)
-    ax.grid(which="minor", color="white", lw=1.5)
+    ax.grid(which="minor", color="white", lw=1.0)
     ax.tick_params(which="minor", length=0)
     ax.set_axisbelow(True)  # else the white gridlines cut the boxes
+
+    # The colourbar is small and horizontal, in the strip under the grid. A
+    # tall bar on the right cost a full column of width to restate what every
+    # cell already prints as a number. Here colour is the secondary cue and the
+    # number is the value, so the key only has to fix the direction and the
+    # end points.
+    cax = fig.add_axes([0.615, 0.062, 0.150, 0.030])
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    cb = fig.colorbar(sm, cax=cax, orientation="horizontal", extend="both",
+                      extendfrac=0.09, ticks=[-limit, 0, limit])
+    cb.ax.set_xticklabels([f"$-{limit:.0f}$", "0", f"$+{limit:.0f}$"])
+    cb.ax.tick_params(labelsize=6.5, length=2, width=0.5, pad=1.5)
+    cb.outline.set_linewidth(0.5)
+    cb.outline.set_edgecolor("0.4")
+    # "vs.\ the cell's own baseline" used to follow. The backslash was a LaTeX
+    # inter-word space pasted into a matplotlib string, where it is a literal
+    # backslash, and the phrase ran off the canvas besides. The caption already
+    # says what the baseline is, so the key only names the unit.
+    cax.text(1.10, 0.5, "success points", transform=cax.transAxes,
+             ha="left", va="center", fontsize=6.5)
 
     # The box has to be decodable from the figure. A caption-only key means a
     # reader who looks before reading sees an unexplained mark, which is the
     # state the asterisk was in.
-    ax.legend(handles=[plt.Rectangle((0, 0), 1, 1, fill=False,
-                                     edgecolor="0.15", lw=1.9)],
-              labels=[f"clears Bonferroni, $\\alpha = 0.05/{fam}$"],
-              loc="upper left", bbox_to_anchor=(0.0, -0.16), frameon=False,
-              handlelength=1.4, handleheight=1.0, fontsize=7.5,
-              borderpad=0.0, handletextpad=0.6)
+    kax = fig.add_axes([0.215, 0.062, 0.30, 0.030]); kax.axis("off")
+    kax.add_patch(plt.Rectangle((0.0, 0.12), 0.075, 0.76, fill=False,
+                                edgecolor="0.1", lw=1.1,
+                                transform=kax.transAxes, clip_on=False))
+    kax.text(0.10, 0.5, f"clears Bonferroni, $\\alpha = 0.05/{fam}$",
+             transform=kax.transAxes, ha="left", va="center", fontsize=6.5)
 
-    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
-    cb = fig.colorbar(sm, ax=ax, fraction=0.025, pad=0.015, extend="both")
-    cb.set_label("success points against the cell's own baseline", fontsize=7.5)
-    cb.ax.tick_params(labelsize=7)
-    cb.outline.set_visible(False)
-
-    fig.tight_layout()
     for ext in ("pdf", "png"):
         path = os.path.join(OUT, f"fig_grid.{ext}")
-        fig.savefig(path, dpi=200, bbox_inches="tight")
+        fig.savefig(path, dpi=400)
         print("wrote", path)
 
 
