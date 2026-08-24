@@ -50,7 +50,11 @@
                Than You Expect},
   journal   = {arXiv preprint arXiv:2403.03853},
   year      = {2024},
-  note      = {v3}
+  %% All eight names match arXiv's own BibTeX export exactly. Nothing to fix.
+  %% The entry used to carry note = {v3}, which IEEEtran would have PRINTED as
+  %% a trailing "v3" in the bibliography. The arXiv id already identifies the
+  %% paper and versions are not normally cited, so it is a comment now: we
+  %% read v3.
 }
 
 @inproceedings{gromov,
@@ -111,14 +115,23 @@
   %% TODO(not printed): umbers. Pick whichever you cite and match the title to it
 }
 
-@inproceedings{fastv,
-  author    = {Chen, Liang and Zhao, Haozhe and Liu, Tianyu and Bai, Shuang and
+@article{fastv,
+  author    = {Chen, Liang and Zhao, Haozhe and Liu, Tianyu and Bai, Shuai and
                Lin, Junyang and Zhou, Chang and Chang, Baobao},
   title     = {An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play
-               Acceleration for {VLLM} Inference},
-  booktitle = {European Conference on Computer Vision (ECCV)},
+               Inference Acceleration for Large Vision-Language Models},
+  journal   = {arXiv preprint arXiv:2403.06764},
   year      = {2024},
-  note      = {arXiv:2403.06764}
+  %% TWO corrections from arXiv's own BibTeX export, 2026-08-24.
+  %% 1) The subtitle was wrong. It read "Plug-and-Play Acceleration for VLLM
+  %%    Inference", which is a shortened form that is not the paper's title.
+  %% 2) The fourth author was "Bai, Shuang". It is Shuai Bai.
+  %% Also demoted from @inproceedings{booktitle = ECCV} to @article. FastV may
+  %% well be ECCV 2024, but NOTHING in this repository records where that came
+  %% from, and this session has already caught three citation errors that all
+  %% came from unverified data. If the acceptance is confirmed, restore
+  %% @inproceedings with booktitle and keep the arXiv id in a note, the way
+  %% the gromov entry does.
 }
 
 @article{sparsevlm,
