@@ -26,12 +26,12 @@ vision-language models to output robot actions, inheriting their size and
 latency, and the resulting efficiency literature already has surveys of its
 own~\cite{effvlasurvey1, effvlasurvey2}. We divide that literature by the
 resource each method spends, which recovers a recent survey's categories of
-dynamic computation, perception and action generation~\cite{effvlasurvey1}.
+action generation, perception and dynamic computation~\cite{effvlasurvey1}.
 1)~\emph{When the policy runs}. A predicted chunk is executed over several
 control steps, a lineage running from frame skip in RL to parallel
 decoding~\cite{dqn, act, diffusionpolicy, openvlaoft}. 2)~\emph{What it is
 shown}. Visual tokens are reduced or reweighted. 3)~\emph{How much network
-each call uses}. Decoder layers are skipped. We treat these as axes rather
+each call uses}. Only part of the decoder runs. We treat these as axes rather
 than competing methods, because a claim about efficiency is a claim about one
 of these resources being spent differently.
 
@@ -81,10 +81,10 @@ matched-episode outcomes. Whether an intervention keeps its \emph{direction}
 when the backbone or the benchmark changes therefore cannot be read off these
 tables, nor can the per-task disagreements they average over.
 
-We do not cover quantisation, KV-cache compression or learned early exit,
-which spend resources our axes do not. Measuring the settings papers leave to
-their source code is an established form~\cite{bagoftricks_cnn,
-bagoftricks_llm}. We measure the same interventions on both axes of a backbone
-$\times$ benchmark grid, and we test each on matched episodes rather than
-aggregate rates. The direction of an effect, and not only its size, then
-becomes something the evidence can decide.
+We do not cover quantisation or KV-cache compression, which spend resources
+our axes do not, nor learned early exit, which is not training-free. Measuring
+the settings papers leave to their source code is an established
+form~\cite{bagoftricks_cnn, bagoftricks_llm}. We measure the same
+interventions on both axes of a backbone $\times$ benchmark grid, and we test
+each on matched episodes rather than aggregate rates. The direction of an
+effect, and not only its size, then becomes something the evidence can decide.

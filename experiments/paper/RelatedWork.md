@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-671 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
-so ours is 1.92x its length. (This file previously said 429, which was a
+678 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
+so ours is 1.94x its length. (This file previously said 429, which was a
 miscount, see `RelatedWork_Plan.md` §0.)
 Provenance for every claim: `RelatedWork_Sources.md`.*
 
@@ -21,14 +21,14 @@ re-measure, and how the literature evaluates them.
 VLA policies adapt pretrained vision-language models to output robot actions,
 inheriting their size and latency, and the resulting efficiency literature
 already has surveys of its own. We divide that literature by the resource
-each method spends, which recovers a recent survey's categories of dynamic computation,
-perception and action generation (the CAS systematic survey).
+each method spends, which recovers a recent survey's categories of action generation,
+perception and dynamic computation (the CAS systematic survey).
 
 1. **When the policy runs.** A predicted chunk is executed over several control
    steps, a lineage running from frame skip in RL to parallel decoding (DQN,
    ACT, Diffusion Policy, OpenVLA-OFT).
 2. **What it is shown.** Visual tokens are reduced or reweighted.
-3. **How much network each call uses.** Decoder layers are skipped.
+3. **How much network each call uses.** Only part of the decoder runs.
 
 We treat these as axes rather than competing methods, because a claim about
 efficiency is a claim about one of these resources being spent differently.
@@ -85,8 +85,8 @@ they average over.
 
 ---
 
-We do not cover quantisation, KV-cache compression or learned early exit, which
-spend resources our axes do not. Measuring the settings papers leave to their
+We do not cover quantisation or KV-cache compression, which spend resources our
+axes do not, nor learned early exit, which is not training-free. Measuring the settings papers leave to their
 source code is an established form (the image-classification and the
 inference-time-computation *bag of tricks* studies). We measure the same
 interventions on both axes of a backbone × benchmark grid, and
@@ -119,7 +119,7 @@ included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
 2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
 none of those.)
 
-**Length — 671 words of prose, which is 1.92x the model paper's 350.** That
+**Length — 678 words of prose, which is 1.94x the model paper's 350.** That
 ratio is larger than this file used to claim, because the 429 it compared
 against was a miscount (`RelatedWork_Plan.md` §0). The 2026-08-22 clause on
 foveated tokenization added 45 of those words. The page budget still rests

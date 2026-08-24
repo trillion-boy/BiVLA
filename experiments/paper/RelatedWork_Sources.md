@@ -423,3 +423,58 @@ axis has ten-plus entries in eighteen months, so joining it as a competitor is
 not our contribution. We use FastV as an **object** of measurement precisely
 because two independent groups already report it differently on VLM versus
 VLA.
+
+---
+
+## The axis paragraph, 2026-08-24: two reviewer catches and one they led to
+
+### 1. The category list was in reverse order, and this file said so
+
+The draft said our division *"recovers a recent survey's categories of dynamic
+computation, perception and action generation"* and then listed the axes as
+1) when the policy runs, 2) what it is shown, 3) how much network each call
+uses. Those are the survey's categories **backwards**. Claim 20 in this file
+records the mapping in exactly those words: *"our axes 3, 2 and 1."* A reader
+had to invert the list to check the claim.
+
+Our own order is not free to change, because `introduction.tex` fixes it:
+action repetition, then foveation, then depth pruning. So the survey's list is
+the one that moves. It now reads *"action generation, perception and dynamic
+computation."* No claim changed and the mapping is now positional.
+
+### 2. Axis 3 was stated more narrowly than axes 1 and 2
+
+*"Decoder layers are skipped"* names one mechanism for an axis that also
+covers MoE routing, early exit and architectural pruning. Axes 1 and 2 are
+both stated generally (*"a lineage running from frame skip to parallel
+decoding"*, *"visual tokens are reduced or reweighted"*), so the asymmetry was
+the actual defect rather than the narrowness on its own.
+
+The suggested repair was a hedge, *"For instance, decoder layers are
+skipped."* A hedge makes the axis sound tentative. Generalising it to match
+the other two is better and the same length: **"Only part of the decoder
+runs."** That covers every mechanism in the axis, and paragraph 2 immediately
+specifies layer skipping as the one we test. It also drops a passive.
+
+### 3. What checking number 2 turned up, and it was worse than either
+
+The closing paragraph read *"We do not cover quantisation, KV-cache
+compression or learned early exit, which spend resources our axes do not."*
+
+**Learned early exit spends exactly axis 3's resource.** It decides how much
+of the network a call uses. So the section defined an axis and then excluded a
+method from it on the ground that the method belongs to no axis, three
+paragraphs apart.
+
+The real reason to exclude it is the one already applied to MoLe-VLA: it is
+**learned**, so it is not training-free. Now *"We do not cover quantisation or
+KV-cache compression, which spend resources our axes do not, nor learned early
+exit, which is not training-free."*
+
+This is worth recording as a pattern. Both reviewer catches were in the axis
+paragraph; the contradiction was in the closing paragraph and was only visible
+because the axis definitions had just been re-read. **A defect can sit outside
+the passage that reveals it.**
+
+Passive in the section is now 4 of 39 sentences, down from 9 when these passes
+began. Prose is 678 words.
