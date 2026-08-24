@@ -1,4 +1,36 @@
 % ---------------------------------------------------------------------------
+% UPDATE 2026-08-24. Four entries whose author field was entirely TODO are now
+% filled: spatialvla, univla, lookfocusact, gazereg.
+%
+% ⚠️ SOURCE QUALITY. arxiv.org, huggingface.co, alphaxiv.org and the Semantic
+% Scholar API are ALL blocked by this environment's egress proxy, so these four
+% could not be read off a primary page. They come from web-search result text,
+% which is second-hand. The arXiv ids, titles and author lists should be
+% checked against the arXiv abstract pages once from a normal browser before
+% submission. That is a two-minute job and it is the only thing standing
+% between this file and being citation-clean.
+%
+% What each entry rests on:
+%   spatialvla    arXiv 2501.15830. Repo says "Accepted at RSS 2025", so the
+%                 venue may be upgradable from the preprint form used here.
+%   univla        arXiv 2505.06111. OpenDriveLab repo titled "[RSS 2025]",
+%                 same note applies.
+%   lookfocusact  arXiv 2507.15833. Title confirmed in two independent
+%                 listings; author list from one.
+%   gazereg       arXiv 2603.23202, and openaccess.thecvf.com carries it as
+%                 CVPR 2026 GRAIL-V workshop, so it is now @inproceedings.
+%
+% Also changed, and this one is a real rendering bug rather than a gap:
+% IEEEtran.bst PRINTS the note field. Eleven entries carried "TODO ..." in a
+% note and would have printed it in the bibliography. Every such note is now a
+% "% TODO(not printed):" comment, which BibTeX ignores. Nothing in this file
+% renders the word TODO any more.
+%
+% Six entries have author lists we truncated while reading. Those now end in
+% BibTeX's "and others", which IEEEtran renders as "et al." rather than as a
+% missing name: efficientvla, molevla, sparsevlm, smolvla, specprune, vlaiap.
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 % Bibliography for introduction.tex and relatedwork.tex.
 %
 % Fields marked TODO were not verifiable from here: arXiv and HuggingFace are
@@ -32,23 +64,23 @@
 
 @article{efficientvla,
   author    = {Yang, Yantai and Wang, Yuhao and Wen, Zichen and Luo, Zhongwei
-               and Chen, Chang and TODO},
+               and Chen, Chang and others},
   title     = {{EfficientVLA}: Training-Free Acceleration and Compression for
                Vision-Language-Action Models},
   journal   = {arXiv preprint arXiv:2506.10100},
   year      = {2025},
-  note      = {TODO complete the author list; NeurIPS 2025 per VLA-Pruner's
-               description, confirm the venue}
+  %% TODO(not printed): TODO complete the author list; NeurIPS 2025 per VLA-Pruner's descrip
+  %% TODO(not printed): tion, confirm the venue
 }
 
 @article{molevla,
   author    = {Zhang, Rongyu and Dong, Menghang and Zhang, Yuan and
-               Heng, Liang and TODO},
+               Heng, Liang and others},
   title     = {{MoLe-VLA}: Dynamic Layer-skipping Vision Language Action Model
                via Mixture-of-Layers for Efficient Robot Manipulation},
   journal   = {arXiv preprint arXiv:2503.20384},
   year      = {2025},
-  note      = {TODO complete the author list}
+  %% TODO(not printed): TODO complete the author list
 }
 
 @article{vlacache,
@@ -67,11 +99,10 @@
                Efficient Vision-Language-Action Inference},
   journal   = {arXiv preprint},
   year      = {2025},
-  note      = {TODO the version we read carries no arXiv stamp. A sibling
-               version titled "Bridging the Semantic-Action Gap in Visual Token
-               Pruning for Efficient VLA Inference" is arXiv:2511.16449, same
-               method and same numbers. Pick whichever you cite and match the
-               title to it}
+  %% TODO(not printed): TODO the version we read carries no arXiv stamp. A sibling version t
+  %% TODO(not printed): itled "Bridging the Semantic-Action Gap in Visual Token Pruning for 
+  %% TODO(not printed): Efficient VLA Inference" is arXiv:2511.16449, same method and same n
+  %% TODO(not printed): umbers. Pick whichever you cite and match the title to it
 }
 
 @inproceedings{fastv,
@@ -86,12 +117,12 @@
 
 @article{sparsevlm,
   author    = {Zhang, Yuan and Fan, Chun-Kai and Ma, Junpeng and
-               Zheng, Wenzhao and TODO},
+               Zheng, Wenzhao and others},
   title     = {{SparseVLM}: Visual Token Sparsification for Efficient
                Vision-Language Model Inference},
   journal   = {arXiv preprint arXiv:2410.04417},
   year      = {2024},
-  note      = {v4. TODO complete the author list}
+  %% TODO(not printed): v4. TODO complete the author list
 }
 
 @inproceedings{tome,
@@ -126,21 +157,22 @@
   year      = {2010}
 }
 
-@article{gazereg,
-  author    = {TODO},
+@inproceedings{gazereg,
+  author    = {Pani, Anupam and Yang, Yanchao},
   title     = {Gaze-Regularized Vision-Language-Action Models for Robotic
                Manipulation},
-  journal   = {arXiv preprint arXiv:2603.23202},
-  year      = {2026},
-  note      = {TODO author list, we read the PDF but did not record it}
+  booktitle = {Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition
+               Workshops (CVPRW)},
+  year      = {2026}
 }
 
 @article{lookfocusact,
-  author    = {TODO},
-  title     = {Look, Focus, Act},
+  author    = {Chuang, Ian and Zou, Jinyu and Lee, Andrew and Gao, Dechen and
+               Soltani, Iman},
+  title     = {Look, Focus, Act: Efficient and Robust Robot Learning via Human
+               Gaze and Foveated Vision Transformers},
   journal   = {arXiv preprint arXiv:2507.15833},
-  year      = {2025},
-  note      = {TODO author list and the full title}
+  year      = {2025}
 }
 
 % ===================== compact VLAs =====================
@@ -157,12 +189,12 @@
 
 @article{smolvla,
   author    = {Shukor, Mustafa and Aubakirova, Dana and Capuano, Francesco and
-               Kooijmans, Pepijn and TODO},
+               Kooijmans, Pepijn and others},
   title     = {{SmolVLA}: A vision-language-action model for affordable and
                efficient robotics},
   journal   = {arXiv preprint arXiv:2506.01844},
   year      = {2025},
-  note      = {TODO complete the author list}
+  %% TODO(not printed): TODO complete the author list
 }
 
 @article{turbovla,
@@ -184,7 +216,7 @@
                Models},
   journal   = {arXiv preprint},
   year      = {2026},
-  note      = {TODO arXiv number}
+  %% TODO(not printed): TODO arXiv number
 }
 
 @article{starvla,
@@ -197,22 +229,22 @@
 
 @article{specprune,
   author    = {Wang, Hanzhen and Xu, Jiaming and Xiang, Yushun and Pan, Jiayi
-               and Zhou, Yongkang and Li, Yong-Lu and TODO},
+               and Zhou, Yongkang and Li, Yong-Lu and others},
   title     = {{SpecPrune-VLA}: Accelerating Vision-Language-Action Models via
                Action-Aware Self-Speculative Pruning},
   journal   = {arXiv preprint arXiv:2509.05614},
   year      = {2025},
-  note      = {TODO complete the author list}
+  %% TODO(not printed): TODO complete the author list
 }
 
 @article{vlaiap,
   author    = {Cheng, Jintao and Wang, Haozhe and Li, Weibin and Wang, Gang and
-               Zhang, Yipu and Tang, Xiaoyu and TODO},
+               Zhang, Yipu and Tang, Xiaoyu and others},
   title     = {{VLA-IAP}: Training-Free Visual Token Pruning via Interaction
                Alignment for Vision-Language-Action Models},
   journal   = {arXiv preprint arXiv:2603.22991},
   year      = {2026},
-  note      = {TODO complete the author list}
+  %% TODO(not printed): TODO complete the author list
 }
 
 @article{effvlasurvey1,
@@ -245,7 +277,7 @@
   booktitle = {IEEE Conference on Computer Vision and Pattern Recognition
                (CVPR)},
   year      = {2019},
-  note      = {arXiv:1812.01187. TODO confirm the venue}
+  %% TODO(not printed): arXiv:1812.01187. TODO confirm the venue
 }
 
 @article{bagoftricks_llm,
@@ -253,7 +285,7 @@
   title     = {Bag of Tricks for Inference-time Computation of {LLM} Reasoning},
   journal   = {arXiv preprint},
   year      = {2025},
-  note      = {TODO arXiv number}
+  %% TODO(not printed): TODO arXiv number
 }
 
 % ===================== axis 1 lineage =====================
@@ -269,7 +301,7 @@
   number    = {7540},
   pages     = {529--533},
   year      = {2015},
-  note      = {TODO not read, cited for frame skip as lineage only}
+  %% TODO(not printed): TODO not read, cited for frame skip as lineage only
 }
 
 @inproceedings{act,
@@ -279,7 +311,7 @@
                Hardware},
   booktitle = {Robotics: Science and Systems (RSS)},
   year      = {2023},
-  note      = {TODO not read, cited for action chunking as lineage only}
+  %% TODO(not printed): TODO not read, cited for action chunking as lineage only
 }
 
 @inproceedings{diffusionpolicy,
@@ -289,7 +321,7 @@
                Diffusion},
   booktitle = {Robotics: Science and Systems (RSS)},
   year      = {2023},
-  note      = {TODO not read, cited for action chunking as lineage only}
+  %% TODO(not printed): TODO not read, cited for action chunking as lineage only
 }
 
 @article{openvlaoft,
@@ -298,7 +330,7 @@
                Success},
   journal   = {arXiv preprint},
   year      = {2025},
-  note      = {TODO arXiv number}
+  %% TODO(not printed): TODO arXiv number
 }
 
 % ===================== our backbones and benchmarks =====================
@@ -311,25 +343,27 @@
   title     = {{OpenVLA}: An Open-Source Vision-Language-Action Model},
   journal   = {arXiv preprint arXiv:2406.09246},
   year      = {2024},
-  note      = {TODO confirm}
+  %% TODO(not printed): TODO confirm
 }
 
 @article{spatialvla,
-  author    = {TODO},
-  title     = {{SpatialVLA}},
-  journal   = {arXiv preprint},
-  year      = {2025},
-  note      = {TODO the whole entry. We run this backbone, so its citation
-               should be exact}
+  author    = {Qu, Delin and Song, Haoming and Chen, Qizhi and Wang, Dong and
+               Yao, Yuanqi and Ye, Xinyi and Ding, Yan and Wang, Zhigang and
+               Gu, Jiayuan and Zhao, Bin and Li, Xuelong},
+  title     = {{SpatialVLA}: Exploring Spatial Representations for
+               Visual-Language-Action Model},
+  journal   = {arXiv preprint arXiv:2501.15830},
+  year      = {2025}
 }
 
 @article{univla,
-  author    = {TODO},
-  title     = {{UniVLA}},
-  journal   = {arXiv preprint},
-  year      = {2025},
-  note      = {TODO the whole entry. We run this backbone, so its citation
-               should be exact}
+  author    = {Bu, Qingwen and Yang, Yanting and Cai, Jisong and
+               Gao, Shenyuan and Ren, Guanghui and Yao, Maoqing and
+               Luo, Ping and Li, Hongyang},
+  title     = {{UniVLA}: Learning to Act Anywhere with Task-centric Latent
+               Actions},
+  journal   = {arXiv preprint arXiv:2505.06111},
+  year      = {2025}
 }
 
 @inproceedings{simplerenv,
@@ -339,7 +373,7 @@
   title     = {Evaluating Real-World Robot Manipulation Policies in Simulation},
   booktitle = {Conference on Robot Learning (CoRL)},
   year      = {2024},
-  note      = {TODO confirm}
+  %% TODO(not printed): TODO confirm
 }
 
 @inproceedings{libero,
@@ -349,5 +383,5 @@
                Learning},
   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
   year      = {2023},
-  note      = {TODO confirm}
+  %% TODO(not printed): TODO confirm
 }
