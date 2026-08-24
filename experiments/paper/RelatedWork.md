@@ -24,8 +24,8 @@ already has surveys of its own. We divide that literature by the resource
 each method spends, which recovers a recent survey's categories of action generation,
 perception and dynamic computation (the CAS systematic survey).
 
-1. **When the policy runs.** A predicted chunk is executed over several control
-   steps, a lineage running from frame skip in RL to parallel decoding (DQN,
+1. **When the policy runs.** One decision is executed over several control
+   steps, a lineage running from frame skip in RL to action chunking (DQN,
    ACT, Diffusion Policy, OpenVLA-OFT).
 2. **What it is shown.** Visual tokens are reduced or reweighted.
 3. **How much network each call uses.** Only part of the decoder runs.
@@ -44,9 +44,9 @@ training, and MoLe-VLA needs a learned router and distillation, placing it
 outside what we test. **We find no comparison of these rules on a robot policy,
 and our depth results turn on which one holds.** Several recent compact
 VLAs **build such reductions in by design** rather than applying them at
-inference (FLOWER, SmolVLA, TurboVLA). Whether a reduction transfers is
-therefore a question about architecture and not only about an inference-time
-setting.
+inference (FLOWER, SmolVLA, TurboVLA). Whether removing layers helps therefore
+depends on what the architecture already leaves out, not only on an
+inference-time setting.
 
 On the visual axis, two papers report that methods developed for VLMs (FastV,
 SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this poor transfer to the

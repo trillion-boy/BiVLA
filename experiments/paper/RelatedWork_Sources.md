@@ -23,7 +23,7 @@ paper's PDF, not its abstract.*
 | 11 | those with both axes leave the crossing cell empty | Gaze-Reg (A.5); VLA-Pruner (LIBERO has OpenVLA + OpenVLA-OFT, SIMPLER has OpenVLA only) |
 | 12 | the tables we cite report mean success rates, not matched-episode outcomes | grep over every PDF read: *paired* 0, *McNemar* 0, and in vla-eval also *significance* 0, *statistic* 0, *confidence* 0, *error bar* 0. The draft says **"the tables we cite,"** not "no prior work" — see the re-check note below |
 | 13 | FastV, SparseVLM and ToMe were developed for VLMs | all three PDFs read this session |
-| 14 | OpenVLA-OFT uses parallel decoding and action chunking | **upgraded from second-hand to primary, 2026-08-22.** Was verified only from VLA-Pruner's description of its own baseline; now from the paper itself (Kim, Finn & Liang, *Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success*), abstract p1: *"an Optimized Fine-Tuning (OFT) recipe that integrates **parallel decoding, action chunking**, a continuous action representation, and a simple L1 regression-based learning objective"* |
+| 14 | OpenVLA-OFT uses action chunking (the draft cited it for parallel decoding until 2026-08-24, see the note below) | **upgraded from second-hand to primary, 2026-08-22.** Was verified only from VLA-Pruner's description of its own baseline; now from the paper itself (Kim, Finn & Liang, *Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success*), abstract p1: *"an Optimized Fine-Tuning (OFT) recipe that integrates **parallel decoding, action chunking**, a continuous action representation, and a simple L1 regression-based learning objective"* |
 | 20 | our three axes are the field's own categories, not our invention | **PDF read 2026-08-22.** The CAS systematic survey (Guan et al., Institute of Automation, arXiv 2510.17111, confirmed from the listing page) divides efficiency work into §3.2 *Dynamic Computation Pathways*, §4 *Efficient Perception Feature*, §5 *Efficient Action Generation* — our axes 3, 2 and 1 — and populates them with the same papers we cite (§3.2 names SmolVLA and FLOWER; §4.1 names FastV and EfficientVLA; §4.2 names VLA-Cache) |
 | 15 | foveation has been applied to VLAs by gaze-conditioned policies | `RelatedWork.md` A.5 (Gaze-Reg, arXiv 2603.23202) and A.6 (Look Focus Act, arXiv 2507.15833), both marked *원문 확인* — the two PDFs were opened and their tables cross-checked |
 | 17 | log-polar was adopted in robot vision to cut data while preserving central resolution | **PDF read 2026-08-22**, Traver & Bernardino p3: *"Elegant trade-off solution between these three mutually opposing criteria: wide field of view, high visual resolution and little data to process … the reduced size of log-polar images (as much as 30 times smaller than uniformly-sampled Cartesian images have been reported) hugely facilitates real-time visual data processing. On the other hand, the radially logarithmic sampling entails that a higher resolution is devoted to the center of the scene (fovea area)"* — both halves of our clause, verbatim, with a number |
@@ -674,3 +674,69 @@ The general lesson, since this is the second time in two rounds: when a phrase
 keeps drawing fire, check whether the contested element can be **deleted**
 before choosing among replacements. The previous round removed the word
 *resource*; this one removes the subject.
+
+### Axis 1 named the wrong endpoint, 2026-08-24
+
+*"A predicted chunk is executed over several control steps, a lineage running
+from frame skip in RL to **parallel decoding**."*
+
+Axis 1 is *when the policy runs*. Frame skip and action chunking belong there:
+both hold one decision across several control steps, so both change how often
+the policy is called. **Parallel decoding does not.** It emits the action
+tokens of a single call in one pass instead of autoregressively. That is a
+decoding-cost change inside one call, so it belongs to axis 3 if anywhere. The
+lineage sentence named it as the endpoint of a lineage it is not in.
+
+Claim 14 already held the right word. It records OFT's abstract as integrating
+*"parallel decoding, **action chunking**, a continuous action representation,
+and a simple L1 regression-based learning objective."* OFT has both, and only
+one of them is on this axis.
+
+Now: *"One decision is executed over several control steps, a lineage running
+from frame skip in RL to action chunking."* The first clause also changed, from
+*"A predicted chunk"* to *"One decision"*, which removes a `chunk`/`chunking`
+echo and matches this file's own description of the DQN citation, *"the origin
+of executing one decision over several steps."* All four citations stay: DQN,
+ACT, Diffusion Policy and OFT are all action chunking or its ancestor.
+
+Claim 14 is rescoped accordingly. The draft no longer asserts anything about
+parallel decoding, so the verification behind it is now unused rather than
+wrong. Do not re-add parallel decoding to axis 1.
+
+### The compact-VLA inference was stated but not shown
+
+*"Whether a reduction transfers is therefore a question about architecture and
+not only about an inference-time setting."* The `therefore` did work the
+sentence never showed. *Transfers* from what to what was unstated, and a reader
+had to reconstruct the argument.
+
+The argument is short and worth writing out: FLOWER prunes 30--50\% of its VLM
+layers, SmolVLA keeps only the first sixteen, and TurboVLA drops the language
+model from the action path (claims 6--8). So for those models, removing layers
+at inference starts from a stack that has already been cut. Now: *"Whether
+removing layers helps therefore depends on what the architecture already leaves
+out, not only on an inference-time setting."*
+
+`Leaves out` rather than `already removed` because TurboVLA removed a component
+rather than layers, and the phrase has to cover all three.
+
+Note what this sentence still does **not** claim. It does not say the effect
+reverses across backbones. That is result 3, it belongs to the Introduction,
+and Related Work should not assert our own findings.
+
+### Two declined
+
+**`The tables we cite` to `These prior studies`.** The scoping is the point,
+and claim 12 records it: the draft says *"the tables we cite,"* not *"no prior
+work."* `Tables` is also the more precise subject for what the sentence
+asserts, which is what a printed table shows. And it matches the house
+construction already used in the Introduction, *"the five training-free methods
+we survey."* Plain is not informal.
+
+**The comma in `produce, and measures`.** Strictly optional in a compound
+predicate, but it is licensed when the predicates are long, and here it
+prevents a stumble. Without it the text reads *"the short action sequences VLAs
+produce and measures FastV,"* and a reader scanning `produce and measures` has
+to check the agreement to rule out a compound verb. Removing a comma to gain
+nothing and reintroduce a hesitation is the wrong trade in a section that has
+had three garden paths removed.
