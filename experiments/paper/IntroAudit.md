@@ -509,3 +509,83 @@ written down in a provenance file. The draft was not short of evidence. It was
 losing the scope on the way from the provenance file into the prose, which is
 a copy-edit failure mode and not a research one, and it is worth checking for
 directly the next time a sentence is tightened.
+
+---
+
+## 13. Pass thirteen, 2026-08-23: prose only, no claim changed
+
+The section is past the stage where checks find defects, so this pass read for
+rhythm, reference and garden paths instead. Twelve edits, none of them touching
+a number, a citation or a claim. Recorded because several of them fix things a
+reader trips over silently, and a later editor should not undo them.
+
+### Two garden paths, both from a missing "that"
+
+| was | why it stalls |
+|---|---|
+| *"the control runs and sweeps the results below rest on"* | `sweeps` reads as a verb and `the results` as its object. The reader gets to *"sweeps the results"* before backing up |
+| *"how much of the observation foveation keeps"* | `observation foveation` reads as a compound noun |
+| *"the fourteen intervention conditions our two Fractal cells ran"* | same shape as the first, milder |
+
+The first and third took a `that`. The second was rewritten to *"how much of
+the observation to keep"*, since inserting a word there does not separate the
+two nouns.
+
+### One ambiguous pronoun, which is a class we have already been caught on
+
+*"below the $25$ to $50$~Hz **it** says real-time deployment needs."* The
+nearest noun is *autoregressive OpenVLA*, not the OpenVLA-OFT paper. Now
+*"that paper says."* This is the same defect as the *"below it"* pronoun raised
+in pass eleven, in the same paragraph, and it survived that pass. Pronouns in
+this section should be checked against the nearest preceding noun, not against
+what the author meant.
+
+Two more of the same kind inside result 1. *"It stays inert while it is loose"*
+and *"Widening it"* both leaned on a *"restriction"* / *"window"* chain that
+had three referents in four sentences. Both pronouns are now the noun.
+
+### Verb placement, voice and one imperative that read as a command
+
+- *"we held the backbone, the benchmark, the method and the number of layers
+  removed (four) fixed"* put eighteen words between `held` and `fixed`. Now
+  *"we fixed the backbone, …"*.
+- *"Five cells are filled"* was the last easy passive in the section. Passive
+  is now 3 of 60 sentences.
+- **"Average the two cells and the effect nearly vanishes."** The author read
+  this as an imperative and asked whether `Average` was a command. That is the
+  reading, and one reader hitting it is enough. Now *"Averaged over the two
+  cells, …"*.
+- *"The premise is what we test"* → *"That premise"*, which points at the
+  sentence before it rather than making the reader decide which premise.
+- *"Our claim is narrower"* sits four sentences after *"we do not claim that
+  these interventions fail in general,"* with the baseline defence in between,
+  so the link had gone cold. Now *"What we do claim is narrower,"* which
+  echoes the earlier *do not claim* and re-opens the thread.
+- A sentence opened on a lowercase `\texttt{pick coke can}`. Now *"The task
+  \texttt{pick coke can} …"*, which also tells a first-time reader that these
+  are task names.
+
+### One vagueness kept on purpose
+
+*"one of them by a wide margin"* stays vague, and it should not be replaced
+with the number. The cell is OpenVLA on Bridge, ours $15.6\%$ against a
+published $1.0\%$, and `Report.md` §7.1 records why that figure cannot go in
+an Introduction: the $1.0\%$ has **one** independent source, and OpenVLA's own
+training mix is $13.3\%$ Bridge, so a fifteen-fold gap raises a question about
+the published evaluation setup rather than about our policy. Printing $15.6$
+against $1.0$ here would demand the whole disclosure on the spot. The margin
+belongs in Setup with its explanation. What the Introduction needs from the
+sentence is only that the deviation is upward, which is what it says.
+
+Keeping the phrase also keeps us honest. `Report.md` §7.1 explicitly forbids
+writing *"nowhere lower,"* and the sentence after this one gives the $4.2$
+point exception by name.
+
+### What did not change, and was checked
+
+Mixed tense is deliberate. Past for what we did (*we chose*, *we swept*, *we
+fixed*), present for what the paper does (*we fill*, *we run McNemar's*, *what
+we test*). That split is consistent throughout and is the normal convention.
+
+Longest sentence rose from 35 to 41 words, all from inserted relative pronouns
+and clarifying nouns. The ceiling is 45 and the mean is 17.7.
