@@ -50,12 +50,12 @@ turbovla}. Whether removing layers helps therefore depends on what the
 architecture already leaves out, not only on an inference-time setting. On the
 visual axis, two papers report that methods developed for VLMs~\cite{fastv,
 sparsevlm, tome} transfer poorly to VLAs. VLA-Cache attributes this poor
-transfer to the short action sequences VLAs produce, and measures FastV
-leaving FLOPs unchanged while latency rises~\cite{vlacache}. VLA-Pruner
-reproduces the degradation on another setting~\cite{vlapruner}. Our own visual
-intervention, foveation, comes from a different lineage. It descends from
-Schwartz's log-polar mapping~\cite{schwartz}, taken up in robot vision to cut
-data while preserving central resolution~\cite{traver} and applied to VLAs by
+transfer to VLAs' short action sequences and measures FastV leaving FLOPs
+unchanged while latency rises~\cite{vlacache}. VLA-Pruner reproduces the
+degradation on another setting~\cite{vlapruner}. Our own visual intervention,
+foveation, comes from a different lineage. It descends from Schwartz's
+log-polar mapping~\cite{schwartz}, taken up in robot vision to cut data while
+preserving central resolution~\cite{traver} and applied to VLAs by
 gaze-conditioned policies~\cite{gazereg, lookfocusact}. The encoders we run
 differ in many ways, but each splits the image into a \emph{uniform} grid, so
 empty background gets the same budget as the region where the gripper meets
@@ -81,11 +81,12 @@ Whether an intervention keeps its \emph{direction} when the backbone or the
 benchmark changes therefore cannot be read off these tables, nor can the
 per-task disagreements they average over.
 
-We do not cover quantisation or KV-cache compression, which operate outside
-the three axes above. We also exclude learned early exit, which is not
-training-free. Isolating the effect of choices that appear only in source code
-is an established practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We measure
-the same interventions over a backbone $\times$ benchmark grid that varies
-both factors independently, and we test each on matched episodes rather than
-aggregate rates. The direction of an effect, and not only its size, then
-becomes something the evidence can decide.
+We do not cover quantisation or KV-cache compression. Neither changes when the
+policy runs, what it is shown, or how much network each call uses. We also
+exclude learned early exit, which is not training-free. Isolating the effect
+of choices that appear only in source code is an established
+practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We measure the same
+interventions over a backbone $\times$ benchmark grid that varies both factors
+independently, and we test each on matched episodes rather than aggregate
+rates. The direction of an effect, and not only its size, then becomes
+something the evidence can decide.

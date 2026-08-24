@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-682 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
+691 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
 so ours is 1.95x its length. (This file previously said 429, which was a
 miscount, see `RelatedWork_Plan.md` §0.)
 Provenance for every claim: `RelatedWork_Sources.md`.*
@@ -49,8 +49,8 @@ depends on what the architecture already leaves out, not only on an
 inference-time setting.
 
 On the visual axis, two papers report that methods developed for VLMs (FastV,
-SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this poor transfer to the
-short action sequences VLAs produce, and measures FastV leaving FLOPs unchanged
+SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this poor transfer to
+VLAs' short action sequences and measures FastV leaving FLOPs unchanged
 while latency rises. VLA-Pruner reproduces the degradation on another setting.
 
 Our own visual intervention, foveation, comes from a different lineage. It
@@ -85,9 +85,9 @@ they average over.
 
 ---
 
-We do not cover quantisation or KV-cache compression, which operate outside
-the three axes above. We also exclude learned early exit, which is not
-training-free. Isolating the effect of choices that appear only in source code
+We do not cover quantisation or KV-cache compression. Neither changes when the
+policy runs, what it is shown, or how much network each call uses. We also
+exclude learned early exit, which is not training-free. Isolating the effect of choices that appear only in source code
 is an established practice (the image-classification and the
 inference-time-computation *bag of tricks* studies). We measure the same
 interventions over a backbone × benchmark grid that varies both factors
@@ -120,7 +120,7 @@ included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
 2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
 none of those.)
 
-**Length — 682 words of prose, which is 1.95x the model paper's 350.** That
+**Length — 691 words of prose, which is 1.95x the model paper's 350.** That
 ratio is larger than this file used to claim, because the 429 it compared
 against was a miscount (`RelatedWork_Plan.md` §0). The 2026-08-22 clause on
 foveated tokenization added 45 of those words. The page budget still rests

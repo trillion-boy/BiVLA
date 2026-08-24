@@ -740,3 +740,52 @@ produce and measures FastV,"* and a reader scanning `produce and measures` has
 to check the agreement to rule out a compound verb. Removing a comma to gain
 nothing and reintroduce a hesitation is the wrong trade in a section that has
 had three garden paths removed.
+
+### Round three on the exclusion clause, 2026-08-24: stop asserting, start applying
+
+Third objection, third wording. Rounds 1 and 2 are recorded above. Round 3
+called *"which operate outside the three axes above"* a cop-out and proposed
+*"which target memory bottlenecks rather than the three computational axes."*
+
+**That proposal is declined, and it is factually worse than the two before
+it.** Quantisation does not only target memory. Int8 and int4 kernels are
+faster arithmetic, so the claim is wrong for one of the two methods it
+describes, and we have read neither paper. Round 1's version was refused for
+being a claim about uncited work; this one is the same defect with a narrower,
+falsifiable body.
+
+**But the objection is right that the clause asserted a verdict instead of
+showing its working.** Three rounds of that is enough. The clause now applies
+the test rather than announcing its result:
+
+> *"We do not cover quantisation or KV-cache compression. Neither changes when
+> the policy runs, what it is shown, or how much network each call uses."*
+
+That restates the three axes verbatim from paragraph 1 and lets the reader
+check each method against them. Quantisation: same schedule, same input, every
+layer still runs, different arithmetic. KV-cache compression: same schedule,
+same input, every layer still runs, smaller history. Neither makes **only part
+of the decoder run**, which is what axis 3 says.
+
+To refute this a reviewer now has to argue that KV-cache compression makes part
+of the decoder not run, which is false. The previous wordings could be refuted
+by disagreeing with a word. Costs eight words and ends the argument.
+
+### The comma, round two: the collision was the problem, not the comma
+
+*"the short action sequences VLAs produce, and measures FastV"* drew the comma
+objection twice. It was declined the first time on the grounds that the comma
+prevents a reader from parsing `produce and measures` as a compound verb.
+
+That defence was right about the hazard and wrong about the fix. **The hazard
+is the verb `produce`**, and once it goes, the comma has nothing to do:
+
+> *"attributes this poor transfer to **VLAs' short action sequences** and
+> measures FastV leaving FLOPs unchanged"*
+
+No verb collision, so no comma, and the possessive is explicit, which is what
+`produce` had been added to achieve when the bare `their` was removed. One word
+shorter than either previous version.
+
+Third time in three rounds the answer was deletion rather than substitution:
+the word *resource*, then the subject of *leave*, now the verb *produce*.
