@@ -589,3 +589,75 @@ we test*). That split is consistent throughout and is the normal convention.
 
 Longest sentence rose from 35 to 41 words, all from inserted relative pronouns
 and clarifying nouns. The ceiling is 45 and the mean is 17.7.
+
+---
+
+## 14. Pass fourteen, 2026-08-23: a regression pass thirteen introduced
+
+Three items raised on the pass-thirteen text. One was a defect **created** by
+pass twelve, which is the part worth recording.
+
+### The regression, and how it happened
+
+Pass twelve rewrote this sentence to kill a false universal:
+
+| pass | sentence |
+|---|---|
+| before | *"…is a restriction an implementation can add **without any specification calling for it**, and **ours** did."* |
+| pass 12 | *"…is a restriction **neither method we implement asks for**, and **ours** added it anyway."* |
+| now | *"…is a restriction neither method we implement asks for, and **our implementation** added it anyway."* |
+
+The fix was right. *"Any specification"* was refuted by Gromov, cited two
+sentences earlier. But **the phrase that carried `ours` was `an
+implementation`**, and the rewrite deleted it. After pass twelve the only noun
+`ours` could attach to was *method*, in *"neither method we implement."*
+
+So the sentence read *our method added the restriction*, in a paper whose last
+paragraph opens *"We propose no new efficiency method."* Worse than the
+contradiction, it was simply wrong about what happened. The thing that added
+the restriction was our code, and `TableI_Cells.md` §4(b) points at the two
+source lines.
+
+**The lesson is narrow and worth stating.** When a sentence is rewritten to fix
+one defect, the pronouns downstream of the edit have to be rechecked against
+the *new* nouns, not the old ones. Pass thirteen ran a pronoun sweep and
+cleared three pronouns in this same paragraph. It missed this one because it
+checked pronouns the earlier drafts had, and `ours` had been fine in every
+earlier draft. **A pronoun that was correct before an edit is not evidence it
+is correct after one.**
+
+### Two reorderings, both cheaper than the fix that was suggested
+
+**`That premise` had a sentence between it and its referent.**
+
+> A. *That last step holds only if the effect belongs to the method rather than to the configuration it was measured in.*
+> B. *Telling the two apart takes a grid…*
+> C. *That premise is what we test, not any individual method.*
+
+C points at A across B. The suggested repairs were *"That underlying premise"*
+or *"This dependency"*, but neither closes the gap, they only label it. **Swapping B and C** closes it for free, and it pays a second time: the
+paragraph now ends on *"takes a grid that moves the backbone and the benchmark
+independently"*, and the next paragraph opens on *"three open backbones and
+two SimplerEnv suites"*. The hinge between the two paragraphs is now a setup
+and its payoff.
+
+The swap created one new reference, since *"telling the two apart"* now sits
+further from the pair it counts. That pronoun is gone too: *"Telling the
+method from the configuration."* Same length.
+
+**The floating `each` came from pass thirteen and was a lateral move.** That
+pass changed *"over 96 baseline WidowX-Bridge episodes each"* to *"each over
+96 baseline WidowX-Bridge episodes"*, trading one ambiguous attachment for
+another. Both were readable and neither was clean. Splitting the sentence
+removes the quantifier entirely: *"Both averages cover 96 baseline
+WidowX-Bridge episodes."* It also shortens the section's second sentence,
+which was carrying two models, two GPUs, two timings and an episode count.
+
+### Paragraph rewrapping is now scripted
+
+The .tex is wrapped at 78 columns and hand-editing across a wrap boundary
+leaves ragged lines, which is how a *"comparisons we"* fragment went missing
+for one commit in pass twelve. Paragraphs are rewrapped mechanically after
+edits now. This is also why the earlier naming self-test failed silently, and
+the two problems have the same root: the file's line breaks are not where its
+sentences are.

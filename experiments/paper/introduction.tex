@@ -28,22 +28,22 @@
 Vision-language-action (VLA) policies are becoming capable of general-purpose
 robotic control, and running one is expensive. In our own runs, a single call
 to the policy averaged $2.81$~s of model time for UniVLA~\cite{univla} on an
-L4 and $0.90$~s for SpatialVLA~\cite{spatialvla} on a T4, each over 96
-baseline WidowX-Bridge episodes. OpenVLA-OFT reports autoregressive OpenVLA at
-$3$ to $5$~Hz, below the $25$ to $50$~Hz that paper says real-time deployment
-needs~\cite{openvlaoft}. A literature has grown up around fixing this without
-retraining. The idea is to leave the checkpoint alone and make inference
-cheaper by skipping decoder layers~\cite{shortgpt, efficientvla}, by pruning
-visual tokens~\cite{fastv}, or by caching what the previous step already
-computed~\cite{vlacache, efficientvla}. MoLe-VLA learns which layers to
-skip~\cite{molevla} and is outside what we test.
+L4 and $0.90$~s for SpatialVLA~\cite{spatialvla} on a T4. Both averages cover
+96 baseline WidowX-Bridge episodes. OpenVLA-OFT reports autoregressive OpenVLA
+at $3$ to $5$~Hz, below the $25$ to $50$~Hz that paper says real-time
+deployment needs~\cite{openvlaoft}. A literature has grown up around fixing
+this without retraining. The idea is to leave the checkpoint alone and make
+inference cheaper by skipping decoder layers~\cite{shortgpt, efficientvla}, by
+pruning visual tokens~\cite{fastv}, or by caching what the previous step
+already computed~\cite{vlacache, efficientvla}. MoLe-VLA learns which layers
+to skip~\cite{molevla} and is outside what we test.
 
 Such papers share one form of claim. \emph{Applying method $M$ to backbone $A$
 on benchmark $B$ cut FLOPs by $X\%$ while success fell only $Y$ points, so $M$
 is efficient.} That last step holds only if the effect belongs to the method
-rather than to the configuration it was measured in. Telling the two apart
-takes a grid that moves the backbone and the benchmark independently. That
-premise is what we test, not any individual method.
+rather than to the configuration it was measured in. That premise is what we
+test, not any individual method. Telling the method from the configuration
+takes a grid that moves the backbone and the benchmark independently.
 
 We re-measured three interventions under one protocol, on three open backbones
 (OpenVLA~\cite{openvla}, SpatialVLA~\cite{spatialvla}, UniVLA~\cite{univla})
@@ -54,8 +54,8 @@ foveation (a log-polar warp and its inverse) changes what it is shown, and
 network depth pruning changes how much of the model each call uses. UniVLA
 releases a Bridge-only checkpoint, so we fill five of the six cells, each with
 eight conditions (Fig.~\ref{fig:grid}). Counting the control runs and sweeps
-that the results below rest on, the campaign comes to $6{,}910$ episodes. Every
-condition replays the initial states of its cell's baseline, and we run
+that the results below rest on, the campaign comes to $6{,}910$ episodes.
+Every condition replays the initial states of its cell's baseline, and we run
 McNemar's exact test on the episodes whose outcome flipped.
 
 Three results follow, and each has the same shape. The factor that would get
@@ -71,35 +71,35 @@ the prescriptions on record disagree about it. The methods we re-measure rank
 every layer and constrain nothing further~\cite{shortgpt, efficientvla}, while
 a competing one restricts removal to a contiguous block at the deep end and
 reports that the final layer must be kept~\cite{gromov}. Confining removal to
-the deep end is a restriction neither method we implement asks for, and ours
-added it anyway. The restriction stays inert while it is loose. Widening the
-window from the back half of the stack to the back three quarters selects the
-same four layers and returns the same $+15.6$. The setting that loses
-$30.4$ points narrows it instead, far enough that only four layers remain
-eligible, so the ranking has nothing left to choose and the final layer goes
-with the rest. Across all five cells, the same contrast spans $2.1$ to $50.4$
-points. How much the choice matters is itself a property of the configuration.
+the deep end is a restriction neither method we implement asks for, and our
+implementation added it anyway. The restriction stays inert while it is loose.
+Widening the window from the back half of the stack to the back three quarters
+selects the same four layers and returns the same $+15.6$. The setting that
+loses $30.4$ points narrows it instead, far enough that only four layers
+remain eligible, so the ranking has nothing left to choose and the final layer
+goes with the rest. Across all five cells, the same contrast spans $2.1$ to
+$50.4$ points. How much the choice matters is itself a property of the
+configuration.
 
 \textbf{What foveation discards is not what makes it help.} In one cell, we
 swept how much of the observation to keep, and the best setting discards
-nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$
-and $+4.2$ at $10\%$. Our three backbones tokenize a fixed patch grid, so a
-pixel-space edit cannot change how many tokens they process. Model time per
-call, which excludes the warp itself, stayed within $3.1\%$ of baseline in
-every condition we ran. The gain peaks where nothing is discarded and only the
-log-polar round trip remains, so foveation without retraining is an input
-transformation and not a way to spend less.
+nothing, giving $+30.2$ points at $100\%$ against $+18.8$ at $20\%$ and $+4.2$
+at $10\%$. Our three backbones tokenize a fixed patch grid, so a pixel-space
+edit cannot change how many tokens they process. Model time per call, which
+excludes the warp itself, stayed within $3.1\%$ of baseline in every condition
+we ran. The gain peaks where nothing is discarded and only the log-polar round
+trip remains, so foveation without retraining is an input transformation and
+not a way to spend less.
 
 \textbf{The same intervention reverses sign across backbones.} Under depth
 pruning of four layers, OpenVLA gains $15.6$ points while SpatialVLA loses
 $17.8$ on the same $135$ Fractal episodes, each surviving correction on its
 own and differing from the other. Averaged over the two cells, the effect
-nearly vanishes. The cell mean hides a split of its own.
-The task \texttt{pick coke can} comes out ahead of \texttt{move near} in ten
-of the fourteen intervention conditions that our two Fractal cells ran, and
-the two
-published SimplerEnv comparisons we cite print the same split without
-remarking on it~\cite{efficientvla, vlapruner}.
+nearly vanishes. The cell mean hides a split of its own. The task \texttt{pick
+coke can} comes out ahead of \texttt{move near} in ten of the fourteen
+intervention conditions that our two Fractal cells ran, and the two published
+SimplerEnv comparisons we cite print the same split without remarking on
+it~\cite{efficientvla, vlapruner}.
 
 \textbf{Contributions.} \textbf{1)~A uniform re-measurement.} We run three
 training-free interventions over a $3 \times 2$ backbone-benchmark grid and
@@ -125,6 +125,5 @@ baseline, so no result depends on our absolute rates matching anyone else's.
 Four of our five baseline cells do sit above the figures published for the
 checkpoints we run, one of them by a wide margin. The fifth is $4.2$ points
 below. A broken setup would push all five down. What we do claim is narrower.
-As
-results are reported now, the evidence does not separate a property of the
+As results are reported now, the evidence does not separate a property of the
 method from a property of the configuration it was measured in.
