@@ -144,9 +144,9 @@ def main():
 \vspace{3pt}
 \parbox{\textwidth}{\footnotesize Every row below the baseline is the paired
 change against it, over the episodes present in both runs. \textbf{Bold} marks
-the %d entries that clear a Bonferroni threshold of $\alpha = 0.05/%d$ over the
-paired tests the grid runs. \textemdash{} marks the column whose checkpoint is
-not public.}
+the %d entries that clear a Bonferroni threshold of $\alpha = 0.05/%d$ over
+every paired test the grid runs, three of them conditions not shown here.
+\textemdash{} marks the column whose checkpoint is not public.}
 \end{table*}
 """ % (sub, base_row, "\n".join(body), n_sig, fam)
 

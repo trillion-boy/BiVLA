@@ -113,16 +113,52 @@ environment steps on two backbones and 20 on the third, and a paper reporting
 the setting without the chunk length has told the reader nothing about which
 one it ran. That is result 1 on the temporal axis rather than the depth axis.
 
-**One fact makes the charge weaker than it looks: the horizons cannot be
-matched.** UniVLA's chunk is 5, so the horizons available to it are 5, 10, 15,
-20. There is no repeat value that puts it at OpenVLA's 4. Matching the nominal
-setting and matching the horizon are not both possible here, and any uniform
-protocol has to pick one. We picked the nominal setting, which is what the
-literature reports, and the cost of that choice is the finding.
+**One fact makes the charge weaker than it looks, and it needs stating
+carefully.** ⚠️ *Corrected 2026-08-25.* This paragraph used to say the horizons
+cannot be matched. **That is false**, and the arithmetic is a two-line check:
+
+| backbone | chunk | horizons it can reach |
+|---|---:|---|
+| OpenVLA, SpatialVLA | 1 | every integer |
+| UniVLA | 5 | multiples of 5 |
+
+The common values are 5, 10, 15, 20, so a horizon of 20 is reachable by all
+three, at repeat 20, 20 and 4. What is unreachable is 4, and more to the point,
+**no assignment makes the nominal repeat value and the horizon uniform at the
+same time.**
+
+| what you hold uniform | OpenVLA | SpatialVLA | UniVLA |
+|---|---|---|---|
+| nominal repeat = 4 | horizon 4 | horizon 4 | **horizon 20** |
+| horizon = 20 | **repeat 20** | **repeat 20** | repeat 4 |
+
+Every uniform protocol picks one row of that table and lives with the other
+being ragged. We picked the first, because the nominal setting is what the
+literature reports and what a reader of "action repeat = 4" believes they are
+comparing. The cost of that choice is the finding, and the second row is the
+experiment nobody runs.
 
 **What this obliges Setup to state**, in one sentence each: the repeat
 semantics above, the three native chunk lengths, and that the horizons are
 therefore 4 / 4 / 20 rather than 4 / 4 / 4.
+
+### The two wedges Results has to drive, because a reader will not
+
+**A. Block the vertical read before it happens.** A reader meeting a table
+compares down a column by reflex. Results must say, next to the row, that
+reading *"action repetition 4"* downward and concluding UniVLA is the most
+fragile **is the error this paper is about**, committed on our own data. The
+three backbones share the name of the setting and not the operation.
+
+**B. State the incommensurability, with the arithmetic.** The table in section
+5 above is the argument, and it is short enough to print: uniform nominal
+setting gives horizons 4 / 4 / 20, uniform horizon gives repeats 20 / 20 / 4,
+and no assignment gives both. Once a reader sees that, the $-81.2$ stops
+looking like a failed run and starts looking like the price of the convention
+the literature uses.
+
+Neither wedge is optional. Without A the row invites the comparison we exist
+to criticise. Without B the row looks like a bug we did not catch.
 
 ## 6. What Results has to carry
 
