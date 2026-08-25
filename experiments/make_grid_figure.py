@@ -146,10 +146,14 @@ def main():
     cmap = mcolors.ListedColormap(
         plt.get_cmap("RdBu_r")(np.linspace(TRUNC, 1.0 - TRUNC, 256)))
 
-    # 7.16 in is IEEEtran's \textwidth on US Letter, which is what a figure*
-    # spans. Drawing at final size means nothing is scaled in LaTeX and the
-    # point sizes below are the point sizes on the page.
-    fig = plt.figure(figsize=(7.16, 3.05))
+    # 7.00 in is the \textwidth a figure* spans, which is what this project's
+    # ieeeconf.cls actually gives. MEASURED, 2026-08-25, with \showthe
+    # \textwidth in the real document: 505.89 pt, and a TeX point is 1/72.27
+    # in, so 7.000 in exactly. This said 7.16 before, on the assumption that
+    # the class was IEEEtran; the file list says ieeeconf, which ICRA and IROS
+    # distribute, and its margins differ. Drawing at final size means nothing
+    # is scaled in LaTeX and the point sizes below are the ones on the page.
+    fig = plt.figure(figsize=(7.00, 3.05))
     ax = fig.add_axes([0.215, 0.235, 0.778, 0.745])
     ax.imshow(np.ma.masked_invalid(np.clip(grid, -limit, limit)),
               cmap=cmap, norm=norm, aspect="auto", interpolation="nearest")
