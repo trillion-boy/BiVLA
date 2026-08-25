@@ -40,7 +40,7 @@ and that should not be forgotten before the bibliography is finalised.
 | citation | what the draft asserts about it | risk |
 |---|---|---|
 | `effvlasurvey2` — arXiv 2510.24795, *A Survey on Efficient Vision-Language-Action Models* | only that such surveys exist | low — an existence claim. **The only remaining unread citation in the section.** Full bibliographic data verified, see below |
-| DQN (frame skip) | the origin of executing one decision over several steps | low — textbook lineage |
+| ~~DQN (frame skip)~~ | **read 2026-08-24, see below** | moved off this table |
 | ACT, Diffusion Policy | action chunking in imitation learning | low — textbook lineage |
 | SimplerEnv | the benchmark results are reported on | none — we run it, all 24 result directories are SimplerEnv |
 | LIBERO | named alongside SimplerEnv as where the field reports | low — a statement about the field's practice, not about us. **We do not run LIBERO in this paper.** The five-model expansion would, and `notebooks/05` supports it, but no LIBERO run exists in `results/`. Do not let this citation drift into implying we evaluated on it |
@@ -789,3 +789,49 @@ shorter than either previous version.
 
 Third time in three rounds the answer was deletion rather than substitution:
 the word *resource*, then the subject of *leave*, now the verb *produce*.
+
+---
+
+## DQN read 2026-08-24, and one of our own notes was wrong
+
+The PDF arrived, so this citation is no longer lineage-only. Two things came
+out of it, and the second is a correction to this file.
+
+**The claim is confirmed, verbatim, and it is a closer match than expected.**
+Methods, on frame skipping:
+
+> *"the agent sees and selects actions on **every kth frame** instead of every
+> frame, and **its last action is repeated on skipped frames**."*
+
+That is axis 1 as `relatedwork.tex` states it, *"One decision is executed over
+several control steps,"* in the source's own words. The paper even gives the
+efficiency rationale our axis rests on:
+
+> *"Because running the emulator forward for one step requires much less
+> computation than **having the agent select an action**, this technique allows
+> the agent to play roughly k times more games without significantly increasing
+> the runtime."*
+
+The expensive thing is the policy call, so spending fewer of them is the
+saving. That is exactly why *when the policy runs* is a resource axis and not
+a scheduling detail. There is a second instance too: the random baseline
+*"chose a random action at 10 Hz which is every sixth frame, repeating its last
+action on intervening frames."*
+
+⚠️ **This file described DQN as "the origin of executing one decision over
+several steps." That is wrong.** The sentence introducing the technique reads
+*"**Following previous approaches** to playing Atari 2600 games, we also use a
+simple frame-skipping technique"*, with a citation of its own. DQN adopts frame
+skip, it does not invent it.
+
+**The draft is unaffected and needs no edit.** `relatedwork.tex` says *"a
+lineage running **from frame skip in RL** to action chunking"* and cites four
+papers for the lineage. It names the technique as the starting point, not DQN
+as its inventor. The error was in this file's summary, which is the more
+dangerous place for it: a wrong provenance note is what a later editor would
+have promoted into the prose.
+
+**Bibliographic data, all from the PDF's own first page.** Nineteen authors,
+where this entry previously stopped at ten and *"and others"*. Nature 518, and
+the running head gives the rest: *"26 FEBRUARY 2015 | VOL 518 | NATURE | 529"*,
+`doi:10.1038/nature14236`, received 10 July 2014, accepted 16 January 2015.
