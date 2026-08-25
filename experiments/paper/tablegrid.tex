@@ -3,24 +3,23 @@
 % edit the numbers here, because there are none to edit. Regenerate instead.
 %
 % Spans both columns, so table* and not table. Needs \usepackage{booktabs}.
+%
+% The caption is ONE sentence on purpose. IEEEtran sets table captions in
+% small capitals, which is fine for a line and unreadable for six, and the
+% first draft ran to six. Everything a reader needs but does not need in
+% capitals sits in a \footnotesize note under the rule instead, which is the
+% usual IEEE arrangement. Do not grow the caption; grow the note.
 % ---------------------------------------------------------------------------
 \begin{table*}[t]
 \centering
-\caption{Every condition in the grid, as the paired change in success points
-against that cell's own baseline. A cell pairs only the episodes present in
-both runs. \textbf{Bold} marks the 8 cells that clear a Bonferroni threshold
-of $\alpha = 0.05/38$ over the paired tests the grid runs, and \textemdash{}
-marks the cell whose checkpoint is not public. Read along any row. The same
-intervention, applied the same way, moves in both directions depending only on
-which cell it was measured in, and the last row does so with both directions
-individually significant.}
+\caption{Paired change in success points against each cell's own baseline.}
 \label{tab:grid}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{l rrr rrr}
 \toprule
 & \multicolumn{3}{c}{WidowX-Bridge} & \multicolumn{3}{c}{Google Robot/Fractal} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7}
-\multicolumn{1}{c}{condition} & \textsc{openvla} & \textsc{spatialvla} & \textsc{univla} & \textsc{openvla} & \textsc{spatialvla} & \textsc{univla} \\
+\multicolumn{1}{c}{condition} & OpenVLA & SpatialVLA & UniVLA & OpenVLA & SpatialVLA & UniVLA \\
 \midrule
 action repetition 2 & $-8.3$ & $+12.5$ & $\mathbf{-69.8}$ & $+5.2$ & $0.0$ & \textemdash \\
 action repetition 4 & $\mathbf{-11.5}$ & $-12.5$ & $\mathbf{-81.2}$ & $-1.5$ & $\mathbf{-40.0}$ & \textemdash \\
@@ -33,4 +32,13 @@ depth pruning 2 & $0.0$ & $-9.4$ & $-4.2$ & $0.0$ & $+3.0$ & \textemdash \\
 depth pruning 4 & $+1.0$ & $\mathbf{-28.1}$ & $-2.1$ & $\mathbf{+15.6}$ & $\mathbf{-17.8}$ & \textemdash \\
 \bottomrule
 \end{tabular}
+
+\vspace{3pt}
+\parbox{\textwidth}{\footnotesize A cell pairs only the episodes present in
+both runs. \textbf{Bold} marks the 8 cells that clear a Bonferroni threshold
+of $\alpha = 0.05/38$ over the paired tests the grid runs, and \textemdash{}
+marks the cell whose checkpoint is not public. Read along any row. The same
+intervention, applied the same way, moves in both directions depending only on
+which cell it was measured in, and the last row does so with both directions
+individually significant.}
 \end{table*}
