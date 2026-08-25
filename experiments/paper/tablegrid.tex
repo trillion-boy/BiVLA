@@ -4,11 +4,13 @@
 %
 % Spans both columns, so table* and not table. Needs \usepackage{booktabs}.
 %
-% The caption is ONE sentence on purpose. IEEEtran sets table captions in
-% small capitals, which is fine for a line and unreadable for six, and the
-% first draft ran to six. Everything a reader needs but does not need in
-% capitals sits in a \footnotesize note under the rule instead, which is the
-% usual IEEE arrangement. Do not grow the caption; grow the note.
+% The caption is ONE sentence and the note is a KEY, not an argument. ieeeconf
+% sets table captions in small capitals, which is unreadable past a line, and
+% the first draft ran to six. The note under the rule used to end with "Read
+% along any row. The same intervention ... moves in both directions", which is
+% the Introduction's own result 3 restated. A caption says what a table shows;
+% the body says what it means, and the body already does. Do not grow either
+% one back.
 % ---------------------------------------------------------------------------
 \begin{table*}[t]
 \centering
@@ -19,26 +21,27 @@
 \toprule
 & \multicolumn{3}{c}{WidowX-Bridge} & \multicolumn{3}{c}{Google Robot/Fractal} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7}
-\multicolumn{1}{c}{condition} & OpenVLA & SpatialVLA & UniVLA & OpenVLA & SpatialVLA & UniVLA \\
+\multicolumn{1}{c}{Condition} & OpenVLA & SpatialVLA & UniVLA & OpenVLA & SpatialVLA & UniVLA \\
 \midrule
-action repetition 2 & $-8.3$ & $+12.5$ & $\mathbf{-69.8}$ & $+5.2$ & $0.0$ & \textemdash \\
-action repetition 4 & $\mathbf{-11.5}$ & $-12.5$ & $\mathbf{-81.2}$ & $-1.5$ & $\mathbf{-40.0}$ & \textemdash \\
+Baseline success (\%) & $15.6$ & $30.2$ & $81.2$ & $38.5$ & $84.4$ & \textemdash \\
+\midrule
+Action repetition 2 & $-8.3$ & $+12.5$ & $\mathbf{-69.8}$ & $+5.2$ & $\phantom{+}0.0$ & \textemdash \\
+Action repetition 4 & $\mathbf{-11.5}$ & $-12.5$ & $\mathbf{-81.2}$ & $-1.5$ & $\mathbf{-40.0}$ & \textemdash \\
 \addlinespace[2pt]
-visual foveation, log-polar & $+18.8$ & $-8.3$ & $+5.2$ & $\mathbf{-19.3}$ & $+0.7$ & \textemdash \\
-visual foveation, blur & $+17.7$ & $0.0$ & $-8.3$ & $-8.9$ & $-1.5$ & \textemdash \\
+Visual foveation, log-polar & $+18.8$ & $-8.3$ & $+5.2$ & $\mathbf{-19.3}$ & $+0.7$ & \textemdash \\
+Visual foveation, blur & $+17.7$ & $\phantom{+}0.0$ & $-8.3$ & $-8.9$ & $-1.5$ & \textemdash \\
 \addlinespace[2pt]
-depth pruning 1 & $+2.1$ & $-10.4$ & $-3.1$ & $+0.7$ & $+8.1$ & \textemdash \\
-depth pruning 2 & $0.0$ & $-9.4$ & $-4.2$ & $0.0$ & $+3.0$ & \textemdash \\
-depth pruning 4 & $+1.0$ & $\mathbf{-28.1}$ & $-2.1$ & $\mathbf{+15.6}$ & $\mathbf{-17.8}$ & \textemdash \\
+Depth pruning 1 & $+2.1$ & $-10.4$ & $-3.1$ & $+0.7$ & $+8.1$ & \textemdash \\
+Depth pruning 2 & $\phantom{+}0.0$ & $-9.4$ & $-4.2$ & $\phantom{+}0.0$ & $+3.0$ & \textemdash \\
+Depth pruning 4 & $+1.0$ & $\mathbf{-28.1}$ & $-2.1$ & $\mathbf{+15.6}$ & $\mathbf{-17.8}$ & \textemdash \\
 \bottomrule
 \end{tabular}
 
 \vspace{3pt}
-\parbox{\textwidth}{\footnotesize A cell pairs only the episodes present in
-both runs. \textbf{Bold} marks the 8 cells that clear a Bonferroni threshold
-of $\alpha = 0.05/38$ over the paired tests the grid runs, and \textemdash{}
-marks the cell whose checkpoint is not public. Read along any row. The same
-intervention, applied the same way, moves in both directions depending only on
-which cell it was measured in, and the last row does so with both directions
-individually significant.}
+\parbox{\textwidth}{\footnotesize The first row is each cell's absolute
+baseline success rate. Every row below it is the paired change in points
+against that rate, over the episodes present in both runs. \textbf{Bold} marks
+the 8 cells that clear a Bonferroni threshold of $\alpha = 0.05/38$ over the
+paired tests the grid runs. \textemdash{} marks the cell whose checkpoint is
+not public.}
 \end{table*}

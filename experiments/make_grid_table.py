@@ -35,6 +35,20 @@ def main():
     fam = grid_family(data, cols)
     alpha = 0.05 / max(1, fam)
 
+    # The baseline row. A -10 point drop from 90% and one from 15% are not the
+    # same result, and without the absolute rate a reader cannot tell which
+    # they are looking at. Computed from the same records, not transcribed.
+    base_cells = []
+    for bb, bench, _ in COLS:
+        base = data.get((bb, bench, "baseline"))
+        if not base:
+            base_cells.append(r"\textemdash")
+            continue
+        n = sum(len(e) for e in base.values())
+        ok = sum(sum(1 for v in e.values() if v) for e in base.values())
+        base_cells.append("$%.1f$" % (100.0 * ok / n))
+    base_row = "Baseline success (\\%) & " + " & ".join(base_cells) + r" \\"
+
     body = []
     n_sig = 0
     for i, (cond, label) in enumerate(ROWS):
@@ -56,14 +70,19 @@ def main():
             # weight, so the "bold" cells would have rendered identical to the
             # rest and the significance column would have been silently blank.
             # \mathbf inside the maths is what actually sets the digits bold.
-            body_ = "0.0" if v == 0 else "%+.1f" % v
+            # \\phantom{+} so an unsigned zero occupies the same width as a
+            # signed number. The column is right-aligned and every value has one
+            # decimal, so decimals line up on their own -- except for the zeros,
+            # which were a character narrower and hung to the right of the rest.
+            body_ = r"\phantom{+}0.0" if v == 0 else "%+.1f" % v
             if p < alpha:
                 n_sig += 1
                 s = r"$\mathbf{%s}$" % body_
             else:
                 s = "$%s$" % body_
             cells.append(s)
-        body.append(f"{label} & " + " & ".join(cells) + r" \\")
+        body.append(f"{label[0].upper() + label[1:]} & "
+                    + " & ".join(cells) + r" \\")
 
     head = (r"\multicolumn{3}{c}{WidowX-Bridge} & "
             r"\multicolumn{3}{c}{Google Robot/Fractal}")
@@ -78,11 +97,13 @@ def main():
 %%
 %% Spans both columns, so table* and not table. Needs \usepackage{booktabs}.
 %%
-%% The caption is ONE sentence on purpose. IEEEtran sets table captions in
-%% small capitals, which is fine for a line and unreadable for six, and the
-%% first draft ran to six. Everything a reader needs but does not need in
-%% capitals sits in a \footnotesize note under the rule instead, which is the
-%% usual IEEE arrangement. Do not grow the caption; grow the note.
+%% The caption is ONE sentence and the note is a KEY, not an argument. ieeeconf
+%% sets table captions in small capitals, which is unreadable past a line, and
+%% the first draft ran to six. The note under the rule used to end with "Read
+%% along any row. The same intervention ... moves in both directions", which is
+%% the Introduction's own result 3 restated. A caption says what a table shows;
+%% the body says what it means, and the body already does. Do not grow either
+%% one back.
 %% ---------------------------------------------------------------------------
 \begin{table*}[t]
 \centering
@@ -93,22 +114,23 @@ def main():
 \toprule
 & \multicolumn{3}{c}{WidowX-Bridge} & \multicolumn{3}{c}{Google Robot/Fractal} \\
 \cmidrule(lr){2-4} \cmidrule(lr){5-7}
-\multicolumn{1}{c}{condition} & %s \\
+\multicolumn{1}{c}{Condition} & %s \\
+\midrule
+%s
 \midrule
 %s
 \bottomrule
 \end{tabular}
 
 \vspace{3pt}
-\parbox{\textwidth}{\footnotesize A cell pairs only the episodes present in
-both runs. \textbf{Bold} marks the %d cells that clear a Bonferroni threshold
-of $\alpha = 0.05/%d$ over the paired tests the grid runs, and \textemdash{}
-marks the cell whose checkpoint is not public. Read along any row. The same
-intervention, applied the same way, moves in both directions depending only on
-which cell it was measured in, and the last row does so with both directions
-individually significant.}
+\parbox{\textwidth}{\footnotesize The first row is each cell's absolute
+baseline success rate. Every row below it is the paired change in points
+against that rate, over the episodes present in both runs. \textbf{Bold} marks
+the %d cells that clear a Bonferroni threshold of $\alpha = 0.05/%d$ over the
+paired tests the grid runs. \textemdash{} marks the cell whose checkpoint is
+not public.}
 \end{table*}
-""" % (sub, "\n".join(body), n_sig, fam)
+""" % (sub, base_row, "\n".join(body), n_sig, fam)
 
     path = os.path.join(OUT, "tablegrid.tex")
     with open(path, "w") as fh:
