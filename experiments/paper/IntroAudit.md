@@ -661,3 +661,60 @@ for one commit in pass twelve. Paragraphs are rewrapped mechanically after
 edits now. This is also why the earlier naming self-test failed silently, and
 the two problems have the same root: the file's line breaks are not where its
 sentences are.
+
+---
+
+## 15. If the Introduction has to shrink: what to cut, in order
+
+Written 2026-08-25 because Related Work has carried a cut list with costs
+since the first draft and the Introduction never has. A cut list written under
+page pressure gets made in the wrong order, and the cheapest sentence to
+delete is rarely the cheapest one to lose.
+
+**Measured shape, 1066 words over nine paragraphs.**
+
+| | paragraph | words | share |
+|---|---|---:|---:|
+| 1 | opening, the cost of inference | 127 | 12% |
+| 2 | the claim form we test | 78 | 7% |
+| 3 | setup and the grid | 127 | 12% |
+| 4 | the two-sentence hinge | 24 | 2% |
+| 5 | result 1, the 45.9-point window | **224** | **21%** |
+| 6 | result 2, foveation | 107 | 10% |
+| 7 | result 3, sign reversal | 97 | 9% |
+| 8 | contributions | 176 | 17% |
+| 9 | scope and the baseline defence | 106 | 10% |
+
+### Cut in this order
+
+| # | cut | saves | what it costs |
+|---|---|---:|---|
+| 1 | the OFT frequency sentence in ¶1 | ~30 | third-party corroboration that the cost is not ours alone. Our own two timings survive, but they become the only evidence |
+| 2 | the per-task split in ¶7, from *"The cell mean hides"* | ~45 | the weakest-supported claim in the section, ten of fourteen, and the one whose provenance needs a whole file. **Cut this before anything in ¶5** |
+| 3 | the two-sentence hinge, ¶4 | 24 | the reader meets three bold headings with no warning that they share a shape. Cheap in words, and the shape is the argument |
+| 4 | *"Four of our five baseline cells…"* through *"push all five down"*, ¶9 | ~45 | the answer to *"your setup is broken."* It is the objection a reviewer reaches for first. **Do not cut this to save space; cut it only if Setup carries it instead** |
+| 5 | the widening sentence in ¶5 | ~45 | the proof that the restriction is inert until tight, which is the answer to *"this is your bug, not the field's problem."* `TableI_Cells.md` §4(b) records that the whole result rests on it |
+
+### Do not cut
+
+**¶2 at 78 words.** It states the claim form the paper tests. Every result is
+an instance of it and the paper has no thesis without it.
+
+**The 45.9 contrast itself, ¶5.** It is the strongest result and the only one
+that is fully within-cell, so no reviewer can reach it by disputing a
+comparison across cells.
+
+**The four contributions, ¶8 at 176 words.** Long, and it is the block a
+reviewer skims before deciding. Contribution 4's enumeration, *"of the five
+methods we survey, none reports…"*, is the paper's method claim in its
+checkable form.
+
+### The real lever is not prose
+
+Table I spans both columns and holds 42 cells. Dropping the empty
+UniVLA/Fractal column would save nothing worth having, but folding the two
+foveation rows or the three depth rows would. Before cutting an argument,
+check the table, the figure area and the reference list, in that order. The
+bibliography alone gives back **0.8 pages** by applying IEEE's own rule that
+more than six authors becomes *et al.*, which is 173 of 248 printed names, and
+costs no argument at all.
