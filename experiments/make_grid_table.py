@@ -101,13 +101,25 @@ def main():
 %% sets table captions in small capitals, which is unreadable past a line, and
 %% the first draft ran to six. The note under the rule used to end with "Read
 %% along any row. The same intervention ... moves in both directions", which is
-%% the Introduction's own result 3 restated. A caption says what a table shows;
+%% the Introduction's own result 3 restated. A caption says what a table shows,
 %% the body says what it means, and the body already does. Do not grow either
 %% one back.
+%%
+%% The caption covers BOTH kinds of number. It used to read "paired change ...
+%% against each cell's own baseline", which stopped describing the table the
+%% moment the baseline row went in, since the first row is an absolute rate and
+%% not a change. It also names the unit once, as percentage points, so the
+%% prose can go on saying "points" without either being loose.
+%%
+%% The caption covers BOTH kinds of number. It used to say "paired change ...
+%% against each cell's own baseline", which stopped describing the table the
+%% moment the baseline row went in: the first row is an absolute rate, not a
+%% change. It also names the unit once, as percentage points, so the prose can
+%% keep saying "points" without either being loose.
 %% ---------------------------------------------------------------------------
 \begin{table*}[t]
 \centering
-\caption{Paired change in success points against each cell's own baseline.}
+\caption{Baseline success rates and paired changes, in percentage points.}
 \label{tab:grid}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{l rrr rrr}
@@ -124,8 +136,8 @@ def main():
 
 \vspace{3pt}
 \parbox{\textwidth}{\footnotesize The first row is each cell's absolute
-baseline success rate. Every row below it is the paired change in points
-against that rate, over the episodes present in both runs. \textbf{Bold} marks
+baseline success rate. Every row below it is the paired change against that
+rate, over the episodes present in both runs. \textbf{Bold} marks
 the %d cells that clear a Bonferroni threshold of $\alpha = 0.05/%d$ over the
 paired tests the grid runs. \textemdash{} marks the cell whose checkpoint is
 not public.}
