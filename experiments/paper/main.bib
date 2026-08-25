@@ -43,27 +43,50 @@
 
 % ===================== the interventions we re-measure =====================
 
-@article{shortgpt,
-  title   = {{ShortGPT}: Layers in Large Language Models are More Redundant
-             Than You Expect},
-  author  = {Men, Xin and Xu, Mingyu and Zhang, Qingyu and Wang, Bingning and
-             Lin, Hongyu and Lu, Yaojie and Han, Xianpei and Chen, Weipeng},
-  journal = {arXiv preprint arXiv:2403.03853},
-  year    = {2024},
-  %% All eight names match arXiv's own BibTeX export exactly. Nothing to fix.
-  %% The entry used to carry note = {v3}, which IEEEtran would have PRINTED as
-  %% a trailing "v3" in the bibliography. The arXiv id already identifies the
-  %% paper and versions are not normally cited, so it is a comment now: we
-  %% read v3.
+@article{univla,
+  title   = {Unified Vision-Language-Action Model},
+  author  = {Wang, Yuqi and Li, Xinghang and Wang, Wenxuan and Zhang, Junbo
+             and Li, Yingyan and Chen, Yuntao and Wang, Xinlong and Zhang,
+             Zhaoxiang},
+  journal = {arXiv preprint arXiv:2506.19850},
+  year    = {2025},
+  %% Verified against the repo we actually run, not against a search result.
+  %% adaptive_sparse_vla/inference_libero.py:6-9 names the checkpoint source
+  %% as huggingface.co/Yuqi1997/UniVLA (baaivision/UniVLA) and warns in so
+  %% many words: "not to be confused with the unrelated OpenDriveLab/UniVLA
+  %% project of the same name". Yuqi1997 is Yuqi Wang, first author here.
+  %% Our backbone is UniVLA(-Emu3); Emu3 is BAAI's. OpenDriveLab's UniVLA
+  %% (Bu et al., arXiv 2505.06111) is a DIFFERENT paper and MUST NOT be
+  %% cited for this backbone. An earlier revision of this file had exactly
+  %% that error.
 }
 
-@inproceedings{gromov,
-  title     = {The Unreasonable Ineffectiveness of the Deeper Layers},
-  author    = {Gromov, Andrey and Tirumala, Kushal and Shapourian, Hassan and
-               Glorioso, Paolo and Roberts, Daniel A.},
-  booktitle = {International Conference on Learning Representations (ICLR)},
-  year      = {2025},
-  note      = {arXiv:2403.17887},
+@article{spatialvla,
+  title   = {{SpatialVLA}: Exploring Spatial Representations for
+             Visual-Language-Action Model},
+  author  = {Qu, Delin and Song, Haoming and Chen, Qizhi and Yao, Yuanqi and
+             Ye, Xinyi and Ding, Yan and Wang, Zhigang and Gu, JiaYuan and
+             Zhao, Bin and Wang, Dong and Li, Xuelong},
+  journal = {arXiv preprint arXiv:2501.15830},
+  year    = {2025},
+  %% Complete 11-author list from arXiv, 2026-08-24. The repo's citation block
+  %% stops at ten with "and others", which is what a Google Scholar export
+  %% does; arXiv does not truncate. The eleventh is Xuelong Li.
+  %% "Gu, JiaYuan" keeps arXiv's capitalisation even though simplerenv writes
+  %% the same person as "Gu, Jiayuan". Both are cited as their own paper
+  %% publishes them, and IEEEtran prints initials, so both render "J. Gu".
+}
+
+@article{openvlaoft,
+  title   = {Fine-Tuning Vision-Language-Action Models: Optimizing Speed and
+             Success},
+  author  = {Kim, Moo Jin and Finn, Chelsea and Liang, Percy},
+  journal = {arXiv preprint arXiv:2502.19645},
+  year    = {2025},
+  %% arXiv number filled from the project repo; it was a TODO before.
+  %% No braces needed here: the title carries no acronym that IEEEtran's
+  %% sentence-casing would damage.
+% ===================== our backbones and benchmarks =====================
 }
 
 @article{efficientvla,
@@ -81,37 +104,6 @@
   %% the name as bare "Luo Zhongwei" inside a First-Last author list, which
   %% BibTeX parses as given=Luo, family=Zhongwei. Odd next to the other seven,
   %% but we cite a name the way its source publishes it. Do not "fix" it.
-}
-
-@article{molevla,
-  title   = {{MoLe-VLA}: Dynamic Layer-skipping Vision Language Action Model
-             via Mixture-of-Layers for Efficient Robot Manipulation},
-  author  = {Zhang, Rongyu and Dong, Menghang and Zhang, Yuan and Heng, Liang
-             and Chi, Xiaowei and Dai, Gaole and Du, Li and Wang, Dan and Du,
-             Yuan and Zhang, Shanghang},
-  journal = {arXiv preprint arXiv:2503.20384},
-  year    = {2025},
-  %% Full 10-author list, 2026-08-24. Was truncated at four with "and others".
-}
-
-@article{vlacache,
-  title   = {{VLA-Cache}: Efficient Vision-Language-Action Manipulation via
-             Adaptive Token Caching},
-  author  = {Xu, Siyu and Wang, Yunke and Xia, Chenghao and Zhu, Dihao and
-             Huang, Tao and Xu, Chang},
-  journal = {arXiv preprint arXiv:2502.02175},
-  year    = {2025},
-}
-
-@article{vlapruner,
-  title   = {{VLA-Pruner}: Temporal-Aware Dual-Level Visual Token Pruning for
-             Efficient Vision-Language-Action Inference},
-  author  = {Liu, Ziyan and Chen, Yeqiu and Cai, Hongyi and Lin, Tao and Yang,
-             Shuo and Liu, Zheng and Zhao, Bo},
-  journal = {arXiv preprint arXiv:2511.16449},
-  year    = {2025},
-  %% arXiv number filled 2026-08-24; the entry carried none and had a TODO
-  %% saying the version we read had no arXiv stamp.
 }
 
 @article{fastv,
@@ -133,156 +125,89 @@
   %% the gromov entry does.
 }
 
-@article{sparsevlm,
-  title   = {{SparseVLM}: Visual Token Sparsification for Efficient
-             Vision-Language Model Inference},
-  author  = {Zhang, Yuan and Fan, Chun-Kai and Ma, Junpeng and Zheng, Wenzhao
-             and Huang, Tao and Cheng, Kuan and Gudovskiy, Denis and Okuno,
-             Tomoyuki and Nakata, Yohei and Keutzer, Kurt and Zhang, Shanghang},
-  journal = {arXiv preprint arXiv:2410.04417},
-  year    = {2025},
-  %% Full 11-author list from arXiv, 2026-08-24. Was 4 and "and others".
+@article{shortgpt,
+  title   = {{ShortGPT}: Layers in Large Language Models are More Redundant
+             Than You Expect},
+  author  = {Men, Xin and Xu, Mingyu and Zhang, Qingyu and Wang, Bingning and
+             Lin, Hongyu and Lu, Yaojie and Han, Xianpei and Chen, Weipeng},
+  journal = {arXiv preprint arXiv:2403.03853},
+  year    = {2024},
+  %% All eight names match arXiv's own BibTeX export exactly. Nothing to fix.
+  %% The entry used to carry note = {v3}, which IEEEtran would have PRINTED as
+  %% a trailing "v3" in the bibliography. The arXiv id already identifies the
+  %% paper and versions are not normally cited, so it is a comment now: we
+  %% read v3.
 }
 
-@inproceedings{tome,
-  title     = {Token Merging: Your {ViT} but Faster},
-  author    = {Bolya, Daniel and Fu, Cheng-Yang and Dai, Xiaoliang and Zhang,
-               Peizhao and Feichtenhofer, Christoph and Hoffman, Judy},
+@article{vlacache,
+  title   = {{VLA-Cache}: Efficient Vision-Language-Action Manipulation via
+             Adaptive Token Caching},
+  author  = {Xu, Siyu and Wang, Yunke and Xia, Chenghao and Zhu, Dihao and
+             Huang, Tao and Xu, Chang},
+  journal = {arXiv preprint arXiv:2502.02175},
+  year    = {2025},
+}
+
+@article{molevla,
+  title   = {{MoLe-VLA}: Dynamic Layer-skipping Vision Language Action Model
+             via Mixture-of-Layers for Efficient Robot Manipulation},
+  author  = {Zhang, Rongyu and Dong, Menghang and Zhang, Yuan and Heng, Liang
+             and Chi, Xiaowei and Dai, Gaole and Du, Li and Wang, Dan and Du,
+             Yuan and Zhang, Shanghang},
+  journal = {arXiv preprint arXiv:2503.20384},
+  year    = {2025},
+  %% Full 10-author list, 2026-08-24. Was truncated at four with "and others".
+}
+
+@article{openvla,
+  title   = {{OpenVLA}: An Open-Source Vision-Language-Action Model},
+  author  = {Kim, Moo Jin and Pertsch, Karl and Karamcheti, Siddharth and
+             Xiao, Ted and Balakrishna, Ashwin and Nair, Suraj and Rafailov,
+             Rafael and Foster, Ethan and Lam, Grace and Sanketi, Pannag and
+             Vuong, Quan and Kollar, Thomas and Burchfiel, Benjamin and
+             Tedrake, Russ and Sadigh, Dorsa and Levine, Sergey and Liang,
+             Percy and Finn, Chelsea},
+  journal = {arXiv preprint arXiv:2406.09246},
+  year    = {2024},
+  %% Full 18-author list, 2026-08-24. Was truncated at ten with "and others".
+}
+
+@article{simplerenv,
+  title   = {Evaluating Real-World Robot Manipulation Policies in Simulation},
+  author  = {Li, Xuanlin and Hsu, Kyle and Gu, Jiayuan and Pertsch, Karl and
+             Mees, Oier and Walke, Homer Rich and Fu, Chuyuan and Lunawat,
+             Ishikaa and Sieh, Isabel and Kirmani, Sean and Levine, Sergey and
+             Wu, Jiajun and Finn, Chelsea and Su, Hao and Vuong, Quan and
+             Xiao, Ted},
+  journal = {arXiv preprint arXiv:2405.05941},
+  year    = {2024},
+  %% Full 16-author list and the arXiv number, 2026-08-24. Was truncated at
+  %% ten with "and others" and carried no arXiv id.
+  %% Demoted from @inproceedings{booktitle = CoRL}. Nothing in this repository
+  %% records where that venue came from, which is the same test fastv failed.
+  %% SimplerEnv is very likely CoRL 2024 and this is the benchmark we RUN, so
+  %% it is worth confirming and restoring. Until then we cite what we can
+  %% source.
+}
+
+@article{vlapruner,
+  title   = {{VLA-Pruner}: Temporal-Aware Dual-Level Visual Token Pruning for
+             Efficient Vision-Language-Action Inference},
+  author  = {Liu, Ziyan and Chen, Yeqiu and Cai, Hongyi and Lin, Tao and Yang,
+             Shuo and Liu, Zheng and Zhao, Bo},
+  journal = {arXiv preprint arXiv:2511.16449},
+  year    = {2025},
+  %% arXiv number filled 2026-08-24; the entry carried none and had a TODO
+  %% saying the version we read had no arXiv stamp.
+}
+
+@inproceedings{gromov,
+  title     = {The Unreasonable Ineffectiveness of the Deeper Layers},
+  author    = {Gromov, Andrey and Tirumala, Kushal and Shapourian, Hassan and
+               Glorioso, Paolo and Roberts, Daniel A.},
   booktitle = {International Conference on Learning Representations (ICLR)},
-  year      = {2023},
-% ===================== foveation lineage =====================
-}
-
-@article{schwartz,
-  title   = {Computational anatomy and functional architecture of striate
-             cortex: A spatial mapping approach to perceptual coding},
-  author  = {Schwartz, Eric L.},
-  journal = {Vision Research},
-  volume  = {20},
-  number  = {8},
-  pages   = {645--669},
-  year    = {1980},
-  %% doi 10.1016/0042-6989(80)90090-5 (not printed: only 3 of 33 entries had one, so
-  %% IEEEtran rendered those three unlike the rest)
-}
-
-@article{traver,
-  title   = {A review of log-polar imaging for visual perception in robotics},
-  author  = {Traver, V. Javier and Bernardino, Alexandre},
-  journal = {Robotics and Autonomous Systems},
-  volume  = {58},
-  number  = {4},
-  pages   = {378--398},
-  year    = {2010},
-}
-
-@inproceedings{gazereg,
-  title     = {Gaze-Regularized Vision-Language-Action Models for Robotic
-               Manipulation},
-  author    = {Pani, Anupam and Yang, Yanchao},
-  booktitle = {Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition
-               Workshops (CVPRW)},
-  pages     = {11332--11342},
-  year      = {2026},
-  %% Stays @inproceedings, and now with pages. The CVF open-access repository
-  %% carries it at content/CVPR2026W/GRAIL-V/, which only hosts accepted
-  %% papers, and gives 11332-11342.
-  %%
-  %% arXiv's export shows no venue, and that is not evidence against one:
-  %% arXiv prints a journal-ref only when the authors fill it in. Same
-  %% situation as gromov, which keeps ICLR 2025 for the same reason.
-  %% Contrast fastv, which was demoted to @article, because for that one no
-  %% venue is recorded anywhere in this repository. The rule is the evidence,
-  %% not the preference.
-}
-
-@article{lookfocusact,
-  title   = {Look, Focus, Act: Efficient and Robust Robot Learning via Human
-             Gaze and Foveated Vision Transformers},
-  author  = {Chuang, Ian and Zou, Jinyu and Lee, Andrew and Gao, Dechen and
-             Soltani, Iman},
-  journal = {arXiv preprint arXiv:2507.15833},
-  year    = {2026},
-  %% YEAR CORRECTED 2026-08-24, was 2025. arXiv's export stamps 2026. Same
-  %% class of error as specprune, and just as invisible: the arXiv number was
-  %% right, so the citation resolved and printed a plausible year.
-  %% Five authors confirmed against arXiv's own export.
-% ===================== compact VLAs =====================
-}
-
-@article{flower,
-  title   = {{FLOWER}: Democratizing Generalist Robot Policies with Efficient
-             Vision-Language-Action Flow Policies},
-  author  = {Reuss, Moritz and Zhou, Hongyi and R{\"u}hle, Marcel and
-             Ya{\u{g}}murlu, {\"O}mer Erdin{\c{c}} and Otto, Fabian and
-             Lioutikov, Rudolf},
-  journal = {arXiv preprint arXiv:2509.04996},
-  year    = {2025},
-}
-
-@article{smolvla,
-  title   = {{SmolVLA}: A Vision-Language-Action Model for Affordable and
-             Efficient Robotics},
-  author  = {Shukor, Mustafa and Aubakirova, Dana and Capuano, Francesco and
-             Kooijmans, Pepijn and Palma, Steven and Zouitine, Adil and
-             Aractingi, Michel and Pascal, Caroline and Russi, Martino and
-             Marafioti, Andres and Alibert, Simon and Cord, Matthieu and Wolf,
-             Thomas and Cadene, Remi},
-  journal = {arXiv preprint arXiv:2506.01844},
-  year    = {2025},
-  %% Full 14-author list from arXiv, 2026-08-24. Was 4 and "and others".
-  %% Title also takes arXiv's capitalisation.
-}
-
-@article{turbovla,
-  title   = {{TurboVLA}: Real-Time Vision-Language-Action Model at 32 {Hz} on
-             an {RTX} 4090 with $<$1 {GB} {VRAM}},
-  author  = {Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying
-             and Liang, Dingkang and Bai, Xiang and Ding, Han},
-  journal = {arXiv preprint arXiv:2607.27205},
-  year    = {2026},
-% ===================== evaluation practice =====================
-}
-
-@article{vlaeval,
-  title   = {vla-eval: A Unified Evaluation Harness for Vision-Language-Action
-             Models},
-  author  = {Choi, Suhwan and Lee, Yunsung and Park, Yubeen and Kim, Chris
-             Dongjoo and Krishna, Ranjay and Fox, Dieter and Yu, Youngjae},
-  journal = {arXiv preprint},
-  year    = {2026},
-  %% TODO(not printed): TODO arXiv number
-}
-
-@article{starvla,
-  title   = {{StarVLA}: A Lego-like Codebase for Vision-Language-Action Model
-             Developing},
-  author  = {{StarVLA Community and Von Neumann Institute, HKUST}},
-  journal = {arXiv preprint arXiv:2604.05014},
-  year    = {2026},
-}
-
-@article{specprune,
-  title   = {{SpecPrune-VLA}: Accelerating Vision-Language-Action Models via
-             Action-Aware Self-Speculative Pruning},
-  author  = {Wang, Hanzhen and Xu, Jiaming and Xiang, Yushun and Pan, Jiayi
-             and Zhou, Yongkang and Li, Yong-Lu and Dai, Guohao},
-  journal = {arXiv preprint arXiv:2509.05614},
-  year    = {2026},
-  %% YEAR CORRECTED 2026-08-24, was 2025. arXiv's own export stamps 2026.
-  %% Full 7-author list; the seventh, Guohao Dai, was hidden behind the
-  %% "and others" a Google Scholar export had left.
-}
-
-@article{vlaiap,
-  title   = {{VLA-IAP}: Training-Free Visual Token Pruning via Interaction
-             Alignment for Vision-Language-Action Models},
-  author  = {Cheng, Jintao and Wang, Haozhe and Li, Weibin and Wang, Gang and
-             Zhang, Yipu and Tang, Xiaoyu and Wu, Jin and Chen, Xieyuanli and
-             Liu, Yunhui and Zhang, Wei},
-  journal = {arXiv preprint arXiv:2603.22991},
-  year    = {2026},
-  %% Full 10-author list from arXiv, 2026-08-24. Was 6 and "and others".
+  year      = {2025},
+  note      = {arXiv:2403.17887},
 }
 
 @article{effvlasurvey1,
@@ -307,26 +232,6 @@
   %% arXiv's own export stamps the entry with the latest version, which is the
   %% one we read.
 % ===================== the genre =====================
-}
-
-@inproceedings{bagoftricks_cnn,
-  title     = {Bag of Tricks for Image Classification with Convolutional
-               Neural Networks},
-  author    = {He, Tong and Zhang, Zhi and Zhang, Hang and Zhang, Zhongyue and
-               Xie, Junyuan and Li, Mu},
-  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition
-               (CVPR)},
-  year      = {2019},
-  %% TODO(not printed): arXiv:1812.01187. TODO confirm the venue
-}
-
-@article{bagoftricks_llm,
-  title   = {Bag of Tricks for Inference-time Computation of {LLM} Reasoning},
-  author  = {Liu, Fan and Chao, Wen-Shuo and Tan, Naiqiang and Liu, Hao},
-  journal = {arXiv preprint},
-  year    = {2025},
-  %% TODO(not printed): TODO arXiv number
-% ===================== axis 1 lineage =====================
 }
 
 @article{dqn,
@@ -360,6 +265,26 @@
   %% TODO(not printed): TODO not read, cited for action chunking as lineage only
 }
 
+@inproceedings{bagoftricks_cnn,
+  title     = {Bag of Tricks for Image Classification with Convolutional
+               Neural Networks},
+  author    = {He, Tong and Zhang, Zhi and Zhang, Hang and Zhang, Zhongyue and
+               Xie, Junyuan and Li, Mu},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition
+               (CVPR)},
+  year      = {2019},
+  %% TODO(not printed): arXiv:1812.01187. TODO confirm the venue
+}
+
+@article{bagoftricks_llm,
+  title   = {Bag of Tricks for Inference-time Computation of {LLM} Reasoning},
+  author  = {Liu, Fan and Chao, Wen-Shuo and Tan, Naiqiang and Liu, Hao},
+  journal = {arXiv preprint},
+  year    = {2025},
+  %% TODO(not printed): TODO arXiv number
+% ===================== axis 1 lineage =====================
+}
+
 @inproceedings{diffusionpolicy,
   title     = {Diffusion Policy: Visuomotor Policy Learning via Action
                Diffusion},
@@ -370,81 +295,34 @@
   %% TODO(not printed): TODO not read, cited for action chunking as lineage only
 }
 
-@article{openvlaoft,
-  title   = {Fine-Tuning Vision-Language-Action Models: Optimizing Speed and
-             Success},
-  author  = {Kim, Moo Jin and Finn, Chelsea and Liang, Percy},
-  journal = {arXiv preprint arXiv:2502.19645},
+@article{flower,
+  title   = {{FLOWER}: Democratizing Generalist Robot Policies with Efficient
+             Vision-Language-Action Flow Policies},
+  author  = {Reuss, Moritz and Zhou, Hongyi and R{\"u}hle, Marcel and
+             Ya{\u{g}}murlu, {\"O}mer Erdin{\c{c}} and Otto, Fabian and
+             Lioutikov, Rudolf},
+  journal = {arXiv preprint arXiv:2509.04996},
   year    = {2025},
-  %% arXiv number filled from the project repo; it was a TODO before.
-  %% No braces needed here: the title carries no acronym that IEEEtran's
-  %% sentence-casing would damage.
-% ===================== our backbones and benchmarks =====================
 }
 
-@article{openvla,
-  title   = {{OpenVLA}: An Open-Source Vision-Language-Action Model},
-  author  = {Kim, Moo Jin and Pertsch, Karl and Karamcheti, Siddharth and
-             Xiao, Ted and Balakrishna, Ashwin and Nair, Suraj and Rafailov,
-             Rafael and Foster, Ethan and Lam, Grace and Sanketi, Pannag and
-             Vuong, Quan and Kollar, Thomas and Burchfiel, Benjamin and
-             Tedrake, Russ and Sadigh, Dorsa and Levine, Sergey and Liang,
-             Percy and Finn, Chelsea},
-  journal = {arXiv preprint arXiv:2406.09246},
-  year    = {2024},
-  %% Full 18-author list, 2026-08-24. Was truncated at ten with "and others".
-}
-
-@article{spatialvla,
-  title   = {{SpatialVLA}: Exploring Spatial Representations for
-             Visual-Language-Action Model},
-  author  = {Qu, Delin and Song, Haoming and Chen, Qizhi and Yao, Yuanqi and
-             Ye, Xinyi and Ding, Yan and Wang, Zhigang and Gu, JiaYuan and
-             Zhao, Bin and Wang, Dong and Li, Xuelong},
-  journal = {arXiv preprint arXiv:2501.15830},
-  year    = {2025},
-  %% Complete 11-author list from arXiv, 2026-08-24. The repo's citation block
-  %% stops at ten with "and others", which is what a Google Scholar export
-  %% does; arXiv does not truncate. The eleventh is Xuelong Li.
-  %% "Gu, JiaYuan" keeps arXiv's capitalisation even though simplerenv writes
-  %% the same person as "Gu, Jiayuan". Both are cited as their own paper
-  %% publishes them, and IEEEtran prints initials, so both render "J. Gu".
-}
-
-@article{univla,
-  title   = {Unified Vision-Language-Action Model},
-  author  = {Wang, Yuqi and Li, Xinghang and Wang, Wenxuan and Zhang, Junbo
-             and Li, Yingyan and Chen, Yuntao and Wang, Xinlong and Zhang,
-             Zhaoxiang},
-  journal = {arXiv preprint arXiv:2506.19850},
-  year    = {2025},
-  %% Verified against the repo we actually run, not against a search result.
-  %% adaptive_sparse_vla/inference_libero.py:6-9 names the checkpoint source
-  %% as huggingface.co/Yuqi1997/UniVLA (baaivision/UniVLA) and warns in so
-  %% many words: "not to be confused with the unrelated OpenDriveLab/UniVLA
-  %% project of the same name". Yuqi1997 is Yuqi Wang, first author here.
-  %% Our backbone is UniVLA(-Emu3); Emu3 is BAAI's. OpenDriveLab's UniVLA
-  %% (Bu et al., arXiv 2505.06111) is a DIFFERENT paper and MUST NOT be
-  %% cited for this backbone. An earlier revision of this file had exactly
-  %% that error.
-}
-
-@article{simplerenv,
-  title   = {Evaluating Real-World Robot Manipulation Policies in Simulation},
-  author  = {Li, Xuanlin and Hsu, Kyle and Gu, Jiayuan and Pertsch, Karl and
-             Mees, Oier and Walke, Homer Rich and Fu, Chuyuan and Lunawat,
-             Ishikaa and Sieh, Isabel and Kirmani, Sean and Levine, Sergey and
-             Wu, Jiajun and Finn, Chelsea and Su, Hao and Vuong, Quan and
-             Xiao, Ted},
-  journal = {arXiv preprint arXiv:2405.05941},
-  year    = {2024},
-  %% Full 16-author list and the arXiv number, 2026-08-24. Was truncated at
-  %% ten with "and others" and carried no arXiv id.
-  %% Demoted from @inproceedings{booktitle = CoRL}. Nothing in this repository
-  %% records where that venue came from, which is the same test fastv failed.
-  %% SimplerEnv is very likely CoRL 2024 and this is the benchmark we RUN, so
-  %% it is worth confirming and restoring. Until then we cite what we can
-  %% source.
+@inproceedings{gazereg,
+  title     = {Gaze-Regularized Vision-Language-Action Models for Robotic
+               Manipulation},
+  author    = {Pani, Anupam and Yang, Yanchao},
+  booktitle = {Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition
+               Workshops (CVPRW)},
+  pages     = {11332--11342},
+  year      = {2026},
+  %% Stays @inproceedings, and now with pages. The CVF open-access repository
+  %% carries it at content/CVPR2026W/GRAIL-V/, which only hosts accepted
+  %% papers, and gives 11332-11342.
+  %%
+  %% arXiv's export shows no venue, and that is not evidence against one:
+  %% arXiv prints a journal-ref only when the authors fill it in. Same
+  %% situation as gromov, which keeps ICLR 2025 for the same reason.
+  %% Contrast fastv, which was demoted to @article, because for that one no
+  %% venue is recorded anywhere in this repository. The rule is the evidence,
+  %% not the preference.
 }
 
 @inproceedings{libero,
@@ -455,4 +333,126 @@
   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
   year      = {2023},
   %% TODO(not printed): TODO confirm
+}
+
+@article{lookfocusact,
+  title   = {Look, Focus, Act: Efficient and Robust Robot Learning via Human
+             Gaze and Foveated Vision Transformers},
+  author  = {Chuang, Ian and Zou, Jinyu and Lee, Andrew and Gao, Dechen and
+             Soltani, Iman},
+  journal = {arXiv preprint arXiv:2507.15833},
+  year    = {2026},
+  %% YEAR CORRECTED 2026-08-24, was 2025. arXiv's export stamps 2026. Same
+  %% class of error as specprune, and just as invisible: the arXiv number was
+  %% right, so the citation resolved and printed a plausible year.
+  %% Five authors confirmed against arXiv's own export.
+% ===================== compact VLAs =====================
+}
+
+@article{schwartz,
+  title   = {Computational anatomy and functional architecture of striate
+             cortex: A spatial mapping approach to perceptual coding},
+  author  = {Schwartz, Eric L.},
+  journal = {Vision Research},
+  volume  = {20},
+  number  = {8},
+  pages   = {645--669},
+  year    = {1980},
+  %% doi 10.1016/0042-6989(80)90090-5 (not printed: only 3 of 33 entries had one, so
+  %% IEEEtran rendered those three unlike the rest)
+}
+
+@article{smolvla,
+  title   = {{SmolVLA}: A Vision-Language-Action Model for Affordable and
+             Efficient Robotics},
+  author  = {Shukor, Mustafa and Aubakirova, Dana and Capuano, Francesco and
+             Kooijmans, Pepijn and Palma, Steven and Zouitine, Adil and
+             Aractingi, Michel and Pascal, Caroline and Russi, Martino and
+             Marafioti, Andres and Alibert, Simon and Cord, Matthieu and Wolf,
+             Thomas and Cadene, Remi},
+  journal = {arXiv preprint arXiv:2506.01844},
+  year    = {2025},
+  %% Full 14-author list from arXiv, 2026-08-24. Was 4 and "and others".
+  %% Title also takes arXiv's capitalisation.
+}
+
+@article{sparsevlm,
+  title   = {{SparseVLM}: Visual Token Sparsification for Efficient
+             Vision-Language Model Inference},
+  author  = {Zhang, Yuan and Fan, Chun-Kai and Ma, Junpeng and Zheng, Wenzhao
+             and Huang, Tao and Cheng, Kuan and Gudovskiy, Denis and Okuno,
+             Tomoyuki and Nakata, Yohei and Keutzer, Kurt and Zhang, Shanghang},
+  journal = {arXiv preprint arXiv:2410.04417},
+  year    = {2025},
+  %% Full 11-author list from arXiv, 2026-08-24. Was 4 and "and others".
+}
+
+@article{specprune,
+  title   = {{SpecPrune-VLA}: Accelerating Vision-Language-Action Models via
+             Action-Aware Self-Speculative Pruning},
+  author  = {Wang, Hanzhen and Xu, Jiaming and Xiang, Yushun and Pan, Jiayi
+             and Zhou, Yongkang and Li, Yong-Lu and Dai, Guohao},
+  journal = {arXiv preprint arXiv:2509.05614},
+  year    = {2026},
+  %% YEAR CORRECTED 2026-08-24, was 2025. arXiv's own export stamps 2026.
+  %% Full 7-author list; the seventh, Guohao Dai, was hidden behind the
+  %% "and others" a Google Scholar export had left.
+}
+
+@article{starvla,
+  title   = {{StarVLA}: A Lego-like Codebase for Vision-Language-Action Model
+             Developing},
+  author  = {{StarVLA Community and Von Neumann Institute, HKUST}},
+  journal = {arXiv preprint arXiv:2604.05014},
+  year    = {2026},
+}
+
+@inproceedings{tome,
+  title     = {Token Merging: Your {ViT} but Faster},
+  author    = {Bolya, Daniel and Fu, Cheng-Yang and Dai, Xiaoliang and Zhang,
+               Peizhao and Feichtenhofer, Christoph and Hoffman, Judy},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2023},
+% ===================== foveation lineage =====================
+}
+
+@article{traver,
+  title   = {A review of log-polar imaging for visual perception in robotics},
+  author  = {Traver, V. Javier and Bernardino, Alexandre},
+  journal = {Robotics and Autonomous Systems},
+  volume  = {58},
+  number  = {4},
+  pages   = {378--398},
+  year    = {2010},
+}
+
+@article{turbovla,
+  title   = {{TurboVLA}: Real-Time Vision-Language-Action Model at 32 {Hz} on
+             an {RTX} 4090 with $<$1 {GB} {VRAM}},
+  author  = {Xie, Hengyi and Yao, Chenfei and Wu, Xianjin and Zhu, Yingying
+             and Liang, Dingkang and Bai, Xiang and Ding, Han},
+  journal = {arXiv preprint arXiv:2607.27205},
+  year    = {2026},
+% ===================== evaluation practice =====================
+}
+
+@article{vlaeval,
+  title   = {vla-eval: A Unified Evaluation Harness for Vision-Language-Action
+             Models},
+  author  = {Choi, Suhwan and Lee, Yunsung and Park, Yubeen and Kim, Chris
+             Dongjoo and Krishna, Ranjay and Fox, Dieter and Yu, Youngjae},
+  journal = {arXiv preprint},
+  year    = {2026},
+  %% TODO(not printed): TODO arXiv number
+}
+
+@article{vlaiap,
+  title   = {{VLA-IAP}: Training-Free Visual Token Pruning via Interaction
+             Alignment for Vision-Language-Action Models},
+  author  = {Cheng, Jintao and Wang, Haozhe and Li, Weibin and Wang, Gang and
+             Zhang, Yipu and Tang, Xiaoyu and Wu, Jin and Chen, Xieyuanli and
+             Liu, Yunhui and Zhang, Wei},
+  journal = {arXiv preprint arXiv:2603.22991},
+  year    = {2026},
+  %% Full 10-author list from arXiv, 2026-08-24. Was 6 and "and others".
 }
