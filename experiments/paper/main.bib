@@ -184,7 +184,18 @@
                Manipulation},
   booktitle = {Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition
                Workshops (CVPRW)},
-  year      = {2026}
+  pages     = {11332--11342},
+  year      = {2026},
+  %% Stays @inproceedings, and now with pages. The CVF open-access repository
+  %% carries it at content/CVPR2026W/GRAIL-V/, which only hosts accepted
+  %% papers, and gives 11332-11342.
+  %%
+  %% arXiv's export shows no venue, and that is not evidence against one:
+  %% arXiv prints a journal-ref only when the authors fill it in. Same
+  %% situation as gromov, which keeps ICLR 2025 for the same reason.
+  %% Contrast fastv, which was demoted to @article, because for that one no
+  %% venue is recorded anywhere in this repository. The rule is the evidence,
+  %% not the preference.
 }
 
 @article{lookfocusact,
@@ -193,7 +204,11 @@
   title     = {Look, Focus, Act: Efficient and Robust Robot Learning via Human
                Gaze and Foveated Vision Transformers},
   journal   = {arXiv preprint arXiv:2507.15833},
-  year      = {2025}
+  year      = {2026},
+  %% YEAR CORRECTED 2026-08-24, was 2025. arXiv's export stamps 2026. Same
+  %% class of error as specprune, and just as invisible: the arXiv number was
+  %% right, so the citation resolved and printed a plausible year.
+  %% Five authors confirmed against arXiv's own export.
 }
 
 % ===================== compact VLAs =====================
