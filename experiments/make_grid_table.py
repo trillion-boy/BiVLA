@@ -111,6 +111,13 @@ def main():
 %% not a change. It also names the unit once, as percentage points, so the
 %% prose can go on saying "points" without either being loose.
 %%
+%% The note says "entries" and "column", never "cell". The Introduction uses
+%% cell for a backbone-benchmark pair, and inside a table the same word means
+%% a box, so "marks the cell whose checkpoint is not public" pointed at one
+%% grid cell while eight boxes carried the dash. "Column" is what the reader
+%% sees and "entry" is what bold marks, and neither collides with the term the
+%% body has already defined.
+%%
 %% The caption covers BOTH kinds of number. It used to say "paired change ...
 %% against each cell's own baseline", which stopped describing the table the
 %% moment the baseline row went in: the first row is an absolute rate, not a
@@ -135,11 +142,10 @@ def main():
 \end{tabular}
 
 \vspace{3pt}
-\parbox{\textwidth}{\footnotesize The first row is each cell's absolute
-baseline success rate. Every row below it is the paired change against that
-rate, over the episodes present in both runs. \textbf{Bold} marks
-the %d cells that clear a Bonferroni threshold of $\alpha = 0.05/%d$ over the
-paired tests the grid runs. \textemdash{} marks the cell whose checkpoint is
+\parbox{\textwidth}{\footnotesize Every row below the baseline is the paired
+change against it, over the episodes present in both runs. \textbf{Bold} marks
+the %d entries that clear a Bonferroni threshold of $\alpha = 0.05/%d$ over the
+paired tests the grid runs. \textemdash{} marks the column whose checkpoint is
 not public.}
 \end{table*}
 """ % (sub, base_row, "\n".join(body), n_sig, fam)

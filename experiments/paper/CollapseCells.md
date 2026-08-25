@@ -60,7 +60,71 @@ backbone, and no paper reporting "action repeat = 4" states the chunk length
 that makes the number mean anything. `FiveModels_Read.md` already flags this
 for the expansion, where the five new models run 8, 20--50 and 50.
 
-## 4. What Results has to carry
+## 4. How action repeat is applied to a chunked policy
+
+Asked because a reviewer cannot check the mechanism without it, and because
+"20 environment steps" is only true under one of three plausible readings.
+
+`eval.py:582` is the whole answer, and its own comment states the choice:
+
+```python
+# Repeat each element in place (np.repeat semantics), NOT tile -- [a,b] -> [a,a,b,b].
+env_actions = [a for a in env_actions for _ in range(args.action_repeat)]
+```
+
+So each action in the predicted chunk is **held for `repeat` consecutive
+environment steps**. Not the chunk tiled `repeat` times, and not the same chunk
+executed once with the policy simply called less often. For UniVLA at repeat 4
+the executed sequence is $a_1a_1a_1a_1\,a_2a_2a_2a_2\ldots a_5a_5a_5a_5$,
+twenty steps, all of them open loop.
+
+**And the harness already computed this.** `paired_test.py` has a `horizon()`
+function whose docstring says the thing a reviewer would raise:
+
+> *"Env steps executed per model call... This is the quantity the temporal
+> conditions actually change, and it is not comparable across backbones
+> without being stated: a chunking policy at action-repeat 2 sits at 2x its
+> chunk length, not at 2."*
+
+Read straight out of the result files, not reconstructed:
+
+| backbone | repeat | chunk | **horizon** |
+|---|---:|---:|---:|
+| OpenVLA | 4 | 1 | **4** |
+| SpatialVLA | 4 | 1 | **4** |
+| UniVLA | 2 | 5 | **10** |
+| **UniVLA** | **4** | **5** | **20** |
+
+## 5. The strawman charge, and the honest answer to it
+
+*"Twenty steps of open loop is a setup built to fail. Reporting that as a
+result is a strawman."*
+
+**Half of that is right, and it decides how the row may be reported.**
+
+What we may **not** write is that action repetition is worse for UniVLA than
+for the other two. At repeat 4 the three backbones are not running the same
+intervention, so a comparison down that column would be exactly the error this
+paper is about, committed by us.
+
+What we **may** write, and what the row is for, is that a single nominal
+setting produced three different operations. `Action repeat = 4` is 4
+environment steps on two backbones and 20 on the third, and a paper reporting
+the setting without the chunk length has told the reader nothing about which
+one it ran. That is result 1 on the temporal axis rather than the depth axis.
+
+**One fact makes the charge weaker than it looks: the horizons cannot be
+matched.** UniVLA's chunk is 5, so the horizons available to it are 5, 10, 15,
+20. There is no repeat value that puts it at OpenVLA's 4. Matching the nominal
+setting and matching the horizon are not both possible here, and any uniform
+protocol has to pick one. We picked the nominal setting, which is what the
+literature reports, and the cost of that choice is the finding.
+
+**What this obliges Setup to state**, in one sentence each: the repeat
+semantics above, the three native chunk lengths, and that the horizons are
+therefore 4 / 4 / 20 rather than 4 / 4 / 4.
+
+## 6. What Results has to carry
 
 A reader reaching $-81.2$ will stop, so the explanation must be adjacent to
 it, not in an appendix. The three parts, in order of what a sceptic needs:
