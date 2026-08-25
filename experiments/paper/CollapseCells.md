@@ -150,12 +150,25 @@ reading *"action repetition 4"* downward and concluding UniVLA is the most
 fragile **is the error this paper is about**, committed on our own data. The
 three backbones share the name of the setting and not the operation.
 
-**B. State the incommensurability, with the arithmetic.** The table in section
-5 above is the argument, and it is short enough to print: uniform nominal
-setting gives horizons 4 / 4 / 20, uniform horizon gives repeats 20 / 20 / 4,
-and no assignment gives both. Once a reader sees that, the $-81.2$ stops
-looking like a failed run and starts looking like the price of the convention
-the literature uses.
+**B. State the incommensurability, and print it rather than describe it.**
+The two-row table in section 5 above **is** the argument, and prose cannot
+carry it. Written out as a sentence it becomes a clause a reader skims. Set as
+a block, it is one glance:
+
+|  | OpenVLA | SpatialVLA | UniVLA |
+|---|---|---|---|
+| uniform repeat = 4 | horizon 4 | horizon 4 | **horizon 20** |
+| uniform horizon = 20 | repeat 20 | repeat 20 | repeat 4 |
+
+Four rows of LaTeX, and it does the work of a paragraph. The sentence that has
+to sit under it is the causal one: **the literature reports the first row, and
+the second row is what the policy actually experiences, which is where the
+$-81.2$ comes from.**
+
+That ordering matters. The number has to arrive *after* the reader knows the
+horizons differ, not before. A reader who meets $-81.2$ first has already
+formed the hypothesis that something broke, and no later explanation fully
+removes it.
 
 Neither wedge is optional. Without A the row invites the comparison we exist
 to criticise. Without B the row looks like a bug we did not catch.

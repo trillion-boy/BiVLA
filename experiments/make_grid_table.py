@@ -118,6 +118,12 @@ def main():
 %% sees and "entry" is what bold marks, and neither collides with the term the
 %% body has already defined.
 %%
+%% "including three conditions omitted from this table" is deliberate and
+%% replaced "three of them conditions not shown here", which was an absolute
+%% phrase and read as speech. The clause exists because the family is 38 while
+%% the table draws 35 entries, and a reader who divides 0.05 by 38 and then
+%% counts boxes deserves the answer without having to ask for it.
+%%
 %% The caption covers BOTH kinds of number. It used to say "paired change ...
 %% against each cell's own baseline", which stopped describing the table the
 %% moment the baseline row went in: the first row is an absolute rate, not a
@@ -145,7 +151,8 @@ def main():
 \parbox{\textwidth}{\footnotesize Every row below the baseline is the paired
 change against it, over the episodes present in both runs. \textbf{Bold} marks
 the %d entries that clear a Bonferroni threshold of $\alpha = 0.05/%d$ over
-every paired test the grid runs, three of them conditions not shown here.
+every paired test the grid runs, including three conditions omitted from
+this table.
 \textemdash{} marks the column whose checkpoint is not public.}
 \end{table*}
 """ % (sub, base_row, "\n".join(body), n_sig, fam)
