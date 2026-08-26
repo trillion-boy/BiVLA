@@ -71,7 +71,7 @@ training-free study works under.
 
 The field reports results on SimplerEnv and LIBERO, and recent work addresses the
 infrastructure around them. The vla-eval harness unifies fourteen benchmarks
-and documents previously undocumented evaluation pitfalls, and StarVLA
+and documents evaluation pitfalls earlier work had left unrecorded, and StarVLA
 describes the field as fragmented across incompatible codebases and protocols.
 
 What infrastructure cannot supply is **the comparison itself.** Papers using
