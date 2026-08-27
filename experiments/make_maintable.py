@@ -49,7 +49,9 @@ BENCH_ORDER = ["Bridge", "Fractal"]
 
 
 def _add(agg, key, summary):
-    rec = agg.setdefault(key, {"ok": 0, "n": 0, "steps": [], "lat": []})
+    rec = agg.setdefault(key, {"ok": 0, "n": 0, "steps": [], "lat": [],
+                              "mtep": []})
+    repeat = summary.get("action_repeat") or 1
     # A run-level latency, used as the per-episode fallback for harnesses
     # (OpenVLA) that record model time once per run instead of per episode.
     run_lat = summary.get("avg_model_ms_per_infer")
@@ -67,6 +69,18 @@ def _add(agg, key, summary):
                or stats.get("model_ms_per_infer") or run_lat)
         if lat is not None:
             rec["lat"].append(lat)
+        # Model time for the whole episode = (model ms per environment step) x
+        # (environment steps). The per-env-step figure is the recorded one when
+        # present -- which is the only correct source for UniVLA, whose 5-action
+        # chunk means one call covers five steps -- and otherwise infer/repeat,
+        # which is exact for the one-action backbones. This is what makes the
+        # action-repeat speedup visible: repeat k queries the policy once every
+        # k steps, so the per-episode model time falls with k.
+        step_ms = (e.get("model_ms_per_env_step")
+                   or stats.get("model_ms_per_env_step")
+                   or (lat / repeat if lat is not None else None))
+        if step_ms is not None and st is not None:
+            rec["mtep"].append(step_ms * st)
 
 
 def collect():
@@ -94,10 +108,12 @@ def fmt(rec):
         return None
     succ = "$%.1f$" % (100.0 * rec["ok"] / rec["n"])
     lat = mean(rec["lat"])
+    mtep = mean(rec["mtep"])
     steps = mean(rec["steps"])
     lat_s = "$%.2f$" % (lat / 1000.0) if lat is not None else r"\textemdash"
+    mtep_s = "$%.1f$" % (mtep / 1000.0) if mtep is not None else r"\textemdash"
     step_s = "$%.1f$" % steps if steps is not None else r"\textemdash"
-    return succ, lat_s, step_s
+    return succ, lat_s, mtep_s, step_s
 
 
 def main():
@@ -124,14 +140,14 @@ def main():
                 if first_back_row:
                     lead += r"\multirow{%d}{*}{%s} " % (len(conds), b)
                     first_back_row = False
-                lead += "& "
+                lead += "& "  # condition column follows
                 # "%" is a LaTeX comment, so "20%" would eat the rest of the
                 # row. Escape it, and capitalise the condition for the column.
                 label = DISPLAY[c].replace("%", r"\%")
                 label = label[0].upper() + label[1:]
                 row = f"{lead}{label} & " + " & ".join(cells) + r" \\"
                 body.append(row)
-            body.append(r"\cmidrule(l){2-6}")
+            body.append(r"\cmidrule(l){2-7}")
         if bench != BENCH_ORDER[-1]:
             body[-1] = r"\midrule"
 
@@ -151,20 +167,24 @@ def main():
 %% Needs \usepackage{booktabs}, \usepackage{multirow}, \usepackage{graphicx}
 %% (for \rotatebox). Spans both columns, so table* and not table.
 %%
-%% Latency is model time PER CALL, so the action-repeat rows read the same as
-%% baseline: repeat changes how OFTEN the model is called, not the cost of one
-%% call. If the meeting wants the repeat speedup visible in this table, add a
-%% "model time per episode" column; that is a design choice, not a data gap.
+%% Two time columns, because they answer different questions. "Latency" is
+%% model time PER CALL, so it drops with depth pruning but not with action
+%% repeat (repeat changes how OFTEN the model is called, not the cost of one
+%% call). "Model s/ep" is model time over a whole EPISODE, so it drops with
+%% action repeat too, and it rises when a broken intervention makes episodes
+%% run longer. True wall-clock per episode is not usable here: SpatialVLA never
+%% recorded it, so two of the five cells would be blank; model time per episode
+%% is complete and is the cleaner efficiency figure anyway.
 %% ---------------------------------------------------------------------------
 \begin{table*}[t]
 \centering
-\caption{Absolute success rate, model latency per call, and mean episode length
-for every backbone, benchmark, and condition in the grid.}
+\caption{Absolute success rate, model latency per call, model time per episode,
+and mean episode length for every backbone, benchmark, and condition.}
 \label{tab:grid}
 \setlength{\tabcolsep}{6pt}
-\begin{tabular}{ll l rrr}
+\begin{tabular}{ll l rrrr}
 \toprule
-& Backbone & Condition & Success (\%) & Latency (s) & Avg.\ steps \\
+& Backbone & Condition & Success (\%) & Latency (s) & Model s/ep & Avg.\ steps \\
 \midrule
 __BODY__
 \bottomrule
