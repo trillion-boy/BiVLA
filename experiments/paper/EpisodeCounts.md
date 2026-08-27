@@ -79,21 +79,34 @@ out of the grid without being deleted.
 |---|---:|---:|
 | SpatialVLA/Fractal `baseline` vs `baseline_rerun`, same environment | 85 | **0** |
 | UniVLA/Bridge `foveate_blur` vs `recheck_0810`, same L4 | 24 | **0** |
-| UniVLA/Bridge July `baseline` vs `baseline_l4`, **different card** | 96 | **11** |
+| UniVLA/Bridge `baseline` (08-05) vs `baseline_l4` (08-10), matched card | 96 | **11** |
+
+⚠️ **Corrected 2026-08-26.** The third row said **"different card"** and the
+text below it said "move to a different card and 11 of 96 flip." Both were
+wrong, and they contradicted the primary source this section cites.
+`Report_EN.md` §3.4.0 says `baseline_l4` was **"re-taken on a matched card"**,
+the two differ by **3.1 points at $p = 0.5488$** (indistinguishable from
+chance), and the result files **record no GPU at all**, so nothing here
+identifies a card change. UniVLA always ran on an L4 (`Hardware.md` §3), so
+this pair never crossed a hardware boundary.
 
 ### So the conclusion is not "it is deterministic"
 
 Repeat a condition **in the same environment** and every episode reproduces,
-85 of 85 and 24 of 24. Move to a different card and **11 of 96 episodes
-flip**, which is the 3.1-point gap `Report.md` §3.4.0 quotes.
+85 of 85 and 24 of 24. Two UniVLA/Bridge baselines with identical settings,
+which the files cannot place on the same card or different ones, differ by
+**11 of 96 episodes, 3.1 points, $p = 0.55$**. That is the size of any
+residual environment or session effect, an upper **bound** rather than a
+measured card difference, and every $\Delta$ attached to both baselines in
+turn keeps its significance (`Report.md` §3.4.0). It is an order of magnitude
+below the values the grid argues from.
 
-That second row is why the repeats exist and what they changed. They did not
-end in "fine, it is deterministic, carry on." They found a boundary the grid
-could not subtract across, and the UniVLA/Bridge column was **restructured**
-so that every delta in it is computed within one card. Contribution 4's
-*"check determinism explicitly"* is this, and the paper's rule that a
-condition and its baseline must come from the same environment comes from
-here rather than from an assumption.
+The repeats are why the same-environment rule exists. They did not end in
+"fine, it is deterministic, carry on." Because the files do not record the GPU,
+the grid pairs a condition only against a baseline from the same run
+environment rather than assuming a shared card. Contribution 4's *"check
+determinism explicitly"* is the 85/85 and 24/24 reproduction; the 3.1-point
+bound is a Limitations item, not a determinism result.
 
 `Hardware.md` §3 carries the related finding, that the policy itself is
 numerically stable across cards while the **foveation image path** is not,

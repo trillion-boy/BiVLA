@@ -1,17 +1,33 @@
 % ---------------------------------------------------------------------------
-% Setup and Protocol -- ICRA form. FIRST DRAFT, 2026-08-26.
+% Setup and Protocol -- ICRA form. Draft 2, 2026-08-26.
 %
 % This section pays the Introduction's debts. Every quantity the Introduction
 % asserted and deferred is settled here with its record:
 %   6,910 episodes        -> the decomposition below (paper/EpisodeCounts.md)
 %   McNemar / alpha=0.05/38 -> "Pairing and significance" (verify_all.py)
-%   "check determinism"   -> "Determinism" (EpisodeCounts.md sec 4)
+%   "check determinism"   -> "Determinism" (Report_EN.md sec 3.4)
 %   "four baselines above the published figures" -> "Baselines" (Report 3.8)
 %   backbone specs         -> Table II (make_backbone_table.py)
 %   the grid itself        -> Table I (make_grid_table.py)
 %
 % Numbers reproduced by experiments/verify_all.py. Style matches the
 % Introduction: no em-dashes, no semicolons, no prose colons.
+%
+% DRAFT 2 changes (Reviewer 2 pass, 2026-08-26):
+%  - dropped "each spends a different resource" and the fixed-patch-grid
+%    sentence, both verbatim echoes of Related Work.
+%  - dropped "a point we return to in the results" (foreshadowing).
+%  - "broken-setup objection" -> plain environment check.
+%  - CONTENT FIX. Draft 1 said the 11-of-96 UniVLA/Bridge baseline gap was a
+%    "different GPU model" effect and that we "rebuilt the column" to avoid a
+%    hardware boundary. Both are wrong. Report_EN.md 3.4.0 (primary): the two
+%    baselines were re-taken on a MATCHED card, differ by 3.1 points at
+%    p = 0.5488 (indistinguishable from chance), and the files record no GPU
+%    at all, so 3.1 points is a BOUND on an unprovable hardware/session
+%    confound, not a measured card effect. UniVLA always ran on an L4, so no
+%    column ever crossed a hardware boundary to be rebuilt around. The 3.1-pt
+%    bound belongs in Limitations (Hardware.md sec 8), not here; Setup states
+%    only the same-environment reproduction and the pairing rule.
 %
 % ⚠️ EXPANSION. The mentor is running five more backbones (TurboVLA, CoTinyVLA,
 % SmolVLA, FLOWER, MiniVLA) on LIBERO and SimplerEnv. When those land, the grid
@@ -30,26 +46,24 @@ UniVLA/Fractal is left empty (Table~\ref{tab:grid}). Each filled cell runs the
 same eight conditions, a baseline and seven interventions, over a fixed episode
 set, 96 episodes on Bridge (four tasks at 24) and 135 on Fractal. The grid is
 therefore $3 \times 96 \times 8 + 2 \times 135 \times 8 = 4{,}464$ episodes.
-Beyond the grid, eligibility-window controls, a foveation keep sweep, extra
-depth variants, and the determinism re-runs below bring the campaign to
-$6{,}910$. Table~\ref{tab:backbones} lists the checkpoint, decoder depth,
-actions emitted per call, and GPU for each backbone.
+Beyond it, eligibility-window controls, a foveation keep sweep, extra depth
+variants, determinism re-runs, and a task-level failure probe bring the
+campaign to $6{,}910$. Table~\ref{tab:backbones} lists the checkpoint, decoder
+depth, actions emitted per call, and GPU for each backbone.
 
-\textbf{The three interventions, as we implement them.} Each spends a different
-resource, and each is applied to the released checkpoint with no retraining.
-\emph{Action repetition} holds every predicted action for $r$ consecutive
-environment steps, so a two-action output at $r{=}2$ executes as
-$a_1a_1a_2a_2$, and we sweep $r \in \{2, 4\}$. A backbone emits one, one, or
-five actions per call (Table~\ref{tab:backbones}), so a single value of $r$ is
-a different open-loop horizon on each, a point we return to in the results.
-\emph{Visual foveation} applies a log-polar warp to the observation and inverts
-it before the image reaches the encoder, at keep fractions we sweep, in two
-variants, log-polar and blur. The backbones tokenize a fixed patch grid, so
-this pixel-space edit leaves the token count unchanged. \emph{Depth pruning}
-scores each decoder layer by its input-output redundancy, the Block Influence
-criterion, and removes the $k$ most redundant layers inside an eligibility
-window. We hold the number of removed layers fixed rather than the fraction,
-since the stacks are 32, 32, and 26 layers deep, and sweep $k \in \{1, 2, 4\}$.
+\textbf{The three interventions, as we implement them.} We apply each to the
+released checkpoint without retraining. \emph{Action repetition} holds every
+predicted action for $r$ consecutive environment steps, so a two-action output
+at $r{=}2$ executes as $a_1a_1a_2a_2$, and we sweep $r \in \{2, 4\}$. A backbone
+emits one, one, or five actions per call (Table~\ref{tab:backbones}), so one
+value of $r$ sets a different open-loop horizon on each. \emph{Visual foveation}
+applies a log-polar warp to the observation and inverts it before the image
+reaches the encoder, at keep fractions we sweep, in two variants, log-polar and
+blur. \emph{Depth pruning} scores each decoder layer by its input-output
+redundancy, the Block Influence criterion, and removes the $k$ most redundant
+layers inside an eligibility window. We hold the number of removed layers fixed
+rather than the fraction, since the stacks are 32, 32, and 26 layers deep, and
+sweep $k \in \{1, 2, 4\}$.
 
 \textbf{Pairing and significance.} Every condition replays the initial states
 of its cell's baseline, so each episode has a matched control. We compare a
@@ -60,19 +74,17 @@ tests, the $35$ drawn in Table~\ref{tab:grid} plus three depth variants that
 some cells also ran. We control the family with a Bonferroni threshold of
 $\alpha = 0.05/38 \approx 0.0013$, which eight of the drawn entries clear.
 
-\textbf{Determinism.} We ran repeats to check that a paired change is a
-property of the intervention and not of the run. Re-running a condition in the
-same environment reproduces every episode, 85 of 85 and 24 of 24 on two
-backbones, and a third condition run in July and again in August agrees on all
-96. Moving the same condition to a different GPU model flips 11 of 96 episodes,
-a 3.1-point gap. We therefore require a condition and its baseline to share one
-environment, and rebuilt the UniVLA/Bridge column on its single-card runs so
-that no delta is taken across that boundary.
+\textbf{Determinism.} With greedy decoding and a seeded environment, re-running
+a condition reproduces it episode for episode, 85 of 85 and 24 of 24 on two
+backbones. The result files do not record the GPU, so we pair only within a
+cell and require a condition and its baseline to share a run environment. The
+two Fractal backbones ran on the same card model (Table~\ref{tab:backbones}),
+which places the cross-backbone contrast on Fractal on matched hardware.
 
-\textbf{Baselines against the reported figures.} Because every result is a
-within-cell paired change, no claim depends on our absolute rates matching
-anyone else's. We report the comparison anyway, as the direct answer to a
-broken-setup objection. Four of the five baseline cells sit above the figures
-published for the same checkpoints, UniVLA/Bridge by $11.4$ points, and the
-fifth, SpatialVLA/Bridge, is $4.2$ points below. A broken setup would depress
-all five together rather than leave four high and one marginally low.
+\textbf{Baselines against the reported figures.} To check the environment
+configuration, we compare each baseline against the figure published for the
+same checkpoint. Four of the five sit above it, UniVLA/Bridge by $11.4$ points,
+and the fifth, SpatialVLA/Bridge, is $4.2$ points below. Because every result is
+a within-cell paired change, no claim depends on these rates, and a broken
+setup would depress all five together rather than leave four high and one
+marginally low.
