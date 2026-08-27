@@ -37,7 +37,13 @@
 % argument -- does not change. Keep the protocol prose and re-derive the counts.
 % ---------------------------------------------------------------------------
 
-\section{Setup and Protocol}
+% NOTE 2026-08-26: this is now IV.A, a subsection of "Experiments and
+% Evaluation". The interventions paragraph moved to III.B (bagoftricks.tex);
+% Setup carries only the protocol. In main.tex this file follows
+% \section{Experiments and Evaluation}. If compiled alone, change the
+% \subsection below back to \section.
+
+\subsection{Setup and Protocol}
 
 \textbf{The grid.} We cross three open backbones (OpenVLA, SpatialVLA, UniVLA)
 with two SimplerEnv suites, WidowX-Bridge and Google Robot/Fractal. UniVLA
@@ -49,30 +55,20 @@ therefore $3 \times 96 \times 8 + 2 \times 135 \times 8 = 4{,}464$ episodes.
 Beyond it, eligibility-window controls, a foveation keep sweep, extra depth
 variants, determinism re-runs, and a task-level failure probe bring the
 campaign to $6{,}910$. Table~\ref{tab:backbones} lists the checkpoint, decoder
-depth, actions emitted per call, and GPU for each backbone.
-
-\textbf{The three interventions, as we implement them.} We apply each to the
-released checkpoint without retraining. \emph{Action repetition} holds every
-predicted action for $r$ consecutive environment steps, so a two-action output
-at $r{=}2$ executes as $a_1a_1a_2a_2$, and we sweep $r \in \{2, 4\}$. A backbone
-emits one, one, or five actions per call (Table~\ref{tab:backbones}), so one
-value of $r$ sets a different open-loop horizon on each. \emph{Visual foveation}
-applies a log-polar warp to the observation and inverts it before the image
-reaches the encoder, at keep fractions we sweep, in two variants, log-polar and
-blur. \emph{Depth pruning} scores each decoder layer by its input-output
-redundancy, the Block Influence criterion, and removes the $k$ most redundant
-layers inside an eligibility window. We hold the number of removed layers fixed
-rather than the fraction, since the stacks are 32, 32, and 26 layers deep, and
-sweep $k \in \{1, 2, 4\}$.
+depth, actions emitted per call, and GPU for each backbone. Section~III gives
+the three interventions and the conditions swept within each.
 
 \textbf{Pairing and significance.} Every condition replays the initial states
 of its cell's baseline, so each episode has a matched control. We compare a
 condition against that baseline with McNemar's exact two-sided test on the
 discordant pairs, the episodes whose success flipped, and report the paired
 change in percentage points. Across the grid this is a family of $38$ paired
-tests, the $35$ drawn in Table~\ref{tab:grid} plus three depth variants that
-some cells also ran. We control the family with a Bonferroni threshold of
-$\alpha = 0.05/38 \approx 0.0013$, which eight of the drawn entries clear.
+tests, the five cells times the seven interventions plus three depth variants
+that some cells also ran. We control the family with a Bonferroni threshold of
+$\alpha = 0.05/38 \approx 0.0013$, which eight of the $38$ clear. The tables in
+Section~IV-B report each change with its exact $p$-value and mark the ones that
+clear the threshold; Table~\ref{tab:grid} carries the absolute rates the
+changes are taken from.
 
 \textbf{Determinism.} With greedy decoding and a seeded environment, re-running
 a condition reproduces it episode for episode, 85 of 85 and 24 of 24 on two
