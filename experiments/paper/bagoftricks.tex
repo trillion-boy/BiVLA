@@ -17,13 +17,21 @@
 
 \subsection{Preliminaries}
 
-A VLA policy maps an observation to robot actions in three stages. An encoder
-turns the image and the instruction into tokens, a decoder of transformer
-layers processes them, and an action head reads out one or more actions from
-the decoder's output. The policy is queried during a rollout, and each query
-returns a \emph{chunk} of $c$ actions that are sent to the environment in
-order. A backbone's chunk length is a property of its checkpoint and is one,
-one, and five for the three we run (Table~\ref{tab:backbones}).
+A vision-language model (VLM) maps an image and a text prompt to text through a
+visual encoder and a transformer decoder over the resulting tokens. A
+vision-language-action (VLA) policy adapts a pretrained VLM to control. It keeps
+the encoder and decoder and attaches an action head that reads robot actions off
+the decoder's output, fine-tuned on demonstrations~\cite{openvla, spatialvla,
+univla}. It therefore inherits the VLM's parameter count and per-call latency,
+which is the cost the interventions in this paper act on.
+
+Concretely, a VLA policy maps an observation to actions in three stages. An
+encoder turns the image and the instruction into tokens, a decoder of
+transformer layers processes them, and the action head reads out one or more
+actions. The policy is queried during a rollout, and each query returns a
+\emph{chunk} of $c$ actions that are sent to the environment in order. A
+backbone's chunk length is a property of its checkpoint and is one, one, and
+five for the three we run (Table~\ref{tab:backbones}).
 
 Two settings govern how often the decoder runs relative to the environment. The
 chunk length $c$ fixes how many environment steps one query already covers, and
