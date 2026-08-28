@@ -53,16 +53,24 @@ single one of these against that baseline. We add no training.
 \subsection{Methods}
 
 \emph{Action repetition} holds every returned action for $r$ consecutive
-environment steps, so a two-action chunk at $r{=}2$ executes as
-$a_1a_1a_2a_2$, and we sweep $r \in \{2, 4\}$. It changes the horizon and
-leaves the cost of a single query untouched.
+environment steps, an in-place repeat, so a two-action chunk at $r{=}2$ executes
+as $a_1a_1a_2a_2$ and not the chunk tiled as $a_1a_2a_1a_2$. We sweep
+$r \in \{2, 4\}$. It changes the horizon and leaves the cost of a single query
+untouched.
 
-\emph{Visual foveation} applies a log-polar warp to the observation and inverts
-it before the image reaches the encoder, at keep fractions we sweep, in two
-variants, log-polar and blur.
+\emph{Visual foveation} transforms the observation before it reaches the
+encoder, in two variants at a keep fraction $\rho$, set to $0.2$ in the grid and
+swept in Section~IV. The log-polar variant warps the frame to log-polar
+coordinates about its center, keeps a fraction $\rho$ of the samples
+($\sqrt{\rho}$ per axis), interpolates back to full size, and inverts the warp.
+Because the log-polar map over-samples the center, subsampling it keeps central
+detail and coarsens the periphery. The blur variant instead leaves a central
+disc of area $\rho$ unchanged and applies a Gaussian that strengthens with
+radius, moving no pixel.
 
-\emph{Depth pruning} scores each decoder layer by its input-output redundancy,
-the Block Influence criterion, and removes the $k$ most redundant of the $N$
-layers within an eligibility window over the stack. We fix the removed count
-$k$ rather than the fraction $k/N$, since $N$ is 32, 32, and 26, and sweep
-$k \in \{1, 2, 4\}$.
+\emph{Depth pruning} scores each decoder layer by the Block Influence criterion,
+the input-output redundancy of the layer, and removes the $k$ most redundant of
+the $N$ layers within an \emph{eligibility window}, the contiguous deep span of
+the stack a layer must fall in to be a candidate, by default the deeper half. We
+fix the removed count $k$ rather than the fraction $k/N$, since $N$ is 32, 32,
+and 26, and sweep $k \in \{1, 2, 4\}$. Section~IV varies the window.
