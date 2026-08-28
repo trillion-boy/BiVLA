@@ -12,7 +12,7 @@ mode.
 Every number comes from build_grid_report.paired(), the same call the figure
 and verify_all.py use, so the two cannot disagree.
 
-Output: paper/tablegrid.tex
+Output: paper/tablechanges.tex
 """
 import os
 import sys
@@ -132,8 +132,8 @@ def main():
 %% ---------------------------------------------------------------------------
 \begin{table*}[t]
 \centering
-\caption{Baseline success rates and paired changes, in percentage points.}
-\label{tab:grid}
+\caption{Paired change in success against each cell's baseline, in percentage points. This is the significance view of the grid; Table~\ref{tab:grid} carries the absolute rates.}
+\label{tab:changes}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{l rrr rrr}
 \toprule
@@ -157,7 +157,7 @@ this table.
 \end{table*}
 """ % (sub, base_row, "\n".join(body), n_sig, fam)
 
-    path = os.path.join(OUT, "tablegrid.tex")
+    path = os.path.join(OUT, "tablechanges.tex")
     with open(path, "w") as fh:
         fh.write(tex)
     print(f"{n_sig} cells clear the correction, family of {fam}")
