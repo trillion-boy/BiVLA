@@ -59,8 +59,7 @@ leaves the cost of a single query untouched.
 
 \emph{Visual foveation} applies a log-polar warp to the observation and inverts
 it before the image reaches the encoder, at keep fractions we sweep, in two
-variants, log-polar and blur. The warp is a pixel-space edit that runs outside
-the network.
+variants, log-polar and blur.
 
 \emph{Depth pruning} scores each decoder layer by its input-output redundancy,
 the Block Influence criterion, and removes the $k$ most redundant of the $N$
