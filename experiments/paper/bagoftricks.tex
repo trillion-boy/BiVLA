@@ -25,26 +25,30 @@ the decoder's output, fine-tuned on demonstrations~\cite{openvla, spatialvla,
 univla}. It therefore inherits the VLM's parameter count and per-call latency,
 which is the cost the interventions in this paper act on.
 
-Concretely, a VLA policy maps an observation to actions in three stages. An
-encoder turns the image and the instruction into tokens, a decoder of
-transformer layers processes them, and the action head reads out one or more
-actions. The policy is queried during a rollout, and each query returns a
-\emph{chunk} of $c$ actions that are sent to the environment in order. A
-backbone's chunk length is a property of its checkpoint and is one, one, and
-five for the three we run (Table~\ref{tab:backbones}).
+Concretely, write the policy as $\pi_\theta$ with a decoder of $N$ transformer
+layers. An encoder turns the image and instruction into tokens, the decoder
+processes them, and the action head reads out a \emph{chunk} of $c$ actions,
+\begin{equation}
+\pi_\theta(o_t) = (a_t^1, \dots, a_t^c),
+\end{equation}
+which the environment executes in order before the next query at step $t{+}c$.
+The chunk length $c$ and the depth $N$ are fixed by the checkpoint and are one,
+one, five and 32, 32, 26 for the three backbones we run
+(Table~\ref{tab:backbones}).
 
 Two settings govern how often the decoder runs relative to the environment. The
 chunk length $c$ fixes how many environment steps one query already covers, and
 an \emph{action repeat} $r$ holds each returned action for $r$ consecutive
-steps. One query therefore advances the environment by $c\,r$ steps, a quantity
-we call the \emph{horizon}. The horizon, not $r$ alone, is what a temporal
-intervention changes, and because $c$ differs across backbones the same $r$
-gives a different horizon on each.
+steps. One query therefore advances the environment by $h = c\,r$ steps, a
+quantity we call the \emph{horizon}. The horizon, not $r$ alone, is what a
+temporal intervention changes, and because $c$ differs across backbones the same
+$r$ gives a different horizon on each.
 
-Each of the three interventions below spends one resource: how often the
-decoder is queried, what the encoder is shown, or how many decoder layers each
-query runs. We apply every intervention to the released checkpoint with no
-retraining.
+Each intervention moves one quantity and leaves the rest fixed: the horizon $h$,
+the tokens the encoder is given, or the set of decoder layers a query runs. The
+baseline is the released policy run unchanged, at the native chunk with $r{=}1$,
+the full observation, and all $N$ layers, and every intervention perturbs a
+single one of these against that baseline. We add no training.
 
 \subsection{Methods}
 
@@ -59,7 +63,7 @@ variants, log-polar and blur. The warp is a pixel-space edit that runs outside
 the network.
 
 \emph{Depth pruning} scores each decoder layer by its input-output redundancy,
-the Block Influence criterion, and removes the $k$ most redundant layers within
-an eligibility window over the stack. We hold the number of removed layers
-fixed rather than the fraction, since the stacks are 32, 32, and 26 layers deep
-(Table~\ref{tab:backbones}), and sweep $k \in \{1, 2, 4\}$.
+the Block Influence criterion, and removes the $k$ most redundant of the $N$
+layers within an eligibility window over the stack. We fix the removed count
+$k$ rather than the fraction $k/N$, since $N$ is 32, 32, and 26, and sweep
+$k \in \{1, 2, 4\}$.
