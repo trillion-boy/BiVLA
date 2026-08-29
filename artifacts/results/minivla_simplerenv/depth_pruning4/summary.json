@@ -1,0 +1,129 @@
+{
+  "status": "completed",
+  "condition": "depth_pruning",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic/checkpoints/step-362500-epoch-21-loss=0.2259.pt",
+    "resolved_checkpoint_size_bytes": 5554882540,
+    "model_id": "prism-qwen25-extra-dinosiglip-224px+0_5b",
+    "base_vlm": "prism-qwen25-extra-dinosiglip-224px+0_5b",
+    "action_statistics_key": "bridge_dataset",
+    "task_suite": "simpler_widowx",
+    "image_resolution": 224,
+    "center_crop": false
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_spoon_on_towel",
+    "widowx_carrot_on_plate",
+    "widowx_stack_cube",
+    "widowx_put_eggplant_in_basket"
+  ],
+  "episodes": 200,
+  "successes": 0,
+  "success_rate": 0.0,
+  "average_steps": 75.0,
+  "average_policy_calls": 75.0,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 85.52290744079704,
+    "median_ms": 85.29448600893375,
+    "p95_ms": 86.58709131268552
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 93.34494122083416,
+    "median_ms": 93.10784850094933,
+    "p95_ms": 94.51360734674381
+  },
+  "average_episode_ms": 9843.157677797863,
+  "average_control_frequency_hz": 7.619506103124745,
+  "per_task": {
+    "widowx_spoon_on_towel": {
+      "episodes": 50,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 60.0,
+      "average_policy_calls": 60.0,
+      "average_episode_ms": 7889.407900138758
+    },
+    "widowx_carrot_on_plate": {
+      "episodes": 50,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 60.0,
+      "average_policy_calls": 60.0,
+      "average_episode_ms": 7903.710545678623
+    },
+    "widowx_stack_cube": {
+      "episodes": 50,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 60.0,
+      "average_policy_calls": 60.0,
+      "average_episode_ms": 7852.945199516253
+    },
+    "widowx_put_eggplant_in_basket": {
+      "episodes": 50,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 120.0,
+      "average_policy_calls": 120.0,
+      "average_episode_ms": 15726.567065857816
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.14817626774311066,
+      0.04301217198371887,
+      0.01849733293056488,
+      0.01711106300354004,
+      0.01467868685722351,
+      0.01693706214427948,
+      0.01398611068725586,
+      0.013174578547477722,
+      0.018696963787078857,
+      0.01890990138053894,
+      0.018763810396194458,
+      0.01155167818069458,
+      0.013641640543937683,
+      0.009715631604194641,
+      0.03628149628639221,
+      0.019435152411460876,
+      0.04481019079685211,
+      0.03086298704147339,
+      0.04003442823886871,
+      0.053421348333358765,
+      0.08763644099235535,
+      0.08497366309165955,
+      0.08615285158157349,
+      0.24608956277370453
+    ],
+    "selected_layers": [
+      7,
+      9,
+      11,
+      13
+    ]
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic",
+    "condition": "depth_pruning",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/minivla_simplerenv_depth_pruning_4_50",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 4,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false
+  },
+  "claim_scope": "Task success and timing from SimplerEnv rollouts. Compare paired seeds across conditions; synthetic action agreement is not used.",
+  "model_name": "minivla_simplerenv",
+  "config_name": "depth_pruning4"
+}

@@ -1,0 +1,25 @@
+name: vla_tricks
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      # RTX 5090 / Blackwell-compatible build used locally.
+      - torch==2.8.0
+      - torchvision==0.23.0
+      - torchaudio==2.8.0
+      # Official VLA-Cache fork, pinned to the audited revision. It is based on
+      # Transformers 4.47 and adds selective DynamicCache reuse.
+      - transformers @ git+https://github.com/siyuhsu/transformers.git@2302fce58afa3a4f8461625b1394f9e9c8a7f1ea
+      - tokenizers==0.21.1
+      - timm==0.9.10
+      - accelerate>=1.0
+      - huggingface-hub>=0.23,<1
+      - safetensors>=0.4.3
+      - numpy>=1.26,<2
+      - opencv-python-headless>=4.10,<5
+      - scikit-image==0.25.0
+      - pillow>=10
+      - pytest>=8,<9
+      - ipykernel>=6,<7
