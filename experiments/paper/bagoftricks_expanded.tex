@@ -1,0 +1,109 @@
+% ---------------------------------------------------------------------------
+% III. Bag of Tricks -- EXPANSION DRAFT, 2026-08-29.
+%
+% Written from docs/methodology.md (the mentor's own blueprint) to cover all
+% SIX families, not the three in bagoftricks.tex. This file does NOT replace
+% bagoftricks.tex; keep both until the scope question is settled with the
+% mentor (3-method SimplerEnv critique vs 6-method base-OpenVLA/LIBERO study).
+%
+% Grouped by the role each family plays in the paper's argument, which is the
+% order Results walks through: negative controls establish why safeguards are
+% needed, VLA-Cache anchors the recent baseline, and the three conditional
+% candidates are then tested against the Pareto gates in
+% docs/experiment_protocol.md.
+%
+% ⚠️ DECISIONS THIS DRAFT COMMITS TO (confirm with the mentor):
+%   - base OpenVLA, 7-D action, optimized dense SDPA as the reference.
+%   - foveation here is the BLUR/disc variant methodology.md defines
+%     (r_s = sqrt(rho HW/pi)); the log-polar variant from the 3-backbone runs
+%     is not in the mentor's blueprint. Reconcile before merging.
+%   - if this direction is chosen, Intro must drop "we propose no new method"
+%     and RW must add the candidate/control framing plus the new citations.
+%
+% Style: no em-dashes, no semicolons, no prose colons. Specs terse but
+% code-level, the bag-of-tricks house style.
+% ---------------------------------------------------------------------------
+
+\section{Bag of Tricks}
+
+\subsection{Preliminaries}
+
+A vision-language model (VLM) maps an image and a text prompt to text through a
+visual encoder and a transformer decoder over the resulting tokens. A
+vision-language-action (VLA) policy adapts a pretrained VLM to control by
+attaching an action head, fine-tuned on demonstrations~\cite{openvla, spatialvla,
+univla}. At control step $t$ the policy $\pi_\theta$ reads an observation $o_t$,
+the image $I_t$ and instruction $l$, through a decoder of $N$ transformer layers
+and returns an action
+\begin{equation}
+a_t = \pi_\theta(o_t), \qquad a_t \in \mathbb{R}^7,
+\end{equation}
+whose first six components are translation and rotation and whose last is a
+binary gripper decision. Chunking backbones return $c$ such actions per query
+and an action repeat $r$ holds each for $r$ steps, so one query advances the
+environment by the horizon $h = c\,r$. The weights $\theta$ stay frozen for
+every intervention. Calibration selects only inference-time quantities, the
+removed layers, thresholds, budgets, and keyframe intervals, and never updates
+a parameter.
+
+The goal is to lower end-to-end policy latency or the number of model calls
+without lowering task success, measured against \emph{optimized} dense
+inference under fused SDPA or FlashAttention, not an artificially slow eager
+baseline. The baseline is the released policy run unchanged, and each
+intervention perturbs one part of it against that reference.
+
+\subsection{Methods}
+
+\paragraph{Negative controls.} \emph{Fixed foveation} keeps a sharp central
+disc and blurs the periphery. For keep fraction $\rho$ the sharp-disc radius is
+$r_s = \sqrt{\rho HW/\pi}$; pixels inside are copied and pixels outside blend
+the image with Gaussian-blurred copies at increasing radius, with $\rho=0.2$ by
+default. Output resolution and the visual token count are unchanged, so it is a
+control for the claim that perceptual simplification alone accelerates
+inference. \emph{Unconditional action repeat} executes a dense action for $k$
+consecutive steps, $\tilde a_{t+j}=a_t$ for $j=0,\dots,k-1$, and queries the
+policy on none of the repeated steps, with $k=2$ by default. It roughly halves
+calls but doubles the interval the robot acts on without fresh feedback, so it
+is a temporal control that establishes the failure mode of skipping feedback
+without a safety gate.
+
+\paragraph{Recent baseline.} \emph{VLA-Cache}~\cite{vlacache} reuses the cached
+key-value computation of visually static patches while recomputing dynamic and
+task-relevant ones, the latter selected from a language-model attention layer.
+Historical information is retained, unlike token dropping. We include it as the
+recent training-free baseline rather than as a first-party method.
+
+\paragraph{Conditional candidates.} \emph{Calibrated depth removal} scores each
+decoder block $j$ by the ShortGPT block influence $s_j = 1 - \operatorname{mean}_q
+\cos(H^{\mathrm{in}}_{j,q}, H^{\mathrm{out}}_{j,q})$~\cite{shortgpt}, averaged
+over a disjoint calibration split. The selector protects the first quarter of
+the stack and the final block, forbids removing two adjacent blocks, and freezes
+the chosen indices before testing; selected blocks are structurally removed and
+the generation cache is reindexed, so this is true removal rather than an
+identity block. We evaluate budgets of 0, 1, 2, and 4 of 32 blocks and treat one
+as the conservative operating point.
+
+\emph{Guarded action reuse} makes the action-repeat saving conditional. Reuse is
+allowed only when the observation and the recent trajectory are both stable. A
+cheap signature $S_t$ samples every eighth pixel and must satisfy whole-frame
+stability $\operatorname{mean}|S_t-S_{t-1}| \le \tau_g$ and local stability
+$\max_{p} \operatorname{mean}_{x\in p}|S_t(x)-S_{t-1}(x)| \le \tau_l$ over an
+$8\times 8$ grid, with defaults $\tau_g=0.01$ and $\tau_l=0.03$. The two most
+recent dense actions must agree, $\cos(a_{t-2}^{0:6},a_{t-1}^{0:6}) \ge 0.995$,
+the current translation norm must exceed $0.01$, and the gripper signs must
+match. Reuse is capped at one consecutive step and any failed gate falls back to
+dense inference, so every step still receives a current image. We sweep the
+thresholds as strict, moderate, and aggressive.
+
+\emph{Interaction-aware temporal fusion} forms one auditable patch mask and uses
+it for both representation fusion and cache reuse. For each of the 256 visual
+patches it computes motion $m_i$, image entropy $e_i$, and optional
+text-to-vision relevance $r_i$, protects patches that are high in any of these
+or lie next to one (a one-patch dilation), and among the rest declares at most
+half reusable by the rank $R_i = m_i+e_i+r_i$. A reusable patch takes the
+previous step's projected token and the others are recomputed, with a dense
+keyframe every third step to bound propagation. The same reusable indices drive
+selective key-value reuse, the speed mechanism paired with the fusion
+hypothesis. We evaluate motion-entropy, task-aware, and conservative-adaptive
+settings. Fusion alone runs the full network and is an accuracy candidate; the
+selective-cache speed path is the extension that must clear the latency gate.
