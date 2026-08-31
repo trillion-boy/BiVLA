@@ -1,16 +1,26 @@
 % ---------------------------------------------------------------------------
-% III. Bag of Tricks -- the methods section, created 2026-08-26 to match the
-% lab-meeting outline (III. Bag of Tricks {A. Preliminaries, B. Methods}).
+% III. Bag of Tricks -- the CHOSEN version, 2026-08-29. Covers all SIX families
+% from docs/methodology.md (the mentor's blueprint). The earlier three-method
+% version is kept as bagoftricks_3method_backup.tex in case the scope reverts.
 %
-% A. Preliminaries: the inference loop and the notation the rest of the paper
-%    uses (chunk, repeat, horizon). It does NOT re-explain the three axes --
-%    Related Work already defines them, and repeating them here is the echo
-%    Reviewer 2 flagged in Setup. Preliminaries only fixes notation.
-% B. Methods: the three interventions as implemented. This paragraph was in
-%    setup.tex (draft 2); it moved here so Setup carries only the protocol.
+% Grouped by the role each family plays in the paper's argument, which is the
+% order Results walks through: negative controls establish why safeguards are
+% needed, VLA-Cache anchors the recent baseline, and the three conditional
+% candidates are then tested against the Pareto gates in
+% docs/experiment_protocol.md.
 %
-% Style matches the rest: no em-dashes, no semicolons, no prose colons.
-% Specs (checkpoint, depth, chunk, GPU) live in Table II, not in prose.
+% ⚠️ DOWNSTREAM ITEMS this choice forces (do as the scope firms up):
+%   - Intro must drop "we propose no new method" (the paper now has candidate
+%     methods) and reframe around controls + candidates + the Pareto question.
+%   - RW must add the candidate/control framing and the new citations
+%     (FlashVLA, TTF-VLA, VLA-InfoEntropy, TEAM-VLA, ActionCache, the anonymous
+%     cross-modal-reuse submission).
+%   - Foveation is described in BOTH variants below (log-polar and blur): our
+%     SimplerEnv runs and Table I use the log-polar warp, methodology.md
+%     formalizes the blur disc, and the paper carries both.
+%
+% Style: no em-dashes, no semicolons, no prose colons. Specs terse but
+% code-level, the bag-of-tricks house style.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
@@ -19,58 +29,82 @@
 
 A vision-language model (VLM) maps an image and a text prompt to text through a
 visual encoder and a transformer decoder over the resulting tokens. A
-vision-language-action (VLA) policy adapts a pretrained VLM to control. It keeps
-the encoder and decoder and attaches an action head that reads robot actions off
-the decoder's output, fine-tuned on demonstrations~\cite{openvla, spatialvla,
-univla}. It therefore inherits the VLM's parameter count and per-call latency,
-which is the cost the interventions in this paper act on.
-
-Concretely, write the policy as $\pi_\theta$ with a decoder of $N$ transformer
-layers. An encoder turns the image and instruction into tokens, the decoder
-processes them, and the action head reads out a \emph{chunk} of $c$ actions,
+vision-language-action (VLA) policy adapts a pretrained VLM to control by
+attaching an action head, fine-tuned on demonstrations~\cite{openvla, spatialvla,
+univla}. At control step $t$ the policy $\pi_\theta$ reads an observation $o_t$,
+the image $I_t$ and instruction $l$, through a decoder of $N$ transformer layers
+and returns an action
 \begin{equation}
-\pi_\theta(o_t) = (a_t^1, \dots, a_t^c),
+a_t = \pi_\theta(o_t), \qquad a_t \in \mathbb{R}^7,
 \end{equation}
-which the environment executes in order before the next query at step $t{+}c$.
-The chunk length $c$ and the depth $N$ are fixed by the checkpoint and are one,
-one, five and 32, 32, 26 for the three backbones we run
-(Table~\ref{tab:backbones}).
+whose first six components are translation and rotation and whose last is a
+binary gripper decision. Chunking backbones return $c$ such actions per query
+and an action repeat $r$ holds each for $r$ steps, so one query advances the
+environment by the horizon $h = c\,r$. The weights $\theta$ stay frozen for
+every intervention. Calibration selects only inference-time quantities, the
+removed layers, thresholds, budgets, and keyframe intervals, and never updates
+a parameter.
 
-Two settings govern how often the decoder runs relative to the environment. The
-chunk length $c$ fixes how many environment steps one query already covers, and
-an \emph{action repeat} $r$ holds each returned action for $r$ consecutive
-steps. One query therefore advances the environment by $h = c\,r$ steps, a
-quantity we call the \emph{horizon}. The horizon, not $r$ alone, is what a
-temporal intervention changes, and because $c$ differs across backbones the same
-$r$ gives a different horizon on each.
-
-Each intervention moves one quantity and leaves the rest fixed: the horizon $h$,
-the tokens the encoder is given, or the set of decoder layers a query runs. The
-baseline is the released policy run unchanged, at the native chunk with $r{=}1$,
-the full observation, and all $N$ layers, and every intervention perturbs a
-single one of these against that baseline. We add no training.
+The goal is to lower end-to-end policy latency or the number of model calls
+without lowering task success, measured against \emph{optimized} dense
+inference under fused SDPA or FlashAttention, not an artificially slow eager
+baseline. The baseline is the released policy run unchanged, and each
+intervention perturbs one part of it against that reference.
 
 \subsection{Methods}
 
-\emph{Action repetition} holds every returned action for $r$ consecutive
-environment steps, an in-place repeat, so a two-action chunk at $r{=}2$ executes
-as $a_1a_1a_2a_2$ and not the chunk tiled as $a_1a_2a_1a_2$. We sweep
-$r \in \{2, 4\}$. It changes the horizon and leaves the cost of a single query
-untouched.
+\paragraph{Negative controls.} \emph{Fixed foveation} suppresses peripheral
+detail while keeping a sharp fovea, in two variants at keep fraction $\rho$
+(default $0.2$). The log-polar variant warps the frame to log-polar coordinates
+about its center, keeps a fraction $\rho$ of the samples, interpolates back to
+full size, and inverts the warp. The blur variant instead keeps a central disc
+of radius $r_s = \sqrt{\rho HW/\pi}$ unchanged and blends Gaussian-blurred
+copies at increasing radius outside it. Both leave the output resolution and the
+visual token count unchanged, so foveation is a control for the claim that
+perceptual simplification alone accelerates inference. \emph{Unconditional action repeat} executes a dense action for $k$
+consecutive steps, $\tilde a_{t+j}=a_t$ for $j=0,\dots,k-1$, and queries the
+policy on none of the repeated steps, with $k=2$ by default. It roughly halves
+calls but doubles the interval the robot acts on without fresh feedback, so it
+is a temporal control that establishes the failure mode of skipping feedback
+without a safety gate.
 
-\emph{Visual foveation} transforms the observation before it reaches the
-encoder, in two variants at a keep fraction $\rho$, set to $0.2$ in the grid and
-swept in Section~IV. The log-polar variant warps the frame to log-polar
-coordinates about its center, keeps a fraction $\rho$ of the samples
-($\sqrt{\rho}$ per axis), interpolates back to full size, and inverts the warp.
-Because the log-polar map over-samples the center, subsampling it keeps central
-detail and coarsens the periphery. The blur variant instead leaves a central
-disc of area $\rho$ unchanged and applies a Gaussian that strengthens with
-radius, moving no pixel.
+\paragraph{Recent baseline.} \emph{VLA-Cache}~\cite{vlacache} reuses the cached
+key-value computation of visually static patches while recomputing dynamic and
+task-relevant ones, the latter selected from a language-model attention layer.
+Historical information is retained, unlike token dropping. We include it as the
+recent training-free baseline rather than as a first-party method.
 
-\emph{Depth pruning} scores each decoder layer by the Block Influence criterion,
-the input-output redundancy of the layer, and removes the $k$ most redundant of
-the $N$ layers within an \emph{eligibility window}, the contiguous deep span of
-the stack a layer must fall in to be a candidate, by default the deeper half. We
-fix the removed count $k$ rather than the fraction $k/N$, since $N$ is 32, 32,
-and 26, and sweep $k \in \{1, 2, 4\}$. Section~IV varies the window.
+\paragraph{Conditional candidates.} \emph{Calibrated depth removal} scores each
+decoder block $j$ by the ShortGPT block influence $s_j = 1 - \operatorname{mean}_q
+\cos(H^{\mathrm{in}}_{j,q}, H^{\mathrm{out}}_{j,q})$~\cite{shortgpt}, averaged
+over a disjoint calibration split. The selector protects the first quarter of
+the stack and the final block, forbids removing two adjacent blocks, and freezes
+the chosen indices before testing. Selected blocks are structurally removed and
+the generation cache is reindexed, so this is true removal rather than an
+identity block. We evaluate budgets of 0, 1, 2, and 4 of 32 blocks and treat one
+as the conservative operating point.
+
+\emph{Guarded action reuse} makes the action-repeat saving conditional. Reuse is
+allowed only when the observation and the recent trajectory are both stable. A
+cheap signature $S_t$ samples every eighth pixel and must satisfy whole-frame
+stability $\operatorname{mean}|S_t-S_{t-1}| \le \tau_g$ and local stability
+$\max_{p} \operatorname{mean}_{x\in p}|S_t(x)-S_{t-1}(x)| \le \tau_l$ over an
+$8\times 8$ grid, with defaults $\tau_g=0.01$ and $\tau_l=0.03$. The two most
+recent dense actions must agree, $\cos(a_{t-2}^{0:6},a_{t-1}^{0:6}) \ge 0.995$,
+the current translation norm must exceed $0.01$, and the gripper signs must
+match. Reuse is capped at one consecutive step and any failed gate falls back to
+dense inference, so every step still receives a current image. We sweep the
+thresholds as strict, moderate, and aggressive.
+
+\emph{Interaction-aware temporal fusion} forms one auditable patch mask and uses
+it for both representation fusion and cache reuse. For each of the 256 visual
+patches it computes motion $m_i$, image entropy $e_i$, and optional
+text-to-vision relevance $r_i$, protects patches that are high in any of these
+or lie next to one (a one-patch dilation), and among the rest declares at most
+half reusable by the rank $R_i = m_i+e_i+r_i$. A reusable patch takes the
+previous step's projected token and the others are recomputed, with a dense
+keyframe every third step to bound propagation. The same reusable indices drive
+selective key-value reuse, the speed mechanism paired with the fusion
+hypothesis. We evaluate motion-entropy, task-aware, and conservative-adaptive
+settings. Fusion alone runs the full network and is an accuracy candidate, and
+the selective-cache speed path is the extension that must clear the latency gate.
