@@ -44,8 +44,9 @@ fail in ways that motivate the safeguards below. On the spatial side, foveation
 descends from Schwartz's log-polar mapping~\cite{schwartz}, taken up in robot
 vision to cut data while preserving central resolution~\cite{traver} and applied
 to VLAs by gaze-conditioned policies~\cite{gazereg, lookfocusact}. At a fixed
-output resolution, however, the encoder still produces the same visual tokens,
-so a pixel-space edit removes no model computation and only tests robustness.
+output resolution the encoder still produces the same visual tokens, so a
+pixel-space edit removes no model computation. It only tests whether the policy
+survives clutter.
 Methods that instead foveate inside the encoder shed tokens but give up the
 pretrained weights fitted to a uniform grid~\cite{lookfocusact}. On the temporal
 side, executing one decision over several control steps has a lineage from frame
@@ -58,7 +59,7 @@ repeat as controls that establish why the candidate methods need gates.
 
 \textbf{Conditional candidates.} Three families remove computation only where a
 signal says it is safe. Decoder-layer redundancy is well established in language
-models, and the recipes built on it disagree on which layers may go. ShortGPT
+models. But the recipes built on it disagree on which layers may go. ShortGPT
 ranks every layer by Block Influence, the criterion we adopt, and constrains
 nothing further~\cite{shortgpt}, while others keep the final layer and remove a
 contiguous deep block~\cite{gromov}. EfficientVLA carries the unconstrained form
@@ -90,7 +91,7 @@ SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work addresses
 the infrastructure around them, with the vla-eval harness unifying benchmarks
 and documenting evaluation pitfalls earlier work had left
 unrecorded~\cite{vlaeval} and StarVLA describing the field as fragmented across
-incompatible codebases~\cite{starvla}. What infrastructure cannot supply is the
+incompatible codebases~\cite{starvla}. But infrastructure cannot supply the
 comparison itself. Papers using several backbones change the benchmark at the
 same time~\cite{vlacache, specprune, vlaiap}, those with both factors present
 leave the crossing cell empty~\cite{gazereg, vlapruner}, and the tables we cite
