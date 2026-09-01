@@ -1,20 +1,12 @@
 % ---------------------------------------------------------------------------
-% Figure -- where the three interventions apply in the VLA inference pipeline.
-% Added 2026-08-26 to give Section III visual weight and to make rho, the
-% eligibility window, and the horizon h=cr legible at a glance, rather than
-% padding the Methods prose.
+% Figure -- where the six methods apply in the VLA inference pipeline (v2).
+% Gives Section III visual weight and shows each family's role at a glance.
 %
-% Drawn in TikZ, NOT matplotlib, on purpose: a vector schema has no Type 3
-% fonts, so it passes IEEE PDF eXpress, the check that would have failed the
-% old matplotlib heat map. Nothing to regenerate; edit here.
-%
-% Preamble needs:
+% TikZ, not matplotlib, so the vector schema has no Type 3 fonts and passes
+% IEEE PDF eXpress. Preamble needs, in main.tex ABOVE \begin{document}:
 %   \usepackage{tikz}
-%   \usetikzlibrary{positioning, arrows.meta, fit, backgrounds}
-%
-% ⚠️ COMPILE-CHECK in Overleaf before trusting the layout: this was authored
-% without a local LaTeX run. The structure is deliberately simple (one row of
-% boxes, one feedback arrow above, three tags below) to keep it robust.
+%   \usetikzlibrary{positioning, arrows.meta}
+% Preview it on its own with figpipeline_standalone.tex.
 %
 % Spans both columns (figure*), placed near the top of Section III.
 % ---------------------------------------------------------------------------
@@ -22,46 +14,44 @@
 \begin{figure*}[t]
 \centering
 \begin{tikzpicture}[
-    font=\small,
-    >=Stealth,
+    >=Stealth, font=\small,
     box/.style={draw, rounded corners=2pt, minimum height=9mm,
-                minimum width=17mm, align=center, inner sep=3pt},
-    tag/.style={draw, dashed, rounded corners=2pt, fill=black!5,
-                align=center, font=\footnotesize, inner sep=3pt},
+                minimum width=15mm, align=center, inner sep=3pt},
+    tag/.style={draw, dashed, rounded corners=2pt, align=center,
+                font=\scriptsize, inner sep=3pt, text width=25mm},
     flow/.style={->, thick},
 ]
-% --- main pipeline, left to right ---
-\node[box] (obs)  {Observation\\$o_t$};
-\node[box, right=9mm of obs]  (enc)  {Visual\\encoder};
-\node[box, right=9mm of enc]  (dec)  {Decoder\\$N$ layers};
-\node[box, right=9mm of dec]  (head) {Action\\head};
-\node[box, right=13mm of head] (env) {Environment};
-
-\draw[flow] (obs)  -- (enc);
-\draw[flow] (enc)  -- (dec);
-\draw[flow] (dec)  -- (head);
-\draw[flow] (head) -- node[above, font=\footnotesize]
-            {chunk $(a_t^1,\dots,a_t^c)$} (env);
-
+% --- pipeline, left to right ---
+\node[box] (obs) {Observation\\$o_t$};
+\node[box, right=13mm of obs] (enc) {Visual\\encoder};
+\node[box, right=20mm of enc] (dec) {Decoder\\$N$ layers};
+\node[box, right=13mm of dec] (head) {Action\\head};
+\node[box, right=15mm of head] (env) {Environment};
+\draw[flow] (obs) -- (enc);
+\draw[flow] (enc) -- (dec);
+\draw[flow] (dec) -- (head);
+\draw[flow] (head) -- (env);
 % --- feedback arrow above, carrying the horizon ---
-\draw[flow] (env.north) -- ++(0,6mm)
-            -| node[above, pos=0.25, font=\footnotesize]
-            {next query after $h = c\,r$ steps} (obs.north);
-
-% --- the three interventions, tagged at the point each acts ---
-\node[tag, below=8mm of obs]  (fov) {\textbf{Visual foveation}\\warp before the\\encoder, keep $\rho$};
-\node[tag, below=8mm of dec]  (dp)  {\textbf{Depth pruning}\\remove $k$ of $N$\\in a deep window};
-\node[tag, below=8mm of head] (ar)  {\textbf{Action repetition}\\hold each action\\$r$ steps};
-
-\draw[->, dashed] (fov) -- (obs);
-\draw[->, dashed] (dp)  -- (dec);
-\draw[->, dashed] (ar)  -- (head);
+\draw[flow] (env.north) -- ++(0,7mm)
+      -| node[above, pos=0.25, font=\footnotesize]
+      {re-query every $h = c\,r$ steps} (obs.north);
+% --- the six methods, grouped by where each acts, with its role ---
+\node[tag, below=10mm of obs]  (t1) {\textbf{Foveation} (control)};
+\node[tag, below=10mm of enc]  (t2) {\textbf{VLA-Cache} (baseline)\\\textbf{Temporal fusion} (candidate)};
+\node[tag, below=10mm of dec]  (t3) {\textbf{Depth pruning} (candidate)};
+\node[tag, below=10mm of head] (t4) {\textbf{Action repeat} (control)\\\textbf{Guarded reuse} (candidate)};
+\draw[->, dashed] (t1) -- (obs);
+\draw[->, dashed] (t2) -- (enc);
+\draw[->, dashed] (t3) -- (dec);
+\draw[->, dashed] (t4) -- (head);
 \end{tikzpicture}
-\caption{The three interventions in the VLA inference pipeline. Each acts at
-one point and moves one quantity: foveation transforms the observation before
-the encoder, depth pruning removes layers inside the decoder, and action
-repetition sets how many environment steps one query covers. The horizon
-$h = c\,r$ combines the checkpoint's chunk length $c$ with the action repeat
-$r$, so a single value of $r$ is a different horizon on each backbone.}
+\caption{The six training-free methods in the VLA inference pipeline, each
+tagged at the point it acts and by its role. The two negative controls degrade
+the input (foveation) or skip feedback unconditionally (action repeat). The
+recent baseline (VLA-Cache) and the candidates reuse visual-token computation
+across frames (temporal fusion), skip decoder layers (depth pruning), or reuse
+a whole action under stability gates (guarded reuse). One query returns a chunk
+of $c$ actions and the action repeat $r$ holds each for $r$ steps, so the
+horizon $h = c\,r$ sets how many environment steps pass between queries.}
 \label{fig:pipeline}
 \end{figure*}

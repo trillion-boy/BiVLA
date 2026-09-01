@@ -1,15 +1,11 @@
 % ===========================================================================
-% STANDALONE preview of the pipeline figure. Compile THIS FILE BY ITSELF in
-% Overleaf (set it as the main document, or open it and press Recompile) to see
-% the figure on its own, without touching main.tex.
-%
-% It is self-contained: the \usepackage lines live in this file's own preamble,
-% which is why it just works. When you put the figure into main.tex instead,
-% the figure body (\begin{tikzpicture} ... \end{tikzpicture}) goes in the body
-% and these two lines
+% STANDALONE preview of the pipeline figure (v2, all six methods).
+% Compile THIS FILE BY ITSELF in Overleaf to see the figure.
+% For main.tex, the two lines
 %     \usepackage{tikz}
 %     \usetikzlibrary{positioning, arrows.meta}
-% go in main.tex's PREAMBLE, above \begin{document}, next to \usepackage{graphicx}.
+% go in the PREAMBLE (above \begin{document}), and only the tikzpicture goes
+% in the body.
 % ===========================================================================
 \documentclass[border=6pt]{standalone}
 \usepackage{tikz}
@@ -18,39 +14,35 @@
 
 \begin{document}
 \begin{tikzpicture}[
-    font=\small,
-    >=Stealth,
+    >=Stealth, font=\small,
     box/.style={draw, rounded corners=2pt, minimum height=9mm,
-                minimum width=17mm, align=center, inner sep=3pt},
-    tag/.style={draw, dashed, rounded corners=2pt, fill=black!5,
-                align=center, font=\footnotesize, inner sep=3pt},
+                minimum width=15mm, align=center, inner sep=3pt},
+    tag/.style={draw, dashed, rounded corners=2pt, align=center,
+                font=\scriptsize, inner sep=3pt, text width=25mm},
     flow/.style={->, thick},
 ]
-% --- main pipeline, left to right ---
-\node[box] (obs)  {Observation\\$o_t$};
-\node[box, right=9mm of obs]  (enc)  {Visual\\encoder};
-\node[box, right=9mm of enc]  (dec)  {Decoder\\$N$ layers};
-\node[box, right=9mm of dec]  (head) {Action\\head};
-\node[box, right=13mm of head] (env) {Environment};
-
-\draw[flow] (obs)  -- (enc);
-\draw[flow] (enc)  -- (dec);
-\draw[flow] (dec)  -- (head);
-\draw[flow] (head) -- node[above, font=\footnotesize]
-            {chunk $(a_t^1,\dots,a_t^c)$} (env);
-
+% --- pipeline, left to right ---
+\node[box] (obs) {Observation\\$o_t$};
+\node[box, right=13mm of obs] (enc) {Visual\\encoder};
+\node[box, right=20mm of enc] (dec) {Decoder\\$N$ layers};
+\node[box, right=13mm of dec] (head) {Action\\head};
+\node[box, right=15mm of head] (env) {Environment};
+\draw[flow] (obs) -- (enc);
+\draw[flow] (enc) -- (dec);
+\draw[flow] (dec) -- (head);
+\draw[flow] (head) -- (env);
 % --- feedback arrow above, carrying the horizon ---
-\draw[flow] (env.north) -- ++(0,6mm)
-            -| node[above, pos=0.25, font=\footnotesize]
-            {next query after $h = c\,r$ steps} (obs.north);
-
-% --- the three interventions, tagged at the point each acts ---
-\node[tag, below=8mm of obs]  (fov) {\textbf{Visual foveation}\\warp before the\\encoder, keep $\rho$};
-\node[tag, below=8mm of dec]  (dp)  {\textbf{Depth pruning}\\remove $k$ of $N$\\in a deep window};
-\node[tag, below=8mm of head] (ar)  {\textbf{Action repetition}\\hold each action\\$r$ steps};
-
-\draw[->, dashed] (fov) -- (obs);
-\draw[->, dashed] (dp)  -- (dec);
-\draw[->, dashed] (ar)  -- (head);
+\draw[flow] (env.north) -- ++(0,7mm)
+      -| node[above, pos=0.25, font=\footnotesize]
+      {re-query every $h = c\,r$ steps} (obs.north);
+% --- the six methods, grouped by where each acts, with its role ---
+\node[tag, below=10mm of obs]  (t1) {\textbf{Foveation} (control)};
+\node[tag, below=10mm of enc]  (t2) {\textbf{VLA-Cache} (baseline)\\\textbf{Temporal fusion} (candidate)};
+\node[tag, below=10mm of dec]  (t3) {\textbf{Depth pruning} (candidate)};
+\node[tag, below=10mm of head] (t4) {\textbf{Action repeat} (control)\\\textbf{Guarded reuse} (candidate)};
+\draw[->, dashed] (t1) -- (obs);
+\draw[->, dashed] (t2) -- (enc);
+\draw[->, dashed] (t3) -- (dec);
+\draw[->, dashed] (t4) -- (head);
 \end{tikzpicture}
 \end{document}
