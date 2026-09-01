@@ -1,0 +1,103 @@
+% ---------------------------------------------------------------------------
+% II. Related Work -- SIX-FAMILY version, 2026-08-29. Rewritten from
+% docs/literature_review.md to match the chosen six-family scope. The earlier
+% three-method version is kept as relatedwork_3method_backup.tex.
+%
+% Organised by the role each family plays: negative controls (foveation,
+% action repeat), the recent baseline (VLA-Cache), and the conditional
+% candidates (depth, guarded reuse, temporal fusion). This is the same order
+% Methods (Section III) and Results walk through.
+%
+% ⚠️ FOUR NEW CITATION KEYS used below that are NOT yet in main.bib. Build
+% proper entries from the arXiv pages before compiling (ids from
+% docs/literature_review.md):
+%   flashvla        2505.21200
+%   ttfvla          2508.19257   (AAAI 2026)
+%   vlainfoentropy  2604.05323
+%   crossmodalreuse  anonymous OpenReview R6d86jMO74
+% (teamvla 2512.09927 and actioncache 2607.06370 are in literature_review.md
+%  but not cited in this draft; add them only if a later revision needs them.)
+% Existing keys reused: openvla, shortgpt, efficientvla, gromov, molevla,
+%   vlacache, vlapruner, fastv, sparsevlm, tome, schwartz, traver, gazereg,
+%   lookfocusact, simplerenv, libero, vlaeval, starvla, specprune, vlaiap,
+%   dqn, act, diffusionpolicy, effvlasurvey1, bagoftricks_cnn, bagoftricks_llm.
+%
+% Style: no em-dashes, no semicolons, no prose colons.
+% ---------------------------------------------------------------------------
+
+\section{Related Work}
+
+We cover the cost of VLA inference, the interventions we evaluate, grouped by
+the role each plays, and how the literature tests them.
+
+\textbf{Inference cost in VLA policies.} VLA policies adapt pretrained
+vision-language models to output robot actions, inheriting their size and
+latency, and the resulting efficiency literature already has surveys of its
+own~\cite{effvlasurvey1}. Methods divide by the resource each spends, when the
+policy runs, what it is shown, and how much network each call uses. A claim
+about efficiency is a claim about one of these resources being spent
+differently, so we treat them as axes rather than competing methods.
+
+\textbf{Generic shortcuts, used as negative controls.} The simplest way to
+spend less is to degrade the input or to skip feedback unconditionally, and both
+fail in ways that motivate the safeguards below. On the spatial side, foveation
+descends from Schwartz's log-polar mapping~\cite{schwartz}, taken up in robot
+vision to cut data while preserving central resolution~\cite{traver} and applied
+to VLAs by gaze-conditioned policies~\cite{gazereg, lookfocusact}. At a fixed
+output resolution, however, the encoder still produces the same visual tokens,
+so a pixel-space edit removes no model computation and only tests robustness.
+Methods that instead foveate inside the encoder shed tokens but give up the
+pretrained weights fitted to a uniform grid~\cite{lookfocusact}. On the temporal
+side, executing one decision over several control steps has a lineage from frame
+skip in reinforcement learning to action chunking~\cite{dqn, act,
+diffusionpolicy}. Unconditional repetition reduces model calls but acts open
+loop through contacts, and training-free action reuse of this kind reports a
+success decrease~\cite{flashvla} unless it separates coarse motion from
+precision phases~\cite{specprune}. We therefore use fixed foveation and fixed
+repeat as controls that establish why the candidate methods need gates.
+
+\textbf{Conditional candidates.} Three families remove computation only where a
+signal says it is safe. Decoder-layer redundancy is well established in language
+models, and the recipes built on it disagree on which layers may go. ShortGPT
+ranks every layer by Block Influence, the criterion we adopt, and constrains
+nothing further~\cite{shortgpt}, while others keep the final layer and remove a
+contiguous deep block~\cite{gromov}. EfficientVLA carries the unconstrained form
+into VLAs without training~\cite{efficientvla}, and MoLe-VLA needs a learned
+router~\cite{molevla}, placing it outside a training-free study. Guarded action
+reuse makes the temporal shortcut conditional on visual and trajectory
+stability, a direction that recent work supports by tying reuse to interaction
+phase~\cite{flashvla, specprune}. Task-aware visual reuse is the third family.
+Temporal token fusion reuses parts of the visual representation across frames to
+stabilise it~\cite{ttfvla}, while selective cache reuse budgets computation by
+image entropy and task attention~\cite{vlainfoentropy, vlaiap}. A shared mask
+that governs both denoising and cache reuse is close to a concurrent
+proposal~\cite{crossmodalreuse}, so the defensible differences are contact-aware
+fallbacks, one mask driving both paths, and paired evaluation against optimized
+dense inference.
+
+\textbf{The recent baseline.} VLA-Cache reuses the key-value computation of
+static patches while recomputing dynamic and task-relevant ones, retaining
+history unlike token pruning~\cite{vlacache}. On base OpenVLA across LIBERO it
+reports nearly maintained rather than improved average success at lower latency,
+which makes it the recent anchor against which candidates are measured rather
+than a first-party contribution. Visual-token methods developed for
+vision-language models transfer poorly to VLAs~\cite{fastv, sparsevlm, tome},
+which VLA-Cache and VLA-Pruner attribute to VLAs' short action
+sequences~\cite{vlacache, vlapruner}.
+
+\textbf{How these claims are evaluated.} The field reports results on
+SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work addresses
+the infrastructure around them, with the vla-eval harness unifying benchmarks
+and documenting evaluation pitfalls earlier work had left
+unrecorded~\cite{vlaeval} and StarVLA describing the field as fragmented across
+incompatible codebases~\cite{starvla}. What infrastructure cannot supply is the
+comparison itself. Papers using several backbones change the benchmark at the
+same time~\cite{vlacache, specprune, vlaiap}, those with both factors present
+leave the crossing cell empty~\cite{gazereg, vlapruner}, and the tables we cite
+report mean success rates rather than matched-episode outcomes. Many also
+compare against an artificially slow eager baseline, which inflates a speedup.
+Isolating the effect of choices that appear only in source code is an
+established practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six
+families under one protocol, on matched episodes against optimized dense
+inference, so that a candidate is called positive only when its speed and its
+success both clear a preregistered gate.
