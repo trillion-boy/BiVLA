@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-943 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+942 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 130 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -97,10 +97,11 @@ across frames without training and raises base OpenVLA on LIBERO by four
 points at under two percent overhead, a denoising result rather than a speed
 one. VLA-InfoEntropy selects which tokens to reuse by image and attention
 entropy, and VLA-IAP prunes
-tokens by interaction alignment. A concurrent anonymous submission also
-coordinates token reuse across modalities, so a shared mask by itself is not
-new. What we test is one mask that drives both denoising and cache reuse, with
-contact-aware fallbacks, against optimized dense inference on paired episodes.
+tokens by interaction alignment. Selecting patches for reuse is therefore not
+itself new, and concurrent work is converging on coordinated reuse across
+modalities. What we test is one mask that drives both denoising and cache
+reuse, with contact-aware fallbacks, against optimized dense inference on
+paired episodes.
 
 ### How these claims are evaluated
 
@@ -157,6 +158,15 @@ when its speed and its success both clear a preregistered gate.
 3. The vla-eval / StarVLA infrastructure sentence, about 35 words.
 4. The quantisation / early-exit exclusion sentence, about 20 words.
 
-**Four citation keys still need `.bib` entries:** `flashvla` (2505.21200),
-`ttfvla` (2508.19257, AAAI 2026), `vlainfoentropy` (2604.05323),
-`crossmodalreuse` (anonymous, OpenReview R6d86jMO74).
+**Citations are complete.** `flashvla`, `ttfvla` and `vlainfoentropy` were
+added to `main.bib` on 2026-09-03 from the PDFs. Reading them changed two
+sentences, so the earlier second-hand versions were not accurate enough to
+ship.
+
+**The anonymous OpenReview submission (R6d86jMO74) is not cited.** It is
+non-archival, still under review, and has no public version, so a reviewer
+cannot verify it and IEEE has no reference format for it. Dropping it costs
+nothing, because TTF-VLA and VLA-InfoEntropy already establish that a reuse
+mask is not novel on its own. The concurrent-work clause stays in prose
+without a reference. Restore the citation only if the paper appears publicly
+before camera-ready.

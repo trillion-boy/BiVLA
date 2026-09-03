@@ -21,12 +21,14 @@
 % 0.75 page, roughly 800 words in ieeeconf. Polish down from here; the cut
 % candidates are marked in RelatedWork.md.
 %
-% ⚠️ FOUR CITATION KEYS used below are NOT yet in main.bib. Build entries
-% from the arXiv pages before compiling:
-%   flashvla        2505.21200
-%   ttfvla          2508.19257   (AAAI 2026)
-%   vlainfoentropy  2604.05323
-%   crossmodalreuse  anonymous OpenReview R6d86jMO74
+% Citations: all keys used below are in main.bib. flashvla, ttfvla and
+% vlainfoentropy were added 2026-09-03 from the PDFs, not from abstracts.
+% The anonymous OpenReview submission R6d86jMO74 that docs/literature_review.md
+% raises is deliberately NOT cited. It is non-archival and under review with no
+% public version, so a reviewer cannot check it. Its point, that a reuse mask is
+% not novel on its own, is carried by ttfvla and vlainfoentropy instead, and the
+% concurrent-work clause stays in prose with no reference. See
+% RelatedWork_Sources.md row 31.
 %
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
@@ -106,11 +108,10 @@ visual tokens across frames without training and raises base OpenVLA on LIBERO
 by four points at under two percent overhead, a denoising result rather than a
 speed one~\cite{ttfvla}. VLA-InfoEntropy selects which tokens to reuse by
 image and attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
-alignment~\cite{vlaiap}. A concurrent anonymous submission also coordinates
-token reuse across modalities~\cite{crossmodalreuse}, so a shared mask by
-itself is not new. What we test is one mask that drives both denoising and
-cache reuse, with contact-aware fallbacks, against optimized dense inference
-on paired episodes.
+alignment~\cite{vlaiap}. Selecting patches for reuse is therefore not itself
+new, and concurrent work is converging on coordinated reuse across modalities.
+What we test is one mask that drives both denoising and cache reuse, with
+contact-aware fallbacks, against optimized dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
