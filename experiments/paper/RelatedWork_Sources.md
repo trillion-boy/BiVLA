@@ -835,3 +835,42 @@ have promoted into the prose.
 where this entry previously stopped at ten and *"and others"*. Nature 518, and
 the running head gives the rest: *"26 FEBRUARY 2015 | VOL 518 | NATURE | 529"*,
 `doi:10.1038/nature14236`, received 10 July 2014, accepted 16 January 2015.
+
+---
+
+## Six-family revision, 2026-09-03: claims carried in from the mentor's audit
+
+`relatedwork.tex` v3 adds the three families the mentor's project introduced
+(VLA-Cache as baseline, guarded reuse and temporal fusion as candidates). The
+new claims below are taken from `docs/literature_review.md` on the `tricks`
+branch (audit dated 27 August 2026), which the mentor wrote against the
+primary PDFs. Each row names the sentence in the draft and the line in that
+document it rests on. Where the draft carries a number, the number is the
+mentor's.
+
+| # | claim in the draft | source in `docs/literature_review.md` |
+|---|---|---|
+| 21 | FlashVLA reports a 0.7-point average success decrease with training-free action reuse | §2: *"FlashVLA uses training-free action reuse as part of its acceleration pipeline, although the full method reports a 0.7-point average success decrease."* |
+| 22 | SpecPrune-VLA separates coarse movement from precision-sensitive phases | §2: *"SpecPrune-VLA similarly distinguishes coarse movement from precision-sensitive manipulation phases."* The draft says "separates", not "avoids the decrease"; the source supports only the distinction. |
+| 23 | VLA-Cache: static patches reused, dynamic and task-relevant recomputed, task relevance from language-model attention, history retained unlike token dropping | §5, first paragraph, and `docs/methodology.md` §8. |
+| 24 | VLA-Cache on base OpenVLA across LIBERO, 75.0% dense vs 74.7%, 51.91 ms vs 31.83 ms | §5: *"the paper reports average success of 75.0% for dense inference and 74.7% for VLA-Cache, with latency changing from 51.91 ms to 31.83 ms."* Draft rounds to 31.8 / 51.9. |
+| 25 | "nearly maintained rather than improved" | §5: *"a strong efficiency result with nearly maintained, not improved, average accuracy."* |
+| 26 | guarded reuse skips a call only when image and recent trajectory are both stable | §4 and `docs/methodology.md` §7 (global and local signature gates, two-action cosine, translation floor, gripper sign, cap of one). |
+| 27 | FlashVLA ties reuse to action stability | FlashVLA abstract (arXiv 2505.21200): token-aware action reuse triggered by action stability. **Read from the abstract only.** Confirm from the PDF before camera-ready. |
+| 28 | TTF-VLA raises base OpenVLA on LIBERO by four points at under 2% overhead, a denoising result | §6: *"TTF-VLA (AAAI 2026) reports that training-free temporal token fusion improves base OpenVLA LIBERO success from 68.4% to 72.4% with less than 2% runtime overhead. Its evaluated fusion is a temporal-denoising intervention rather than a speed mechanism."* |
+| 29 | VLA-InfoEntropy budgets cache reuse by image entropy | §6: *"VLA-InfoEntropy independently supports entropy-aware cache budgeting."* |
+| 30 | VLA-IAP prunes tokens by interaction alignment | §6: *"IAprune ... is a token-pruning method"*, and the paper title in `main.bib` (*Training-Free Visual Token Pruning via Interaction Alignment*). v2 of the draft wrongly grouped it with cache reuse. |
+| 31 | a concurrent anonymous submission coordinates token reuse across modalities, so a shared mask alone is not new | §6: *"A recent anonymous submission also studies coordinated cross-modal token reuse. Therefore, the paper should not claim that a shared mask alone is novel."* |
+| 32 | what we test: one mask driving denoising and cache reuse, contact-aware fallbacks, optimized dense baseline, paired episodes | §6, the four "defensible differentiators". |
+| 33 | a speedup against eager attention overstates the gain | §"Exact inference optimization": *"Comparing only with an artificially slow eager implementation would inflate acceleration claims."* Stated in the draft as a fact about measurement, not as a count of papers, because no paper was checked for it. |
+| 34 | positive only when speed and success both clear a preregistered gate | `docs/experiment_protocol.md`, "Claim gates" 1 and 2. |
+
+### Sentences from v1 that were changed, and why
+
+- *"VLA-Cache and VLA-Pruner attribute [poor transfer] to short action
+  sequences"* (v2) reverted to v1's split: VLA-Cache attributes, VLA-Pruner
+  reproduces. Row 5 above supports only reproduction for VLA-Pruner.
+- *"Many also compare against an artificially slow eager baseline"* (v2)
+  replaced, see row 33.
+- The exclusion sentence lost "KV-cache compression". VLA-Cache reuses KV
+  computation, so keeping that exclusion would contradict the section.

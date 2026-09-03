@@ -1,10 +1,11 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-691 words of prose. *Bag of Tricks*' Related Work is 350 on the same basis,
-so ours is 1.95x its length. (This file previously said 429, which was a
-miscount, see `RelatedWork_Plan.md` §0.)
-Provenance for every claim: `RelatedWork_Sources.md`.*
+936 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 130 words
+come out in polishing. Cut candidates are listed under "Notes for the
+co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
+claims in its last section.*
 
 **Regenerate this file whenever `relatedwork.tex` changes.** It has fallen
 behind three times, once carrying a sentence whose meaning had been inverted in
@@ -13,159 +14,147 @@ for that.
 
 ---
 
-We cover the cost of VLA inference, the training-free interventions we
-re-measure, and how the literature evaluates them.
+We cover the cost of VLA inference, the six intervention families we evaluate,
+grouped by the role each plays in our argument, and how the literature tests
+such claims.
 
 ### Inference cost in VLA policies
 
 VLA policies adapt pretrained vision-language models to output robot actions,
 inheriting their size and latency, and the resulting efficiency literature
-already has surveys of its own. We divide that literature by the resource
-each method spends, which recovers a recent survey's categories of action generation,
-perception and dynamic computation (the CAS systematic survey).
+already has surveys of its own (the CAS systematic survey, the Yu et al.
+survey). We divide that literature by the resource each method spends.
 
 1. **When the policy runs.** One decision is executed over several control
-   steps, a lineage running from frame skip in RL to action chunking (DQN,
-   ACT, Diffusion Policy, OpenVLA-OFT).
-2. **What it is shown.** Visual tokens are reduced or reweighted.
+   steps, a lineage running from frame skip in reinforcement learning to
+   action chunking (DQN, ACT, Diffusion Policy).
+2. **What it is shown.** Visual tokens are reduced, reweighted, or reused.
 3. **How much network each call uses.** Only part of the decoder runs.
 
-We treat these as axes rather than competing methods, because a claim about
-efficiency is a claim about one of these resources being spent differently.
+A claim about efficiency is a claim about one of these resources being spent
+differently, so we treat them as axes rather than competing methods, and each
+of the six families below acts on one of them.
 
-### The interventions we re-measure
+### Generic shortcuts, used as negative controls
 
-Layer redundancy in language models is well established, **but the recipes built on it
-disagree on which layers may go.** ShortGPT ranks every layer by Block
-Influence, the criterion we adopt, and constrains nothing further, while Gromov
-et al. remove a contiguous block of the deepest layers and find the final layer
-must be kept. EfficientVLA carries the unconstrained form into VLAs without
-training, and MoLe-VLA needs a learned router and distillation, placing it
-outside what we test. **We find no comparison of these rules on a robot policy,
-and our depth results turn on which one holds.** Several recent compact
-VLAs **build such reductions in by design** rather than applying them at
-inference (FLOWER, SmolVLA, TurboVLA). Whether removing layers helps therefore
-depends on what the architecture already leaves out, not only on an
-inference-time setting.
+The simplest way to spend less is to degrade the input or to skip feedback
+unconditionally. Both fail in ways that motivate the safeguards the candidates
+carry. On the spatial axis, foveation descends from Schwartz's log-polar
+mapping, taken up in robot vision to cut data while preserving central
+resolution (Traver and Bernardino) and applied to VLAs by gaze-conditioned
+policies (Gaze-Reg, Look Focus Act). Every encoder we run splits the image
+into a uniform grid, so at a fixed output resolution a pixel-space edit leaves
+the visual token count and the model computation unchanged. Foveation before
+the encoder therefore tests whether the policy survives losing its periphery,
+not whether it runs faster. Methods that foveate inside the encoder do shed
+tokens, but they give up pretrained weights fitted to a uniform grid (Look
+Focus Act). On the temporal axis, executing one action over several control
+steps reduces model calls in proportion. But it acts open loop through
+contacts. FlashVLA reports a 0.7-point average success decrease with
+training-free action reuse, and SpecPrune-VLA separates coarse movement from
+precision-sensitive phases for the same reason. We run fixed foveation and
+fixed repeat as controls that establish why the candidate methods need gates.
 
-On the visual axis, two papers report that methods developed for VLMs (FastV,
-SparseVLM, ToMe) transfer poorly to VLAs. VLA-Cache attributes this poor transfer to
-VLAs' short action sequences and measures FastV leaving FLOPs unchanged
-while latency rises. VLA-Pruner reproduces the degradation on another setting.
+### The recent baseline
 
-Our own visual intervention, foveation, comes from a different lineage. It
-descends from Schwartz's log-polar mapping, taken up in robot vision to cut
-data while preserving central resolution (Traver & Bernardino) and applied to
-VLAs by gaze-conditioned policies (Gaze-Reg, Look-Focus-Act). **The encoders we run differ in many
-ways**, but each splits the image into a **uniform** grid, so empty
-background gets the same budget as the region where the gripper meets the
-object. Methods that foveate *inside* the encoder change that grid, giving
-distant patches a coarser resolution and so shedding tokens, but they give up
-the pretrained weights, which were fitted to a uniform grid (Look-Focus-Act).
-Our foveation stays *before* the encoder, which is what makes it comparable
-across backbones, and that is why we include it. Editing pixels therefore
-leaves the backbone's token count unchanged, and that is the constraint a
-training-free study works under.
+VLA-Cache reuses the key-value computation of visually static patches while
+recomputing dynamic and task-relevant ones, the latter selected by
+language-model attention, so history is retained unlike under token dropping.
+On base OpenVLA across LIBERO it reports average success of 74.7% against
+75.0% dense at 31.8 ms against 51.9 ms, a speed result with nearly maintained
+rather than improved success. That makes it the anchor against which we
+measure candidates, not a first-party contribution. It also explains a pattern
+the token-pruning literature reports. Methods developed for vision-language
+models (FastV, SparseVLM, ToMe) transfer poorly to VLAs, which VLA-Cache
+attributes to VLAs' short action sequences and VLA-Pruner reproduces on
+another setting. Whatever is removed from the visual stream must be removed by
+a signal that knows what the robot is doing.
+
+### Conditional candidates
+
+Three families remove computation only where a signal says it is safe.
+
+**Depth.** Decoder-layer redundancy is well established in language models.
+But the recipes built on it disagree on which layers may go. ShortGPT ranks
+every layer by Block Influence, the criterion we adopt, and constrains nothing
+further, while others keep the final layer and remove a contiguous deep block
+(Gromov et al.). EfficientVLA carries the unconstrained form into VLAs without
+training, and MoLe-VLA needs a learned router and distillation, which places
+it outside a training-free study. Several recent compact VLAs build such
+reductions in by design rather than applying them at inference (FLOWER,
+SmolVLA, TurboVLA), so whether removing layers helps depends on what the
+architecture already leaves out. We add protected regions and a non-adjacency
+rule to the ShortGPT score and calibrate on a disjoint split.
+
+**Guarded reuse.** Where fixed repeat skips feedback blindly, guarded reuse
+skips a model call only when the current image and the recent trajectory are
+both stable. Recent work ties reuse to action stability (FlashVLA) or to the
+manipulation phase (SpecPrune-VLA) on the same reasoning.
+
+**Temporal fusion with a shared cache mask.** TTF-VLA fuses visual tokens
+across frames without training and raises base OpenVLA on LIBERO by four
+points at under two percent overhead, a denoising result rather than a speed
+one. VLA-InfoEntropy budgets cache reuse by image entropy, and VLA-IAP prunes
+tokens by interaction alignment. A concurrent anonymous submission also
+coordinates token reuse across modalities, so a shared mask by itself is not
+new. What we test is one mask that drives both denoising and cache reuse, with
+contact-aware fallbacks, against optimized dense inference on paired episodes.
 
 ### How these claims are evaluated
 
-The field reports results on SimplerEnv and LIBERO, and recent work addresses the
-infrastructure around them. The vla-eval harness unifies fourteen benchmarks
-and documents evaluation pitfalls earlier work had left unrecorded, and StarVLA
-describes the field as fragmented across incompatible codebases and protocols.
-
-What infrastructure cannot supply is **the comparison itself.** Papers using
-several backbones change the benchmark at the same time (VLA-Cache,
-SpecPrune-VLA, VLA-IAP). Those with both factors present leave the crossing cell
-empty (Gaze-Reg, VLA-Pruner). The tables we cite report mean success rates,
-not matched-episode outcomes. Whether an
-intervention keeps its *direction* when the backbone or the benchmark changes
-therefore cannot be read off these tables, nor can the per-task disagreements
-they average over.
-
----
-
-We do not cover quantisation or KV-cache compression. Neither changes when the
-policy runs, what it is shown, or how much network each call uses. We also
-exclude learned early exit, which is not training-free. Isolating the effect of choices that appear only in source code
-is an established practice (the image-classification and the
-inference-time-computation *bag of tricks* studies). We measure the same
-interventions over a backbone × benchmark grid that varies both factors
-independently, and we test each on matched episodes rather than aggregate rates. The direction of
-an effect, and not only its size, then becomes something the evidence can decide.
+The field reports results on SimplerEnv and LIBERO, and recent work addresses
+the infrastructure around them. The vla-eval harness unifies fourteen
+benchmarks and documents evaluation pitfalls earlier work had left unrecorded,
+and StarVLA describes the field as fragmented across incompatible codebases.
+But infrastructure cannot supply the comparison itself. Papers using several
+backbones change the benchmark at the same time (VLA-Cache, SpecPrune-VLA,
+VLA-IAP). Those with both factors present leave the crossing cell empty
+(Gaze-Reg, VLA-Pruner). The tables we cite report mean success rates rather
+than matched-episode outcomes, and a speedup measured against eager attention
+rather than fused attention overstates the gain. We exclude quantisation,
+which changes none of the three resources, and learned early exit, which
+needs training. Isolating the effect of choices that appear only in source
+code is an established practice (Bag of Tricks for CNNs, Bag of Tricks for
+LLMs). We evaluate the six families under one protocol, on matched episodes
+against optimized dense inference, so that a candidate is called positive only
+when its speed and its success both clear a preregistered gate.
 
 ---
 
-## Notes for the co-authors (not part of the section)
+## Notes for the co-authors
 
-**Structure copied from *Bag of Tricks*, measured:** one roadmap sentence,
-three bold run-in paragraphs, each ending on our position rather than on a
-summary, and a closing paragraph that states what we do differently. No tables
-— theirs is in the Introduction, and so is ours.
+**What changed from the three-method version (2026-09-03).**
 
-That closing paragraph used to open on *"Unique to this paper."* Dropped
-2026-08-23: it is a priority claim over the whole literature, and one
-counterexample kills it. The three sentences just above it already name three
-specific gaps with citations, so the close reads stronger without it. Same
-rule as claim 12 in `RelatedWork_Sources.md`, which was careful to say *"the
-tables we cite"* rather than *"no prior work."*
+- Order now matches III.B: controls, then the VLA-Cache baseline, then the
+  three candidates. VLA-Cache moved ahead of the candidates because the
+  temporal-fusion cache path is VLA-Cache-compatible and reads better once
+  VLA-Cache has been introduced.
+- Six families are covered, each with its lineage and its role. Foveation and
+  unconditional repeat are named as controls in the text, VLA-Cache as the
+  baseline, depth / guarded reuse / temporal fusion as candidates.
+- Four claims were corrected against `docs/literature_review.md`:
+  VLA-IAP is token pruning, not cache reuse (was lumped with VLA-InfoEntropy);
+  SpecPrune-VLA "distinguishes" phases, it does not "avoid the decrease";
+  VLA-Pruner "reproduces" the poor transfer, it does not "attribute" it;
+  "Many also compare against an eager baseline" was an unverified count and
+  is now a statement about measurement, not about papers.
+- Numbers added, all from the mentor's audit: VLA-Cache 74.7 vs 75.0, 31.8 vs
+  51.9 ms; FlashVLA 0.7-point decrease; TTF-VLA four points at under 2%.
+- Dropped from v1: the "KV-cache compression" exclusion (VLA-Cache IS KV
+  reuse, so that sentence would now contradict the section) and the
+  OpenVLA-OFT citation in the chunking lineage (covered by Preliminaries).
 
-**Punctuation.** Both `.tex` files use no em-dashes, no semicolons and no
-prose colons. That was measured against the 23 papers we hold: prose semicolons
-run at a median of **1.0 per 1000 words** and **11 of 23 use none**, so zero is
-normal. Colons are a different story — median **5.2 per 1000**, and only 2 of
-23 use none — so dropping them is a house choice rather than a convention, and
-restoring three or four would be unremarkable. (First count was wrong: it
-included author-year citation separators like `Ma et al., 2024; Firoozi et al.,
-2025`, which inflated semicolons to a median of 8.3. IEEEtran numeric style has
-none of those.)
+**Cut candidates for the polish to 0.75 page, cheapest first.**
 
-**Length — 691 words of prose, which is 1.95x the model paper's 350.** That
-ratio is larger than this file used to claim, because the 429 it compared
-against was a miscount (`RelatedWork_Plan.md` §0). The 2026-08-22 clause on
-foveated tokenization added 45 of those words. The page budget still rests
-on an *unverified* rule of thumb (≈500–550 words per IEEEtran column), so
-**compile one real column before cutting anything.** Only if that overruns does
-the following apply.
+1. The compact-VLA sentence (FLOWER, SmolVLA, TurboVLA), about 30 words.
+   Keep it if the final Table I shows depth pruning hurting the small
+   backbones, because it then explains the pattern.
+2. "It also explains a pattern the token-pruning literature reports." plus
+   the FastV / SparseVLM / ToMe sentence, about 40 words. Cut if the paper
+   does not run any VLM token-pruning method.
+3. The vla-eval / StarVLA infrastructure sentence, about 35 words.
+4. The quantisation / early-exit exclusion sentence, about 20 words.
 
-Paragraph 2 is 260 words against *Bag of Tricks*' 80 for the equivalent
-paragraph, because it carries four topics: the layer-rule disagreement, the
-VLM→VLA transfer failure, foveation's lineage and rationale, and the compact
-VLAs. Everything that could be compressed without losing an argument already
-has been. (Earlier notes here said 586, then 589, then 614. The first two were
-miscounts; 614 counts citation markers as tokens and 616 is the prose count
-used for the comparison above. `check_reading_copies.py` asserts the header
-figure so it cannot drift again.)
-
-If a real compile says it must shrink, the two candidates and their costs:
-
-| cut | saves | what it costs |
-|---|---|---|
-| the compact-VLA clause | ~25 | the only in-paper motivation for the five-model expansion the mentor is running |
-| the Schwartz/Traver lineage | ~24 | the "why this axis" that was specifically asked for; the uniform-grid argument survives, the provenance does not |
-
-Neither is a free cut. Prefer taking the overrun out of a section with slack.
-
-**Three things deliberately left out, and one that changed.**
-
-1. **The per-task split** (`RelatedWork.md` §2.5 of the long version) gets one
-   clause, not a paragraph. It is a finding, its evidence is in
-   `PerTaskRows.md`, and its statement is in Results. (Table I was dropped on
-   2026-08-22, see `tableI.tex`.)
-2. ~~**StarVLA** is not cited — we have a search snippet, not the PDF.~~
-   **Now cited.** The PDF was read 2026-08-22; the snippet we had been
-   carrying turned out not to appear in the paper, so the caution was right.
-3. **The ten training-free papers** in `Survey_2026-08.md` §4 are not cited.
-   Abstract-level only.
-4. **The grid's size** belongs in **Setup**, not here. Related Work claims a
-   *method* — crossing both axes plus matched episodes — not a coverage
-   record, because vla-eval already publishes 14 benchmarks × 6 model servers.
-   The closing sentence said "a **complete** backbone × benchmark grid" until
-   2026-08-22, which contradicted the Introduction's "five of the six cells"
-   and would have broken outright on the expanded grid, since depth pruning
-   applies to two of the five new models. It now claims the crossing.
-
-**Two sentences a reviewer will test.** The matched-episode claim is scoped to
-"the tables we cite," not to the field — keep it that way. And the
-crossing-cell claim was already too strong once, which is why
-`Survey_2026-08.md` exists; re-run that sweep close to submission.
+**Four citation keys still need `.bib` entries:** `flashvla` (2505.21200),
+`ttfvla` (2508.19257, AAAI 2026), `vlainfoentropy` (2604.05323),
+`crossmodalreuse` (anonymous, OpenReview R6d86jMO74).
