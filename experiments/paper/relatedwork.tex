@@ -116,10 +116,10 @@ language model attends to, so history is retained unlike under token
 dropping~\cite{vlacache}. On base OpenVLA across LIBERO it reports average
 success of 74.7\% against 75.0\% dense at 31.8~ms against 51.9~ms, a speed
 result with nearly maintained rather than improved success. That makes it the
-anchor against which we measure candidates, not a contribution of ours. It also
-explains a pattern reported for token pruning. Methods developed for
-vision-language models~\cite{fastv, sparsevlm, tome} transfer poorly to VLAs,
-which VLA-Cache attributes to VLAs' short action sequences~\cite{vlacache} and
+anchor against which we measure candidates, not a contribution of ours. The
+same paper accounts for a pattern reported for token pruning. Methods developed
+for vision-language models~\cite{fastv, sparsevlm, tome} transfer poorly to
+VLAs, which it attributes to VLAs' short action sequences~\cite{vlacache} and
 VLA-Pruner reproduces on another setting~\cite{vlapruner}. Whatever is removed
 from the visual stream must be removed by a signal that knows what the robot is
 doing.
@@ -135,8 +135,8 @@ and MoLe-VLA needs a learned router and distillation~\cite{molevla}, which
 places it outside a training-free study. Several recent compact VLAs build such
 reductions in by design rather than applying them at inference~\cite{flower,
 smolvla, turbovla}, so whether removing layers helps depends on what the
-architecture already leaves out. We add protected regions to the ShortGPT
-score, forbid adjacent removals, and calibrate on a disjoint split.
+architecture already leaves out. We add protected regions and a ban on adjacent
+removals to the ShortGPT selector, and calibrate on a disjoint split.
 \emph{Guarded reuse.} Where fixed repeat skips feedback blindly, our guarded
 reuse skips a model call only when the current image and the recent trajectory
 are both stable, and falls back to dense inference the moment either gate
@@ -158,22 +158,21 @@ for contact, and test it against optimized dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
-addresses the infrastructure around them. The vla-eval harness unifies
-fourteen benchmarks and documents evaluation pitfalls earlier work had left
-unrecorded~\cite{vlaeval}, and StarVLA describes the field as fragmented
-across incompatible codebases~\cite{starvla}. But infrastructure cannot supply
-the comparison itself. Papers that use several backbones also change the
+addresses the infrastructure around them. The vla-eval harness unifies fourteen
+benchmarks and documents evaluation pitfalls earlier work had left
+unrecorded~\cite{vlaeval}, and StarVLA describes the field as fragmented across
+incompatible codebases~\cite{starvla}. But infrastructure cannot supply the
+comparison itself. Papers that use several backbones also change the
 benchmark~\cite{vlacache, specprune, vlaiap}, and those with both factors
 present do not report the crossing cell~\cite{gazereg, vlapruner}, so the
 effect of a backbone cannot be separated from the effect of a benchmark. The
-tables we cite report mean success rates, which cannot say on which episodes
-an intervention helped, and speedups against dense baselines that differ in
-attention backend, which cannot be compared across papers. We hold both fixed.
-We exclude quantisation, which changes none of the three
-resources, and learned early exit, which needs training. Isolating the effect
-of choices that appear only in source code is an established
-practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six
-families under one protocol across six backbones and two benchmarks, on
-matched episodes against optimized dense inference, so that a candidate is
-called positive only when its speed and its success both clear a
-preregistered gate.
+tables we cite report mean success rates, which cannot say on which episodes an
+intervention helped. A speedup also depends on the dense baseline it is
+measured against, and an eager attention baseline inflates it relative to a
+fused one. We hold both fixed. We exclude quantization, which changes none of
+the three resources, and learned early exit, which needs training. Isolating
+the effect of choices that appear only in source code is an established
+practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six families
+under one protocol across six backbones and two benchmarks, on matched episodes
+against optimized dense inference, so that a candidate is called positive only
+when its speed and its success both clear a preregistered gate.

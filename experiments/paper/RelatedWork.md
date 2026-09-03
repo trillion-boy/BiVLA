@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1056 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 250 words
+1069 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 270 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -61,9 +61,9 @@ is retained unlike under token dropping. On base OpenVLA across LIBERO it
 reports average success of 74.7% against 75.0% dense at 31.8 ms against 51.9
 ms, a speed result with nearly maintained rather than improved success. That
 makes it the anchor against which we measure candidates, not a contribution of
-ours. It also explains a pattern reported for token pruning. Methods developed
-for vision-language models (FastV, SparseVLM, ToMe) transfer poorly to VLAs,
-which VLA-Cache attributes to VLAs' short action sequences and VLA-Pruner
+ours. The same paper accounts for a pattern reported for token pruning. Methods
+developed for vision-language models (FastV, SparseVLM, ToMe) transfer poorly
+to VLAs, which it attributes to VLAs' short action sequences and VLA-Pruner
 reproduces on another setting. Whatever is removed from the visual stream must
 be removed by a signal that knows what the robot is doing.
 
@@ -80,8 +80,8 @@ without training, and MoLe-VLA needs a learned router and distillation, which
 places it outside a training-free study. Several recent compact VLAs build such
 reductions in by design rather than applying them at inference (FLOWER,
 SmolVLA, TurboVLA), so whether removing layers helps depends on what the
-architecture already leaves out. We add protected regions to the ShortGPT
-score, forbid adjacent removals, and calibrate on a disjoint split.
+architecture already leaves out. We add protected regions and a ban on adjacent
+removals to the ShortGPT selector, and calibrate on a disjoint split.
 
 **Guarded reuse.** Where fixed repeat skips feedback blindly, our guarded reuse
 skips a model call only when the current image and the recent trajectory are
@@ -109,22 +109,21 @@ The field reports results on SimplerEnv and LIBERO, and recent work addresses
 the infrastructure around them. The vla-eval harness unifies fourteen
 benchmarks and documents evaluation pitfalls earlier work had left unrecorded,
 and StarVLA describes the field as fragmented across incompatible codebases.
-But infrastructure cannot supply the comparison itself. Papers that use
-several backbones also change the benchmark (VLA-Cache, SpecPrune-VLA,
-VLA-IAP), and those with both factors present do not report the crossing cell
-(Gaze-Reg, VLA-Pruner), so the effect of a backbone cannot be separated from
-the effect of a benchmark. The tables we cite report mean success rates, which
-cannot say on which episodes an intervention helped, and speedups against
-dense baselines that differ in attention backend, which cannot be compared
-across papers. We hold both fixed. We exclude quantisation,
-which changes none of the three resources, and learned early exit, which
-needs training. Isolating the effect of choices that appear only in source
-code is an established practice (Bag of Tricks for CNNs, Bag of Tricks for
-LLMs). We evaluate the six families under one protocol across six backbones
-and two benchmarks, on matched episodes against optimized dense inference, so
-that a candidate is called positive only when its speed and its success both
-clear a preregistered gate.
-
+But infrastructure cannot supply the comparison itself. Papers that use several
+backbones also change the benchmark (VLA-Cache, SpecPrune-VLA, VLA-IAP), and
+those with both factors present do not report the crossing cell (Gaze-Reg,
+VLA-Pruner), so the effect of a backbone cannot be separated from the effect of
+a benchmark. The tables we cite report mean success rates, which cannot say on
+which episodes an intervention helped. A speedup also depends on the dense
+baseline it is measured against, and an eager attention baseline inflates it
+relative to a fused one. We hold both fixed. We exclude quantization, which
+changes none of the three resources, and learned early exit, which needs
+training. Isolating the effect of choices that appear only in source code is an
+established practice (Bag of Tricks for CNNs, Bag of Tricks for LLMs). We
+evaluate the six families under one protocol across six backbones and two
+benchmarks, on matched episodes against optimized dense inference, so that a
+candidate is called positive only when its speed and its success both clear a
+preregistered gate.
 ---
 
 ## Notes for the co-authors
