@@ -24,11 +24,18 @@
 % Citations: all keys used below are in main.bib. flashvla, ttfvla and
 % vlainfoentropy were added 2026-09-03 from the PDFs, not from abstracts.
 % The anonymous OpenReview submission R6d86jMO74 that docs/literature_review.md
-% raises is deliberately NOT cited. It is non-archival and under review with no
-% public version, so a reviewer cannot check it. Its point, that a reuse mask is
-% not novel on its own, is carried by ttfvla and vlainfoentropy instead, and the
-% concurrent-work clause stays in prose with no reference. See
-% RelatedWork_Sources.md row 31.
+% raises is deliberately NOT cited. It is non-archival and under review with
+% no public version, so a reviewer cannot check it. Its weak point, that a
+% reuse mask is not novel on its own, is carried by ttfvla and vlainfoentropy
+% instead. Its strong point, that someone already shares one mask across both
+% paths, has no citable source and is not stated. See RelatedWork_Sources.md
+% row 31.
+%
+% Ownership: three of the six are first-party recipes (calibrated depth,
+% guarded reuse, shared-mask fusion), per docs/literature_review.md line 22.
+% The text says "we add", "our guarded reuse", "we build" for those, and
+% "baseline" / "control" for the other three. Novelty of the mechanisms is
+% not claimed anywhere; the contribution is the protocol.
 %
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
@@ -99,18 +106,20 @@ such reductions in by design rather than applying them at
 inference~\cite{flower, smolvla, turbovla}, so whether removing layers helps
 depends on what the architecture already leaves out. We add protected regions
 and a non-adjacency rule to the ShortGPT score and calibrate on a disjoint
-split. \emph{Guarded reuse.} Where fixed repeat skips feedback blindly,
+split. \emph{Guarded reuse.} Where fixed repeat skips feedback blindly, our
 guarded reuse skips a model call only when the current image and the recent
-trajectory are both stable. Recent work ties reuse to action similarity and
-visual-token stability~\cite{flashvla} or to the manipulation
-phase~\cite{specprune} on the same reasoning. \emph{Temporal fusion with a shared cache mask.} TTF-VLA fuses
+trajectory are both stable, and falls back to dense inference the moment either
+gate fails. Recent work ties reuse to action similarity and visual-token
+stability~\cite{flashvla} or to the manipulation phase~\cite{specprune} on the
+same reasoning. \emph{Temporal fusion with a shared cache mask.} TTF-VLA fuses
 visual tokens across frames without training and raises base OpenVLA on LIBERO
 by four points at under two percent overhead, a denoising result rather than a
 speed one~\cite{ttfvla}. VLA-InfoEntropy selects which tokens to reuse by
-image and attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
-alignment~\cite{vlaiap}. Selecting patches by a computed signal is therefore
-not new. What we test is whether one mask can drive both the denoising and the
-cache path, with contact-aware fallbacks, against optimized dense inference on
+image and attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens
+by interaction alignment~\cite{vlaiap}. Selecting patches by a computed signal
+is therefore
+not new. We build one mask that drives both the denoising and the cache path,
+with contact-aware fallbacks, and test it against optimized dense inference on
 paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on

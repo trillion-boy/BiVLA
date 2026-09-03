@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-936 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+948 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 130 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -86,11 +86,12 @@ SmolVLA, TurboVLA), so whether removing layers helps depends on what the
 architecture already leaves out. We add protected regions and a non-adjacency
 rule to the ShortGPT score and calibrate on a disjoint split.
 
-**Guarded reuse.** Where fixed repeat skips feedback blindly, guarded reuse
-skips a model call only when the current image and the recent trajectory are
-both stable. Recent work ties reuse to action similarity and visual-token stability
-(FlashVLA) or to the manipulation phase (SpecPrune-VLA) on the same
-reasoning.
+**Guarded reuse.** Where fixed repeat skips feedback blindly, our guarded
+reuse skips a model call only when the current image and the recent
+trajectory are both stable, and falls back to dense inference the moment
+either gate fails. Recent work ties reuse to action similarity and
+visual-token stability (FlashVLA) or to the manipulation phase (SpecPrune-VLA)
+on the same reasoning.
 
 **Temporal fusion with a shared cache mask.** TTF-VLA fuses visual tokens
 across frames without training and raises base OpenVLA on LIBERO by four
@@ -98,9 +99,9 @@ points at under two percent overhead, a denoising result rather than a speed
 one. VLA-InfoEntropy selects which tokens to reuse by image and attention
 entropy, and VLA-IAP prunes
 tokens by interaction alignment. Selecting patches by a computed signal is
-therefore not new. What we test is whether one mask can drive both the
-denoising and the cache path, with contact-aware fallbacks, against optimized
-dense inference on paired episodes.
+therefore not new. We build one mask that drives both the denoising and the
+cache path, with contact-aware fallbacks, and test it against optimized dense
+inference on paired episodes.
 
 ### How these claims are evaluated
 
