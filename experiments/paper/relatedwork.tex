@@ -99,13 +99,13 @@ depends on what the architecture already leaves out. We add protected regions
 and a non-adjacency rule to the ShortGPT score and calibrate on a disjoint
 split. \emph{Guarded reuse.} Where fixed repeat skips feedback blindly,
 guarded reuse skips a model call only when the current image and the recent
-trajectory are both stable. Recent work ties reuse to action
-stability~\cite{flashvla} or to the manipulation phase~\cite{specprune} on the
-same reasoning. \emph{Temporal fusion with a shared cache mask.} TTF-VLA fuses
+trajectory are both stable. Recent work ties reuse to action similarity and
+visual-token stability~\cite{flashvla} or to the manipulation
+phase~\cite{specprune} on the same reasoning. \emph{Temporal fusion with a shared cache mask.} TTF-VLA fuses
 visual tokens across frames without training and raises base OpenVLA on LIBERO
 by four points at under two percent overhead, a denoising result rather than a
-speed one~\cite{ttfvla}. VLA-InfoEntropy budgets cache reuse by image
-entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
+speed one~\cite{ttfvla}. VLA-InfoEntropy selects which tokens to reuse by
+image and attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
 alignment~\cite{vlaiap}. A concurrent anonymous submission also coordinates
 token reuse across modalities~\cite{crossmodalreuse}, so a shared mask by
 itself is not new. What we test is one mask that drives both denoising and
