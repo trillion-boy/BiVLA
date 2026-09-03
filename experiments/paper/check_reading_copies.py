@@ -101,7 +101,7 @@ def main() -> int:
 
         # the .md header should quote the current word count
         wc = measure(tex_path.read_text())
-        claimed = re.findall(r"(\d{3}) words of prose", md_raw)
+        claimed = re.findall(r"(\d{3,4}) words of prose", md_raw)
         if claimed and abs(int(claimed[0]) - wc) > 5:
             failures.append(
                 f"{md_name} says {claimed[0]} rendered words, {tex_name} measures ~{wc}"
