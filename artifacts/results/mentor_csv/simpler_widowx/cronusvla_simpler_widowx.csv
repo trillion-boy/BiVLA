@@ -1,0 +1,15 @@
+model_name,environment,checkpoint_model_id,configuration,tasks,episodes,successes,success_rate_pct,avg_steps,avg_policy_calls,avg_reuses,policy_median_latency_ms,policy_p95_latency_ms,cycle_median_latency_ms,cycle_p95_latency_ms,avg_episode_time_s,control_frequency_hz,action_repeat,depth_layers,selected_depth_layers,fusion_keyframe_interval,fusion_max_reuse_fraction,median_reusable_visual_tokens
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,original,4,200,68,34,50.555,50.555,0,126.3,130.997,126.3,130.997,6.362,7.92,1,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,fixed_foveation_keep20,4,200,73,36.5,48.92,48.92,0,145.943,152.476,145.943,152.476,7.138,6.828,1,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,fixed_foveation_keep50,4,200,68,34,50.44,50.44,0,147.162,152.31,147.162,152.31,7.412,6.786,1,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,action_repeat2,4,200,7,3.5,73.395,36.71,36.685,162.782,183.87,81.45,91.987,6.217,11.986,2,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,action_repeat4,4,200,0,0,75,18.75,56.25,239.703,288.844,59.926,72.211,4.788,16.084,4,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,depth_pruning1,4,200,70,35,52.17,52.17,0,123.056,126.719,123.056,126.719,6.425,8.121,1,1,1,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,depth_pruning2,4,200,60,30,59.315,59.315,0,118.831,127.893,118.831,127.893,7.125,8.371,1,2,"1,3",,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,depth_pruning4,4,200,0,0,75,75,0,110.279,112.247,110.279,112.247,8.277,9.067,1,4,"0,2,4,5",,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,guarded_reuse_strict,4,200,72,36,49.735,49.71,0.025,125.718,130.256,125.718,130.256,6.24,7.945,1,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,guarded_reuse_moderate,4,200,72,36,49.735,49.71,0.025,123.876,129.172,123.876,129.021,6.164,8.033,1,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,guarded_reuse_aggressive,4,200,72,36,49.735,49.71,0.025,125.873,129.243,125.873,128.971,6.238,7.954,1,0,,,,0
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,temporal_fusion_motion_entropy,4,200,67,33.5,51.205,51.205,0,126.666,131.341,126.666,131.341,6.499,7.859,1,0,,1,0.5,110.542
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,temporal_fusion_task_aware,4,200,67,33.5,51.205,51.205,0,127.525,132.511,127.525,132.511,6.52,7.827,1,0,,1,0.5,110.542
+cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,temporal_fusion_conservative_adaptive,4,200,67,33.5,51.205,51.205,0,127.319,134.073,127.319,134.073,6.539,7.795,1,0,,1,0.5,110.542

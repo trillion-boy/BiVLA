@@ -1,0 +1,15 @@
+model_name,environment,checkpoint_model_id,configuration,tasks,episodes,successes,success_rate_pct,avg_steps,avg_policy_calls,avg_reuses,policy_median_latency_ms,policy_p95_latency_ms,cycle_median_latency_ms,cycle_p95_latency_ms,avg_episode_time_s,control_frequency_hz,action_repeat,depth_layers,selected_depth_layers,fusion_keyframe_interval,fusion_max_reuse_fraction,median_reusable_visual_tokens
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,original,4,200,72,36.0,63.84,63.84,0.0,97.08,100.1,104.86,107.91,9.54,6.69,2,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,action_repeat2,4,200,60,30.0,66.94,33.545,33.395,97.14,99.33,103.64,106.02,6.64,10.09,2,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,action_repeat4,4,200,58,29.0,66.915,16.83,50.085,98.04,99.07,7.74,106.42,4.96,13.5,4,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,depth_pruning1,4,200,37,18.5,67.435,67.435,0.0,95.72,96.96,103.5,104.75,9.84,6.85,2,1,13,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,depth_pruning2,4,200,0,0.0,75.0,75.0,0.0,91.64,92.35,99.37,100.18,10.34,7.25,2,2,11;13,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,depth_pruning4,4,200,0,0.0,75.0,75.0,0.0,85.29,86.59,93.11,94.51,9.84,7.62,2,4,7;9;11;13,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,fixed_foveation_keep20,4,200,56,28.0,63.365,63.365,0.0,99.38,123.0,113.69,137.0,10.15,6.24,2,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,fixed_foveation_keep50,4,200,70,35.0,62.91,62.91,0.0,98.07,100.07,112.7,114.81,9.84,6.39,2,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,guarded_reuse_aggressive,4,200,67,33.5,65.37,62.73,2.64,97.72,98.68,106.11,107.28,9.47,6.9,2,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,guarded_reuse_moderate,4,200,72,36.0,64.04,61.325,2.715,99.18,100.49,107.56,109.0,9.37,6.83,2,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,guarded_reuse_strict,4,200,77,38.5,62.65,60.69,1.96,97.2,98.65,105.57,107.2,9.12,6.87,2,1,,,,0.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,temporal_fusion_conservative_adaptive,4,200,77,38.5,63.09,63.09,0.0,97.66,98.41,105.8,106.82,9.38,6.73,2,1,,2,0.25,64.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,temporal_fusion_motion_entropy,4,200,78,39.0,61.165,61.165,0.0,98.57,99.86,106.97,108.43,9.17,6.67,2,1,,,,107.0
+minivla_simplerenv,simpler_widowx,prism-qwen25-extra-dinosiglip-224px+0_5b,temporal_fusion_task_aware,4,200,71,35.5,63.64,63.64,0.0,110.27,111.64,118.64,120.22,10.31,6.17,2,1,,3,0.5,68.0
