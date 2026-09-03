@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-942 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+936 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 130 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -97,11 +97,10 @@ across frames without training and raises base OpenVLA on LIBERO by four
 points at under two percent overhead, a denoising result rather than a speed
 one. VLA-InfoEntropy selects which tokens to reuse by image and attention
 entropy, and VLA-IAP prunes
-tokens by interaction alignment. Selecting patches for reuse is therefore not
-itself new, and concurrent work is converging on coordinated reuse across
-modalities. What we test is one mask that drives both denoising and cache
-reuse, with contact-aware fallbacks, against optimized dense inference on
-paired episodes.
+tokens by interaction alignment. Selecting patches by a computed signal is
+therefore not new. What we test is whether one mask can drive both the
+denoising and the cache path, with contact-aware fallbacks, against optimized
+dense inference on paired episodes.
 
 ### How these claims are evaluated
 

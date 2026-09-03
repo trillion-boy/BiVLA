@@ -108,10 +108,10 @@ visual tokens across frames without training and raises base OpenVLA on LIBERO
 by four points at under two percent overhead, a denoising result rather than a
 speed one~\cite{ttfvla}. VLA-InfoEntropy selects which tokens to reuse by
 image and attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
-alignment~\cite{vlaiap}. Selecting patches for reuse is therefore not itself
-new, and concurrent work is converging on coordinated reuse across modalities.
-What we test is one mask that drives both denoising and cache reuse, with
-contact-aware fallbacks, against optimized dense inference on paired episodes.
+alignment~\cite{vlaiap}. Selecting patches by a computed signal is therefore
+not new. What we test is whether one mask can drive both the denoising and the
+cache path, with contact-aware fallbacks, against optimized dense inference on
+paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
