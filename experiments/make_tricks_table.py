@@ -1,29 +1,35 @@
 #!/usr/bin/env python3
-"""Table I for the six-family (bag of tricks) paper.
+"""Table I for the six-family (bag of tricks) paper, in the tablemain.tex
+layout: Benchmark > Backbone > Condition down the page, four absolute
+columns, no paired changes.
 
 Reads the mentor's two summary.csv files under artifacts/results/mentor_csv/
-and writes paper/tabletricks.tex. Layout follows the draft table the team
-agreed on 2026-09-03: backbones down the page, one row per intervention
-family, WidowX and Google Robot / Fractal side by side, each with success,
-per-step latency and mean episode length, and the change against the
-original policy of the same backbone and environment in parentheses.
+and writes paper/tabletricks.tex.
 
 summary.csv is the mentor's selection: for every family the variant with the
-highest success rate in that environment. The variants (keep20 / keep50,
-repeat 2 / 4, depth 1 / 2 / 4, strict / moderate / aggressive, three fusion
-settings) are compared in the later per-family tables, so this table names
-the chosen variant only in the .tex comments and in the footnote line.
+highest success rate in that environment. The condition label names the
+chosen variant ("Depth prune 2", "Foveation keep 50%"), so the reader sees
+which setting a row is without a footnote. The per-setting sweeps are the
+later per-family tables.
 
-Latency. The CSV column cycle_median_latency_ms is NOT used. Its definition
-differs between harnesses: for OpenVLA, MiniVLA and CronusVLA a cycle is one
-environment step, for CogACT, SpatialVLA and UniVLA it is one policy call
-including the environment steps that call drives. Under action repeat the
-first family falls and the second rises for the same intervention. The one
-quantity defined the same way in every harness is wall-clock time per
-environment step, avg_episode_time_s * 1000 / avg_steps, and that is what
-the "Step time" column reports.
+Columns, all absolute:
 
-Output: paper/tabletricks.tex  (needs booktabs, multirow, xcolor)
+  Success (%)   success_rate_pct
+  Latency (ms)  policy_median_latency_ms. Model time PER CALL, so it
+                drops with depth pruning but not with action repeat, which
+                changes how often the model is called, not what one call costs.
+  Model s/ep    avg_policy_calls * per-call latency. Model time over a whole
+                EPISODE, so it drops with action repeat and guarded reuse, and
+                rises when a broken intervention makes episodes run longer.
+  Avg. steps    avg_steps, environment steps per episode.
+
+Not used: cycle_median_latency_ms. Its definition differs between harnesses
+(per environment step for OpenVLA, MiniVLA, CronusVLA; per policy call for
+CogACT, SpatialVLA, UniVLA), so it moves in opposite directions under action
+repeat. avg_episode_time_s / avg_steps is the consistent wall-clock per step
+and is available from the same CSVs if a wall-clock column is wanted.
+
+Output: paper/tabletricks.tex  (needs booktabs, multirow, graphicx)
 """
 import csv
 import os
@@ -34,50 +40,49 @@ ROOT = os.path.dirname(HERE)
 CSV_DIR = os.path.join(ROOT, "artifacts", "results", "mentor_csv")
 OUT = os.path.join(HERE, "paper", "tabletricks.tex")
 
+# (csv folder, label in the rotated first column)
 ENVS = [
-    ("simpler_widowx", "WidowX"),
-    ("google_robot_fractal", "Google Fractal"),
+    ("simpler_widowx", "Bridge"),
+    ("google_robot_fractal", "Fractal"),
 ]
 
-# Display name, parameter count, and the substring that identifies the
-# backbone in the CSV model_name column. Order is the row order of the table,
-# largest backbone first. Parameter counts are the full VLA (VLM plus action
-# head) as listed by each release; CronusVLA and MiniVLA are the two whose
-# checkpoint names carry the LLM size (0.5B) instead, so confirm those two
-# with the mentor before camera-ready.
+# Row order within a benchmark, largest backbone first. The substring
+# identifies the backbone in the CSV model_name column.
 BACKBONES = [
-    ("UniVLA",     "8.5B", "univla"),
-    ("CogACT",     "7.6B", "cogact"),
-    ("OpenVLA",    "7.5B", "openvla"),
-    ("SpatialVLA", "4.0B", "spatialvla"),
-    ("CronusVLA",  "1.5B", "cronusvla"),
-    ("MiniVLA",    "1.4B", "minivla"),
+    ("UniVLA", "univla"),
+    ("CogACT", "cogact"),
+    ("OpenVLA", "openvla"),
+    ("SpatialVLA", "spatialvla"),
+    ("CronusVLA", "cronusvla"),
+    ("MiniVLA", "minivla"),
 ]
 
-# Family label in the table -> prefix of the configuration name in the CSV.
+# Family order within a backbone, and the CSV configuration prefix.
 FAMILIES = [
-    ("Original",        "original"),
-    ("Foveation",       "fixed_foveation"),
-    ("Action repeat",   "action_repeat"),
-    ("Depth pruning",   "depth_pruning"),
-    ("Guarded reuse",   "guarded_reuse"),
-    ("Temporal fusion", "temporal_fusion"),
+    "original",
+    "fixed_foveation",
+    "action_repeat",
+    "depth_pruning",
+    "guarded_reuse",
+    "temporal_fusion",
 ]
 
-VARIANT_SHORT = {
-    "fixed_foveation_keep20": "keep 20\\%",
-    "fixed_foveation_keep50": "keep 50\\%",
-    "action_repeat2": "$k{=}2$",
-    "action_repeat4": "$k{=}4$",
-    "depth_pruning1": "1 block",
-    "depth_pruning2": "2 blocks",
-    "depth_pruning4": "4 blocks",
-    "guarded_reuse_strict": "strict",
-    "guarded_reuse_moderate": "moderate",
-    "guarded_reuse_aggressive": "aggressive",
-    "temporal_fusion_motion_entropy": "motion-entropy",
-    "temporal_fusion_task_aware": "task-aware",
-    "temporal_fusion_conservative_adaptive": "conservative",
+# Condition label per CSV configuration name.
+LABEL = {
+    "original": "Original policy",
+    "fixed_foveation_keep20": "Foveation keep 20\\%",
+    "fixed_foveation_keep50": "Foveation keep 50\\%",
+    "action_repeat2": "Action repeat 2",
+    "action_repeat4": "Action repeat 4",
+    "depth_pruning1": "Depth prune 1",
+    "depth_pruning2": "Depth prune 2",
+    "depth_pruning4": "Depth prune 4",
+    "guarded_reuse_strict": "Guarded reuse strict",
+    "guarded_reuse_moderate": "Guarded reuse moderate",
+    "guarded_reuse_aggressive": "Guarded reuse aggressive",
+    "temporal_fusion_motion_entropy": "Temporal fusion motion-entropy",
+    "temporal_fusion_task_aware": "Temporal fusion task-aware",
+    "temporal_fusion_conservative_adaptive": "Temporal fusion conservative",
 }
 
 
@@ -87,8 +92,8 @@ def load(env_key):
     out = {}
     with open(path) as fh:
         for row in csv.DictReader(fh):
-            bk = next(k for _, _, k in BACKBONES if k in row["model_name"])
-            fam = next(p for _, p in FAMILIES
+            bk = next(k for _, k in BACKBONES if k in row["model_name"])
+            fam = next(p for p in FAMILIES
                        if row["configuration"].startswith(p))
             if fam in out.setdefault(bk, {}):
                 raise SystemExit(f"{path}: two rows for {bk}/{fam}")
@@ -96,129 +101,73 @@ def load(env_key):
     return out
 
 
-def metrics(row):
-    steps = float(row["avg_steps"])
-    return {
-        "success": float(row["success_rate_pct"]),
-        "step_ms": 1000.0 * float(row["avg_episode_time_s"]) / steps,
-        "steps": steps,
-    }
-
-
-def delta(v, ref, lower_is_better):
-    d = v - ref
-    if abs(d) < 0.005:
-        return "\\textcolor{gray}{(+0.00)}"
-    good = (d < 0) if lower_is_better else (d > 0)
-    col = "green!60!black" if good else "red"
-    return f"\\textcolor{{{col}}}{{({d:+.2f})}}"
-
-
-def cell(m, ref, key, lower):
-    if m is None:
-        return "--"
-    if ref is None:  # original row
-        return f"{m[key]:.2f}"
-    return f"{m[key]:.2f} {{\\scriptsize {delta(m[key], ref[key], lower)}}}"
+def fmt_row(row):
+    per_call_ms = float(row["policy_median_latency_ms"])
+    model_ep = float(row["avg_policy_calls"]) * per_call_ms / 1000.0
+    return (f"${float(row['success_rate_pct']):.1f}$ & ${per_call_ms:.0f}$ & "
+            f"${model_ep:.1f}$ & ${float(row['avg_steps']):.1f}$")
 
 
 def main():
-    data = {env: load(env) for env, _ in ENVS}
     lines = []
-    chosen = []  # (backbone, env label, family, variant)
-
-    for name, params, bk in BACKBONES:
-        first = True
-        for fam_label, fam in FAMILIES:
-            cells = []
-            for env, env_label in ENVS:
-                rows = data[env].get(bk, {})
-                row = rows.get(fam)
-                orig = rows.get("original")
-                m = metrics(row) if row else None
-                ref = metrics(orig) if (orig and fam != "original") else None
-                if row and fam != "original":
-                    chosen.append((name, env_label, fam_label,
-                                   row["configuration"]))
-                cells += [
-                    cell(m, ref, "success", False),
-                    cell(m, ref, "step_ms", True),
-                    cell(m, ref, "steps", True),
-                ]
-            lead = (f"\\multirow{{{len(FAMILIES)}}}{{*}}{{{name}}} & "
-                    f"\\multirow{{{len(FAMILIES)}}}{{*}}{{{params}}}"
-                    if first else "& ")
-            first = False
-            lines.append(f"{lead} & {fam_label} & " + " & ".join(cells)
-                         + " \\\\")
-        lines.append("\\midrule")
-    lines[-1] = "\\bottomrule"
-
-    variant_note = "; ".join(
-        f"{b} {e} {f.lower()}: {VARIANT_SHORT[v]}"
-        for b, e, f, v in chosen
-        if v not in ("fixed_foveation_keep20", "action_repeat2",
-                     "depth_pruning1", "guarded_reuse_moderate",
-                     "temporal_fusion_motion_entropy"))
-
-    header = f"""%% ---------------------------------------------------------------------------
-%% Generated by make_tricks_table.py on {date.today().isoformat()}. Do not
-%% edit; regenerate. Input: artifacts/results/mentor_csv/*/summary.csv.
-%%
-%% Each family row is the variant with the highest success rate in that
-%% environment (the mentor's summary.csv selection). The per-family tables
-%% later in Results show all variants. Chosen variant per cell:
-"""
-    for b, e, f, v in chosen:
-        header += f"%%   {b:11s} {e:15s} {f:16s} {v}\n"
-    header += """%%
-%% "Step time" is wall-clock milliseconds per environment step,
-%% avg_episode_time_s / avg_steps. The CSV column cycle_median_latency_ms is
-%% deliberately not used: it is per environment step in the OpenVLA, MiniVLA
-%% and CronusVLA harness and per policy call in the CogACT, SpatialVLA and
-%% UniVLA harness, so it moves in opposite directions under action repeat.
-%%
-%% Needs \\usepackage{booktabs}, \\usepackage{multirow}, \\usepackage{xcolor}.
-%% Spans both columns, so table* and not table.
-%% ---------------------------------------------------------------------------
-"""
-
-    caption = (
-        "SimplerEnv results on WidowX and Google Robot/Fractal at the strongest "
-        "setting of each intervention family. Step time is wall-clock "
-        "milliseconds per environment step, so it falls under action repeat "
-        "even though the cost of one model call does not. Values in "
-        "parentheses are the change against the original policy of the same "
-        "model and environment. A dash marks a backbone with no checkpoint "
-        "for that environment."
-    )
+    for ei, (env, env_label) in enumerate(ENVS):
+        data = load(env)
+        present = [(n, k) for n, k in BACKBONES if k in data]
+        n_rows = len(present) * len(FAMILIES)
+        env_cell = (f"\\multirow{{{n_rows}}}{{*}}"
+                    f"{{\\rotatebox[origin=c]{{90}}{{{env_label}}}}}")
+        for bi, (name, bk) in enumerate(present):
+            rows = data[bk]
+            missing = [f for f in FAMILIES if f not in rows]
+            if missing:
+                raise SystemExit(f"{env}/{bk}: no row for {missing}")
+            for fi, fam in enumerate(FAMILIES):
+                row = rows[fam]
+                c1 = env_cell if (bi == 0 and fi == 0) else ""
+                c2 = (f"\\multirow{{{len(FAMILIES)}}}{{*}}{{{name}}}"
+                      if fi == 0 else "")
+                lines.append(f"{c1} & {c2} & {LABEL[row['configuration']]} & "
+                             f"{fmt_row(row)} \\\\")
+            if bi < len(present) - 1:
+                lines.append("\\cmidrule(l){2-7}")
+        lines.append("\\midrule" if ei < len(ENVS) - 1 else "\\bottomrule")
 
     body = "\n".join(lines)
-    tex = f"""{header}\\begin{{table*}}[t]
+    tex = f"""%% ---------------------------------------------------------------------------
+%% Generated by make_tricks_table.py on {date.today().isoformat()}. Do not
+%% edit; regenerate. Input: artifacts/results/mentor_csv/*/summary.csv, the
+%% mentor's best-variant-per-family selection. The condition label names the
+%% chosen variant.
+%%
+%% "Latency" is model time PER CALL in ms (policy_median_latency_ms), so it drops
+%% with depth pruning but not with action repeat. "Model s/ep" is
+%% avg_policy_calls times that latency, model time over a whole EPISODE, so it
+%% drops with action repeat and guarded reuse and rises when a broken
+%% intervention makes episodes run longer. cycle_median_latency_ms is not
+%% used: it is per environment step in one harness and per policy call in the
+%% other, so it rises under action repeat for CogACT, SpatialVLA and UniVLA.
+%%
+%% MiniVLA and UniVLA have no Fractal checkpoint and appear under Bridge only.
+%% Needs booktabs, multirow, graphicx. Spans both columns: table*, not table.
+%% ---------------------------------------------------------------------------
+\\begin{{table*}}[t]
 \\centering
-\\caption{{{caption}}}
-\\label{{tab:tricks}}
-\\footnotesize
-\\setlength{{\\tabcolsep}}{{4pt}}
-\\begin{{tabular}}{{@{{}}lll rrr rrr@{{}}}}
+\\caption{{Absolute success rate, model latency per call, model time per episode, and mean episode length, at the strongest setting of each intervention family.}}
+\\label{{tab:grid}}
+\\setlength{{\\tabcolsep}}{{6pt}}
+\\begin{{tabular}}{{ll l rrrr}}
 \\toprule
-& & & \\multicolumn{{3}}{{c}}{{WidowX}} & \\multicolumn{{3}}{{c}}{{Google Fractal}} \\\\
-\\cmidrule(lr){{4-6}} \\cmidrule(lr){{7-9}}
-Model & Params & Policy & Success $\\uparrow$ (\\%) & Step time $\\downarrow$ (ms) & Avg.\\ steps $\\downarrow$
-& Success $\\uparrow$ (\\%) & Step time $\\downarrow$ (ms) & Avg.\\ steps $\\downarrow$ \\\\
+& Backbone & Condition & Success (\\%) & Latency (ms) & Model s/ep & Avg.\\ steps \\\\
 \\midrule
 {body}
 \\end{{tabular}}
-
 \\vspace{{2pt}}
-{{\\scriptsize Variants other than the default (foveation keep 20\\%, repeat $k{{=}}2$,
-depth 1 block, guarded reuse moderate, fusion motion-entropy): {variant_note}.}}
+\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Latency is model time per call, so action repeat and guarded reuse leave it unchanged and lower the model time per episode instead. The per-setting sweeps are in the ablation tables of Section~IV.}}
 \\end{{table*}}
 """
     with open(OUT, "w") as fh:
         fh.write(tex)
-    print(f"wrote {os.path.relpath(OUT, ROOT)}: "
-          f"{len(BACKBONES)} backbones x {len(FAMILIES)} rows")
+    print(f"wrote {os.path.relpath(OUT, ROOT)}: {len(lines)} lines")
 
 
 if __name__ == "__main__":
