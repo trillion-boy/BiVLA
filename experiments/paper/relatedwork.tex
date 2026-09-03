@@ -17,7 +17,7 @@
 %                                          comparison, our protocol
 % Each paragraph ends on our position, the bag-of-tricks house style.
 %
-% Length: this is the LONG draft (about 900 words of prose). Final target is
+% Length: this is the LONG draft (about 1070 words of prose). Final target is
 % 0.75 page, roughly 800 words in ieeeconf. Polish down from here; the cut
 % candidates are marked in RelatedWork.md.
 %
@@ -60,8 +60,9 @@
 %       agreement in direction and gripper, one reused step. FlashVLA's gate
 %       is token-aware, so it is NOT described as "broad" or "global".
 %   (3) "leave the crossing cell empty" -> "do not report"; "overstates the
-%       gain" -> baselines differ in attention backend so speedups cannot be
-%       compared across papers. Same content, no verdict on anyone's work.
+%       gain" -> an eager attention baseline inflates a speedup relative to
+%       a fused one, and we fix the baseline. States a measurement fact, no
+%       verdict on any paper and no claim about which backend they used.
 %   (4) "six backbones and two benchmarks" STAYS. The review assumed LIBERO
 %       and one backbone from experiment_protocol.md, but setup.tex and the
 %       mentor's CSVs are SimplerEnv WidowX + Fractal. The real inconsistency
