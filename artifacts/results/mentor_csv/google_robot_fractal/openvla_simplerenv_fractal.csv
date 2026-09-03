@@ -1,0 +1,15 @@
+model_name,environment,checkpoint_model_id,configuration,tasks,episodes,successes,success_rate_pct,avg_steps,avg_policy_calls,avg_reuses,policy_median_latency_ms,policy_p95_latency_ms,cycle_median_latency_ms,cycle_p95_latency_ms,avg_episode_time_s,control_frequency_hz,action_repeat,depth_layers,selected_depth_layers,fusion_keyframe_interval,fusion_max_reuse_fraction,median_reusable_visual_tokens
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,original,5,250,89,35.6,64.312,64.312,0,160.072,165.475,168.012,170.567,15.42,5.94,2,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,fixed_foveation_keep20,5,250,19,7.6,76.296,76.296,0,166.357,192.905,182.088,184.973,18.99,5.49,2,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,fixed_foveation_keep50,5,250,61,24.4,68.236,68.236,0,160.88,186.431,179.238,183.63,17.02,5.58,2,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,action_repeat2,5,250,100,40,62.912,31.556,31.356,159.141,162.801,87.531,91.652,10.01,11.33,2,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,action_repeat4,5,250,89,35.6,67.02,16.896,50.124,159.859,167.065,47.82,52.819,7.97,20.49,4,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,depth_pruning1,5,250,96,38.4,62.836,62.836,0,155.736,158.23,163.617,165.398,14.86,6.11,2,1,23,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,depth_pruning2,5,250,102,40.8,61.856,61.856,0,150.871,153.091,158.569,159.698,14.27,6.3,2,2,23;25,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,depth_pruning4,5,250,92,36.8,62.8,62.8,0,142.669,144.743,150.508,151.408,14.02,6.65,2,4,17;23;25;27,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,guarded_reuse_strict,5,250,90,36,64.292,62.828,1.464,159.516,163.704,167.568,169.786,15.16,6.05,2,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,guarded_reuse_moderate,5,250,91,36.4,64.196,62.592,1.604,160.004,163.955,168.301,170.396,15.19,6.04,2,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,guarded_reuse_aggressive,5,250,88,35.2,64.248,61.756,2.492,159.817,164.09,168,170.715,15.08,6.09,2,1,,,,0.0
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,temporal_fusion_motion_entropy,5,250,105,42,62.028,62.028,0,160.771,166.741,169.533,172.763,15.05,5.89,2,1,,3,0.5,111
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,temporal_fusion_task_aware,5,250,106,42.4,61.436,61.436,0,172.809,176.559,182.035,184.989,15.6,5.49,2,1,,3,0.5,55
+openvla_simplerenv_fractal,simpler_google_robot_fractal,openvla-7b-Fractal,temporal_fusion_conservative_adaptive,5,250,92,36.8,63.272,63.272,0,159.024,163.843,167.609,170.428,15.2,5.94,2,1,,2,0.25,64
