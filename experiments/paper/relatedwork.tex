@@ -50,6 +50,24 @@
 %   calibrates on the same tasks and seed as the test run, so confirm before
 %   camera-ready. Also pending: the VLA-Cache paragraph, if no rollout is run.
 %
+% Review-response edits, 2026-09-03, after a simulated review:
+%   (1) "Selecting patches by a computed signal is therefore not new" removed.
+%       The design is now stated positively (one mask, cache reuses only what
+%       fusion treats as stable). No "first" claim: literature_review.md bars
+%       it, and no collapse-when-combined claim: there is no such experiment.
+%   (2) Guarded reuse now names its differences from FlashVLA: pixel gates
+%       before any network call, whole-frame and local scale, two-action
+%       agreement in direction and gripper, one reused step. FlashVLA's gate
+%       is token-aware, so it is NOT described as "broad" or "global".
+%   (3) "leave the crossing cell empty" -> "do not report"; "overstates the
+%       gain" -> baselines differ in attention backend so speedups cannot be
+%       compared across papers. Same content, no verdict on anyone's work.
+%   (4) "six backbones and two benchmarks" STAYS. The review assumed LIBERO
+%       and one backbone from experiment_protocol.md, but setup.tex and the
+%       mentor's CSVs are SimplerEnv WidowX + Fractal. The real inconsistency
+%       is that setup.tex still describes the three-backbone grid; it is
+%       rewritten with Results once the per-episode files arrive.
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -122,18 +140,22 @@ and a non-adjacency rule to the ShortGPT score and calibrate on a disjoint
 split. \emph{Guarded reuse.} Where fixed repeat skips feedback blindly, our
 guarded reuse skips a model call only when the current image and the recent
 trajectory are both stable, and falls back to dense inference the moment either
-gate fails. Recent work ties reuse to action similarity and visual-token
-stability~\cite{flashvla} or to the manipulation phase~\cite{specprune} on the
-same reasoning. \emph{Temporal fusion with a shared cache mask.} TTF-VLA fuses
+gate fails. Recent work gates reuse on action similarity and visual-token
+stability~\cite{flashvla} or on the manipulation phase~\cite{specprune}. Ours
+differs in where the gate sits and how far it may go. It reads subsampled
+pixels before any network call, at whole-frame and local scale, requires the
+last two dense actions to agree in direction and gripper state, and permits
+one reused step before the next dense call. \emph{Temporal fusion with a
+shared cache mask.} TTF-VLA fuses
 visual tokens across frames without training and raises base OpenVLA on LIBERO
 by four points at under two percent overhead, a denoising result rather than a
 speed one~\cite{ttfvla}. VLA-InfoEntropy selects which tokens to reuse by
 image and attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens
-by interaction alignment~\cite{vlaiap}. Selecting patches by a computed signal
-is therefore
-not new. We build one mask that drives both the denoising and the cache path,
-with contact-aware fallbacks, and test it against optimized dense inference on
-paired episodes.
+by interaction alignment~\cite{vlaiap}. Each selects patches for one purpose
+with its own signal. We build one mask from motion, entropy and task relevance
+that drives both the denoising and the cache path, so the cache reuses only
+what the fusion also treats as stable, add contact-aware fallbacks, and test
+it against optimized dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
@@ -141,12 +163,14 @@ addresses the infrastructure around them. The vla-eval harness unifies
 fourteen benchmarks and documents evaluation pitfalls earlier work had left
 unrecorded~\cite{vlaeval}, and StarVLA describes the field as fragmented
 across incompatible codebases~\cite{starvla}. But infrastructure cannot supply
-the comparison itself. Papers using several backbones change the benchmark at
-the same time~\cite{vlacache, specprune, vlaiap}. Those with both factors
-present leave the crossing cell empty~\cite{gazereg, vlapruner}. The tables we
-cite report mean success rates rather than matched-episode outcomes, and a
-speedup measured against eager attention rather than fused attention
-overstates the gain. We exclude quantisation, which changes none of the three
+the comparison itself. Papers that use several backbones also change the
+benchmark~\cite{vlacache, specprune, vlaiap}, and those with both factors
+present do not report the crossing cell~\cite{gazereg, vlapruner}, so the
+effect of a backbone cannot be separated from the effect of a benchmark. The
+tables we cite report mean success rates, which cannot say on which episodes
+an intervention helped, and speedups against dense baselines that differ in
+attention backend, which cannot be compared across papers. We hold both fixed.
+We exclude quantisation, which changes none of the three
 resources, and learned early exit, which needs training. Isolating the effect
 of choices that appear only in source code is an established
 practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six

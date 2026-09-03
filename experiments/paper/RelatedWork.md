@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-954 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 130 words
+1044 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 240 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -89,19 +89,23 @@ rule to the ShortGPT score and calibrate on a disjoint split.
 **Guarded reuse.** Where fixed repeat skips feedback blindly, our guarded
 reuse skips a model call only when the current image and the recent
 trajectory are both stable, and falls back to dense inference the moment
-either gate fails. Recent work ties reuse to action similarity and
-visual-token stability (FlashVLA) or to the manipulation phase (SpecPrune-VLA)
-on the same reasoning.
+either gate fails. Recent work gates reuse on action similarity and
+visual-token stability (FlashVLA) or on the manipulation phase (SpecPrune-VLA).
+Ours differs in where the gate sits and how far it may go. It reads subsampled
+pixels before any network call, at whole-frame and local scale, requires the
+last two dense actions to agree in direction and gripper state, and permits
+one reused step before the next dense call.
 
 **Temporal fusion with a shared cache mask.** TTF-VLA fuses visual tokens
 across frames without training and raises base OpenVLA on LIBERO by four
 points at under two percent overhead, a denoising result rather than a speed
 one. VLA-InfoEntropy selects which tokens to reuse by image and attention
-entropy, and VLA-IAP prunes
-tokens by interaction alignment. Selecting patches by a computed signal is
-therefore not new. We build one mask that drives both the denoising and the
-cache path, with contact-aware fallbacks, and test it against optimized dense
-inference on paired episodes.
+entropy, and VLA-IAP prunes tokens by interaction alignment. Each selects
+patches for one purpose with its own signal. We build one mask from motion,
+entropy and task relevance that drives both the denoising and the cache path,
+so the cache reuses only what the fusion also treats as stable, add
+contact-aware fallbacks, and test it against optimized dense inference on
+paired episodes.
 
 ### How these claims are evaluated
 
@@ -109,12 +113,14 @@ The field reports results on SimplerEnv and LIBERO, and recent work addresses
 the infrastructure around them. The vla-eval harness unifies fourteen
 benchmarks and documents evaluation pitfalls earlier work had left unrecorded,
 and StarVLA describes the field as fragmented across incompatible codebases.
-But infrastructure cannot supply the comparison itself. Papers using several
-backbones change the benchmark at the same time (VLA-Cache, SpecPrune-VLA,
-VLA-IAP). Those with both factors present leave the crossing cell empty
-(Gaze-Reg, VLA-Pruner). The tables we cite report mean success rates rather
-than matched-episode outcomes, and a speedup measured against eager attention
-rather than fused attention overstates the gain. We exclude quantisation,
+But infrastructure cannot supply the comparison itself. Papers that use
+several backbones also change the benchmark (VLA-Cache, SpecPrune-VLA,
+VLA-IAP), and those with both factors present do not report the crossing cell
+(Gaze-Reg, VLA-Pruner), so the effect of a backbone cannot be separated from
+the effect of a benchmark. The tables we cite report mean success rates, which
+cannot say on which episodes an intervention helped, and speedups against
+dense baselines that differ in attention backend, which cannot be compared
+across papers. We hold both fixed. We exclude quantisation,
 which changes none of the three resources, and learned early exit, which
 needs training. Isolating the effect of choices that appear only in source
 code is an established practice (Bag of Tricks for CNNs, Bag of Tricks for
@@ -157,6 +163,22 @@ closing sentence, because the paragraph faults others for the empty crossing
 cell and four of our backbones fill it. The compact-VLA sentence is no longer
 a cut candidate: MiniVLA drops to 0% at two removed blocks, CronusVLA to 0% at
 four, SpatialVLA to 14%.
+
+**Review-response edits (2026-09-03).** A simulated review raised four
+points. Three changed text. (1) The "not new" admission on the shared mask is
+gone; the design is stated positively without a "first" claim, which
+literature_review.md bars, and without a collapse-when-combined claim, for
+which there is no experiment. (2) Guarded reuse now names its differences
+from FlashVLA: pixel gates before any network call, whole-frame and local
+scale, two-action agreement in direction and gripper, one reused step.
+FlashVLA's gate is token-aware, so the review's suggested "broad visual
+stability" was not used. (3) "leave the crossing cell empty" and "overstates
+the gain" were replaced by statements about what the tables cannot show,
+with no verdict on any paper. (4) The review asked for "four LIBERO suites"
+in place of "six backbones and two benchmarks"; that reading came from
+experiment_protocol.md, but setup.tex and the CSVs are SimplerEnv WidowX and
+Fractal, so the sentence stays. What does need fixing is setup.tex, which
+still describes the three-backbone grid.
 
 **Pending the mentor.** "calibrate on a disjoint split": the harness
 calibrates on the same tasks and seed as the test run. Confirm or reword.
