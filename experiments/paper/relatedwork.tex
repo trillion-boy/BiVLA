@@ -37,6 +37,19 @@
 % "baseline" / "control" for the other three. Novelty of the mechanisms is
 % not claimed anywhere; the contribution is the protocol.
 %
+% Data-driven edits, 2026-09-03, after the mentor's 12 CSVs arrived:
+%   "why the candidate methods need gates" -> "when". Fixed repeat 2 collapses
+%   four of six backbones on WidowX but harms none of four on Fractal, so the
+%   gate is needed on contact tasks, not always. Results carries the split.
+%   "across six backbones and two benchmarks" added to the last sentence,
+%   because the paragraph faults others for the empty crossing cell and four
+%   of our backbones fill it.
+%   The compact-VLA sentence (FLOWER, SmolVLA, TurboVLA) is no longer a cut
+%   candidate: MiniVLA, CronusVLA and SpatialVLA collapse under depth pruning.
+% Pending the mentor: "calibrate on a disjoint split" (line ~108). The harness
+%   calibrates on the same tasks and seed as the test run, so confirm before
+%   camera-ready. Also pending: the VLA-Cache paragraph, if no rollout is run.
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -76,7 +89,7 @@ several control steps reduces model calls in proportion. But it acts open loop
 through contacts. FlashVLA reports a 0.7-point average success decrease with
 training-free action reuse~\cite{flashvla}, and SpecPrune-VLA separates coarse
 movement from precision-sensitive phases for the same reason~\cite{specprune}.
-We run fixed foveation and fixed repeat as controls that establish why the
+We run fixed foveation and fixed repeat as controls that establish when the
 candidate methods need gates.
 
 \textbf{The recent baseline.} VLA-Cache reuses the key-value computation of
@@ -137,6 +150,7 @@ overstates the gain. We exclude quantisation, which changes none of the three
 resources, and learned early exit, which needs training. Isolating the effect
 of choices that appear only in source code is an established
 practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six
-families under one protocol, on matched episodes against optimized dense
-inference, so that a candidate is called positive only when its speed and its
-success both clear a preregistered gate.
+families under one protocol across six backbones and two benchmarks, on
+matched episodes against optimized dense inference, so that a candidate is
+called positive only when its speed and its success both clear a
+preregistered gate.

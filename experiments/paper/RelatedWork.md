@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-948 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+954 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 130 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -53,7 +53,7 @@ steps reduces model calls in proportion. But it acts open loop through
 contacts. FlashVLA reports a 0.7-point average success decrease with
 training-free action reuse, and SpecPrune-VLA separates coarse movement from
 precision-sensitive phases for the same reason. We run fixed foveation and
-fixed repeat as controls that establish why the candidate methods need gates.
+fixed repeat as controls that establish when the candidate methods need gates.
 
 ### The recent baseline
 
@@ -118,9 +118,10 @@ rather than fused attention overstates the gain. We exclude quantisation,
 which changes none of the three resources, and learned early exit, which
 needs training. Isolating the effect of choices that appear only in source
 code is an established practice (Bag of Tricks for CNNs, Bag of Tricks for
-LLMs). We evaluate the six families under one protocol, on matched episodes
-against optimized dense inference, so that a candidate is called positive only
-when its speed and its success both clear a preregistered gate.
+LLMs). We evaluate the six families under one protocol across six backbones
+and two benchmarks, on matched episodes against optimized dense inference, so
+that a candidate is called positive only when its speed and its success both
+clear a preregistered gate.
 
 ---
 
@@ -147,16 +148,27 @@ when its speed and its success both clear a preregistered gate.
   reuse, so that sentence would now contradict the section) and the
   OpenVLA-OFT citation in the chunking lineage (covered by Preliminaries).
 
+**What the mentor's CSVs changed (2026-09-03).** Two words. "why the
+candidate methods need gates" became "when": fixed repeat 2 collapses four of
+six backbones on WidowX (CronusVLA 34 to 3.5, CogACT 50 to 12) but harms none
+of four on Fractal, so the gate is a contact-task requirement and Results
+carries the split. "across six backbones and two benchmarks" was added to the
+closing sentence, because the paragraph faults others for the empty crossing
+cell and four of our backbones fill it. The compact-VLA sentence is no longer
+a cut candidate: MiniVLA drops to 0% at two removed blocks, CronusVLA to 0% at
+four, SpatialVLA to 14%.
+
+**Pending the mentor.** "calibrate on a disjoint split": the harness
+calibrates on the same tasks and seed as the test run. Confirm or reword.
+The VLA-Cache paragraph stays until the rollout question is answered.
+
 **Cut candidates for the polish to 0.75 page, cheapest first.**
 
-1. The compact-VLA sentence (FLOWER, SmolVLA, TurboVLA), about 30 words.
-   Keep it if the final Table I shows depth pruning hurting the small
-   backbones, because it then explains the pattern.
-2. "It also explains a pattern the token-pruning literature reports." plus
+1. "It also explains a pattern the token-pruning literature reports." plus
    the FastV / SparseVLM / ToMe sentence, about 40 words. Cut if the paper
    does not run any VLM token-pruning method.
-3. The vla-eval / StarVLA infrastructure sentence, about 35 words.
-4. The quantisation / early-exit exclusion sentence, about 20 words.
+2. The vla-eval / StarVLA infrastructure sentence, about 35 words.
+3. The quantisation / early-exit exclusion sentence, about 20 words.
 
 **Citations are complete.** `flashvla`, `ttfvla` and `vlainfoentropy` were
 added to `main.bib` on 2026-09-03 from the PDFs. Reading them changed two
