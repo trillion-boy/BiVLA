@@ -67,6 +67,17 @@
 %       mentor's CSVs are SimplerEnv WidowX + Fractal. The real inconsistency
 %       is that setup.tex still describes the three-backbone grid; it is
 %       rewritten with Results once the per-episode files arrive.
+%       UPDATE 2026-09-03: the mentor writes Setup and Protocol. What RW
+%       commits Setup to, so the two sections agree:
+%         - six intervention families, two of them controls, one baseline
+%         - six backbones, two SimplerEnv suites (WidowX, Fractal)
+%         - matched episodes, paired test (needs the per-episode files)
+%         - dense baseline under fused attention (SDPA / FlashAttention)
+%         - a preregistered speed-and-success gate for calling a candidate
+%           positive
+%         - depth calibration on a disjoint split (confirm; the harness
+%           calibrates on the test tasks and seed)
+%         - one GPU, one run per configuration, episodes paired by seed
 %
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------

@@ -175,6 +175,15 @@ experiment_protocol.md, but setup.tex and the CSVs are SimplerEnv WidowX and
 Fractal, so the sentence stays. What does need fixing is setup.tex, which
 still describes the three-backbone grid.
 
+**Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
+writes those two sections. RW commits them to: six families (two controls,
+one baseline, three candidates); six backbones on two SimplerEnv suites,
+WidowX and Fractal; matched episodes with a paired test; a dense baseline
+under fused attention; a preregistered gate on both speed and success; depth
+calibration on a disjoint split; and, from the mentor's own description, one
+GPU and one run per configuration with episodes paired by seed. If any of
+these is not what Setup says, RW changes to match, not the other way round.
+
 **Pending the mentor.** "calibrate on a disjoint split": the harness
 calibrates on the same tasks and seed as the test run. Confirm or reword.
 The VLA-Cache paragraph stays until the rollout question is answered.
