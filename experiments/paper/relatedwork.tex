@@ -135,7 +135,23 @@
 %   STILL OPEN, cannot be fixed in prose: "six intervention families" vs
 %     five in Methods and the tables (VLA-Cache rollout pending); "Both
 %     fail" vs repeat 2 on Fractal (Results must state the exception);
-%     "disjoint split"; "preregistered".
+%     "preregistered".
+%   NEW 2026-09-04: "measuring every speedup against fused attention". The
+%     mentor's harness scripts on the tricks branch set no attention backend
+%     (git grep for sdpa / flash_attn / attn_implementation hits only the
+%     unrelated AutoGaze code). local_results.md says SDPA for OpenVLA; the
+%     other five backbones are unverified. Ask the mentor which backend each
+%     backbone ran. If any ran eager, change to "against the dense
+%     implementation each backbone ships with" and drop "fused".
+%
+% Verification status of the citations, 2026-09-04. This environment blocks
+% arxiv.org, huggingface.co and Semantic Scholar. Re-read TODAY from a primary
+% source: FLOWER (README: "Half of the Florence-2 LLM layers"), SpatialVLA
+% and CronusVLA READMEs (grid sentence), MiniVLA collection. Read from the
+% PDF on 2026-09-03: flashvla, ttfvla, vlainfoentropy. Everything else rests
+% on RelatedWork_Sources.md rows recorded from PDF reads in earlier sessions
+% (gromov, shortgpt, smolvla, turbovla, vlaeval, gazereg, vlapruner) and was
+% NOT re-read today.
 %
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
