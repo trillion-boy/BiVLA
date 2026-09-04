@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1169 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 370 words
+1187 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 390 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -57,17 +57,18 @@ fixed repeat as controls that establish when the candidate methods need gates.
 
 ### The recent baseline
 
-VLA-Cache reuses the key-value computation of visually static patches while
-recomputing patches that move or that the language model attends to, so history
-is retained unlike under token dropping. On base OpenVLA across LIBERO it
-reports average success of 74.7% against 75.0% dense at 39% lower latency, a
-speed result at nearly unchanged success. It is the closest published point of
-comparison for our candidates, not a contribution of ours. The same paper
-accounts for a pattern reported for token pruning. Methods developed for
-vision-language models (FastV, SparseVLM, ToMe) transfer poorly to VLAs, which
-it attributes to VLAs' short action sequences and VLA-Pruner reproduces on
-another setting. Whatever is dropped from the token stream must be chosen by a
-signal that knows what the robot is doing.
+VLA-Cache reuses the cached key-value entries of visually static patches and
+recomputes those that move or that the decoder's attention marks task-relevant.
+On base OpenVLA across LIBERO it reports average success of 74.7% against 75.0%
+dense at 39% lower latency, a speed result at nearly unchanged success. It is
+the closest published point of comparison for our candidates, not a
+contribution of ours. The same paper also reports that token pruning developed
+for vision-language models (FastV, SparseVLM, ToMe) transfers poorly to VLAs,
+which it attributes to those methods ignoring the temporal structure of
+closed-loop control. VLA-Pruner reproduces the loss on the same OpenVLA setting
+and attributes it instead to a mismatch between the attention patterns of the
+prefill and the action-decode stage. Whatever is dropped from the token stream
+must be chosen by a signal that knows what the robot is doing.
 
 ### Conditional candidates
 
@@ -118,23 +119,23 @@ benchmarks and documents evaluation pitfalls earlier work had left unrecorded,
 and StarVLA describes the field as fragmented across incompatible codebases.
 But infrastructure cannot supply the comparison itself. Papers that use several
 backbones also change the benchmark (VLA-Cache, SpecPrune-VLA, VLA-IAP), and
-those with both factors present do not report the crossing cell (Gaze-Reg,
-VLA-Pruner), so the effect of a backbone cannot be separated from the effect of
-a benchmark. The tables we cite report mean success rates, which cannot say on
-which episodes an intervention helped. A speedup also depends on the dense
-baseline it is measured against, and an eager attention baseline inflates it
-relative to a fused one. We remove both, by pairing episodes and by measuring
-every speedup against fused attention. We exclude quantization, which lowers
-numerical precision rather than any of the three quantities above, and learned
-early exit, which needs training. Isolating the effect of choices that appear
-only in source code is an established practice (Bag of Tricks for CNNs, Bag of
-Tricks for LLMs). We evaluate the six families under one protocol on three
-benchmarks, the WidowX and Fractal suites of SimplerEnv and the four suites of
-LIBERO, and run each backbone on every benchmark for which a checkpoint at the
-size we evaluate is released, as listed in Section IV-A. Every comparison is on
-matched episodes against optimized dense inference. A candidate is called
-positive only when its end-to-end latency, with the cost of its own signals
-included, and its success both clear a preregistered gate.
+where one backbone does appear on two benchmarks the others appear on one
+(VLA-Pruner, Gaze-Reg), so the effect of a backbone cannot be separated from
+the effect of a benchmark. The tables we cite report mean success rates, which
+cannot say on which episodes an intervention helped. A speedup also depends on
+the dense baseline it is measured against, and an eager attention baseline
+inflates it relative to a fused one. We remove both, by pairing episodes and by
+measuring every speedup against fused attention. We exclude quantization, which
+lowers numerical precision rather than any of the three quantities above, and
+learned early exit, which needs training. Isolating the effect of choices that
+appear only in source code is an established practice (Bag of Tricks for CNNs,
+Bag of Tricks for LLMs). We evaluate the six families under one protocol on
+three benchmarks, the WidowX and Fractal suites of SimplerEnv and the four
+suites of LIBERO, and run each backbone on every benchmark for which a
+checkpoint at the size we evaluate is released, as listed in Section IV-A.
+Every comparison is on matched episodes against optimized dense inference. A
+candidate is called positive only when its end-to-end latency, with the cost of
+its own signals included, and its success both clear a preregistered gate.
 ---
 
 ## Notes for the co-authors
@@ -253,6 +254,17 @@ at inference, so "policies conditioned on gaze" became "as a training-time
 regularizer (Gaze-Reg) or as a foveation signal (Look Focus Act)". Its
 crossing-cell gap is confirmed: pi0 on LIBERO and ALOHA-Sim, OpenVLA on
 LIBERO only. Sources rows 34 to 38.
+
+**Eighth pass (2026-09-04), VLA-Cache and VLA-Pruner PDFs.** Three
+corrections. "History is retained unlike under token dropping" is not in
+VLA-Cache and was removed. VLA-Cache attributes the poor transfer of VLM
+pruning to ignoring the temporal structure of closed-loop control, not to
+short action sequences; VLA-Pruner reproduces it on the same OpenVLA setting
+and blames a prefill versus action-decode attention mismatch. VLA-Pruner
+does run OpenVLA on both LIBERO and SIMPLER, so the crossing-cell sentence
+now says that where one backbone appears on two benchmarks the others
+appear on one. Every citation with a concrete claim has now been read from
+its PDF (sources rows 27 to 45).
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,

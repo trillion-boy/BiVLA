@@ -17,7 +17,7 @@
 %                                          comparison, our protocol
 % Each paragraph ends on our position, the bag-of-tricks house style.
 %
-% Length: this is the LONG draft (about 1170 words of prose). Final target is
+% Length: this is the LONG draft (about 1190 words of prose). Final target is
 % 0.75 page, roughly 800 words in ieeeconf. Polish down from here; the cut
 % candidates are marked in RelatedWork.md.
 %
@@ -159,16 +159,27 @@
 %     change to "against the dense implementation each backbone ships with"
 %     and drop "fused".
 %
-% Verification status of the citations, 2026-09-04. This environment blocks
-% arxiv.org, huggingface.co and Semantic Scholar. Read from the PDF on
-% 2026-09-04 (uploaded by the author): shortgpt, smolvla, turbovla, vlaeval,
-% gazereg, ttfvla. Read from the PDF on 2026-09-03: flashvla, vlainfoentropy.
-% Read from GitHub READMEs 2026-09-04: FLOWER, SpatialVLA, CronusVLA,
-% openvla-mini. Still resting on earlier-session rows in
-% RelatedWork_Sources.md, NOT re-read: gromov, vlapruner, efficientvla,
-% molevla, vlaiap, specprune, vlacache, starvla, schwartz, traver,
-% lookfocusact, the two surveys, dqn/act/diffusionpolicy/openvlaoft,
-% simplerenv/libero, the two bag-of-tricks papers.
+% Verification status of the citations, 2026-09-04. The uploads folder holds
+% the PDFs from 2026-08-21 onward, so every citation that carries a concrete
+% claim has now been read from its PDF: shortgpt, gromov, smolvla, turbovla,
+% flower (README), vlaeval, gazereg, ttfvla, flashvla, vlainfoentropy,
+% vlacache, vlapruner, specprune, vlaiap, efficientvla, molevla,
+% lookfocusact, traver, starvla. Quotes are in RelatedWork_Sources.md rows
+% 27 to 45. Not re-read, cited only for existence or lineage: schwartz, the
+% two surveys, dqn, act, diffusionpolicy, openvlaoft, simplerenv, libero,
+% fastv, sparsevlm, tome, the two bag-of-tricks papers.
+% Eighth pass, 2026-09-04, from the VLA-Cache and VLA-Pruner PDFs:
+%   "so history is retained unlike under token dropping" removed. Not in
+%     VLA-Cache; it was the mentor's gloss.
+%   Poor transfer of VLM pruning: VLA-Cache attributes it to ignoring the
+%     temporal structure of closed-loop control, not to "short action
+%     sequences". VLA-Pruner reproduces it on the SAME OpenVLA / LIBERO
+%     setting and attributes it to a prefill versus action-decode attention
+%     mismatch. Both now stated as the papers state them.
+%   Crossing cell: VLA-Pruner does run OpenVLA on both LIBERO and SIMPLER
+%     (OFT and pi0 on LIBERO only), so "do not report the crossing cell" was
+%     wrong for it. Now "where one backbone does appear on two benchmarks
+%     the others appear on one" (vlapruner, gazereg), which both satisfy.
 % Seventh pass, 2026-09-04, from those PDFs:
 %   TurboVLA does not remove layers, it drops the LLM pathway (direct
 %     V + L -> A, 0.2B). The compact-VLA sentence now splits FLOWER/SmolVLA
@@ -238,18 +249,19 @@ phases that need precision for the same reason~\cite{specprune}. We run fixed
 foveation and fixed repeat as controls that establish when the candidate
 methods need gates.
 
-\textbf{The recent baseline.} VLA-Cache reuses the key-value computation of
-visually static patches while recomputing patches that move or that the
-language model attends to, so history is retained unlike under token
-dropping~\cite{vlacache}. On base OpenVLA across LIBERO it reports average
-success of 74.7\% against 75.0\% dense at 39\% lower latency, a speed result at
-nearly unchanged success. It is the closest published point of comparison for
-our candidates, not a contribution of ours. The same paper accounts for a
-pattern reported for token pruning. Methods developed for vision-language
-models~\cite{fastv, sparsevlm, tome} transfer poorly to VLAs, which it
-attributes to VLAs' short action sequences~\cite{vlacache} and VLA-Pruner
-reproduces on another setting~\cite{vlapruner}. Whatever is dropped from the
-token stream must be chosen by a signal that knows what the robot is doing.
+\textbf{The recent baseline.} VLA-Cache reuses the cached key-value entries of
+visually static patches and recomputes those that move or that the decoder's
+attention marks task-relevant~\cite{vlacache}. On base OpenVLA across LIBERO it
+reports average success of 74.7\% against 75.0\% dense at 39\% lower latency, a
+speed result at nearly unchanged success. It is the closest published point of
+comparison for our candidates, not a contribution of ours. The same paper also
+reports that token pruning developed for vision-language models~\cite{fastv,
+sparsevlm, tome} transfers poorly to VLAs, which it attributes to those methods
+ignoring the temporal structure of closed-loop control~\cite{vlacache}.
+VLA-Pruner reproduces the loss on the same OpenVLA setting and attributes it
+instead to a mismatch between the attention patterns of the prefill and the
+action-decode stage~\cite{vlapruner}. Whatever is dropped from the token stream
+must be chosen by a signal that knows what the robot is doing.
 
 \textbf{Conditional candidates.} Three families remove computation only where a
 signal says it is safe. \emph{Depth.} Redundancy among decoder layers is well
@@ -295,13 +307,13 @@ benchmarks and documents evaluation pitfalls earlier work had left
 unrecorded~\cite{vlaeval}, and StarVLA describes the field as fragmented across
 incompatible codebases~\cite{starvla}. But infrastructure cannot supply the
 comparison itself. Papers that use several backbones also change the
-benchmark~\cite{vlacache, specprune, vlaiap}, and those with both factors
-present do not report the crossing cell~\cite{gazereg, vlapruner}, so the
-effect of a backbone cannot be separated from the effect of a benchmark. The
-tables we cite report mean success rates, which cannot say on which episodes an
-intervention helped. A speedup also depends on the dense baseline it is
-measured against, and an eager attention baseline inflates it relative to a
-fused one. We remove both, by pairing episodes and by measuring every speedup
+benchmark~\cite{vlacache, specprune, vlaiap}, and where one backbone does
+appear on two benchmarks the others appear on one~\cite{vlapruner, gazereg}, so
+the effect of a backbone cannot be separated from the effect of a benchmark.
+The tables we cite report mean success rates, which cannot say on which
+episodes an intervention helped. A speedup also depends on the dense baseline
+it is measured against, and an eager attention baseline inflates it relative to
+a fused one. We remove both, by pairing episodes and by measuring every speedup
 against fused attention. We exclude quantization, which lowers numerical
 precision rather than any of the three quantities above, and learned early
 exit, which needs training. Isolating the effect of choices that appear only in
