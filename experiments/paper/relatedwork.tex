@@ -217,8 +217,9 @@ against fused attention. We exclude quantization, which lowers numerical
 precision rather than any of the three quantities above, and learned early
 exit, which needs training. Isolating the effect of choices that appear only in
 source code is an established practice~\cite{bagoftricks_cnn, bagoftricks_llm}.
-We evaluate the six families under one protocol on six backbones, and cross the
-four that release checkpoints for both benchmarks with both. Every comparison
-is on matched episodes against optimized dense inference. A candidate is called
-positive only when its end-to-end latency, with the cost of its own signals
-included, and its success both clear a preregistered gate.
+We evaluate the six families under one protocol on six backbones. Four of them
+release checkpoints for WidowX and Fractal alike, and we run those four on both
+benchmarks. Every comparison is on matched episodes against optimized dense
+inference. A candidate is called positive only when its end-to-end latency,
+with the cost of its own signals included, and its success both clear a
+preregistered gate.

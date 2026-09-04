@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1108 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 310 words
+1117 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 320 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -125,11 +125,11 @@ numerical precision rather than any of the three quantities above, and learned
 early exit, which needs training. Isolating the effect of choices that appear
 only in source code is an established practice (Bag of Tricks for CNNs, Bag of
 Tricks for LLMs). We evaluate the six families under one protocol on six
-backbones, and cross the four that release checkpoints for both benchmarks with
-both. Every comparison is on matched episodes against optimized dense
-inference. A candidate is called positive only when its end-to-end latency,
-with the cost of its own signals included, and its success both clear a
-preregistered gate.
+backbones. Four of them release checkpoints for WidowX and Fractal alike, and
+we run those four on both benchmarks. Every comparison is on matched episodes
+against optimized dense inference. A candidate is called positive only when its
+end-to-end latency, with the cost of its own signals included, and its success
+both clear a preregistered gate.
 ---
 
 ## Notes for the co-authors
