@@ -14,9 +14,12 @@
 %     shrinks. Pending the mentor's rollout answer.
 %   - Motivation and lineage are gone (Related Work has them). Each
 %     subsection states only what runs, with symbols, not values.
-%   - Default VALUES are gone from here. They belong in IV.A Setup and
-%     Protocol, which the mentor writes. Handoff list of every value that
-%     must appear there:
+%   - Rule for variants: Methods defines the knob and, where settings have
+%     names rather than numbers, what the names mean. Swept VALUES (keep
+%     20/50, k = 2/4, 1/2/4 blocks, the tau triples, keyframe and reuse
+%     fraction) belong in IV.A Setup and Protocol, which the mentor writes,
+%     and the per-setting results in the ablation tables. Handoff list of
+%     every value that must appear in Setup:
 %       foveation      keep fraction rho = 0.2 (keep 20%), also 0.5 swept
 %       action repeat  k = 2 default, k = 4 swept
 %       depth removal  budgets 1, 2, 4 blocks; protect first quarter and
@@ -87,8 +90,8 @@ states~\cite{shortgpt}, on a calibration split disjoint from the test
 episodes. The selector protects the first quarter of the stack and the final
 block, forbids removing adjacent blocks, and fixes the removed set before
 testing. Removed blocks are excised and the generation cache reindexed, so
-this is removal rather than an identity block. We sweep the budget over 1, 2,
-and 4 blocks.
+this is removal rather than an identity block. The budget, how many blocks
+are removed, is the swept quantity.
 
 \subsection{Guarded Reuse}
 
@@ -97,7 +100,8 @@ signature is stable at frame and patch scale, the two most recent dense
 actions agree in direction and gripper state, and the commanded translation
 is above a floor. Reuse is capped at one consecutive step, and any failed
 gate returns to dense inference, so every step still sees a current image.
-Thresholds are swept as strict, moderate, and aggressive.
+The three thresholds are swept together as one setting, strict, moderate, or
+aggressive, from the tightest gate to the loosest.
 
 \subsection{Temporal Fusion}
 
@@ -107,5 +111,8 @@ these or adjacent to one, and marks at most a fixed fraction of the rest
 reusable. A reusable patch takes the previous step's projected token, the
 others are recomputed, and a dense keyframe every few steps bounds propagation.
 The same mask drives selective key-value reuse, so fusion alone is an accuracy
-candidate and the cache path is the speed extension. We evaluate
-motion-entropy, task-aware, and conservative-adaptive settings.
+candidate and the cache path is the speed extension. Three settings are
+evaluated. Motion-entropy builds the mask from motion and entropy alone,
+task-aware adds text-to-vision relevance, and conservative-adaptive keeps the
+motion-entropy mask with a smaller reuse fraction and a shorter keyframe
+interval.
