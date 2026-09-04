@@ -14,20 +14,26 @@ later per-family tables.
 
 Columns, all absolute:
 
-  Success (%)   success_rate_pct
-  Latency (ms)  policy_median_latency_ms. Model time PER CALL, so it
-                drops with depth pruning but not with action repeat, which
-                changes how often the model is called, not what one call costs.
-  Model s/ep    avg_policy_calls * per-call latency. Model time over a whole
-                EPISODE, so it drops with action repeat and guarded reuse, and
-                rises when a broken intervention makes episodes run longer.
-  Avg. steps    avg_steps, environment steps per episode.
+  Success (%)     success_rate_pct
+  Step time (ms)  avg_episode_time_s * 1000 / avg_steps. Wall-clock per
+                  environment step, end to end, the cost of an intervention's
+                  own signals included. The one latency defined the same way
+                  in every harness. Falls under action repeat on all six
+                  backbones (28 to 44 percent at k = 2).
+  Per call (ms)   policy_median_latency_ms. Model time for one call. Falls
+                  with depth pruning, unchanged under action repeat, so the
+                  pair shows whether a saving came from cheaper calls or
+                  fewer calls.
+  Avg. steps      avg_steps, environment steps per episode.
 
 Not used: cycle_median_latency_ms. Its definition differs between harnesses
-(per environment step for OpenVLA, MiniVLA, CronusVLA; per policy call for
-CogACT, SpatialVLA, UniVLA), so it moves in opposite directions under action
-repeat. avg_episode_time_s / avg_steps is the consistent wall-clock per step
-and is available from the same CSVs if a wall-clock column is wanted.
+(per environment step for OpenVLA, MiniVLA, CronusVLA; per policy call
+including the repeated steps for CogACT, SpatialVLA, UniVLA), so under
+action repeat it falls for the first three and rises for the other three.
+Also, under repeat the per-step distribution is bimodal (most steps near
+zero, one in k at full cost), so neither its median nor its p95 describes a
+step; MiniVLA repeat 4 has median 7.7 ms and p95 106 ms. The mean, episode
+time over steps, is the only summary that is a cost per step.
 
 Output: paper/tabletricks.tex  (needs booktabs, multirow, graphicx)
 """
@@ -102,10 +108,11 @@ def load(env_key):
 
 
 def fmt_row(row):
+    steps = float(row["avg_steps"])
+    step_ms = 1000.0 * float(row["avg_episode_time_s"]) / steps
     per_call_ms = float(row["policy_median_latency_ms"])
-    model_ep = float(row["avg_policy_calls"]) * per_call_ms / 1000.0
-    return (f"${float(row['success_rate_pct']):.1f}$ & ${per_call_ms:.0f}$ & "
-            f"${model_ep:.1f}$ & ${float(row['avg_steps']):.1f}$")
+    return (f"${float(row['success_rate_pct']):.1f}$ & ${step_ms:.0f}$ & "
+            f"${per_call_ms:.0f}$ & ${steps:.1f}$")
 
 
 def main():
@@ -139,30 +146,32 @@ def main():
 %% mentor's best-variant-per-family selection. The condition label names the
 %% chosen variant.
 %%
-%% "Latency" is model time PER CALL in ms (policy_median_latency_ms), so it drops
-%% with depth pruning but not with action repeat. "Model s/ep" is
-%% avg_policy_calls times that latency, model time over a whole EPISODE, so it
-%% drops with action repeat and guarded reuse and rises when a broken
-%% intervention makes episodes run longer. cycle_median_latency_ms is not
-%% used: it is per environment step in one harness and per policy call in the
-%% other, so it rises under action repeat for CogACT, SpatialVLA and UniVLA.
+%% "Step time" is wall-clock per environment step, avg_episode_time_s over
+%% avg_steps, end to end with each intervention's own signal cost included. It
+%% is the one latency defined identically in every harness and it falls under
+%% action repeat on all six backbones. "Per call" is policy_median_latency_ms,
+%% model time for one call, unchanged under action repeat and lower under depth
+%% pruning, so the pair separates cheaper calls from fewer calls.
+%% cycle_median_latency_ms is NOT used: per environment step in one harness,
+%% per policy call including repeated steps in the other, so it rises under
+%% action repeat for CogACT, SpatialVLA and UniVLA.
 %%
 %% MiniVLA and UniVLA have no Fractal checkpoint and appear under Bridge only.
 %% Needs booktabs, multirow, graphicx. Spans both columns: table*, not table.
 %% ---------------------------------------------------------------------------
 \\begin{{table*}}[t]
 \\centering
-\\caption{{Absolute success rate, model latency per call, model time per episode, and mean episode length, at the strongest setting of each intervention family.}}
+\\caption{{Absolute success rate, wall-clock time per environment step, model time per call, and mean episode length, at the strongest setting of each intervention family.}}
 \\label{{tab:grid}}
 \\setlength{{\\tabcolsep}}{{6pt}}
 \\begin{{tabular}}{{ll l rrrr}}
 \\toprule
-& Backbone & Condition & Success (\\%) & Latency (ms) & Model s/ep & Avg.\\ steps \\\\
+& Backbone & Condition & Success (\\%) & Step time (ms) & Per call (ms) & Avg.\\ steps \\\\
 \\midrule
 {body}
 \\end{{tabular}}
 \\vspace{{2pt}}
-\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Latency is model time per call, so action repeat and guarded reuse leave it unchanged and lower the model time per episode instead. The per-setting sweeps are in the ablation tables of Section~IV.}}
+\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Step time is end-to-end wall-clock per environment step, so it falls under action repeat and guarded reuse even though the per-call model time does not. The per-setting sweeps are in the ablation tables of Section~IV.}}
 \\end{{table*}}
 """
     with open(OUT, "w") as fh:
