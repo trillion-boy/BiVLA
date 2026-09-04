@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1133 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 335 words
+1110 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 310 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -96,15 +96,14 @@ subsampled pixels before any network call, at frame and patch scale, requires
 the last two dense actions to agree in direction and gripper state, and permits
 one reused step before the next dense call.
 
-**Temporal fusion with a shared cache mask.** TTF-VLA fuses visual tokens
-across frames without training and raises base OpenVLA on LIBERO by four points
-at under two percent overhead, a denoising result rather than a speed one.
-VLA-InfoEntropy selects which tokens to reuse by image and attention entropy,
-and VLA-IAP prunes tokens by interaction alignment. Each selects patches for
-one purpose with its own signal. We build one mask from motion, entropy and
-task relevance that drives both the denoising and the cache path, so the cache
-reuses only what the fusion also treats as stable, add fallbacks for contact,
-and test it against optimized dense inference on paired episodes.
+**Temporal fusion.** TTF-VLA fuses visual tokens across frames without training
+and raises base OpenVLA on LIBERO by four points at under two percent overhead,
+a denoising result rather than a speed one. VLA-InfoEntropy selects which
+tokens to reuse by image and attention entropy, and VLA-IAP prunes tokens by
+interaction alignment. Each selects patches for one purpose with its own
+signal. We build one mask from motion, entropy and task relevance, protect
+patches near contact, and test the fusion it drives against optimized dense
+inference on paired episodes.
 
 ### How these claims are evaluated
 
@@ -223,6 +222,13 @@ checkpoint at the size we evaluate": CronusVLA releases LIBERO checkpoints at
 fixable in prose: six families here versus five in Methods and the tables,
 the cache path of temporal fusion, "Both fail" versus repeat 2 on Fractal,
 the disjoint split, and "preregistered".
+
+**Shared cache mask removed (2026-09-04).** The temporal-fusion heading
+is now "Temporal fusion" and the closing sentence no longer says the mask
+drives a cache path. The CSVs show no latency change under temporal fusion
+and no separate fusion-plus-cache condition, so the speed claim had nothing
+in the tables behind it. Methods III.E says the same. Restore only if a
+fusion-plus-cache condition arrives with its own rows.
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,

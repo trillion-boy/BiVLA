@@ -125,15 +125,17 @@
 %   "removed from the visual stream" -> "dropped from the token stream".
 %     Foveation edits pixels and drops no tokens, and Table I shows it
 %     helping SpatialVLA, so the rule must be about tokens.
-%   Grid sentence: "a checkpoint at the size we evaluate". CronusVLA releases
-%     LIBERO checkpoints at 7B only (JeasLee collection) and we run 0.5B;
-%     SpatialVLA releases no LIBERO checkpoint (its LIBERO numbers were its
-%     own fine-tune). Verified 2026-09-04 from both README files.
+%   Grid sentence: "a checkpoint at the size we evaluate". SpatialVLA README
+%     (fetched 2026-09-04): four checkpoints, none for LIBERO. CronusVLA
+%     README (fetched 2026-09-04, AFTER this note was first written on
+%     memory): LIBERO checkpoints exist at 7B only, the single 0.5B
+%     checkpoint is Bridge + RT-1. Both support the sentence.
+%   Temporal fusion, 2026-09-04: heading and closing sentence no longer
+%     mention the shared cache mask. See bagoftricks.tex header.
 %   STILL OPEN, cannot be fixed in prose: "six intervention families" vs
-%     five in Methods and the tables (VLA-Cache rollout pending); "drives
-%     both the denoising and the cache path" (cache path not visible in the
-%     CSV latencies, pending); "Both fail" vs repeat 2 on Fractal (Results
-%     must state the exception); "disjoint split"; "preregistered".
+%     five in Methods and the tables (VLA-Cache rollout pending); "Both
+%     fail" vs repeat 2 on Fractal (Results must state the exception);
+%     "disjoint split"; "preregistered".
 %
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
@@ -212,16 +214,15 @@ conditions its token pruning on the manipulation phase~\cite{specprune}. Ours
 differs in where the gate sits and how far it may go. It reads subsampled
 pixels before any network call, at frame and patch scale, requires the last two
 dense actions to agree in direction and gripper state, and permits one reused
-step before the next dense call. \emph{Temporal fusion with a shared cache
-mask.} TTF-VLA fuses visual tokens across frames without training and raises
-base OpenVLA on LIBERO by four points at under two percent overhead, a
-denoising result rather than a speed one~\cite{ttfvla}. VLA-InfoEntropy selects
-which tokens to reuse by image and attention entropy~\cite{vlainfoentropy}, and
-VLA-IAP prunes tokens by interaction alignment~\cite{vlaiap}. Each selects
-patches for one purpose with its own signal. We build one mask from motion,
-entropy and task relevance that drives both the denoising and the cache path,
-so the cache reuses only what the fusion also treats as stable, add fallbacks
-for contact, and test it against optimized dense inference on paired episodes.
+step before the next dense call. \emph{Temporal fusion.} TTF-VLA fuses visual
+tokens across frames without training and raises base OpenVLA on LIBERO by four
+points at under two percent overhead, a denoising result rather than a speed
+one~\cite{ttfvla}. VLA-InfoEntropy selects which tokens to reuse by image and
+attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by
+interaction alignment~\cite{vlaiap}. Each selects patches for one purpose with
+its own signal. We build one mask from motion, entropy and task relevance,
+protect patches near contact, and test the fusion it drives against optimized
+dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
