@@ -17,7 +17,7 @@
 %                                          comparison, our protocol
 % Each paragraph ends on our position, the bag-of-tricks house style.
 %
-% Length: this is the LONG draft (about 1085 words of prose). Final target is
+% Length: this is the LONG draft (about 1100 words of prose). Final target is
 % 0.75 page, roughly 800 words in ieeeconf. Polish down from here; the cut
 % candidates are marked in RelatedWork.md.
 %
@@ -93,6 +93,19 @@
 %   (4) Gate is on end-to-end latency with the candidate's own signal cost
 %       included, per experiment_protocol.md line 9.
 %
+% Third review round, 2026-09-03:
+%   "We hold both fixed" -> "We remove both, by pairing episodes and by
+%       measuring every speedup against fused attention". "both" was reading
+%       as the nouns before it.
+%   Quantization "changes none of the three resources" -> "lowers numerical
+%       precision rather than any of the three quantities above".
+%   "four of them on both benchmarks" -> "crossing the four that release
+%       checkpoints for both benchmarks with both". Same count, states the
+%       reason.
+%   VLA-Cache "nearly maintained rather than improved success" -> "at nearly
+%       unchanged success". The contrast with TTF-VLA's denoising result is
+%       still carried by "a speed result" here and "a denoising result" there.
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -140,14 +153,13 @@ visually static patches while recomputing patches that move or that the
 language model attends to, so history is retained unlike under token
 dropping~\cite{vlacache}. On base OpenVLA across LIBERO it reports average
 success of 74.7\% against 75.0\% dense at 31.8~ms against 51.9~ms, a speed
-result with nearly maintained rather than improved success. That makes it the
-anchor against which we measure candidates, not a contribution of ours. The
-same paper accounts for a pattern reported for token pruning. Methods developed
-for vision-language models~\cite{fastv, sparsevlm, tome} transfer poorly to
-VLAs, which it attributes to VLAs' short action sequences~\cite{vlacache} and
-VLA-Pruner reproduces on another setting~\cite{vlapruner}. Whatever is removed
-from the visual stream must be removed by a signal that knows what the robot is
-doing.
+result at nearly unchanged success. That makes it the anchor against which we
+measure candidates, not a contribution of ours. The same paper accounts for a
+pattern reported for token pruning. Methods developed for vision-language
+models~\cite{fastv, sparsevlm, tome} transfer poorly to VLAs, which it
+attributes to VLAs' short action sequences~\cite{vlacache} and VLA-Pruner
+reproduces on another setting~\cite{vlapruner}. Whatever is removed from the
+visual stream must be removed by a signal that knows what the robot is doing.
 
 \textbf{Conditional candidates.} Three families remove computation only where a
 signal says it is safe. \emph{Depth.} Redundancy among decoder layers is well
@@ -195,11 +207,13 @@ effect of a backbone cannot be separated from the effect of a benchmark. The
 tables we cite report mean success rates, which cannot say on which episodes an
 intervention helped. A speedup also depends on the dense baseline it is
 measured against, and an eager attention baseline inflates it relative to a
-fused one. We hold both fixed. We exclude quantization, which changes none of
-the three resources, and learned early exit, which needs training. Isolating
-the effect of choices that appear only in source code is an established
-practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six families
-under one protocol on six backbones, four of them on both benchmarks, on
-matched episodes against optimized dense inference, so that a candidate is
-called positive only when its end-to-end latency, the cost of its own signals
+fused one. We remove both, by pairing episodes and by measuring every speedup
+against fused attention. We exclude quantization, which lowers numerical
+precision rather than any of the three quantities above, and learned early
+exit, which needs training. Isolating the effect of choices that appear only in
+source code is an established practice~\cite{bagoftricks_cnn, bagoftricks_llm}.
+We evaluate the six families under one protocol on six backbones, crossing the
+four that release checkpoints for both benchmarks with both, on matched
+episodes against optimized dense inference, so that a candidate is called
+positive only when its end-to-end latency, the cost of its own signals
 included, and its success both clear a preregistered gate.

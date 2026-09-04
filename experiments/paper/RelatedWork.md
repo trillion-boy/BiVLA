@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1085 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 285 words
+1102 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 300 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -61,13 +61,13 @@ VLA-Cache reuses the key-value computation of visually static patches while
 recomputing patches that move or that the language model attends to, so history
 is retained unlike under token dropping. On base OpenVLA across LIBERO it
 reports average success of 74.7% against 75.0% dense at 31.8 ms against 51.9
-ms, a speed result with nearly maintained rather than improved success. That
-makes it the anchor against which we measure candidates, not a contribution of
-ours. The same paper accounts for a pattern reported for token pruning. Methods
-developed for vision-language models (FastV, SparseVLM, ToMe) transfer poorly
-to VLAs, which it attributes to VLAs' short action sequences and VLA-Pruner
-reproduces on another setting. Whatever is removed from the visual stream must
-be removed by a signal that knows what the robot is doing.
+ms, a speed result at nearly unchanged success. That makes it the anchor
+against which we measure candidates, not a contribution of ours. The same paper
+accounts for a pattern reported for token pruning. Methods developed for
+vision-language models (FastV, SparseVLM, ToMe) transfer poorly to VLAs, which
+it attributes to VLAs' short action sequences and VLA-Pruner reproduces on
+another setting. Whatever is removed from the visual stream must be removed by
+a signal that knows what the robot is doing.
 
 ### Conditional candidates
 
@@ -119,14 +119,16 @@ VLA-Pruner), so the effect of a backbone cannot be separated from the effect of
 a benchmark. The tables we cite report mean success rates, which cannot say on
 which episodes an intervention helped. A speedup also depends on the dense
 baseline it is measured against, and an eager attention baseline inflates it
-relative to a fused one. We hold both fixed. We exclude quantization, which
-changes none of the three resources, and learned early exit, which needs
-training. Isolating the effect of choices that appear only in source code is an
-established practice (Bag of Tricks for CNNs, Bag of Tricks for LLMs). We
-evaluate the six families under one protocol on six backbones, four of them on
-both benchmarks, on matched episodes against optimized dense inference, so that
-a candidate is called positive only when its end-to-end latency, the cost of
-its own signals included, and its success both clear a preregistered gate.
+relative to a fused one. We remove both, by pairing episodes and by measuring
+every speedup against fused attention. We exclude quantization, which lowers
+numerical precision rather than any of the three quantities above, and learned
+early exit, which needs training. Isolating the effect of choices that appear
+only in source code is an established practice (Bag of Tricks for CNNs, Bag of
+Tricks for LLMs). We evaluate the six families under one protocol on six
+backbones, crossing the four that release checkpoints for both benchmarks with
+both, on matched episodes against optimized dense inference, so that a
+candidate is called positive only when its end-to-end latency, the cost of its
+own signals included, and its success both clear a preregistered gate.
 ---
 
 ## Notes for the co-authors
@@ -192,6 +194,16 @@ what is chosen is the removed set, not a threshold. (4) The gate is now on
 end-to-end latency with the cost of the candidate's own signals included,
 which experiment_protocol.md already requires and the CSVs already measure
 (fusion task-aware costs OpenVLA 12 ms per call).
+
+**Third review round (2026-09-03), four wording points, all acted on.**
+"We hold both fixed" named what is fixed (paired episodes, fused attention
+baseline), because "both" was reading as the nouns before it. Quantization
+now "lowers numerical precision rather than any of the three quantities
+above" instead of "changes none of the three resources". The closing
+sentence gives the reason for the 10-cell grid, checkpoints exist for both
+benchmarks on four backbones, instead of a bare "four of them". VLA-Cache is
+"a speed result at nearly unchanged success"; the earlier "rather than
+improved" came from literature_review.md but reads as a dig in the paper.
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,
