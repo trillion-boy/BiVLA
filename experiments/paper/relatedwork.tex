@@ -111,6 +111,13 @@
 %   phase" misattributed reuse to it. Now "conditions its token pruning on the
 %   manipulation phase".
 %
+% Grid sentence, 2026-09-03: the paper now has Table I (SimplerEnv WidowX +
+%   Fractal) and Table II (LIBERO, four suites), with SmolVLA as a seventh
+%   backbone and OpenVLA/LIBERO still running. Counts are therefore NOT
+%   hardcoded any more. The closing sentence names the three benchmarks and
+%   states the rule: every backbone runs on each benchmark with a released
+%   checkpoint. Put numbers back only when the grid is frozen.
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -217,9 +224,9 @@ against fused attention. We exclude quantization, which lowers numerical
 precision rather than any of the three quantities above, and learned early
 exit, which needs training. Isolating the effect of choices that appear only in
 source code is an established practice~\cite{bagoftricks_cnn, bagoftricks_llm}.
-We evaluate the six families under one protocol on six backbones. Four of them
-release checkpoints for WidowX and Fractal alike, and we run those four on both
-benchmarks. Every comparison is on matched episodes against optimized dense
-inference. A candidate is called positive only when its end-to-end latency,
-with the cost of its own signals included, and its success both clear a
-preregistered gate.
+We evaluate the six families under one protocol on three benchmarks, the WidowX
+and Fractal suites of SimplerEnv and the four suites of LIBERO, and run every
+backbone on each benchmark for which it releases a checkpoint. Every comparison
+is on matched episodes against optimized dense inference. A candidate is called
+positive only when its end-to-end latency, with the cost of its own signals
+included, and its success both clear a preregistered gate.

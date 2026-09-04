@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1117 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 320 words
+1125 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 325 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -124,12 +124,13 @@ every speedup against fused attention. We exclude quantization, which lowers
 numerical precision rather than any of the three quantities above, and learned
 early exit, which needs training. Isolating the effect of choices that appear
 only in source code is an established practice (Bag of Tricks for CNNs, Bag of
-Tricks for LLMs). We evaluate the six families under one protocol on six
-backbones. Four of them release checkpoints for WidowX and Fractal alike, and
-we run those four on both benchmarks. Every comparison is on matched episodes
-against optimized dense inference. A candidate is called positive only when its
-end-to-end latency, with the cost of its own signals included, and its success
-both clear a preregistered gate.
+Tricks for LLMs). We evaluate the six families under one protocol on three
+benchmarks, the WidowX and Fractal suites of SimplerEnv and the four suites of
+LIBERO, and run every backbone on each benchmark for which it releases a
+checkpoint. Every comparison is on matched episodes against optimized dense
+inference. A candidate is called positive only when its end-to-end latency,
+with the cost of its own signals included, and its success both clear a
+preregistered gate.
 ---
 
 ## Notes for the co-authors
@@ -205,6 +206,12 @@ sentence gives the reason for the 10-cell grid, checkpoints exist for both
 benchmarks on four backbones, instead of a bare "four of them". VLA-Cache is
 "a speed result at nearly unchanged success"; the earlier "rather than
 improved" came from literature_review.md but reads as a dig in the paper.
+
+**Grid sentence is count-free (2026-09-03).** Table II adds LIBERO (four
+suites) and SmolVLA, and OpenVLA on LIBERO is still running, so "six
+backbones" and "two benchmarks" were dropped. The sentence names the three
+benchmarks and the rule (every backbone on each benchmark with a released
+checkpoint). Restore counts once the grid is frozen.
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,
