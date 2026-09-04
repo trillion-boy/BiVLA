@@ -20,7 +20,12 @@
 %     fraction) belong in IV.A Setup and Protocol, which the mentor writes,
 %     and the per-setting results in the ablation tables. Handoff list of
 %     every value that must appear in Setup:
-%       foveation      keep fraction rho = 0.2 (keep 20%), also 0.5 swept
+%       foveation      Gaussian-blur foveation only (vla_tricks/foveation.py
+%                      has no log-polar path; the log-polar variant was cut
+%                      from III.A in the tenth pass). rho = sharp-disc
+%                      area fraction, 0.2 default, 0.5 swept. CONFIRM the
+%                      same blur ran in the CogACT / SpatialVLA / UniVLA /
+%                      CronusVLA harness.
 %       action repeat  k = 2 default, k = 4 swept
 %       depth removal  budgets 1, 2, 4 blocks; protect first quarter and
 %                      final block; no two adjacent; calibration split
@@ -84,6 +89,53 @@
 %     "one inference-time quantity, whose values" -> "one part of inference,
 %     at settings".
 %
+% Tenth pass, 2026-09-04, from the 88-agent audit:
+%   III.A described a log-polar variant that never ran. The tricks code has
+%     only foveate_blur (sharp disc of area fraction rho, blurred blends
+%     outside). Log-polar sentence cut; rho now has one meaning.
+%   "For a backbone that emits action chunks" was false for CogACT and
+%     SpatialVLA, whose harness executes one action per call (CSV: 44.8
+%     calls for 44.8 steps). Now "Where the harness executes a full action
+%     chunk per call" (UniVLA only).
+%   "lengthens by k" -> "multiplies by k". "negative controls" -> "controls".
+%   "block" -> "layer" and "Block Influence" capitalised, matching RW and
+%     ShortGPT; "depth removal" -> "depth pruning", matching the heading.
+%   "every step still sees a current image" -> "the gates read a current
+%     image at every step and only the model call is skipped" (the policy
+%     does not see it on a reused step).
+%   Fused token: the reused token is the previous FUSED token, not a
+%     recomputed one (perception.py keeps fused.detach()). Reworded.
+%   "Interaction-aware temporal fusion" -> "Temporal fusion" (collided with
+%     VLA-IAP's "interaction alignment" two sentences earlier in RW).
+%
+%   OPEN, needs the mentor (cannot be fixed in prose):
+%   DEPTH MECHANISM: III.C states one selector (first quarter + final layer
+%     protected, no adjacent, true removal with cache reindexing). That is
+%     vla_tricks/depth.py, the OpenVLA/MiniVLA harness. The UniVLA harness
+%     (adaptive_sparse_vla/inference.py) has its own selector: candidates
+%     from floor(0.5 N), final layer NOT protected, gap rule with a fallback
+%     that ignores it, and BypassDecoderLayer (identity), not removal.
+%     UniVLA's rows (26; 26,30; 21,24,26,30) satisfy both rules in outcome,
+%     but the mechanism sentence is false for it if that selector ran. ASK
+%     which selector ran for UniVLA, CogACT and SpatialVLA. Fallback text if
+%     both ran: "The selector protects a prefix of the stack and the final
+%     layer where the harness allows, forbids removing adjacent layers, and
+%     fixes the removed set before testing. Removed layers are excised or
+%     bypassed, as listed in Section IV-A."
+%   CRONUSVLA FUSION: all three fusion rows on both suites carry keyframe
+%     interval 1, fraction 0.5, and identical success, steps and token
+%     counts, so they are one run three times with fusion disabled. Rerun at
+%     the shared presets or footnote and exclude from the fusion claim.
+%   NOISE FLOOR: one seed, one run per cell. Ask for a second dense seed per
+%     cell so Setup can state run-to-run variation.
+%   TIE RULE: seven exact success ties in the best-of-family pick (e.g.
+%     CronusVLA Bridge guarded reuse 36.0 x3, UniVLA depth 1 = 2). Ask which
+%     rule broke them; it is not "tighter setting" (UniVLA kept moderate).
+%   HARDWARE: Setup needs GPU model and count, dtype (bf16 on OpenVLA), batch
+%     size 1, and what avg_episode_time_s spans (simulator step included?).
+%   TASK-AWARE RELEVANCE is read from the preceding call (step t uses t-1),
+%     first step of an episode has none; verified for MiniVLA harness only.
+%
 % Style: no em-dashes, no semicolons, no prose colons. About 520 words by the paper word counter.
 % ---------------------------------------------------------------------------
 
@@ -93,37 +145,34 @@ A VLA policy $\pi_\theta$ maps an image and an instruction to an action $a_t$
 through a visual encoder and a stack of decoder blocks. The reference is the
 released policy run unchanged under fused attention. Every intervention below
 leaves $\theta$ frozen and changes one part of inference, at settings listed in
-Section~IV-A. The first two are negative controls and the last three are the
-candidates. Related Work gives the lineage of each. Here we state only what
-runs.
+Section~IV-A. The first two are controls and the last three are the candidates.
+Related Work gives the lineage of each. Here we state only what runs.
 
 \subsection{Foveation}
 
-Fixed foveation keeps a sharp center and suppresses the periphery at a keep
-fraction $\rho$. The log-polar variant warps the frame about its center, keeps
-a fraction $\rho$ of the samples, and inverts the warp. The blur variant keeps
-a central disc and blends increasingly blurred copies outside it. Output
-resolution and visual token count are unchanged, so foveation tests
+Fixed foveation keeps a central disc sharp, covering a fraction $\rho$ of the
+image area, and blends increasingly blurred copies of the frame outside it.
+Output resolution and visual token count are unchanged, so foveation tests
 perceptual simplification alone.
 
 \subsection{Action Repeat}
 
 Unconditional action repeat executes each dense action for $k$ consecutive
 steps and queries the policy on none of the repeated steps. It divides model
-calls per environment step by $k$ and lengthens by $k$ the interval the robot
-acts on without fresh feedback, with no gate. For a backbone that emits action
-chunks, one call then covers $k$ times the chunk length.
+calls per environment step by $k$ and multiplies by $k$ the interval the robot
+acts on without fresh feedback, with no gate. Where the harness executes a full
+action chunk per call, one call then covers $k$ times the chunk length.
 
 \subsection{Depth Pruning}
 
-Calibrated depth removal scores each decoder block by ShortGPT block
-influence, one minus the mean cosine between its input and output hidden
-states~\cite{shortgpt}, on a calibration split disjoint from the test
-episodes. The selector protects the first quarter of the stack and the final
-block, forbids removing adjacent blocks, and fixes the removed set before
-testing. Removed blocks are excised and the generation cache reindexed, so
-this is removal rather than an identity block. The budget, how many blocks
-are removed, is the swept quantity.
+Calibrated depth pruning scores each decoder layer by ShortGPT Block Influence,
+one minus the mean cosine between its input and output hidden
+states~\cite{shortgpt}, on a calibration split disjoint from the test episodes.
+The selector protects the first quarter of the stack and the final layer,
+forbids removing adjacent layers, and fixes the removed set before testing.
+Removed layers are excised and the generation cache reindexed, so this is
+removal rather than an identity layer. The budget, how many layers are removed,
+is the swept quantity.
 
 \subsection{Guarded Reuse}
 
@@ -131,18 +180,19 @@ Guarded action reuse repeats the previous action only when a subsampled pixel
 signature is stable at frame and patch scale, the two most recent dense actions
 agree in direction and gripper state, and the commanded translation is above a
 floor, which disables reuse in low-motion precision phases. Consecutive reuse
-is capped, and any failed gate returns to dense inference, so every step still
-sees a current image. The image and agreement thresholds and the cap are swept
-together as one setting, strict, moderate, or aggressive, from the tightest to
-the loosest, with the translation floor fixed.
+is capped, and any failed gate returns to dense inference, so the gates read a
+current image at every step and only the model call is skipped. The image and
+agreement thresholds and the cap are swept together as one setting, strict,
+moderate, or aggressive, from the tightest to the loosest, with the translation
+floor fixed.
 
 \subsection{Temporal Fusion}
 
-Interaction-aware temporal fusion scores each visual patch by motion, image
-entropy, and optional text-to-vision relevance, protects patches high in any of
-these or adjacent to one, and marks at most a fixed fraction of the rest
-reusable. A reusable patch takes the previous step's projected token, the
-others are recomputed, and a dense keyframe every few steps bounds propagation.
+Temporal fusion scores each visual patch by motion, image entropy, and optional
+text-to-vision relevance, protects patches high in any of these or adjacent to
+one, and marks at most a fixed fraction of the rest reusable. A reusable patch
+keeps the token that entered the decoder at the previous step, the others take
+the fresh token, and a dense keyframe every few steps bounds propagation.
 Fusion changes which tokens enter the decoder, not how many, so it is an
 accuracy candidate rather than a speed one. Three settings are evaluated.
 Motion-entropy builds the mask from motion and entropy alone, task-aware adds

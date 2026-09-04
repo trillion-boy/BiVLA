@@ -21,9 +21,10 @@ Columns, all absolute:
                   in every harness. Falls under action repeat on all six
                   backbones (28 to 44 percent at k = 2).
   (policy_median_latency_ms, model time per call, is not in the table. It
-   is unchanged under action repeat and lower under depth pruning, so
-   Results states in prose whether a saving came from cheaper calls or
-   fewer calls.)
+   is unchanged under action repeat on five backbones and lower under depth
+   pruning. In the CronusVLA rows it equals k times cycle_median_latency_ms,
+   so it rises with k there. Results states in prose whether a saving came
+   from cheaper calls or fewer calls.)
   Avg. steps      avg_steps, environment steps per episode.
 
 Not used: cycle_median_latency_ms. Its definition differs between harnesses
@@ -88,7 +89,7 @@ LABEL = {
     "guarded_reuse_aggressive": "Guarded reuse aggressive",
     "temporal_fusion_motion_entropy": "Temporal fusion motion-entropy",
     "temporal_fusion_task_aware": "Temporal fusion task-aware",
-    "temporal_fusion_conservative_adaptive": "Temporal fusion conservative",
+    "temporal_fusion_conservative_adaptive": "Temporal fusion conservative-adaptive",
 }
 
 
@@ -160,7 +161,7 @@ def main():
 %% ---------------------------------------------------------------------------
 \\begin{{table*}}[t]
 \\centering
-\\caption{{Absolute success rate, end-to-end latency per environment step, and mean episode length, at the strongest setting of each intervention family.}}
+\\caption{{Absolute success rate, end-to-end latency per environment step, and mean episode length, at the highest-success setting of each intervention family.}}
 \\label{{tab:grid}}
 \\setlength{{\\tabcolsep}}{{6pt}}
 \\begin{{tabular}}{{ll l rrr}}
@@ -170,7 +171,7 @@ def main():
 {body}
 \\end{{tabular}}
 \\vspace{{2pt}}
-\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Latency is end-to-end wall-clock per environment step, the cost of each intervention's own signals included, so it falls under action repeat and guarded reuse as well as under depth pruning. The per-setting sweeps are in the ablation tables of Section~IV.}}
+\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate for that backbone and benchmark, named in the condition column. Latency is end-to-end wall-clock per environment step with the cost of each intervention's own signals and image transforms included, so a saving from fewer calls and the cost of the gate that buys it appear in the same number. It falls under action repeat and depth pruning in every cell and under guarded reuse in nine of ten. On UniVLA the guarded reuse and conservative-adaptive rows equal dense because the gate fired once in 200 episodes and the fusion mask marked no token reusable. MiniVLA and UniVLA release no Fractal checkpoint and appear under Bridge only. The per-setting sweeps are in the ablation tables of Section~IV.}}
 \\end{{table*}}
 """
     with open(OUT, "w") as fh:

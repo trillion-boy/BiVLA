@@ -1,5 +1,5 @@
 % ---------------------------------------------------------------------------
-% Figure -- where the six methods apply in the VLA inference pipeline (v2).
+% Figure -- where the five methods apply in the VLA inference pipeline (v2).
 % Gives Section III visual weight and shows each family's role at a glance.
 %
 % TikZ, not matplotlib, so the vector schema has no Type 3 fonts and passes
@@ -7,6 +7,9 @@
 %   \usepackage{tikz}
 %   \usetikzlibrary{positioning, arrows.meta}
 % Preview it on its own with figpipeline_standalone.tex.
+% Tenth pass 2026-09-04: five methods, VLA-Cache tag removed (no rollout
+% rows), symbols k and c match III.B. Restore the tag and "six" only if
+% VLA-Cache rows arrive.
 %
 % Spans both columns (figure*), placed near the top of Section III.
 % ---------------------------------------------------------------------------
@@ -24,7 +27,7 @@
 % --- pipeline, left to right ---
 \node[box] (obs) {Observation\\$o_t$};
 \node[box, right=13mm of obs] (enc) {Visual\\encoder};
-\node[box, right=20mm of enc] (dec) {Decoder\\$N$ layers};
+\node[box, right=20mm of enc] (dec) {Decoder\\layers};
 \node[box, right=13mm of dec] (head) {Action\\head};
 \node[box, right=15mm of head] (env) {Environment};
 \draw[flow] (obs) -- (enc);
@@ -34,10 +37,10 @@
 % --- feedback arrow above, carrying the horizon ---
 \draw[flow] (env.north) -- ++(0,7mm)
       -| node[above, pos=0.25, font=\footnotesize]
-      {re-query every $h = c\,r$ steps} (obs.north);
-% --- the six methods, grouped by where each acts, with its role ---
+      {re-query every $h = c\,k$ steps} (obs.north);
+% --- the five methods, grouped by where each acts, with its role ---
 \node[tag, below=10mm of obs]  (t1) {\textbf{Foveation} (control)};
-\node[tag, below=10mm of enc]  (t2) {\textbf{VLA-Cache} (baseline)\\\textbf{Temporal fusion} (candidate)};
+\node[tag, below=10mm of enc]  (t2) {\textbf{Temporal fusion} (candidate)};
 \node[tag, below=10mm of dec]  (t3) {\textbf{Depth pruning} (candidate)};
 \node[tag, below=10mm of head] (t4) {\textbf{Action repeat} (control)\\\textbf{Guarded reuse} (candidate)};
 \draw[->, dashed] (t1) -- (obs);
@@ -45,13 +48,13 @@
 \draw[->, dashed] (t3) -- (dec);
 \draw[->, dashed] (t4) -- (head);
 \end{tikzpicture}
-\caption{The six training-free methods in the VLA inference pipeline, each
-tagged at the point it acts and by its role. The two negative controls degrade
-the input (foveation) or skip feedback unconditionally (action repeat). The
-recent baseline (VLA-Cache) and the candidates reuse visual-token computation
-across frames (temporal fusion), skip decoder layers (depth pruning), or reuse
-a whole action under stability gates (guarded reuse). One query returns a chunk
-of $c$ actions and the action repeat $r$ holds each for $r$ steps, so the
-horizon $h = c\,r$ sets how many environment steps pass between queries.}
+\caption{The five training-free methods in the VLA inference pipeline, each
+tagged at the point it acts and by its role. The two controls degrade the
+input (foveation) or skip feedback unconditionally (action repeat). The
+candidates swap stable visual tokens for the previous step's (temporal
+fusion), remove decoder layers (depth pruning), or reuse a whole action under
+stability gates (guarded reuse). One query returns a chunk of $c$ actions and
+the action repeat $k$ holds each for $k$ steps, so the horizon $h = c\,k$
+sets how many environment steps pass between queries.}
 \label{fig:pipeline}
 \end{figure*}

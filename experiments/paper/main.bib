@@ -10,11 +10,9 @@
 % recurring error are kept here; the archival ones live in that file.
 %
 % Before submission, confirm from a normal browser (arXiv/HF are blocked here):
-% the venues currently omitted (fastv, simplerenv) and the few entries still
-% missing an arXiv number (bagoftricks_llm, vlaeval).
+% fastv's ECCV venue, simplerenv's CoRL listing, molevla's author list, and
+% lookfocusact's latest version date.
 % ---------------------------------------------------------------------------
-
-% ===================== the interventions we re-measure =====================
 
 % univla: our backbone is Yuqi Wang's UniVLA(-Emu3), arXiv 2506.19850, whose
 % checkpoint source (adaptive_sparse_vla/inference_libero.py:6-9) warns it is
@@ -48,8 +46,6 @@
   year    = {2025},
 }
 
-% ===================== our backbones and benchmarks =====================
-
 % efficientvla: "Zhongwei, Luo" is deliberate. arXiv writes the fifth author as
 % bare "Luo Zhongwei" in a First-Last list, which BibTeX parses as
 % family=Zhongwei. Odd next to the others, but it is how the source publishes
@@ -64,10 +60,9 @@
   year    = {2025},
 }
 
-% fastv: kept as @article on purpose. It may well be ECCV 2024, but nothing in
-% this repository records the venue, and this is the same unverified-data trap
-% that produced three earlier citation errors. Restore @inproceedings with a
-% booktitle only if the acceptance is confirmed.
+% fastv: kept as @article. VLA-Cache [29] and VLA-InfoEntropy [27] cite it as
+% ECCV 2024, pp. 19-35, but the Springer listing has not been checked from
+% here. Switch to @inproceedings once it is.
 @article{fastv,
   title   = {An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play
              Inference Acceleration for Large Vision-Language Models},
@@ -86,15 +81,19 @@
   year    = {2024},
 }
 
-@article{vlacache,
-  title   = {{VLA-Cache}: Efficient Vision-Language-Action Manipulation via
-             Adaptive Token Caching},
-  author  = {Xu, Siyu and Wang, Yunke and Xia, Chenghao and Zhu, Dihao and
-             Huang, Tao and Xu, Chang},
-  journal = {arXiv preprint arXiv:2502.02175},
-  year    = {2025},
+@inproceedings{vlacache,
+  title     = {{VLA-Cache}: Efficient Vision-Language-Action Manipulation via
+               Adaptive Token Caching},
+  author    = {Xu, Siyu and Wang, Yunke and Xia, Chenghao and Zhu, Dihao and
+               Huang, Tao and Xu, Chang},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2025},
+  note      = {arXiv:2502.02175},
 }
 
+% molevla: author list follows the authors' own BibTeX (repo README) and the
+% arXiv listing; the v2 title page prints nine authors without Dan Wang.
+% Confirm on arXiv before camera-ready.
 @article{molevla,
   title   = {{MoLe-VLA}: Dynamic Layer-skipping Vision Language Action Model
              via Mixture-of-Layers for Efficient Robot Manipulation},
@@ -117,25 +116,29 @@
   year    = {2024},
 }
 
-% simplerenv: kept as @article on purpose. Very likely CoRL 2024 and it is the
-% benchmark we run, so it is worth restoring, but the venue is not recorded
-% here. Confirm before switching to @inproceedings.
-@article{simplerenv,
+% simplerenv: CoRL 2024 per vla-eval's reference list and the PMLR v270
+% proceedings page found during the 2026-09-04 audit; confirm from a browser.
+@inproceedings{simplerenv,
   title   = {Evaluating Real-World Robot Manipulation Policies in Simulation},
   author  = {Li, Xuanlin and Hsu, Kyle and Gu, Jiayuan and Pertsch, Karl and
              Mees, Oier and Walke, Homer Rich and Fu, Chuyuan and Lunawat,
              Ishikaa and Sieh, Isabel and Kirmani, Sean and Levine, Sergey and
              Wu, Jiajun and Finn, Chelsea and Su, Hao and Vuong, Quan and
              Xiao, Ted},
-  journal = {arXiv preprint arXiv:2405.05941},
-  year    = {2024},
+  booktitle = {Conference on Robot Learning (CoRL)},
+  year      = {2024},
+  note      = {arXiv:2405.05941},
 }
 
+% vlapruner: arXiv 2511.16449 was retitled at v5 (26 May 2026) and gained two
+% authors; the method is still called VLA-Pruner in the text. The unversioned
+% id resolves to v5, so the entry follows v5.
 @article{vlapruner,
-  title   = {{VLA-Pruner}: Temporal-Aware Dual-Level Visual Token Pruning for
-             Efficient Vision-Language-Action Inference},
-  author  = {Liu, Ziyan and Chen, Yeqiu and Cai, Hongyi and Lin, Tao and Yang,
-             Shuo and Liu, Zheng and Zhao, Bo},
+  title   = {Bridging the Semantic-Action Gap in Visual Token Pruning for
+             Efficient {VLA} Inference},
+  author  = {Liu, Ziyan and Chen, Yeqiu and Zhang, Yiming and Cai, Hongyi and
+             Lin, Tao and Gui, Runquan and Yang, Shuo and Liu, Zheng and Zhao,
+             Bo},
   journal = {arXiv preprint arXiv:2511.16449},
   year    = {2025},
 }
@@ -167,8 +170,6 @@
   journal = {arXiv preprint arXiv:2510.24795},
   year    = {2026},
 }
-
-% ===================== the genre =====================
 
 @article{dqn,
   title   = {Human-level control through deep reinforcement learning},
@@ -206,15 +207,14 @@
   year      = {2019},
 }
 
-% bagoftricks_llm: arXiv number still missing; fill before submission.
-@article{bagoftricks_llm,
-  title   = {Bag of Tricks for Inference-time Computation of {LLM} Reasoning},
-  author  = {Liu, Fan and Chao, Wen-Shuo and Tan, Naiqiang and Liu, Hao},
-  journal = {arXiv preprint},
-  year    = {2025},
+@inproceedings{bagoftricks_llm,
+  title     = {Bag of Tricks for Inference-time Computation of {LLM} Reasoning},
+  author    = {Liu, Fan and Chao, Wen-Shuo and Tan, Naiqiang and Liu, Hao},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS),
+               Datasets and Benchmarks Track},
+  year      = {2025},
+  note      = {arXiv:2502.07191},
 }
-
-% ===================== axis 1 lineage =====================
 
 % diffusionpolicy: cited for action chunking as lineage; not read in full.
 @inproceedings{diffusionpolicy,
@@ -227,14 +227,15 @@
   note      = {arXiv:2303.04137},
 }
 
-@article{flower,
-  title   = {{FLOWER}: Democratizing Generalist Robot Policies with Efficient
-             Vision-Language-Action Flow Policies},
-  author  = {Reuss, Moritz and Zhou, Hongyi and R{\"u}hle, Marcel and
-             Ya{\u{g}}murlu, {\"O}mer Erdin{\c{c}} and Otto, Fabian and
-             Lioutikov, Rudolf},
-  journal = {arXiv preprint arXiv:2509.04996},
-  year    = {2025},
+@inproceedings{flower,
+  title     = {{FLOWER}: Democratizing Generalist Robot Policies with Efficient
+               Vision-Language-Action Flow Policies},
+  author    = {Reuss, Moritz and Zhou, Hongyi and R{\"u}hle, Marcel and
+               Ya{\u{g}}murlu, {\"O}mer Erdin{\c{c}} and Otto, Fabian and
+               Lioutikov, Rudolf},
+  booktitle = {Conference on Robot Learning (CoRL)},
+  year      = {2025},
+  note      = {arXiv:2509.04996},
 }
 
 @inproceedings{gazereg,
@@ -267,8 +268,6 @@
   year    = {2026},
 }
 
-% ===================== compact VLAs =====================
-
 @article{schwartz,
   title   = {Spatial Mapping in the Primate Sensory Projection: Analytic
              Structure and Relevance to Perception},
@@ -292,14 +291,15 @@
   year    = {2025},
 }
 
-@article{sparsevlm,
-  title   = {{SparseVLM}: Visual Token Sparsification for Efficient
-             Vision-Language Model Inference},
-  author  = {Zhang, Yuan and Fan, Chun-Kai and Ma, Junpeng and Zheng, Wenzhao
-             and Huang, Tao and Cheng, Kuan and Gudovskiy, Denis and Okuno,
-             Tomoyuki and Nakata, Yohei and Keutzer, Kurt and Zhang, Shanghang},
-  journal = {arXiv preprint arXiv:2410.04417},
-  year    = {2025},
+@inproceedings{sparsevlm,
+  title     = {{SparseVLM}: Visual Token Sparsification for Efficient
+               Vision-Language Model Inference},
+  author    = {Zhang, Yuan and Fan, Chun-Kai and Ma, Junpeng and Zheng, Wenzhao
+               and Huang, Tao and Cheng, Kuan and Gudovskiy, Denis and Okuno,
+               Tomoyuki and Nakata, Yohei and Keutzer, Kurt and Zhang, Shanghang},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2025},
+  note      = {arXiv:2410.04417},
 }
 
 % specprune: year is 2026 on purpose (arXiv stamps 2026), not 2025.
@@ -320,16 +320,6 @@
   year    = {2026},
 }
 
-@inproceedings{tome,
-  title     = {Token Merging: Your {ViT} but Faster},
-  author    = {Bolya, Daniel and Fu, Cheng-Yang and Dai, Xiaoliang and Zhang,
-               Peizhao and Feichtenhofer, Christoph and Hoffman, Judy},
-  booktitle = {International Conference on Learning Representations (ICLR)},
-  year      = {2023},
-}
-
-% ===================== foveation lineage =====================
-
 @article{traver,
   title   = {A review of log-polar imaging for visual perception in robotics},
   author  = {Traver, V. Javier and Bernardino, Alexandre},
@@ -349,15 +339,12 @@
   year    = {2026},
 }
 
-% ===================== evaluation practice =====================
-
-% vlaeval: arXiv number still missing; fill before submission.
 @article{vlaeval,
   title   = {vla-eval: A Unified Evaluation Harness for Vision-Language-Action
              Models},
   author  = {Choi, Suhwan and Lee, Yunsung and Park, Yubeen and Kim, Chris
              Dongjoo and Krishna, Ranjay and Fox, Dieter and Yu, Youngjae},
-  journal = {arXiv preprint},
+  journal = {arXiv preprint arXiv:2603.13966},
   year    = {2026},
 }
 
