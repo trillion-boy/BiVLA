@@ -125,10 +125,11 @@ numerical precision rather than any of the three quantities above, and learned
 early exit, which needs training. Isolating the effect of choices that appear
 only in source code is an established practice (Bag of Tricks for CNNs, Bag of
 Tricks for LLMs). We evaluate the six families under one protocol on six
-backbones, crossing the four that release checkpoints for both benchmarks with
-both, on matched episodes against optimized dense inference, so that a
-candidate is called positive only when its end-to-end latency, the cost of its
-own signals included, and its success both clear a preregistered gate.
+backbones, and cross the four that release checkpoints for both benchmarks with
+both. Every comparison is on matched episodes against optimized dense
+inference. A candidate is called positive only when its end-to-end latency,
+with the cost of its own signals included, and its success both clear a
+preregistered gate.
 ---
 
 ## Notes for the co-authors
