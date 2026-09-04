@@ -106,6 +106,11 @@
 %       unchanged success". The contrast with TTF-VLA's denoising result is
 %       still carried by "a speed result" here and "a denoising result" there.
 %
+% Fourth pass, 2026-09-03: SpecPrune-VLA is token pruning (title: Action-Aware
+%   Self-Speculative Pruning), so "gates reuse ... or on the manipulation
+%   phase" misattributed reuse to it. Now "conditions its token pruning on the
+%   manipulation phase".
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -178,21 +183,21 @@ split with no weight update. \emph{Guarded reuse.} Where fixed repeat skips
 feedback blindly, our guarded reuse skips a model call only when the current
 image and the recent trajectory are both stable, and falls back to dense
 inference the moment either gate fails. Recent work gates reuse on action
-similarity and visual token stability~\cite{flashvla} or on the manipulation
-phase~\cite{specprune}. Ours differs in where the gate sits and how far it may
-go. It reads subsampled pixels before any network call, at frame and patch
-scale, requires the last two dense actions to agree in direction and gripper
-state, and permits one reused step before the next dense call. \emph{Temporal
-fusion with a shared cache mask.} TTF-VLA fuses visual tokens across frames
-without training and raises base OpenVLA on LIBERO by four points at under two
-percent overhead, a denoising result rather than a speed one~\cite{ttfvla}.
-VLA-InfoEntropy selects which tokens to reuse by image and attention
-entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
-alignment~\cite{vlaiap}. Each selects patches for one purpose with its own
-signal. We build one mask from motion, entropy and task relevance that drives
-both the denoising and the cache path, so the cache reuses only what the fusion
-also treats as stable, add fallbacks for contact, and test it against optimized
-dense inference on paired episodes.
+similarity and visual token stability~\cite{flashvla}, and SpecPrune-VLA
+conditions its token pruning on the manipulation phase~\cite{specprune}. Ours
+differs in where the gate sits and how far it may go. It reads subsampled
+pixels before any network call, at frame and patch scale, requires the last two
+dense actions to agree in direction and gripper state, and permits one reused
+step before the next dense call. \emph{Temporal fusion with a shared cache
+mask.} TTF-VLA fuses visual tokens across frames without training and raises
+base OpenVLA on LIBERO by four points at under two percent overhead, a
+denoising result rather than a speed one~\cite{ttfvla}. VLA-InfoEntropy selects
+which tokens to reuse by image and attention entropy~\cite{vlainfoentropy}, and
+VLA-IAP prunes tokens by interaction alignment~\cite{vlaiap}. Each selects
+patches for one purpose with its own signal. We build one mask from motion,
+entropy and task relevance that drives both the denoising and the cache path,
+so the cache reuses only what the fusion also treats as stable, add fallbacks
+for contact, and test it against optimized dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work

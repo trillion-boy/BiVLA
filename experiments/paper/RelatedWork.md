@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1102 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 300 words
+1108 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 310 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -90,11 +90,11 @@ split with no weight update.
 skips a model call only when the current image and the recent trajectory are
 both stable, and falls back to dense inference the moment either gate fails.
 Recent work gates reuse on action similarity and visual token stability
-(FlashVLA) or on the manipulation phase (SpecPrune-VLA). Ours differs in where
-the gate sits and how far it may go. It reads subsampled pixels before any
-network call, at frame and patch scale, requires the last two dense actions to
-agree in direction and gripper state, and permits one reused step before the
-next dense call.
+(FlashVLA), and SpecPrune-VLA conditions its token pruning on the manipulation
+phase. Ours differs in where the gate sits and how far it may go. It reads
+subsampled pixels before any network call, at frame and patch scale, requires
+the last two dense actions to agree in direction and gripper state, and permits
+one reused step before the next dense call.
 
 **Temporal fusion with a shared cache mask.** TTF-VLA fuses visual tokens
 across frames without training and raises base OpenVLA on LIBERO by four points
