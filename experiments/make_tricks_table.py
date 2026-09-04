@@ -20,10 +20,10 @@ Columns, all absolute:
                   own signals included. The one latency defined the same way
                   in every harness. Falls under action repeat on all six
                   backbones (28 to 44 percent at k = 2).
-  Per call (ms)   policy_median_latency_ms. Model time for one call. Falls
-                  with depth pruning, unchanged under action repeat, so the
-                  pair shows whether a saving came from cheaper calls or
-                  fewer calls.
+  (policy_median_latency_ms, model time per call, is not in the table. It
+   is unchanged under action repeat and lower under depth pruning, so
+   Results states in prose whether a saving came from cheaper calls or
+   fewer calls.)
   Avg. steps      avg_steps, environment steps per episode.
 
 Not used: cycle_median_latency_ms. Its definition differs between harnesses
@@ -110,9 +110,8 @@ def load(env_key):
 def fmt_row(row):
     steps = float(row["avg_steps"])
     step_ms = 1000.0 * float(row["avg_episode_time_s"]) / steps
-    per_call_ms = float(row["policy_median_latency_ms"])
     return (f"${float(row['success_rate_pct']):.1f}$ & ${step_ms:.0f}$ & "
-            f"${per_call_ms:.0f}$ & ${steps:.1f}$")
+            f"${steps:.1f}$")
 
 
 def main():
@@ -136,7 +135,7 @@ def main():
                 lines.append(f"{c1} & {c2} & {LABEL[row['configuration']]} & "
                              f"{fmt_row(row)} \\\\")
             if bi < len(present) - 1:
-                lines.append("\\cmidrule(l){2-7}")
+                lines.append("\\cmidrule(l){2-6}")
         lines.append("\\midrule" if ei < len(ENVS) - 1 else "\\bottomrule")
 
     body = "\n".join(lines)
@@ -149,9 +148,9 @@ def main():
 %% "Step time" is wall-clock per environment step, avg_episode_time_s over
 %% avg_steps, end to end with each intervention's own signal cost included. It
 %% is the one latency defined identically in every harness and it falls under
-%% action repeat on all six backbones. "Per call" is policy_median_latency_ms,
-%% model time for one call, unchanged under action repeat and lower under depth
-%% pruning, so the pair separates cheaper calls from fewer calls.
+%% action repeat on all six backbones. Per-call model time
+%% (policy_median_latency_ms) is not a column; Results says in prose whether a
+%% saving came from cheaper calls (depth pruning) or fewer calls (repeat).
 %% cycle_median_latency_ms is NOT used: per environment step in one harness,
 %% per policy call including repeated steps in the other, so it rises under
 %% action repeat for CogACT, SpatialVLA and UniVLA.
@@ -161,17 +160,17 @@ def main():
 %% ---------------------------------------------------------------------------
 \\begin{{table*}}[t]
 \\centering
-\\caption{{Absolute success rate, wall-clock time per environment step, model time per call, and mean episode length, at the strongest setting of each intervention family.}}
+\\caption{{Absolute success rate, end-to-end latency per environment step, and mean episode length, at the strongest setting of each intervention family.}}
 \\label{{tab:grid}}
 \\setlength{{\\tabcolsep}}{{6pt}}
-\\begin{{tabular}}{{ll l rrrr}}
+\\begin{{tabular}}{{ll l rrr}}
 \\toprule
-& Backbone & Condition & Success (\\%) & Step time (ms) & Per call (ms) & Avg.\\ steps \\\\
+& Backbone & Condition & Success (\\%) & Latency (ms) & Avg.\\ steps \\\\
 \\midrule
 {body}
 \\end{{tabular}}
 \\vspace{{2pt}}
-\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Step time is end-to-end wall-clock per environment step, so it falls under action repeat and guarded reuse even though the per-call model time does not. The per-setting sweeps are in the ablation tables of Section~IV.}}
+\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Latency is end-to-end wall-clock per environment step, the cost of each intervention's own signals included, so it falls under action repeat and guarded reuse as well as under depth pruning. The per-setting sweeps are in the ablation tables of Section~IV.}}
 \\end{{table*}}
 """
     with open(OUT, "w") as fh:

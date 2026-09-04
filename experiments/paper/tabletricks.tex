@@ -7,9 +7,9 @@
 %% "Step time" is wall-clock per environment step, avg_episode_time_s over
 %% avg_steps, end to end with each intervention's own signal cost included. It
 %% is the one latency defined identically in every harness and it falls under
-%% action repeat on all six backbones. "Per call" is policy_median_latency_ms,
-%% model time for one call, unchanged under action repeat and lower under depth
-%% pruning, so the pair separates cheaper calls from fewer calls.
+%% action repeat on all six backbones. Per-call model time
+%% (policy_median_latency_ms) is not a column; Results says in prose whether a
+%% saving came from cheaper calls (depth pruning) or fewer calls (repeat).
 %% cycle_median_latency_ms is NOT used: per environment step in one harness,
 %% per policy call including repeated steps in the other, so it rises under
 %% action repeat for CogACT, SpatialVLA and UniVLA.
@@ -19,84 +19,84 @@
 %% ---------------------------------------------------------------------------
 \begin{table*}[t]
 \centering
-\caption{Absolute success rate, wall-clock time per environment step, model time per call, and mean episode length, at the strongest setting of each intervention family.}
+\caption{Absolute success rate, end-to-end latency per environment step, and mean episode length, at the strongest setting of each intervention family.}
 \label{tab:grid}
 \setlength{\tabcolsep}{6pt}
-\begin{tabular}{ll l rrrr}
+\begin{tabular}{ll l rrr}
 \toprule
-& Backbone & Condition & Success (\%) & Step time (ms) & Per call (ms) & Avg.\ steps \\
+& Backbone & Condition & Success (\%) & Latency (ms) & Avg.\ steps \\
 \midrule
-\multirow{36}{*}{\rotatebox[origin=c]{90}{Bridge}} & \multirow{6}{*}{UniVLA} & Original policy & $87.5$ & $191$ & $714$ & $30.2$ \\
- &  & Foveation keep 20\% & $79.0$ & $192$ & $714$ & $34.6$ \\
- &  & Action repeat 2 & $12.5$ & $113$ & $718$ & $71.9$ \\
- &  & Depth prune 2 & $82.0$ & $183$ & $682$ & $31.6$ \\
- &  & Guarded reuse moderate & $87.5$ & $190$ & $711$ & $30.1$ \\
- &  & Temporal fusion conservative & $87.5$ & $192$ & $720$ & $30.2$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{CogACT} & Original policy & $50.0$ & $141$ & $99$ & $50.8$ \\
- &  & Foveation keep 20\% & $52.5$ & $160$ & $98$ & $46.6$ \\
- &  & Action repeat 2 & $12.0$ & $92$ & $99$ & $70.6$ \\
- &  & Depth prune 2 & $59.5$ & $137$ & $96$ & $47.1$ \\
- &  & Guarded reuse aggressive & $53.0$ & $139$ & $99$ & $49.8$ \\
- &  & Temporal fusion motion-entropy & $58.0$ & $142$ & $99$ & $47.4$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{OpenVLA} & Original policy & $43.5$ & $210$ & $159$ & $50.9$ \\
- &  & Foveation keep 50\% & $30.0$ & $218$ & $157$ & $62.5$ \\
- &  & Action repeat 2 & $28.0$ & $130$ & $158$ & $60.5$ \\
- &  & Depth prune 2 & $47.5$ & $199$ & $149$ & $51.2$ \\
- &  & Guarded reuse strict & $45.5$ & $203$ & $158$ & $49.7$ \\
- &  & Temporal fusion task-aware & $50.5$ & $222$ & $171$ & $50.5$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{SpatialVLA} & Original policy & $45.0$ & $424$ & $382$ & $45.1$ \\
- &  & Foveation keep 20\% & $50.0$ & $446$ & $384$ & $45.6$ \\
- &  & Action repeat 2 & $41.0$ & $235$ & $384$ & $49.4$ \\
- &  & Depth prune 1 & $38.5$ & $408$ & $368$ & $49.7$ \\
- &  & Guarded reuse aggressive & $45.5$ & $423$ & $383$ & $45.1$ \\
- &  & Temporal fusion motion-entropy & $46.0$ & $428$ & $385$ & $45.3$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{CronusVLA} & Original policy & $34.0$ & $126$ & $126$ & $50.6$ \\
- &  & Foveation keep 20\% & $36.5$ & $146$ & $146$ & $48.9$ \\
- &  & Action repeat 2 & $3.5$ & $85$ & $163$ & $73.4$ \\
- &  & Depth prune 1 & $35.0$ & $123$ & $123$ & $52.2$ \\
- &  & Guarded reuse strict & $36.0$ & $125$ & $126$ & $49.7$ \\
- &  & Temporal fusion motion-entropy & $33.5$ & $127$ & $127$ & $51.2$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{MiniVLA} & Original policy & $36.0$ & $149$ & $97$ & $63.8$ \\
- &  & Foveation keep 50\% & $35.0$ & $156$ & $98$ & $62.9$ \\
- &  & Action repeat 2 & $30.0$ & $99$ & $97$ & $66.9$ \\
- &  & Depth prune 1 & $18.5$ & $146$ & $96$ & $67.4$ \\
- &  & Guarded reuse strict & $38.5$ & $146$ & $97$ & $62.6$ \\
- &  & Temporal fusion motion-entropy & $39.0$ & $150$ & $99$ & $61.2$ \\
+\multirow{36}{*}{\rotatebox[origin=c]{90}{Bridge}} & \multirow{6}{*}{UniVLA} & Original policy & $87.5$ & $191$ & $30.2$ \\
+ &  & Foveation keep 20\% & $79.0$ & $192$ & $34.6$ \\
+ &  & Action repeat 2 & $12.5$ & $113$ & $71.9$ \\
+ &  & Depth prune 2 & $82.0$ & $183$ & $31.6$ \\
+ &  & Guarded reuse moderate & $87.5$ & $190$ & $30.1$ \\
+ &  & Temporal fusion conservative & $87.5$ & $192$ & $30.2$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{CogACT} & Original policy & $50.0$ & $141$ & $50.8$ \\
+ &  & Foveation keep 20\% & $52.5$ & $160$ & $46.6$ \\
+ &  & Action repeat 2 & $12.0$ & $92$ & $70.6$ \\
+ &  & Depth prune 2 & $59.5$ & $137$ & $47.1$ \\
+ &  & Guarded reuse aggressive & $53.0$ & $139$ & $49.8$ \\
+ &  & Temporal fusion motion-entropy & $58.0$ & $142$ & $47.4$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{OpenVLA} & Original policy & $43.5$ & $210$ & $50.9$ \\
+ &  & Foveation keep 50\% & $30.0$ & $218$ & $62.5$ \\
+ &  & Action repeat 2 & $28.0$ & $130$ & $60.5$ \\
+ &  & Depth prune 2 & $47.5$ & $199$ & $51.2$ \\
+ &  & Guarded reuse strict & $45.5$ & $203$ & $49.7$ \\
+ &  & Temporal fusion task-aware & $50.5$ & $222$ & $50.5$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{SpatialVLA} & Original policy & $45.0$ & $424$ & $45.1$ \\
+ &  & Foveation keep 20\% & $50.0$ & $446$ & $45.6$ \\
+ &  & Action repeat 2 & $41.0$ & $235$ & $49.4$ \\
+ &  & Depth prune 1 & $38.5$ & $408$ & $49.7$ \\
+ &  & Guarded reuse aggressive & $45.5$ & $423$ & $45.1$ \\
+ &  & Temporal fusion motion-entropy & $46.0$ & $428$ & $45.3$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{CronusVLA} & Original policy & $34.0$ & $126$ & $50.6$ \\
+ &  & Foveation keep 20\% & $36.5$ & $146$ & $48.9$ \\
+ &  & Action repeat 2 & $3.5$ & $85$ & $73.4$ \\
+ &  & Depth prune 1 & $35.0$ & $123$ & $52.2$ \\
+ &  & Guarded reuse strict & $36.0$ & $125$ & $49.7$ \\
+ &  & Temporal fusion motion-entropy & $33.5$ & $127$ & $51.2$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{MiniVLA} & Original policy & $36.0$ & $149$ & $63.8$ \\
+ &  & Foveation keep 50\% & $35.0$ & $156$ & $62.9$ \\
+ &  & Action repeat 2 & $30.0$ & $99$ & $66.9$ \\
+ &  & Depth prune 1 & $18.5$ & $146$ & $67.4$ \\
+ &  & Guarded reuse strict & $38.5$ & $146$ & $62.6$ \\
+ &  & Temporal fusion motion-entropy & $39.0$ & $150$ & $61.2$ \\
 \midrule
-\multirow{24}{*}{\rotatebox[origin=c]{90}{Fractal}} & \multirow{6}{*}{CogACT} & Original policy & $66.8$ & $169$ & $99$ & $44.8$ \\
- &  & Foveation keep 50\% & $67.2$ & $195$ & $99$ & $44.3$ \\
- &  & Action repeat 2 & $65.6$ & $121$ & $99$ & $46.7$ \\
- &  & Depth prune 4 & $66.8$ & $164$ & $94$ & $43.9$ \\
- &  & Guarded reuse moderate & $67.2$ & $170$ & $99$ & $44.4$ \\
- &  & Temporal fusion conservative & $65.6$ & $171$ & $98$ & $44.5$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{OpenVLA} & Original policy & $35.6$ & $240$ & $160$ & $64.3$ \\
- &  & Foveation keep 50\% & $24.4$ & $249$ & $161$ & $68.2$ \\
- &  & Action repeat 2 & $40.0$ & $159$ & $159$ & $62.9$ \\
- &  & Depth prune 2 & $40.8$ & $231$ & $151$ & $61.9$ \\
- &  & Guarded reuse moderate & $36.4$ & $237$ & $160$ & $64.2$ \\
- &  & Temporal fusion task-aware & $42.4$ & $254$ & $173$ & $61.4$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{SpatialVLA} & Original policy & $59.2$ & $450$ & $379$ & $49.6$ \\
- &  & Foveation keep 50\% & $57.2$ & $478$ & $378$ & $49.1$ \\
- &  & Action repeat 2 & $59.2$ & $263$ & $377$ & $50.4$ \\
- &  & Depth prune 2 & $56.8$ & $426$ & $353$ & $50.7$ \\
- &  & Guarded reuse moderate & $60.0$ & $447$ & $377$ & $49.4$ \\
- &  & Temporal fusion task-aware & $60.0$ & $453$ & $382$ & $47.7$ \\
-\cmidrule(l){2-7}
- & \multirow{6}{*}{CronusVLA} & Original policy & $55.6$ & $155$ & $153$ & $51.3$ \\
- &  & Foveation keep 50\% & $56.8$ & $180$ & $179$ & $50.1$ \\
- &  & Action repeat 2 & $58.4$ & $112$ & $223$ & $57.4$ \\
- &  & Depth prune 1 & $59.2$ & $150$ & $148$ & $49.8$ \\
- &  & Guarded reuse aggressive & $56.8$ & $150$ & $152$ & $50.7$ \\
- &  & Temporal fusion motion-entropy & $57.2$ & $157$ & $155$ & $50.5$ \\
+\multirow{24}{*}{\rotatebox[origin=c]{90}{Fractal}} & \multirow{6}{*}{CogACT} & Original policy & $66.8$ & $169$ & $44.8$ \\
+ &  & Foveation keep 50\% & $67.2$ & $195$ & $44.3$ \\
+ &  & Action repeat 2 & $65.6$ & $121$ & $46.7$ \\
+ &  & Depth prune 4 & $66.8$ & $164$ & $43.9$ \\
+ &  & Guarded reuse moderate & $67.2$ & $170$ & $44.4$ \\
+ &  & Temporal fusion conservative & $65.6$ & $171$ & $44.5$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{OpenVLA} & Original policy & $35.6$ & $240$ & $64.3$ \\
+ &  & Foveation keep 50\% & $24.4$ & $249$ & $68.2$ \\
+ &  & Action repeat 2 & $40.0$ & $159$ & $62.9$ \\
+ &  & Depth prune 2 & $40.8$ & $231$ & $61.9$ \\
+ &  & Guarded reuse moderate & $36.4$ & $237$ & $64.2$ \\
+ &  & Temporal fusion task-aware & $42.4$ & $254$ & $61.4$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{SpatialVLA} & Original policy & $59.2$ & $450$ & $49.6$ \\
+ &  & Foveation keep 50\% & $57.2$ & $478$ & $49.1$ \\
+ &  & Action repeat 2 & $59.2$ & $263$ & $50.4$ \\
+ &  & Depth prune 2 & $56.8$ & $426$ & $50.7$ \\
+ &  & Guarded reuse moderate & $60.0$ & $447$ & $49.4$ \\
+ &  & Temporal fusion task-aware & $60.0$ & $453$ & $47.7$ \\
+\cmidrule(l){2-6}
+ & \multirow{6}{*}{CronusVLA} & Original policy & $55.6$ & $155$ & $51.3$ \\
+ &  & Foveation keep 50\% & $56.8$ & $180$ & $50.1$ \\
+ &  & Action repeat 2 & $58.4$ & $112$ & $57.4$ \\
+ &  & Depth prune 1 & $59.2$ & $150$ & $49.8$ \\
+ &  & Guarded reuse aggressive & $56.8$ & $150$ & $50.7$ \\
+ &  & Temporal fusion motion-entropy & $57.2$ & $157$ & $50.5$ \\
 \bottomrule
 \end{tabular}
 \vspace{2pt}
-\parbox{\textwidth}{\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Step time is end-to-end wall-clock per environment step, so it falls under action repeat and guarded reuse even though the per-call model time does not. The per-setting sweeps are in the ablation tables of Section~IV.}
+\parbox{\textwidth}{\footnotesize Each family is shown at the setting with the highest success rate in that benchmark, named in the condition column. Latency is end-to-end wall-clock per environment step, the cost of each intervention's own signals included, so it falls under action repeat and guarded reuse as well as under depth pruning. The per-setting sweeps are in the ablation tables of Section~IV.}
 \end{table*}
