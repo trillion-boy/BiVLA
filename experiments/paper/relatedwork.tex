@@ -118,6 +118,23 @@
 %   states the rule: every backbone runs on each benchmark with a released
 %   checkpoint. Put numbers back only when the grid is frozen.
 %
+% Fifth pass (reviewer self-check), 2026-09-04:
+%   VLA-Cache latency now a ratio (39% lower), not 31.8 vs 51.9 ms. Table II
+%     will show our own OpenVLA dense latency on LIBERO on a different GPU,
+%     and absolute ms invite a comparison the hardware does not support.
+%   "removed from the visual stream" -> "dropped from the token stream".
+%     Foveation edits pixels and drops no tokens, and Table I shows it
+%     helping SpatialVLA, so the rule must be about tokens.
+%   Grid sentence: "a checkpoint at the size we evaluate". CronusVLA releases
+%     LIBERO checkpoints at 7B only (JeasLee collection) and we run 0.5B;
+%     SpatialVLA releases no LIBERO checkpoint (its LIBERO numbers were its
+%     own fine-tune). Verified 2026-09-04 from both README files.
+%   STILL OPEN, cannot be fixed in prose: "six intervention families" vs
+%     five in Methods and the tables (VLA-Cache rollout pending); "drives
+%     both the denoising and the cache path" (cache path not visible in the
+%     CSV latencies, pending); "Both fail" vs repeat 2 on Fractal (Results
+%     must state the exception); "disjoint split"; "preregistered".
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -164,14 +181,14 @@ methods need gates.
 visually static patches while recomputing patches that move or that the
 language model attends to, so history is retained unlike under token
 dropping~\cite{vlacache}. On base OpenVLA across LIBERO it reports average
-success of 74.7\% against 75.0\% dense at 31.8~ms against 51.9~ms, a speed
-result at nearly unchanged success. That makes it the anchor against which we
-measure candidates, not a contribution of ours. The same paper accounts for a
-pattern reported for token pruning. Methods developed for vision-language
+success of 74.7\% against 75.0\% dense at 39\% lower latency, a speed result at
+nearly unchanged success. That makes it the anchor against which we measure
+candidates, not a contribution of ours. The same paper accounts for a pattern
+reported for token pruning. Methods developed for vision-language
 models~\cite{fastv, sparsevlm, tome} transfer poorly to VLAs, which it
 attributes to VLAs' short action sequences~\cite{vlacache} and VLA-Pruner
-reproduces on another setting~\cite{vlapruner}. Whatever is removed from the
-visual stream must be removed by a signal that knows what the robot is doing.
+reproduces on another setting~\cite{vlapruner}. Whatever is dropped from the
+token stream must be chosen by a signal that knows what the robot is doing.
 
 \textbf{Conditional candidates.} Three families remove computation only where a
 signal says it is safe. \emph{Depth.} Redundancy among decoder layers is well
@@ -225,8 +242,9 @@ precision rather than any of the three quantities above, and learned early
 exit, which needs training. Isolating the effect of choices that appear only in
 source code is an established practice~\cite{bagoftricks_cnn, bagoftricks_llm}.
 We evaluate the six families under one protocol on three benchmarks, the WidowX
-and Fractal suites of SimplerEnv and the four suites of LIBERO, and run every
-backbone on each benchmark for which it releases a checkpoint. Every comparison
-is on matched episodes against optimized dense inference. A candidate is called
-positive only when its end-to-end latency, with the cost of its own signals
-included, and its success both clear a preregistered gate.
+and Fractal suites of SimplerEnv and the four suites of LIBERO, and run each
+backbone on every benchmark for which a checkpoint at the size we evaluate is
+released, as listed in Section~IV-A. Every comparison is on matched episodes
+against optimized dense inference. A candidate is called positive only when its
+end-to-end latency, with the cost of its own signals included, and its success
+both clear a preregistered gate.

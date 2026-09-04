@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1125 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 325 words
+1133 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 335 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -66,8 +66,8 @@ against which we measure candidates, not a contribution of ours. The same paper
 accounts for a pattern reported for token pruning. Methods developed for
 vision-language models (FastV, SparseVLM, ToMe) transfer poorly to VLAs, which
 it attributes to VLAs' short action sequences and VLA-Pruner reproduces on
-another setting. Whatever is removed from the visual stream must be removed by
-a signal that knows what the robot is doing.
+another setting. Whatever is dropped from the token stream must be chosen by a
+signal that knows what the robot is doing.
 
 ### Conditional candidates
 
@@ -126,11 +126,11 @@ early exit, which needs training. Isolating the effect of choices that appear
 only in source code is an established practice (Bag of Tricks for CNNs, Bag of
 Tricks for LLMs). We evaluate the six families under one protocol on three
 benchmarks, the WidowX and Fractal suites of SimplerEnv and the four suites of
-LIBERO, and run every backbone on each benchmark for which it releases a
-checkpoint. Every comparison is on matched episodes against optimized dense
-inference. A candidate is called positive only when its end-to-end latency,
-with the cost of its own signals included, and its success both clear a
-preregistered gate.
+LIBERO, and run each backbone on every benchmark for which a checkpoint at the
+size we evaluate is released, as listed in Section IV-A. Every comparison is on
+matched episodes against optimized dense inference. A candidate is called
+positive only when its end-to-end latency, with the cost of its own signals
+included, and its success both clear a preregistered gate.
 ---
 
 ## Notes for the co-authors
@@ -212,6 +212,17 @@ suites) and SmolVLA, and OpenVLA on LIBERO is still running, so "six
 backbones" and "two benchmarks" were dropped. The sentence names the three
 benchmarks and the rule (every backbone on each benchmark with a released
 checkpoint). Restore counts once the grid is frozen.
+
+**Fifth pass, reviewer self-check (2026-09-04).** Three edits. VLA-Cache's
+latency is given as a ratio, 39% lower, because Table II will carry our own
+OpenVLA dense latency on LIBERO on different hardware. The token-pruning
+paragraph closes on "dropped from the token stream", since foveation drops no
+tokens and Table I shows it helping SpatialVLA. The grid sentence says "a
+checkpoint at the size we evaluate": CronusVLA releases LIBERO checkpoints at
+7B only and we run 0.5B, and SpatialVLA releases none. Still open and not
+fixable in prose: six families here versus five in Methods and the tables,
+the cache path of temporal fusion, "Both fail" versus repeat 2 on Fractal,
+the disjoint split, and "preregistered".
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,
