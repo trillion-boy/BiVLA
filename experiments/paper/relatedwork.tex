@@ -136,13 +136,28 @@
 %     five in Methods and the tables (VLA-Cache rollout pending); "Both
 %     fail" vs repeat 2 on Fractal (Results must state the exception);
 %     "preregistered".
-%   NEW 2026-09-04: "measuring every speedup against fused attention". The
-%     mentor's harness scripts on the tricks branch set no attention backend
-%     (git grep for sdpa / flash_attn / attn_implementation hits only the
-%     unrelated AutoGaze code). local_results.md says SDPA for OpenVLA; the
-%     other five backbones are unverified. Ask the mentor which backend each
-%     backbone ran. If any ran eager, change to "against the dense
-%     implementation each backbone ships with" and drop "fused".
+%   "measuring every speedup against fused attention", checked per backbone
+%     in the tricks-branch code on 2026-09-04:
+%       OpenVLA     VERIFIED  scripts/benchmark_openvla_14.py:159
+%                             attn_implementation="sdpa", logged as
+%                             "attention_backend": "sdpa"
+%       UniVLA      VERIFIED  adaptive_sparse_vla/inference.py:791
+%                             Emu3MoE.from_pretrained(..., attn_implementation
+%                             ="sdpa")
+%       MiniVLA     DEFAULT   loaded through openvla-mini's prismatic
+%                             base_llm.py (fetched from GitHub): inference
+%                             mode builds the LLM from config with no
+%                             attention argument, so it takes the
+%                             transformers default (SDPA for Qwen2 in current
+%                             versions). Fused, but not pinned.
+%       SpatialVLA  UNKNOWN   no load call in the tricks-branch harness; the
+%                             vendored modeling_gemma2.py supports sdpa,
+%                             flash_attention_2 and eager, choice not visible
+%       CogACT      UNKNOWN   no source tree on the tricks branch
+%       CronusVLA   UNKNOWN   no source tree on the tricks branch
+%     Ask the mentor for SpatialVLA, CogACT, CronusVLA. If any ran eager,
+%     change to "against the dense implementation each backbone ships with"
+%     and drop "fused".
 %
 % Verification status of the citations, 2026-09-04. This environment blocks
 % arxiv.org, huggingface.co and Semantic Scholar. Re-read TODAY from a primary
