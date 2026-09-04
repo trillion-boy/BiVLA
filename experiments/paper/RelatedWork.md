@@ -60,9 +60,9 @@ establish when the candidate methods need gates.
 VLA-Cache reuses the key-value computation of visually static patches while
 recomputing patches that move or that the language model attends to, so history
 is retained unlike under token dropping. On base OpenVLA across LIBERO it
-reports average success of 74.7% against 75.0% dense at 31.8 ms against 51.9
-ms, a speed result at nearly unchanged success. That makes it the anchor
-against which we measure candidates, not a contribution of ours. The same paper
+reports average success of 74.7% against 75.0% dense at 39% lower latency, a
+speed result at nearly unchanged success. That makes it the anchor against
+which we measure candidates, not a contribution of ours. The same paper
 accounts for a pattern reported for token pruning. Methods developed for
 vision-language models (FastV, SparseVLM, ToMe) transfer poorly to VLAs, which
 it attributes to VLAs' short action sequences and VLA-Pruner reproduces on
