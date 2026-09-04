@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1110 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 310 words
+1152 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 350 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -26,10 +26,10 @@ already has surveys of its own (the CAS systematic survey, the Yu et al.
 survey). We divide that literature by the resource each method spends.
 
 1. **When the policy runs.** One decision is executed over several control
-   steps, a lineage running from frame skip in reinforcement learning to
-   action chunking (DQN, ACT, Diffusion Policy).
-2. **What it is shown.** Visual tokens are reduced, reweighted, or reused.
-3. **How much network each call uses.** Only part of the decoder runs.
+steps, a lineage running from frame skip in reinforcement learning to action
+chunking (DQN, ACT, Diffusion Policy, OpenVLA-OFT). 2. **What it is shown.**
+Visual tokens are reduced, reweighted, or reused. 3. **How much network each
+call uses.** Only part of the decoder runs.
 
 A claim about efficiency is a claim about one of these resources being spent
 differently, so we treat them as axes rather than competing methods, and each
@@ -61,8 +61,8 @@ VLA-Cache reuses the key-value computation of visually static patches while
 recomputing patches that move or that the language model attends to, so history
 is retained unlike under token dropping. On base OpenVLA across LIBERO it
 reports average success of 74.7% against 75.0% dense at 39% lower latency, a
-speed result at nearly unchanged success. That makes it the anchor against
-which we measure candidates, not a contribution of ours. The same paper
+speed result at nearly unchanged success. It is the closest published point of
+comparison for our candidates, not a contribution of ours. The same paper
 accounts for a pattern reported for token pruning. Methods developed for
 vision-language models (FastV, SparseVLM, ToMe) transfer poorly to VLAs, which
 it attributes to VLAs' short action sequences and VLA-Pruner reproduces on
@@ -96,14 +96,18 @@ subsampled pixels before any network call, at frame and patch scale, requires
 the last two dense actions to agree in direction and gripper state, and permits
 one reused step before the next dense call.
 
-**Temporal fusion.** TTF-VLA fuses visual tokens across frames without training
-and raises base OpenVLA on LIBERO by four points at under two percent overhead,
-a denoising result rather than a speed one. VLA-InfoEntropy selects which
-tokens to reuse by image and attention entropy, and VLA-IAP prunes tokens by
-interaction alignment. Each selects patches for one purpose with its own
-signal. We build one mask from motion, entropy and task relevance, protect
-patches near contact, and test the fusion it drives against optimized dense
-inference on paired episodes.
+**Temporal fusion.** TTF-VLA fuses visual tokens across frames without
+training. It keeps the current token for patches flagged by grayscale pixel
+difference or attention relevance, reuses the previous token elsewhere, and
+anchors a keyframe to bound drift, which raises base OpenVLA on LIBERO by four
+points at under two percent overhead, a denoising result rather than a speed
+one. VLA-InfoEntropy selects tokens for VLA-Cache's key-value reuse by image
+and attention entropy, and VLA-IAP prunes tokens by interaction alignment. Our
+fusion keeps TTF-VLA's hard fusion and keyframe and changes the selection.
+Patches are scored by motion, image entropy and task relevance, every flagged
+patch protects a one-patch ring around it, and the reusable fraction is capped.
+We test it on six backbones against optimized dense inference on paired
+episodes.
 
 ### How these claims are evaluated
 
@@ -229,6 +233,15 @@ drives a cache path. The CSVs show no latency change under temporal fusion
 and no separate fusion-plus-cache condition, so the speed claim had nothing
 in the tables behind it. Methods III.E says the same. Restore only if a
 fusion-plus-cache condition arrives with its own rows.
+
+**Sixth pass (2026-09-04), TTF-VLA read from the PDF.** TTF-VLA already
+does per-patch hard fusion from pixel difference plus attention relevance,
+with keyframe anchoring. Without the cache path our method is that recipe
+with a different selector, so the paragraph now states the relationship and
+lists only what we change (entropy term, one-patch ring, reuse cap, six
+backbones). Also: VLA-Cache is "the closest published point of comparison",
+not "the anchor against which we measure", since no rollout exists; and
+OpenVLA-OFT joins the chunking lineage.
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,

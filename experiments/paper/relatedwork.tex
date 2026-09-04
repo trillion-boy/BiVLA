@@ -17,7 +17,7 @@
 %                                          comparison, our protocol
 % Each paragraph ends on our position, the bag-of-tricks house style.
 %
-% Length: this is the LONG draft (about 1100 words of prose). Final target is
+% Length: this is the LONG draft (about 1150 words of prose). Final target is
 % 0.75 page, roughly 800 words in ieeeconf. Polish down from here; the cut
 % candidates are marked in RelatedWork.md.
 %
@@ -168,6 +168,19 @@
 % (gromov, shortgpt, smolvla, turbovla, vlaeval, gazereg, vlapruner) and was
 % NOT re-read today.
 %
+% Sixth pass, 2026-09-04, after reading the TTF-VLA PDF (local upload):
+%   TTF-VLA's mechanism is a per-patch hard fusion mask from grayscale pixel
+%     difference plus attention relevance, previous token reused elsewhere,
+%     keyframe anchoring (its Sec. 3.2 and abstract). With the cache path
+%     gone, our temporal fusion is that recipe with a different selector.
+%     The paragraph now says so and names only what we change: entropy
+%     term, one-patch protective ring, reuse-fraction cap, six backbones.
+%   "the anchor against which we measure candidates" -> "the closest
+%     published point of comparison". No VLA-Cache rollout exists, so the
+%     old sentence was false today regardless of the rollout decision.
+%   openvlaoft added to the chunking lineage in axis 1. It was cited in the
+%     Introduction only, and the axis had no VLA citation.
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -183,12 +196,12 @@ latency, and the resulting efficiency literature already has surveys of its
 own~\cite{effvlasurvey1, effvlasurvey2}. We divide that literature by the
 resource each method spends. 1)~\emph{When the policy runs}. One decision is
 executed over several control steps, a lineage running from frame skip in
-reinforcement learning to action chunking~\cite{dqn, act, diffusionpolicy}.
-2)~\emph{What it is shown}. Visual tokens are reduced, reweighted, or reused.
-3)~\emph{How much network each call uses}. Only part of the decoder runs. A
-claim about efficiency is a claim about one of these resources being spent
-differently, so we treat them as axes rather than competing methods, and each
-of the six families below acts on one of them.
+reinforcement learning to action chunking~\cite{dqn, act, diffusionpolicy,
+openvlaoft}. 2)~\emph{What it is shown}. Visual tokens are reduced, reweighted,
+or reused. 3)~\emph{How much network each call uses}. Only part of the decoder
+runs. A claim about efficiency is a claim about one of these resources being
+spent differently, so we treat them as axes rather than competing methods, and
+each of the six families below acts on one of them.
 
 \textbf{Generic shortcuts, used as negative controls.} The simplest way to
 spend less is to degrade the input or to skip feedback unconditionally. Both
@@ -215,9 +228,9 @@ visually static patches while recomputing patches that move or that the
 language model attends to, so history is retained unlike under token
 dropping~\cite{vlacache}. On base OpenVLA across LIBERO it reports average
 success of 74.7\% against 75.0\% dense at 39\% lower latency, a speed result at
-nearly unchanged success. That makes it the anchor against which we measure
-candidates, not a contribution of ours. The same paper accounts for a pattern
-reported for token pruning. Methods developed for vision-language
+nearly unchanged success. It is the closest published point of comparison for
+our candidates, not a contribution of ours. The same paper accounts for a
+pattern reported for token pruning. Methods developed for vision-language
 models~\cite{fastv, sparsevlm, tome} transfer poorly to VLAs, which it
 attributes to VLAs' short action sequences~\cite{vlacache} and VLA-Pruner
 reproduces on another setting~\cite{vlapruner}. Whatever is dropped from the
@@ -246,13 +259,17 @@ differs in where the gate sits and how far it may go. It reads subsampled
 pixels before any network call, at frame and patch scale, requires the last two
 dense actions to agree in direction and gripper state, and permits one reused
 step before the next dense call. \emph{Temporal fusion.} TTF-VLA fuses visual
-tokens across frames without training and raises base OpenVLA on LIBERO by four
-points at under two percent overhead, a denoising result rather than a speed
-one~\cite{ttfvla}. VLA-InfoEntropy selects which tokens to reuse by image and
-attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by
-interaction alignment~\cite{vlaiap}. Each selects patches for one purpose with
-its own signal. We build one mask from motion, entropy and task relevance,
-protect patches near contact, and test the fusion it drives against optimized
+tokens across frames without training. It keeps the current token for patches
+flagged by grayscale pixel difference or attention relevance, reuses the
+previous token elsewhere, and anchors a keyframe to bound drift, which raises
+base OpenVLA on LIBERO by four points at under two percent overhead, a
+denoising result rather than a speed one~\cite{ttfvla}. VLA-InfoEntropy selects
+tokens for VLA-Cache's key-value reuse by image and attention
+entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
+alignment~\cite{vlaiap}. Our fusion keeps TTF-VLA's hard fusion and keyframe
+and changes the selection. Patches are scored by motion, image entropy and task
+relevance, every flagged patch protects a one-patch ring around it, and the
+reusable fraction is capped. We test it on six backbones against optimized
 dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on

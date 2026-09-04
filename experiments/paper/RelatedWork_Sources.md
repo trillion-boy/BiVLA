@@ -875,3 +875,5 @@ mentor's.
   replaced, see row 33.
 - The exclusion sentence lost "KV-cache compression". VLA-Cache reuses KV
   computation, so keeping that exclusion would contradict the section.
+| 33 | TTF-VLA keeps the current token for patches flagged by grayscale pixel difference or attention relevance, reuses the previous token elsewhere, and anchors a keyframe | **PDF read 2026-09-04**, abstract: *"dual-dimension detection combining efficient grayscale pixel difference analysis with attention-based semantic relevance assessment, enabling selective temporal token fusion through hard fusion strategies and keyframe anchoring"*; Sec. 3.2, Eq. 2: *"important patches (mask=1) use current frame tokens and others (mask=0) reuse previous frame tokens"*. Also: *"model-agnostic, working across OpenVLA and VLA-Cache architectures"*, so its backbone coverage is two OpenVLA-based settings. |
+
