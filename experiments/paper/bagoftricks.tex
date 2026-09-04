@@ -35,15 +35,32 @@
 %                      task-aware, conservative-adaptive. CronusVLA ran with
 %                      keyframe interval 1, which disables reuse (CONFIRM).
 %
-% Style: no em-dashes, no semicolons, no prose colons. About 380 words.
+% Self-check against the CSVs, 2026-09-04. Two places where the text and
+% the runs disagree; neither can be fixed in prose.
+%   DEPTH: "protects the first quarter ... forbids removing adjacent blocks"
+%     holds for five backbones but NOT for CronusVLA depth 4, which removed
+%     layers 0, 2, 4, 5 (layer 0 is in the first quarter, 4 and 5 are
+%     adjacent). Rerun or footnote. Pending the mentor.
+%   TEMPORAL FUSION: "The same mask drives selective key-value reuse ... the
+%     cache path is the speed extension" is not visible in the data. Latency
+%     under temporal_fusion is unchanged on every backbone (OpenVLA task-aware
+%     is +12 ms). experiment_protocol.md lists "fusion alone" and "fusion +
+%     cache mask" as separate conditions; the CSVs have one family. CONFIRM
+%     with the mentor whether the KV reuse path ran. If not, the last two
+%     sentences of III.E and RW's "drives both the denoising and the cache
+%     path" must be scaled back to fusion only.
+%
+% Style: no em-dashes, no semicolons, no prose colons. About 400 words.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
 
 A VLA policy $\pi_\theta$ maps an image and an instruction to an action $a_t$
-through a visual encoder and an $N$-layer decoder. Every intervention below
+through a visual encoder and an $N$-layer decoder. The reference is the
+released policy run unchanged under fused attention. Every intervention below
 leaves $\theta$ frozen and changes one inference-time quantity, whose values
-are given in Section~IV-A. Related Work gives the lineage of each. Here we
+are given in Section~IV-A. The first two are negative controls and the last
+three are the candidates. Related Work gives the lineage of each. Here we
 state only what runs.
 
 \subsection{Foveation}
@@ -85,10 +102,10 @@ Thresholds are swept as strict, moderate, and aggressive.
 \subsection{Temporal Fusion}
 
 Interaction-aware temporal fusion scores each visual patch by motion, image
-entropy, and optional text-to-vision relevance, protects patches high in any
-of these or adjacent to one, and marks at most half of the rest reusable. A
-reusable patch takes the previous step's projected token, the others are
-recomputed, and a dense keyframe every few steps bounds propagation. The same
-mask drives selective key-value reuse, so fusion alone is an accuracy
+entropy, and optional text-to-vision relevance, protects patches high in any of
+these or adjacent to one, and marks at most a fixed fraction of the rest
+reusable. A reusable patch takes the previous step's projected token, the
+others are recomputed, and a dense keyframe every few steps bounds propagation.
+The same mask drives selective key-value reuse, so fusion alone is an accuracy
 candidate and the cache path is the speed extension. We evaluate
 motion-entropy, task-aware, and conservative-adaptive settings.
