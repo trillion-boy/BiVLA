@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1187 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+1231 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 390 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -11,6 +11,8 @@ claims in its last section.*
 behind three times, once carrying a sentence whose meaning had been inverted in
 the `.tex` and fixed there but not here. `check_reading_copies.py` now tests
 for that.
+
+---
 
 ---
 
@@ -38,22 +40,25 @@ of the six families below acts on one of them.
 ### Generic shortcuts, used as negative controls
 
 The simplest way to spend less is to degrade the input or to skip feedback
-unconditionally. Both fail in ways that motivate the safeguards the candidates
-carry. On the spatial axis, foveation descends from Schwartz's log-polar
-mapping, taken up in robot vision to cut data while preserving central
-resolution (Traver and Bernardino) and brought to VLAs through human gaze, as a
-training-time regularizer (Gaze-Reg) or as a foveation signal (Look Focus Act).
-Every encoder we run splits the image into a uniform grid, so at a fixed output
-resolution an edit in pixel space leaves the visual token count and the model
-computation unchanged. Foveation before the encoder therefore tests whether the
-policy survives losing its periphery, not whether it runs faster. Methods that
-foveate inside the encoder do shed tokens, but they give up pretrained weights
-fitted to a uniform grid (Look Focus Act). On the temporal axis, executing one
-action over several control steps reduces model calls in proportion. But it
-acts open loop through contacts. FlashVLA gates its action reuse and still
-reports a success decrease, and SpecPrune-VLA separates coarse movement from
-phases that need precision for the same reason. We run fixed foveation and
-fixed repeat as controls that establish when the candidate methods need gates.
+unconditionally. Both remove detail or feedback without a signal, which is the
+case the candidates' safeguards exist to avoid. On the spatial axis, foveation
+descends from Schwartz's log-polar mapping, taken up in robot vision to cut
+data while preserving central resolution (Traver and Bernardino) and brought to
+VLAs through human gaze, as a training-time regularizer (Gaze-Reg) or as a
+foveation signal (Look Focus Act). Every encoder we run splits the image into a
+uniform grid, so at a fixed output resolution an edit in pixel space leaves the
+visual token count and the model computation unchanged. Foveation before the
+encoder therefore tests whether the policy survives losing its periphery, not
+whether it runs faster. Methods that foveate inside the encoder do shed tokens,
+but they give up pretrained weights fitted to a uniform grid (Look Focus Act).
+On the temporal axis, executing one action over several control steps reduces
+model calls in proportion. But it acts open loop through contacts. FlashVLA
+gates its action reuse and still reports a success decrease, and SpecPrune-VLA
+separates coarse movement from phases that need precision for the same reason.
+We run fixed foveation and fixed repeat as controls. Each acts on the same axis
+as one candidate but without its signal, foveation for temporal fusion and
+fixed repeat for guarded reuse, so the pair establishes when the candidates
+need their gates.
 
 ### The recent baseline
 
@@ -72,7 +77,7 @@ must be chosen by a signal that knows what the robot is doing.
 
 ### Conditional candidates
 
-Three families remove computation only where a signal says it is safe.
+Three families act only where a signal says it is safe.
 
 **Depth.** Redundancy among decoder layers is well established in language
 models. But the recipes built on it disagree on which layers may go. ShortGPT
@@ -95,8 +100,8 @@ Recent work gates reuse on action similarity and visual token stability
 (FlashVLA), and SpecPrune-VLA conditions its token pruning on the manipulation
 phase. Ours differs in where the gate sits and how far it may go. It reads
 subsampled pixels before any network call, at frame and patch scale, requires
-the last two dense actions to agree in direction and gripper state, and permits
-one reused step before the next dense call.
+the last two dense actions to agree in direction and gripper state, and caps
+consecutive reused steps before the next dense call.
 
 **Temporal fusion.** TTF-VLA fuses visual tokens across frames without
 training. It keeps the current token for patches flagged by grayscale pixel
@@ -105,11 +110,11 @@ anchors a keyframe to bound drift, which raises base OpenVLA on LIBERO by four
 points at under two percent overhead, a denoising result rather than a speed
 one. VLA-InfoEntropy selects tokens for VLA-Cache's key-value reuse by image
 and attention entropy, and VLA-IAP prunes tokens by interaction alignment. Our
-fusion keeps TTF-VLA's hard fusion and keyframe and changes the selection.
+fusion shares TTF-VLA's hard fusion and keyframe and differs in the selection.
 Patches are scored by motion, image entropy and task relevance, every flagged
 patch protects a one-patch ring around it, and the reusable fraction is capped.
-We test it on six backbones against optimized dense inference on paired
-episodes.
+We test it on every backbone in our grid against optimized dense inference on
+paired episodes.
 
 ### How these claims are evaluated
 
@@ -126,16 +131,17 @@ cannot say on which episodes an intervention helped. A speedup also depends on
 the dense baseline it is measured against, and an eager attention baseline
 inflates it relative to a fused one. We remove both, by pairing episodes and by
 measuring every speedup against fused attention. We exclude quantization, which
-lowers numerical precision rather than any of the three quantities above, and
-learned early exit, which needs training. Isolating the effect of choices that
-appear only in source code is an established practice (Bag of Tricks for CNNs,
-Bag of Tricks for LLMs). We evaluate the six families under one protocol on
-three benchmarks, the WidowX and Fractal suites of SimplerEnv and the four
-suites of LIBERO, and run each backbone on every benchmark for which a
-checkpoint at the size we evaluate is released, as listed in Section IV-A.
-Every comparison is on matched episodes against optimized dense inference. A
-candidate is called positive only when its end-to-end latency, with the cost of
-its own signals included, and its success both clear a preregistered gate.
+lowers numerical precision rather than any of the three resources above, and
+learned early exit, which needs training. Evaluating a set of inference tricks
+under one protocol, rather than one per paper, is an established practice (Bag
+of Tricks for CNNs, Bag of Tricks for LLMs). We evaluate the six families under
+one protocol on three benchmarks, the WidowX and Fractal suites of SimplerEnv
+and the four suites of LIBERO, and run each backbone on every benchmark for
+which a checkpoint at the size we evaluate is released, as listed in Section
+IV-A. Every comparison is on matched episodes against optimized dense
+inference. A candidate is called positive only when it lowers end-to-end
+latency, with the cost of its own signals included, or raises success, while
+the other stays within a preregistered margin of dense.
 ---
 
 ## Notes for the co-authors
@@ -299,3 +305,18 @@ nothing, because TTF-VLA and VLA-InfoEntropy already establish that a reuse
 mask is not novel on its own. The concurrent-work clause stays in prose
 without a reference. Restore the citation only if the paper appears publicly
 before camera-ready.
+
+### Ninth pass, 2026-09-04 (adversarial logic read after all citations were verified)
+
+Eight sentences changed, none of them a citation claim. "Both fail" is gone
+because the CSVs contradict it (repeat 2 harms no backbone on Fractal,
+foveation helps three on WidowX); the controls are now defined as a
+candidate's axis without its signal. "remove computation" became "act"
+because temporal fusion removes none. "permits one reused step" became "caps
+consecutive reused steps" because the aggressive preset caps at two. "keeps
+TTF-VLA's" became "shares TTF-VLA's". "six backbones" became "every backbone
+in our grid". "three quantities" became "three resources". The bag-of-tricks
+sentence now describes what those papers did (one protocol over many tricks)
+rather than what they studied. The closing gate is now "lowers latency or
+raises success, while the other stays within a preregistered margin", so an
+accuracy-only candidate can be positive. Setup must state the same gate.

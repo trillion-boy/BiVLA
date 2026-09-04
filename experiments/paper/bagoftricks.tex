@@ -27,16 +27,29 @@
 %                      disjoint from test (CONFIRM: harness uses test tasks
 %                      and seed 42)
 %       guarded reuse  signature = every 8th pixel; whole-frame mean diff
-%                      <= tau_g = 0.01; local 8x8 max mean diff <= tau_l =
-%                      0.03; cos(a_{t-2}, a_{t-1}) >= 0.995 on the 6 pose
-%                      dims; translation norm > 0.01; gripper signs match;
-%                      cap one consecutive reuse; strict/moderate/aggressive
-%                      sweep
-%       temporal fusion  keyframe every 3rd step (conservative: every 2nd);
-%                      max reuse fraction 0.5 (conservative: 0.25); one-patch
-%                      dilation for protection; settings motion-entropy,
-%                      task-aware, conservative-adaptive. CronusVLA ran with
-%                      keyframe interval 1, which disables reuse (CONFIRM).
+%                      <= tau_g; local 8x8 max mean diff <= tau_l;
+%                      cos(a_{t-2}, a_{t-1}) >= c on the 6 pose dims;
+%                      gripper signs match; translation norm > 0.01 (fixed in
+%                      all three presets); presets (tau_g, tau_l, c, cap):
+%                      strict (0.01, 0.03, 0.995, 1), moderate (0.015, 0.04,
+%                      0.99, 1), aggressive (0.02, 0.05, 0.98, 2). Source:
+%                      scripts/benchmark_openvla_14.py GUARDED table and
+%                      scripts/experiments/guarded_reuse_*.py, read
+%                      2026-09-04.
+%       temporal fusion  motion threshold 0.01; entropy-protect top 15%;
+%                      task-protect top 20% (task-aware only); one-patch
+%                      dilation; keyframe every 3rd step, max reuse fraction
+%                      0.5 (motion-entropy, task-aware); conservative-adaptive
+%                      = keyframe every 2nd step, max reuse fraction 0.25,
+%                      forced keyframe when any 16x16 patch motion > 0.03
+%                      (--fusion-event-motion-threshold). Source:
+%                      scripts/experiments/temporal_fusion_*.py and
+%                      scripts/run_minivla_simpler_eval.py. CONFIRM the same
+%                      presets ran in the CogACT / SpatialVLA / UniVLA
+%                      harness; the CSVs show the same keyframe and fraction
+%                      columns but carry no event-threshold column. CronusVLA
+%                      ran with keyframe interval 1, which disables reuse
+%                      (CONFIRM).
 %
 % Self-check against the CSVs, 2026-09-04. Two places where the text and
 % the runs disagree; neither can be fixed in prose.
@@ -53,18 +66,36 @@
 %     Restore both only if the mentor supplies a fusion + cache condition
 %     with its own rows.
 %
-% Style: no em-dashes, no semicolons, no prose colons. About 400 words.
+% Ninth pass, 2026-09-04, checked against the harness scripts on origin/tricks
+% and the CSVs:
+%   "Reuse is capped at one consecutive step" was wrong for the aggressive
+%     preset (cap 2). Now "Consecutive reuse is capped", and the sweep
+%     sentence names what moves (image and agreement thresholds, the cap) and
+%     what stays (the translation floor).
+%   Translation floor: added "which disables reuse in low-motion precision
+%     phases", the stated purpose in docs/methodology.md section 7.
+%   Action repeat: "divides model calls by k" is per environment step, not
+%     per episode (episodes lengthen under repeat). Added the chunking case:
+%     UniVLA emits chunks, so one call covers k times the chunk length
+%     (WidowX CSV: 4.7 steps per call dense, 9.9 under repeat 2).
+%   Conservative-adaptive: the "adaptive" part, a forced dense keyframe when
+%     any patch's motion exceeds a threshold, was missing. Added.
+%   Lead-in: "$N$-layer decoder" (N unused) -> "a stack of decoder blocks";
+%     "one inference-time quantity, whose values" -> "one part of inference,
+%     at settings".
+%
+% Style: no em-dashes, no semicolons, no prose colons. About 520 words by the paper word counter.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
 
 A VLA policy $\pi_\theta$ maps an image and an instruction to an action $a_t$
-through a visual encoder and an $N$-layer decoder. The reference is the
+through a visual encoder and a stack of decoder blocks. The reference is the
 released policy run unchanged under fused attention. Every intervention below
-leaves $\theta$ frozen and changes one inference-time quantity, whose values
-are given in Section~IV-A. The first two are negative controls and the last
-three are the candidates. Related Work gives the lineage of each. Here we
-state only what runs.
+leaves $\theta$ frozen and changes one part of inference, at settings listed in
+Section~IV-A. The first two are negative controls and the last three are the
+candidates. Related Work gives the lineage of each. Here we state only what
+runs.
 
 \subsection{Foveation}
 
@@ -79,8 +110,9 @@ perceptual simplification alone.
 
 Unconditional action repeat executes each dense action for $k$ consecutive
 steps and queries the policy on none of the repeated steps. It divides model
-calls by $k$ and lengthens by $k$ the interval the robot acts on without fresh
-feedback, with no gate.
+calls per environment step by $k$ and lengthens by $k$ the interval the robot
+acts on without fresh feedback, with no gate. For a backbone that emits action
+chunks, one call then covers $k$ times the chunk length.
 
 \subsection{Depth Pruning}
 
@@ -96,12 +128,13 @@ are removed, is the swept quantity.
 \subsection{Guarded Reuse}
 
 Guarded action reuse repeats the previous action only when a subsampled pixel
-signature is stable at frame and patch scale, the two most recent dense
-actions agree in direction and gripper state, and the commanded translation
-is above a floor. Reuse is capped at one consecutive step, and any failed
-gate returns to dense inference, so every step still sees a current image.
-The three thresholds are swept together as one setting, strict, moderate, or
-aggressive, from the tightest gate to the loosest.
+signature is stable at frame and patch scale, the two most recent dense actions
+agree in direction and gripper state, and the commanded translation is above a
+floor, which disables reuse in low-motion precision phases. Consecutive reuse
+is capped, and any failed gate returns to dense inference, so every step still
+sees a current image. The image and agreement thresholds and the cap are swept
+together as one setting, strict, moderate, or aggressive, from the tightest to
+the loosest, with the translation floor fixed.
 
 \subsection{Temporal Fusion}
 
@@ -114,4 +147,5 @@ Fusion changes which tokens enter the decoder, not how many, so it is an
 accuracy candidate rather than a speed one. Three settings are evaluated.
 Motion-entropy builds the mask from motion and entropy alone, task-aware adds
 text-to-vision relevance, and conservative-adaptive keeps the motion-entropy
-mask with a smaller reuse fraction and a shorter keyframe interval.
+mask with a smaller reuse fraction, a shorter keyframe interval, and a forced
+keyframe whenever any patch moves beyond a threshold.
