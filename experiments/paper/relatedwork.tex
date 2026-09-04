@@ -17,7 +17,7 @@
 %                                          comparison, our protocol
 % Each paragraph ends on our position, the bag-of-tricks house style.
 %
-% Length: this is the LONG draft (about 1070 words of prose). Final target is
+% Length: this is the LONG draft (about 1085 words of prose). Final target is
 % 0.75 page, roughly 800 words in ieeeconf. Polish down from here; the cut
 % candidates are marked in RelatedWork.md.
 %
@@ -80,6 +80,19 @@
 %           calibrates on the test tasks and seed)
 %         - one GPU, one run per configuration, episodes paired by seed
 %
+% Second review round, 2026-09-03:
+%   (1) FlashVLA's 0.7-point figure removed. It is the decrease of FlashVLA's
+%       GATED reuse, so it now reads "gates its action reuse and still reports
+%       a success decrease". Unconditional repeat failing is our own result.
+%   (2) Closing sentence says "six backbones, four of them on both
+%       benchmarks": the grid is 10 of 12 cells (no Fractal checkpoint for
+%       MiniVLA, UniVLA). If Results fills fewer cells, drop the
+%       crossing-cell clause.
+%   (3) Depth: "choose the removed set on a disjoint split with no weight
+%       update". Calibration picks layers, not thresholds.
+%   (4) Gate is on end-to-end latency with the candidate's own signal cost
+%       included, per experiment_protocol.md line 9.
+%
 % Style: no em-dashes, no semicolons, no prose colons, no hedges.
 % ---------------------------------------------------------------------------
 
@@ -116,11 +129,11 @@ whether it runs faster. Methods that foveate inside the encoder do shed tokens,
 but they give up pretrained weights fitted to a uniform
 grid~\cite{lookfocusact}. On the temporal axis, executing one action over
 several control steps reduces model calls in proportion. But it acts open loop
-through contacts. FlashVLA reports an average success decrease of 0.7 points
-with training-free action reuse~\cite{flashvla}, and SpecPrune-VLA separates
-coarse movement from phases that need precision for the same
-reason~\cite{specprune}. We run fixed foveation and fixed repeat as controls
-that establish when the candidate methods need gates.
+through contacts. FlashVLA gates its action reuse and still reports a success
+decrease~\cite{flashvla}, and SpecPrune-VLA separates coarse movement from
+phases that need precision for the same reason~\cite{specprune}. We run fixed
+foveation and fixed repeat as controls that establish when the candidate
+methods need gates.
 
 \textbf{The recent baseline.} VLA-Cache reuses the key-value computation of
 visually static patches while recomputing patches that move or that the
@@ -148,25 +161,26 @@ places it outside a training-free study. Several recent compact VLAs build such
 reductions in by design rather than applying them at inference~\cite{flower,
 smolvla, turbovla}, so whether removing layers helps depends on what the
 architecture already leaves out. We add protected regions and a ban on adjacent
-removals to the ShortGPT selector, and calibrate on a disjoint split.
-\emph{Guarded reuse.} Where fixed repeat skips feedback blindly, our guarded
-reuse skips a model call only when the current image and the recent trajectory
-are both stable, and falls back to dense inference the moment either gate
-fails. Recent work gates reuse on action similarity and visual token
-stability~\cite{flashvla} or on the manipulation phase~\cite{specprune}. Ours
-differs in where the gate sits and how far it may go. It reads subsampled
-pixels before any network call, at frame and patch scale, requires the last two
-dense actions to agree in direction and gripper state, and permits one reused
-step before the next dense call. \emph{Temporal fusion with a shared cache
-mask.} TTF-VLA fuses visual tokens across frames without training and raises
-base OpenVLA on LIBERO by four points at under two percent overhead, a
-denoising result rather than a speed one~\cite{ttfvla}. VLA-InfoEntropy selects
-which tokens to reuse by image and attention entropy~\cite{vlainfoentropy}, and
-VLA-IAP prunes tokens by interaction alignment~\cite{vlaiap}. Each selects
-patches for one purpose with its own signal. We build one mask from motion,
-entropy and task relevance that drives both the denoising and the cache path,
-so the cache reuses only what the fusion also treats as stable, add fallbacks
-for contact, and test it against optimized dense inference on paired episodes.
+removals to the ShortGPT selector, and choose the removed set on a disjoint
+split with no weight update. \emph{Guarded reuse.} Where fixed repeat skips
+feedback blindly, our guarded reuse skips a model call only when the current
+image and the recent trajectory are both stable, and falls back to dense
+inference the moment either gate fails. Recent work gates reuse on action
+similarity and visual token stability~\cite{flashvla} or on the manipulation
+phase~\cite{specprune}. Ours differs in where the gate sits and how far it may
+go. It reads subsampled pixels before any network call, at frame and patch
+scale, requires the last two dense actions to agree in direction and gripper
+state, and permits one reused step before the next dense call. \emph{Temporal
+fusion with a shared cache mask.} TTF-VLA fuses visual tokens across frames
+without training and raises base OpenVLA on LIBERO by four points at under two
+percent overhead, a denoising result rather than a speed one~\cite{ttfvla}.
+VLA-InfoEntropy selects which tokens to reuse by image and attention
+entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
+alignment~\cite{vlaiap}. Each selects patches for one purpose with its own
+signal. We build one mask from motion, entropy and task relevance that drives
+both the denoising and the cache path, so the cache reuses only what the fusion
+also treats as stable, add fallbacks for contact, and test it against optimized
+dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
@@ -185,6 +199,7 @@ fused one. We hold both fixed. We exclude quantization, which changes none of
 the three resources, and learned early exit, which needs training. Isolating
 the effect of choices that appear only in source code is an established
 practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six families
-under one protocol across six backbones and two benchmarks, on matched episodes
-against optimized dense inference, so that a candidate is called positive only
-when its speed and its success both clear a preregistered gate.
+under one protocol on six backbones, four of them on both benchmarks, on
+matched episodes against optimized dense inference, so that a candidate is
+called positive only when its end-to-end latency, the cost of its own signals
+included, and its success both clear a preregistered gate.

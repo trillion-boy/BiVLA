@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1069 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 270 words
+1085 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 285 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -41,17 +41,19 @@ The simplest way to spend less is to degrade the input or to skip feedback
 unconditionally. Both fail in ways that motivate the safeguards the candidates
 carry. On the spatial axis, foveation descends from Schwartz's log-polar
 mapping, taken up in robot vision to cut data while preserving central
-resolution (Traver and Bernardino) and applied to VLAs by policies conditioned on gaze (Gaze-Reg, Look Focus Act). Every encoder we run splits the image
-into a uniform grid, so at a fixed output resolution an edit in pixel space leaves
+resolution (Traver and Bernardino) and applied to VLAs by policies conditioned
+on gaze (Gaze-Reg, Look Focus Act). Every encoder we run splits the image into
+a uniform grid, so at a fixed output resolution an edit in pixel space leaves
 the visual token count and the model computation unchanged. Foveation before
 the encoder therefore tests whether the policy survives losing its periphery,
 not whether it runs faster. Methods that foveate inside the encoder do shed
 tokens, but they give up pretrained weights fitted to a uniform grid (Look
 Focus Act). On the temporal axis, executing one action over several control
 steps reduces model calls in proportion. But it acts open loop through
-contacts. FlashVLA reports an average success decrease of 0.7 points with
-training-free action reuse, and SpecPrune-VLA separates coarse movement from phases that need precision for the same reason. We run fixed foveation and
-fixed repeat as controls that establish when the candidate methods need gates.
+contacts. FlashVLA gates its action reuse and still reports a success decrease,
+and SpecPrune-VLA separates coarse movement from phases that need precision for
+the same reason. We run fixed foveation and fixed repeat as controls that
+establish when the candidate methods need gates.
 
 ### The recent baseline
 
@@ -81,7 +83,8 @@ places it outside a training-free study. Several recent compact VLAs build such
 reductions in by design rather than applying them at inference (FLOWER,
 SmolVLA, TurboVLA), so whether removing layers helps depends on what the
 architecture already leaves out. We add protected regions and a ban on adjacent
-removals to the ShortGPT selector, and calibrate on a disjoint split.
+removals to the ShortGPT selector, and choose the removed set on a disjoint
+split with no weight update.
 
 **Guarded reuse.** Where fixed repeat skips feedback blindly, our guarded reuse
 skips a model call only when the current image and the recent trajectory are
@@ -120,10 +123,10 @@ relative to a fused one. We hold both fixed. We exclude quantization, which
 changes none of the three resources, and learned early exit, which needs
 training. Isolating the effect of choices that appear only in source code is an
 established practice (Bag of Tricks for CNNs, Bag of Tricks for LLMs). We
-evaluate the six families under one protocol across six backbones and two
-benchmarks, on matched episodes against optimized dense inference, so that a
-candidate is called positive only when its speed and its success both clear a
-preregistered gate.
+evaluate the six families under one protocol on six backbones, four of them on
+both benchmarks, on matched episodes against optimized dense inference, so that
+a candidate is called positive only when its end-to-end latency, the cost of
+its own signals included, and its success both clear a preregistered gate.
 ---
 
 ## Notes for the co-authors
@@ -174,6 +177,21 @@ in place of "six backbones and two benchmarks"; that reading came from
 experiment_protocol.md, but setup.tex and the CSVs are SimplerEnv WidowX and
 Fractal, so the sentence stays. What does need fixing is setup.tex, which
 still describes the three-backbone grid.
+
+**Second review round (2026-09-03), four points, all acted on.**
+(1) FlashVLA's 0.7-point decrease belongs to its gated reuse, so it was
+evidence for "even gated reuse costs something", not for "unconditional
+repeat fails". The number is gone and the sentence now says FlashVLA gates
+its reuse and still reports a decrease; the failure of unconditional repeat
+is our own control result. (2) Our grid is 10 of 12 cells, MiniVLA and
+UniVLA have no Fractal checkpoint, so the closing sentence says "six
+backbones, four of them on both benchmarks" before anyone counts. If Results
+ends up with fewer filled cells, the "do not report the crossing cell" clause
+must go. (3) "with no weight update" added to the depth calibration clause;
+what is chosen is the removed set, not a threshold. (4) The gate is now on
+end-to-end latency with the cost of the candidate's own signals included,
+which experiment_protocol.md already requires and the CSVs already measure
+(fusion task-aware costs OpenVLA 12 ms per call).
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,
