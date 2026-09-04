@@ -17,7 +17,7 @@
 %                                          comparison, our protocol
 % Each paragraph ends on our position, the bag-of-tricks house style.
 %
-% Length: this is the LONG draft (about 1150 words of prose). Final target is
+% Length: this is the LONG draft (about 1170 words of prose). Final target is
 % 0.75 page, roughly 800 words in ieeeconf. Polish down from here; the cut
 % candidates are marked in RelatedWork.md.
 %
@@ -160,13 +160,27 @@
 %     and drop "fused".
 %
 % Verification status of the citations, 2026-09-04. This environment blocks
-% arxiv.org, huggingface.co and Semantic Scholar. Re-read TODAY from a primary
-% source: FLOWER (README: "Half of the Florence-2 LLM layers"), SpatialVLA
-% and CronusVLA READMEs (grid sentence), MiniVLA collection. Read from the
-% PDF on 2026-09-03: flashvla, ttfvla, vlainfoentropy. Everything else rests
-% on RelatedWork_Sources.md rows recorded from PDF reads in earlier sessions
-% (gromov, shortgpt, smolvla, turbovla, vlaeval, gazereg, vlapruner) and was
-% NOT re-read today.
+% arxiv.org, huggingface.co and Semantic Scholar. Read from the PDF on
+% 2026-09-04 (uploaded by the author): shortgpt, smolvla, turbovla, vlaeval,
+% gazereg, ttfvla. Read from the PDF on 2026-09-03: flashvla, vlainfoentropy.
+% Read from GitHub READMEs 2026-09-04: FLOWER, SpatialVLA, CronusVLA,
+% openvla-mini. Still resting on earlier-session rows in
+% RelatedWork_Sources.md, NOT re-read: gromov, vlapruner, efficientvla,
+% molevla, vlaiap, specprune, vlacache, starvla, schwartz, traver,
+% lookfocusact, the two surveys, dqn/act/diffusionpolicy/openvlaoft,
+% simplerenv/libero, the two bag-of-tricks papers.
+% Seventh pass, 2026-09-04, from those PDFs:
+%   TurboVLA does not remove layers, it drops the LLM pathway (direct
+%     V + L -> A, 0.2B). The compact-VLA sentence now splits FLOWER/SmolVLA
+%     (keep part of the layers) from TurboVLA (no language-model pathway).
+%   Gaze-Reg is a training-time regularizer with no gaze at inference, so
+%     "policies conditioned on gaze" was wrong. Now "as a training-time
+%     regularizer (gazereg) or as a foveation signal (lookfocusact)".
+%   Gaze-Reg crossing cell confirmed: pi0 on LIBERO + ALOHA-Sim, OpenVLA on
+%     LIBERO only. ShortGPT BI formula and "no further constraint"
+%     confirmed. SmolVLA "first 16 layers" confirmed. vla-eval "14
+%     simulation benchmarks" and "previously undocumented pitfalls"
+%     confirmed.
 %
 % Sixth pass, 2026-09-04, after reading the TTF-VLA PDF (local upload):
 %   TTF-VLA's mechanism is a per-patch hard fusion mask from grayscale pixel
@@ -208,8 +222,9 @@ spend less is to degrade the input or to skip feedback unconditionally. Both
 fail in ways that motivate the safeguards the candidates carry. On the spatial
 axis, foveation descends from Schwartz's log-polar mapping~\cite{schwartz},
 taken up in robot vision to cut data while preserving central
-resolution~\cite{traver} and applied to VLAs by policies conditioned on
-gaze~\cite{gazereg, lookfocusact}. Every encoder we run splits the image into a
+resolution~\cite{traver} and brought to VLAs through human gaze, as a
+training-time regularizer~\cite{gazereg} or as a foveation
+signal~\cite{lookfocusact}. Every encoder we run splits the image into a
 uniform grid, so at a fixed output resolution an edit in pixel space leaves the
 visual token count and the model computation unchanged. Foveation before the
 encoder therefore tests whether the policy survives losing its periphery, not
@@ -244,33 +259,34 @@ adopt, and constrains nothing further~\cite{shortgpt}, while others keep the
 final layer and remove a contiguous deep block~\cite{gromov}. EfficientVLA
 carries the unconstrained form into VLAs without training~\cite{efficientvla},
 and MoLe-VLA needs a learned router and distillation~\cite{molevla}, which
-places it outside a training-free study. Several recent compact VLAs build such
-reductions in by design rather than applying them at inference~\cite{flower,
-smolvla, turbovla}, so whether removing layers helps depends on what the
-architecture already leaves out. We add protected regions and a ban on adjacent
-removals to the ShortGPT selector, and choose the removed set on a disjoint
-split with no weight update. \emph{Guarded reuse.} Where fixed repeat skips
-feedback blindly, our guarded reuse skips a model call only when the current
-image and the recent trajectory are both stable, and falls back to dense
-inference the moment either gate fails. Recent work gates reuse on action
-similarity and visual token stability~\cite{flashvla}, and SpecPrune-VLA
-conditions its token pruning on the manipulation phase~\cite{specprune}. Ours
-differs in where the gate sits and how far it may go. It reads subsampled
-pixels before any network call, at frame and patch scale, requires the last two
-dense actions to agree in direction and gripper state, and permits one reused
-step before the next dense call. \emph{Temporal fusion.} TTF-VLA fuses visual
-tokens across frames without training. It keeps the current token for patches
-flagged by grayscale pixel difference or attention relevance, reuses the
-previous token elsewhere, and anchors a keyframe to bound drift, which raises
-base OpenVLA on LIBERO by four points at under two percent overhead, a
-denoising result rather than a speed one~\cite{ttfvla}. VLA-InfoEntropy selects
-tokens for VLA-Cache's key-value reuse by image and attention
-entropy~\cite{vlainfoentropy}, and VLA-IAP prunes tokens by interaction
-alignment~\cite{vlaiap}. Our fusion keeps TTF-VLA's hard fusion and keyframe
-and changes the selection. Patches are scored by motion, image entropy and task
-relevance, every flagged patch protects a one-patch ring around it, and the
-reusable fraction is capped. We test it on six backbones against optimized
-dense inference on paired episodes.
+places it outside a training-free study. Several recent compact VLAs build the
+reduction in by design, keeping only part of the language model's
+layers~\cite{flower, smolvla} or dropping the language-model pathway
+altogether~\cite{turbovla}, so whether removing layers at inference helps
+depends on what the architecture already leaves out. We add protected regions
+and a ban on adjacent removals to the ShortGPT selector, and choose the removed
+set on a disjoint split with no weight update. \emph{Guarded reuse.} Where
+fixed repeat skips feedback blindly, our guarded reuse skips a model call only
+when the current image and the recent trajectory are both stable, and falls
+back to dense inference the moment either gate fails. Recent work gates reuse
+on action similarity and visual token stability~\cite{flashvla}, and
+SpecPrune-VLA conditions its token pruning on the manipulation
+phase~\cite{specprune}. Ours differs in where the gate sits and how far it may
+go. It reads subsampled pixels before any network call, at frame and patch
+scale, requires the last two dense actions to agree in direction and gripper
+state, and permits one reused step before the next dense call. \emph{Temporal
+fusion.} TTF-VLA fuses visual tokens across frames without training. It keeps
+the current token for patches flagged by grayscale pixel difference or
+attention relevance, reuses the previous token elsewhere, and anchors a
+keyframe to bound drift, which raises base OpenVLA on LIBERO by four points at
+under two percent overhead, a denoising result rather than a speed
+one~\cite{ttfvla}. VLA-InfoEntropy selects tokens for VLA-Cache's key-value
+reuse by image and attention entropy~\cite{vlainfoentropy}, and VLA-IAP prunes
+tokens by interaction alignment~\cite{vlaiap}. Our fusion keeps TTF-VLA's hard
+fusion and keyframe and changes the selection. Patches are scored by motion,
+image entropy and task relevance, every flagged patch protects a one-patch ring
+around it, and the reusable fraction is capped. We test it on six backbones
+against optimized dense inference on paired episodes.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work

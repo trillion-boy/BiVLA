@@ -1,8 +1,8 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1152 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
-final target is 0.75 page, about 800 words in ieeeconf, so roughly 350 words
+1169 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+final target is 0.75 page, about 800 words in ieeeconf, so roughly 370 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
 claims in its last section.*
@@ -41,19 +41,19 @@ The simplest way to spend less is to degrade the input or to skip feedback
 unconditionally. Both fail in ways that motivate the safeguards the candidates
 carry. On the spatial axis, foveation descends from Schwartz's log-polar
 mapping, taken up in robot vision to cut data while preserving central
-resolution (Traver and Bernardino) and applied to VLAs by policies conditioned
-on gaze (Gaze-Reg, Look Focus Act). Every encoder we run splits the image into
-a uniform grid, so at a fixed output resolution an edit in pixel space leaves
-the visual token count and the model computation unchanged. Foveation before
-the encoder therefore tests whether the policy survives losing its periphery,
-not whether it runs faster. Methods that foveate inside the encoder do shed
-tokens, but they give up pretrained weights fitted to a uniform grid (Look
-Focus Act). On the temporal axis, executing one action over several control
-steps reduces model calls in proportion. But it acts open loop through
-contacts. FlashVLA gates its action reuse and still reports a success decrease,
-and SpecPrune-VLA separates coarse movement from phases that need precision for
-the same reason. We run fixed foveation and fixed repeat as controls that
-establish when the candidate methods need gates.
+resolution (Traver and Bernardino) and brought to VLAs through human gaze, as a
+training-time regularizer (Gaze-Reg) or as a foveation signal (Look Focus Act).
+Every encoder we run splits the image into a uniform grid, so at a fixed output
+resolution an edit in pixel space leaves the visual token count and the model
+computation unchanged. Foveation before the encoder therefore tests whether the
+policy survives losing its periphery, not whether it runs faster. Methods that
+foveate inside the encoder do shed tokens, but they give up pretrained weights
+fitted to a uniform grid (Look Focus Act). On the temporal axis, executing one
+action over several control steps reduces model calls in proportion. But it
+acts open loop through contacts. FlashVLA gates its action reuse and still
+reports a success decrease, and SpecPrune-VLA separates coarse movement from
+phases that need precision for the same reason. We run fixed foveation and
+fixed repeat as controls that establish when the candidate methods need gates.
 
 ### The recent baseline
 
@@ -79,12 +79,13 @@ ranks every layer by Block Influence, the criterion we adopt, and constrains
 nothing further, while others keep the final layer and remove a contiguous deep
 block (Gromov et al.). EfficientVLA carries the unconstrained form into VLAs
 without training, and MoLe-VLA needs a learned router and distillation, which
-places it outside a training-free study. Several recent compact VLAs build such
-reductions in by design rather than applying them at inference (FLOWER,
-SmolVLA, TurboVLA), so whether removing layers helps depends on what the
-architecture already leaves out. We add protected regions and a ban on adjacent
-removals to the ShortGPT selector, and choose the removed set on a disjoint
-split with no weight update.
+places it outside a training-free study. Several recent compact VLAs build the
+reduction in by design, keeping only part of the language model's layers
+(FLOWER, SmolVLA) or dropping the language-model pathway altogether (TurboVLA),
+so whether removing layers at inference helps depends on what the architecture
+already leaves out. We add protected regions and a ban on adjacent removals to
+the ShortGPT selector, and choose the removed set on a disjoint split with no
+weight update.
 
 **Guarded reuse.** Where fixed repeat skips feedback blindly, our guarded reuse
 skips a model call only when the current image and the recent trajectory are
@@ -242,6 +243,16 @@ lists only what we change (entropy term, one-patch ring, reuse cap, six
 backbones). Also: VLA-Cache is "the closest published point of comparison",
 not "the anchor against which we measure", since no rollout exists; and
 OpenVLA-OFT joins the chunking lineage.
+
+**Seventh pass (2026-09-04), five PDFs read.** ShortGPT, SmolVLA and
+vla-eval match the text. Two did not. TurboVLA drops the LLM pathway rather
+than removing layers, so the compact-VLA sentence now separates FLOWER and
+SmolVLA (keep part of the layers) from TurboVLA (no language-model
+pathway). Gaze-Reg regularizes attention at training time and uses no gaze
+at inference, so "policies conditioned on gaze" became "as a training-time
+regularizer (Gaze-Reg) or as a foveation signal (Look Focus Act)". Its
+crossing-cell gap is confirmed: pi0 on LIBERO and ALOHA-Sim, OpenVLA on
+LIBERO only. Sources rows 34 to 38.
 
 **Handoff to the mentor's Setup and Protocol (2026-09-03).** The mentor
 writes those two sections. RW commits them to: six families (two controls,
