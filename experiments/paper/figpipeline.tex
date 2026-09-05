@@ -48,13 +48,14 @@
 \draw[->, dashed] (t3) -- (dec);
 \draw[->, dashed] (t4) -- (head);
 \end{tikzpicture}
-\caption{The five training-free methods in the VLA inference pipeline, each
+\caption{The five training-free interventions in the VLA inference pipeline, each
 tagged at the point it acts and by its role. The two controls degrade the
 input (foveation) or skip feedback unconditionally (action repeat). The
-candidates swap stable visual tokens for the previous step's (temporal
-fusion), remove decoder layers (depth pruning), or reuse a whole action under
-stability gates (guarded reuse). One call returns a chunk of $m$ actions and
-the action repeat $k$ holds each for $k$ steps, so the horizon $h = m\,k$
-sets how many environment steps pass between calls.}
+candidates swap reusable visual tokens for the previous step's before they
+enter the decoder (temporal fusion), remove decoder layers (depth pruning), or
+reuse a whole action under image and action gates (guarded reuse). One call
+yields $m$ executed actions and the action repeat $k$ holds each for $k$
+steps, so the horizon $h = m\,k$ sets how many environment steps pass between
+calls when no reuse gate skips one.}
 \label{fig:pipeline}
 \end{figure*}

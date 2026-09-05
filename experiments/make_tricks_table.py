@@ -8,7 +8,7 @@ and writes paper/tabletricks.tex.
 
 summary.csv is the mentor's selection: for every family the variant with the
 highest success rate in that environment. The condition label names the
-chosen variant ("Depth prune 2", "Foveation keep 50%"), so the reader sees
+chosen variant ("Depth pruning 2", "Foveation keep 50%"), so the reader sees
 which setting a row is without a footnote. The per-setting sweeps are the
 later per-family tables.
 
@@ -81,9 +81,9 @@ LABEL = {
     "fixed_foveation_keep50": "Foveation keep 50\\%",
     "action_repeat2": "Action repeat 2",
     "action_repeat4": "Action repeat 4",
-    "depth_pruning1": "Depth prune 1",
-    "depth_pruning2": "Depth prune 2",
-    "depth_pruning4": "Depth prune 4",
+    "depth_pruning1": "Depth pruning 1",
+    "depth_pruning2": "Depth pruning 2",
+    "depth_pruning4": "Depth pruning 4",
     "guarded_reuse_strict": "Guarded reuse strict",
     "guarded_reuse_moderate": "Guarded reuse moderate",
     "guarded_reuse_aggressive": "Guarded reuse aggressive",
@@ -171,7 +171,7 @@ def main():
 {body}
 \\end{{tabular}}
 \\vspace{{2pt}}
-\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate for that backbone and benchmark, named in the condition column. Latency is end-to-end wall-clock per environment step with the cost of each intervention's own signals and image transforms included, so a saving from fewer calls and the cost of the gate that buys it appear in the same number. It falls under action repeat and depth pruning in every cell and under guarded reuse in nine of ten. On UniVLA the guarded reuse and conservative-adaptive rows equal dense because the gate fired once in 200 episodes and the fusion mask marked no token reusable. MiniVLA and UniVLA release no Fractal checkpoint and appear under Bridge only. The per-setting sweeps are in the ablation tables of Section~IV.}}
+\\parbox{{\\textwidth}}{{\\footnotesize Each family is shown at the setting with the highest success rate for that backbone and environment, named in the condition column. Latency is end-to-end wall-clock per environment step with the cost of each intervention's own signals and image transforms included, so a saving from fewer calls and the cost of the gate that buys it appear in the same number. Compare latency within a backbone only, since what one step spans differs between harnesses, as listed in Section~IV-A. It falls under action repeat and depth pruning in every cell and under guarded reuse in nine of ten. On UniVLA the guarded reuse and conservative-adaptive rows match the dense success rate because reuse occurred once in 200 episodes and the median count of reusable tokens was zero. MiniVLA and UniVLA release no Fractal checkpoint and appear under Bridge only. The per-setting sweeps are in the ablation tables of Section~IV.}}
 \\end{{table*}}
 """
     with open(OUT, "w") as fh:

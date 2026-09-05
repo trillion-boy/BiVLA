@@ -144,39 +144,85 @@
 %   uses c for the cosine agreement threshold; Setup must not print that
 %   threshold as c if the figure keeps m, or must rename one of them.
 %
+% Twelfth pass, 2026-09-05 (final audit):
+%   Lead-in: "maps an image ... to an action" was false for UniVLA (frame
+%     history in, a chunk of actions out) and clashed with the figure's
+%     "chunk of m actions". Now "maps the observation o_t at step t and an
+%     instruction to an action a_t, or to a chunk of m actions, through a
+%     visual encoder, a stack of decoder layers, and an action head". The
+%     reference is now tied to its other names: "called dense below and
+%     Original policy in the tables".
+%   Foveation: rho named "the keep ratio" so Table I's "keep 20%" resolves.
+%   "Unconditional action repeat" -> "Action repeat" (one name everywhere);
+%     "the interval the robot acts on" -> "the interval over which the robot
+%     acts".
+%   "first quarter" was a value in prose -> "a leading fraction of the
+%     stack" (the value stays in the handoff list).
+%   "frame and patch scale" -> "whole-frame and local scale".
+%   "which disables reuse in low-motion precision phases" stated a purpose
+%     the gate cannot see -> "so reuse never fires while the commanded
+%     motion is small". "so the gates read a current image" did not follow
+%     from the cap; split into two sentences.
+%   Fusion: "a fixed fraction of the rest" was wrong, the cap is a fraction
+%     of ALL patches (perception.py: floor(fraction * patch_count)); "the
+%     mask" had no antecedent; "relevance" -> "attention" (RW's word); the
+%     forced keyframe uses a second, higher motion threshold; comma splice.
+%
+%   NEW mentor questions, 2026-09-05:
+%   OTHER HARNESSES: the tricks branch holds foveation, repeat, guarded
+%     reuse and fusion code for the OpenVLA/MiniVLA harness only. The
+%     CogACT, SpatialVLA, CronusVLA and UniVLA rollouts carry all fourteen
+%     configurations but their harness code is not in the export (UniVLA's
+%     adaptive_sparse_vla has none of the four). Ask which implementation and
+%     presets ran there; every mechanism sentence in III is verified for two
+%     backbones of six.
+%   CRONUSVLA BRIDGE GUARDED REUSE: strict, moderate and aggressive gave
+%     identical rollouts (72 successes, 49.735 steps, 0.025 reuses), so the
+%     three presets did not change there. Rerun or footnote.
+%   CRONUSVLA STEP CLOCK: its per-step time equals its policy median (125.8
+%     vs 126.3 ms Bridge), while every other backbone's step time exceeds
+%     the policy median by 40 to 80 ms. Does CronusVLA's clock exclude the
+%     simulator? Table I footnote now says to compare latency within a
+%     backbone only.
+%   OPENVLA ATTENTION BACKEND: verified in the microbenchmark script only
+%     (benchmark_openvla_14.py), not in the rollout harness that made the
+%     CSV rows.
+%
 % Style: no em-dashes, no semicolons, no prose colons. About 520 words by the paper word counter.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
 
-A VLA policy $\pi_\theta$ maps an image and an instruction to an action $a_t$
-through a visual encoder and a stack of decoder layers. The reference is the
-released policy run unchanged under fused attention. Every intervention below
-leaves $\theta$ frozen and changes one part of inference, at settings listed in
-Section~IV-A. The first two are controls and the last three are the candidates.
-Related Work gives the lineage of each. Here we state only what runs.
+A VLA policy $\pi_\theta$ maps the observation $o_t$ at step $t$ and an
+instruction to an action $a_t$, or to a chunk of $m$ actions, through a visual
+encoder, a stack of decoder layers, and an action head. The reference, called
+dense below and Original policy in the tables, is the released policy run
+unchanged under fused attention. Every intervention below leaves $\theta$
+frozen and changes one part of inference, at settings listed in Section~IV-A.
+The first two are controls and the last three are the candidates. Related Work
+gives the lineage of each. Here we state only what runs.
 
 \subsection{Foveation}
 
-Fixed foveation keeps a central disc sharp, covering a fraction $\rho$ of the
-image area, and blends increasingly blurred copies of the frame outside it.
-Output resolution and visual token count are unchanged, so foveation tests
-perceptual simplification alone.
+Fixed foveation keeps sharp a central disc covering a fraction $\rho$ of the
+image area, the keep ratio, and blends increasingly blurred copies of the frame
+outside it. Output resolution and visual token count are unchanged, so
+foveation tests perceptual simplification alone.
 
 \subsection{Action Repeat}
 
-Unconditional action repeat executes each dense action for $k$ consecutive
-steps and skips the model call on the repeated steps. It divides model calls
-per environment step by $k$ and multiplies by $k$ the interval the robot acts
-on without fresh feedback, with no gate. Where the harness executes a full
-action chunk per call, one call then covers $k$ times the chunk length.
+Action repeat executes each dense action for $k$ consecutive steps and skips
+the model call on the repeated steps. It divides model calls per environment
+step by $k$ and multiplies by $k$ the interval over which the robot acts
+without fresh feedback, with no gate. Where the harness executes a full action
+chunk per call, one call then covers $k$ times the chunk length.
 
 \subsection{Depth Pruning}
 
 Calibrated depth pruning scores each decoder layer by ShortGPT Block Influence,
 one minus the mean cosine between its input and output hidden
 states~\cite{shortgpt}, on a calibration split disjoint from the test episodes.
-The selector protects the first quarter of the stack and the final layer,
+The selector protects a leading fraction of the stack and the final layer,
 forbids removing adjacent layers, and fixes the removed set before testing.
 Removed layers are excised and the generation cache reindexed, so this is
 removal rather than an identity layer. The budget, how many layers are removed,
@@ -185,25 +231,26 @@ is the swept quantity.
 \subsection{Guarded Reuse}
 
 Guarded action reuse repeats the previous action only when a subsampled pixel
-signature is stable at frame and patch scale, the two most recent dense actions
-agree in direction and gripper state, and the commanded translation is above a
-floor, which disables reuse in low-motion precision phases. Consecutive reuse
-is capped, and any failed gate returns to dense inference, so the gates read a
-current image at every step and only the model call is skipped. The image and
-agreement thresholds and the cap are swept together as one setting, strict,
-moderate, or aggressive, from the tightest to the loosest, with the translation
-floor fixed.
+signature is stable at whole-frame and local scale, the two most recent dense
+actions agree in direction and gripper state, and the commanded translation is
+above a floor, so reuse never fires while the commanded motion is small.
+Consecutive reuse is capped, and any failed gate returns to dense inference.
+The gates read a current image at every step, so only the model call is
+skipped. The image and agreement thresholds and the cap are swept together as
+one setting, strict, moderate, or aggressive, from the tightest to the loosest,
+with the translation floor fixed.
 
 \subsection{Temporal Fusion}
 
 Temporal fusion scores each visual patch by motion, image entropy, and optional
-text-to-vision relevance, protects patches high in any of these or adjacent to
-one, and marks at most a fixed fraction of the rest reusable. A reusable patch
-keeps the token that entered the decoder at the previous step, the others take
-the fresh token, and a dense keyframe every few steps bounds propagation.
-Fusion changes which tokens enter the decoder, not how many, so it is an
-accuracy candidate rather than a speed one. Three settings are evaluated.
-Motion-entropy builds the mask from motion and entropy alone, task-aware adds
-text-to-vision relevance, and conservative-adaptive keeps the motion-entropy
-mask with a smaller reuse fraction, a shorter keyframe interval, and a forced
-keyframe whenever any patch moves beyond a threshold.
+text-to-vision attention, protects patches high in any of these or adjacent to
+one, and marks reusable at most a fixed fraction of all patches, drawn from the
+rest. A reusable patch keeps the token that entered the decoder at the previous
+step while the others take the fresh token, and a dense keyframe every few
+steps bounds propagation. Fusion changes which tokens enter the decoder, not
+how many, so it is an accuracy candidate rather than a speed one. Three
+settings are evaluated. Motion-entropy builds the reusable set from motion and
+entropy alone, task-aware adds text-to-vision attention, and
+conservative-adaptive keeps the motion-entropy selection with a smaller reuse
+fraction, a shorter keyframe interval, and a forced keyframe whenever any patch
+moves beyond a second, higher motion threshold.

@@ -10,8 +10,9 @@
 % recurring error are kept here; the archival ones live in that file.
 %
 % Before submission, confirm from a normal browser (arXiv/HF are blocked here):
-% fastv's ECCV venue, simplerenv's CoRL listing, molevla's author list, and
-% lookfocusact's latest version date.
+% fastv's ECCV pages, simplerenv's CoRL listing, shortgpt's Findings of ACL
+% pages and author order, molevla's AAAI entry and author list, openvlaoft's
+% RSS listing, and lookfocusact's latest version date.
 % ---------------------------------------------------------------------------
 
 % univla: our backbone is Yuqi Wang's UniVLA(-Emu3), arXiv 2506.19850, whose
@@ -38,12 +39,15 @@
   year    = {2025},
 }
 
-@article{openvlaoft,
-  title   = {Fine-Tuning Vision-Language-Action Models: Optimizing Speed and
-             Success},
-  author  = {Kim, Moo Jin and Finn, Chelsea and Liang, Percy},
-  journal = {arXiv preprint arXiv:2502.19645},
-  year    = {2025},
+% openvlaoft: RSS 2025 per the reference lists of TTF-VLA, VLA-InfoEntropy
+% and VLA-IAP ("Accepted to Robotics: Science and Systems (RSS) 2025").
+@inproceedings{openvlaoft,
+  title     = {Fine-Tuning Vision-Language-Action Models: Optimizing Speed and
+               Success},
+  author    = {Kim, Moo Jin and Finn, Chelsea and Liang, Percy},
+  booktitle = {Robotics: Science and Systems (RSS)},
+  year      = {2025},
+  note      = {arXiv:2502.19645},
 }
 
 % efficientvla: "Zhongwei, Luo" is deliberate. arXiv writes the fifth author as
@@ -60,25 +64,36 @@
   year    = {2025},
 }
 
-% fastv: kept as @article. VLA-Cache [29] and VLA-InfoEntropy [27] cite it as
-% ECCV 2024, pp. 19-35, but the Springer listing has not been checked from
-% here. Switch to @inproceedings once it is.
-@article{fastv,
-  title   = {An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play
-             Inference Acceleration for Large Vision-Language Models},
-  author  = {Chen, Liang and Zhao, Haozhe and Liu, Tianyu and Bai, Shuai and
-             Lin, Junyang and Zhou, Chang and Chang, Baobao},
-  journal = {arXiv preprint arXiv:2403.06764},
-  year    = {2024},
+% fastv: ECCV 2024, pp. 19-35, per the reference lists of VLA-Cache,
+% VLA-InfoEntropy, VLA-IAP, both surveys, SpecPrune-VLA and FlashVLA; the
+% arXiv v3 PDF prints a different subtitle. Confirm the Springer listing from
+% a browser before camera-ready.
+@inproceedings{fastv,
+  title     = {An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play
+               Inference Acceleration for Large Vision-Language Models},
+  author    = {Chen, Liang and Zhao, Haozhe and Liu, Tianyu and Bai, Shuai and
+               Lin, Junyang and Zhou, Chang and Chang, Baobao},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  pages     = {19--35},
+  year      = {2024},
+  note      = {arXiv:2403.06764},
 }
 
-@article{shortgpt,
-  title   = {{ShortGPT}: Layers in Large Language Models are More Redundant
-             Than You Expect},
-  author  = {Men, Xin and Xu, Mingyu and Zhang, Qingyu and Wang, Bingning and
-             Lin, Hongyu and Lu, Yaojie and Han, Xianpei and Chen, Weipeng},
-  journal = {arXiv preprint arXiv:2403.03853},
-  year    = {2024},
+% shortgpt: Findings of ACL 2025 per the Anthology listing
+% (2025.findings-acl.1035), which adds a ninth author (Qianhao Yuan, fourth).
+% Claims in the text were checked against arXiv v3, kept in the note. Confirm
+% pages and author order from a browser before camera-ready.
+@inproceedings{shortgpt,
+  title     = {{ShortGPT}: Layers in Large Language Models are More Redundant
+               Than You Expect},
+  author    = {Men, Xin and Xu, Mingyu and Zhang, Qingyu and Yuan, Qianhao and
+               Wang, Bingning and Lin, Hongyu and Lu, Yaojie and Han, Xianpei
+               and Chen, Weipeng},
+  booktitle = {Findings of the Association for Computational Linguistics:
+               ACL 2025},
+  pages     = {20192--20204},
+  year      = {2025},
+  note      = {arXiv:2403.03853},
 }
 
 @inproceedings{vlacache,
@@ -94,14 +109,17 @@
 % molevla: author list follows the authors' own BibTeX (repo README) and the
 % arXiv listing; the v2 title page prints nine authors without Dan Wang.
 % Confirm on arXiv before camera-ready.
-@article{molevla,
-  title   = {{MoLe-VLA}: Dynamic Layer-skipping Vision Language Action Model
-             via Mixture-of-Layers for Efficient Robot Manipulation},
-  author  = {Zhang, Rongyu and Dong, Menghang and Zhang, Yuan and Heng, Liang
-             and Chi, Xiaowei and Dai, Gaole and Du, Li and Wang, Dan and Du,
-             Yuan and Zhang, Shanghang},
-  journal = {arXiv preprint arXiv:2503.20384},
-  year    = {2025},
+% molevla: AAAI 2026 per the authors' repository description (fetched
+% 2026-09-05); confirm the proceedings entry from a browser.
+@inproceedings{molevla,
+  title     = {{MoLe-VLA}: Dynamic Layer-skipping Vision Language Action Model
+               via Mixture-of-Layers for Efficient Robot Manipulation},
+  author    = {Zhang, Rongyu and Dong, Menghang and Zhang, Yuan and Heng, Liang
+               and Chi, Xiaowei and Dai, Gaole and Du, Li and Wang, Dan and Du,
+               Yuan and Zhang, Shanghang},
+  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
+  year      = {2026},
+  note      = {arXiv:2503.20384},
 }
 
 @article{openvla,
@@ -172,6 +190,17 @@
   year    = {2026},
 }
 
+% deervla: NeurIPS 2024 (footer of the PDF first page), arXiv 2411.02359.
+@inproceedings{deervla,
+  title     = {{DeeR-VLA}: Dynamic Inference of Multimodal Large Language
+               Models for Efficient Robot Execution},
+  author    = {Yue, Yang and Wang, Yulin and Kang, Bingyi and Han, Yizeng and
+               Wang, Shenzhi and Song, Shiji and Feng, Jiashi and Huang, Gao},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2024},
+  note      = {arXiv:2411.02359},
+}
+
 @article{dqn,
   title   = {Human-level control through deep reinforcement learning},
   author  = {Mnih, Volodymyr and Kavukcuoglu, Koray and Silver, David and
@@ -206,6 +235,7 @@
   booktitle = {IEEE Conference on Computer Vision and Pattern Recognition
                (CVPR)},
   year      = {2019},
+  note      = {arXiv:1812.01187},
 }
 
 @inproceedings{bagoftricks_llm,
@@ -243,10 +273,11 @@
   title     = {Gaze-Regularized Vision-Language-Action Models for Robotic
                Manipulation},
   author    = {Pani, Anupam and Yang, Yanchao},
-  booktitle = {Proc. IEEE/CVF Conf. Computer Vision and Pattern Recognition
+  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition
                Workshops (CVPRW)},
   pages     = {11332--11342},
   year      = {2026},
+  note      = {arXiv:2603.23202},
 }
 
 @inproceedings{libero,
@@ -259,14 +290,15 @@
   note      = {arXiv:2306.03310},
 }
 
-% lookfocusact: year is 2026 on purpose (arXiv stamps 2026), not 2025.
+% lookfocusact: dated by the version in hand (v2, 22 Sep 2025). If a 2026
+% revision is confirmed from a browser, record its version and date here.
 @article{lookfocusact,
   title   = {Look, Focus, Act: Efficient and Robust Robot Learning via Human
              Gaze and Foveated Vision Transformers},
   author  = {Chuang, Ian and Zou, Jinyu and Lee, Andrew and Gao, Dechen and
              Soltani, Iman},
   journal = {arXiv preprint arXiv:2507.15833},
-  year    = {2026},
+  year    = {2025},
 }
 
 @article{schwartz,
