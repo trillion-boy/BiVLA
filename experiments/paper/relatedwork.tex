@@ -537,7 +537,7 @@ still command translation, and falls back to dense inference the moment any
 gate fails. Recent work gates reuse on action similarity and visual token
 stability~\cite{flashvla}, and SpecPrune-VLA sets its pruning budget by the
 end-effector speed read from the actions it has already
-emitted~\cite{specprune}, the quantity our translation floor also reads.
+emitted~\cite{specprune}, the translational part of which our floor also reads.
 Against FlashVLA, ours differs in the signal. FlashVLA compares the visual
 token sets its previous two calls selected, whereas ours reads subsampled
 pixels of the current frame, which FlashVLA's gate never sees, at whole-frame
@@ -546,7 +546,7 @@ read the angle between their two preceding actions, ours the two most recent
 dense ones, and both cap consecutive reuse. \emph{Temporal fusion.} TTF-VLA
 fuses visual tokens across frames without training. It keeps the current token
 for patches flagged by grayscale pixel difference or attention relevance,
-reuses the previous token elsewhere, and anchors a keyframe to bound drift, and
+reuses the previous token elsewhere, and anchors a keyframe to bound drift. It
 reports that this raises average success on OpenVLA's task-finetuned LIBERO
 checkpoints by four points at under two percent overhead, a denoising result
 rather than a speed one~\cite{ttfvla}. VLA-InfoEntropy selects tokens for

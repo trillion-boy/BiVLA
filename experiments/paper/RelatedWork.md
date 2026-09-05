@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1433 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+1435 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 390 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -106,10 +106,10 @@ actions agree and still command translation, and falls back to dense inference
 the moment any gate fails. Recent work gates reuse on action similarity and
 visual token stability (FlashVLA), and SpecPrune-VLA sets its pruning budget by
 the end-effector speed read from the actions it has already emitted, the
-quantity our translation floor also reads. Against FlashVLA, ours differs in
-the signal. FlashVLA compares the visual token sets its previous two calls
-selected, whereas ours reads subsampled pixels of the current frame, which
-FlashVLA's gate never sees, at whole-frame and local scale, and adds a
+translational part of which our floor also reads. Against FlashVLA, ours
+differs in the signal. FlashVLA compares the visual token sets its previous two
+calls selected, whereas ours reads subsampled pixels of the current frame,
+which FlashVLA's gate never sees, at whole-frame and local scale, and adds a
 gripper-state check and a translation floor. Both read the angle between their
 two preceding actions, ours the two most recent dense ones, and both cap
 consecutive reuse.
@@ -117,7 +117,7 @@ consecutive reuse.
 **Temporal fusion.** TTF-VLA fuses visual tokens across frames without
 training. It keeps the current token for patches flagged by grayscale pixel
 difference or attention relevance, reuses the previous token elsewhere, and
-anchors a keyframe to bound drift, and reports that this raises average success
+anchors a keyframe to bound drift. It reports that this raises average success
 on OpenVLA's task-finetuned LIBERO checkpoints by four points at under two
 percent overhead, a denoising result rather than a speed one. VLA-InfoEntropy
 selects tokens for VLA-Cache's key-value reuse by image and attention entropy,
