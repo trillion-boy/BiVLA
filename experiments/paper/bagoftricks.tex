@@ -194,8 +194,13 @@
 %   the harness executes a full action chunk" sentence is gone). Task-aware
 %   attention is "of the preceding call" (run_minivla_simpler_eval.py feeds
 %   step t the map collected at t-1).
+% Fourteenth pass, 2026-09-05: "an action head" was wrong for the four
+%   token-output backbones (OpenVLA, SpatialVLA, MiniVLA, UniVLA emit actions
+%   from the language head). Now "an output stage that emits the action as
+%   tokens from the language head or from a separate action head". Figure
+%   box renamed "Action output".
 %
-% Style: no em-dashes, no semicolons, no prose colons. About 540 words by the paper word counter.
+% Style: no em-dashes, no semicolons, no prose colons. About 550 words by the paper word counter.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
@@ -203,9 +208,10 @@
 A VLA policy $\pi_\theta$ maps the observation $o_t$ at step $t$, with whatever
 history the backbone keeps, and an instruction to an action $a_t$, or to a
 chunk of actions of which the harness executes $m$ per call, through a visual
-encoder, a stack of decoder layers, and an action head. The reference, called
-dense below and Original policy in the tables, is the released policy run
-unchanged under fused attention. Every intervention below leaves $\theta$
+encoder, a stack of decoder layers, and an output stage that emits the action
+as tokens from the language head or from a separate action head. The reference,
+called dense below and Original policy in the tables, is the released policy
+run unchanged under fused attention. Every intervention below leaves $\theta$
 frozen and changes one part of inference, at settings listed in Section~IV-A.
 The first two are controls and the last three are the candidates. Related Work
 gives the lineage of each. Here we state only what runs.

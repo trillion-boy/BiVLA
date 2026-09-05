@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1453 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+1479 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 390 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -69,17 +69,17 @@ VLA-Cache reuses the cached key-value entries of visually static patches and
 recomputes those that move or that the decoder's attention marks task-relevant.
 On OpenVLA's LIBERO checkpoints it reports average success of 74.7% against
 75.0% dense at 39% lower CUDA latency, a speed result at nearly unchanged
-success. It is the training-free VLA acceleration method that later work adopts
-as its baseline (VLA-Pruner, EfficientVLA, SpecPrune-VLA), not a contribution
-of ours. The same paper also reports that two token pruning methods developed
-for vision-language models (FastV, SparseVLM) transfer poorly to VLAs. It
+success. Later work on training-free VLA acceleration adopts it as a baseline
+(VLA-Pruner, EfficientVLA, SpecPrune-VLA), and it is not a contribution of
+ours. The same paper also reports that two token pruning methods developed for
+vision-language models (FastV, SparseVLM) transfer poorly to VLAs. It
 attributes the success loss to their working within a single frame, which
 disrupts spatial fidelity, and the missing speedup to their targeting long
 output sequences, whereas a VLA emits a few action tokens. VLA-Pruner
 reproduces the loss on the same OpenVLA setting and attributes it instead to a
 mismatch between the attention patterns of the prefill and the action-decode
-stage. Both accounts fault the selection signal, one for reading a single frame
-and one for reading the prefill alone.
+stage. Both accounts fault how the tokens are chosen, one for working within a
+single frame and one for reading the prefill alone.
 
 ### Conditional candidates
 
@@ -89,7 +89,7 @@ depth and at every step for the other two.
 **Depth.** Redundancy among decoder layers is well established in language
 models. But the recipes built on it disagree on which layers can go. ShortGPT
 ranks every layer by Block Influence, the criterion we adopt, and constrains
-nothing further, while others remove one contiguous block chosen by the
+nothing further, while Gromov et al. remove one contiguous block chosen by the
 similarity between its input and output and offer finetuning as an optional
 step to heal the cut (Gromov et al.). EfficientVLA applies the same
 unconstrained ranking to a VLA without training, under the name non-contiguous
@@ -97,10 +97,11 @@ pruning, and MoLe-VLA trains a layer router end to end with self-distillation,
 which places it outside a training-free study. Several recent compact VLAs
 build the reduction in by design, keeping only part of the language model's
 layers (FLOWER, SmolVLA) or dropping the large language model from the action
-path altogether (TurboVLA), so whether removing layers at inference helps
-depends on what the architecture already leaves out. We add protected regions
-and a ban on adjacent removals to the ShortGPT selector, and choose the removed
-set on a disjoint split with no weight update.
+path altogether (TurboVLA), so whether removing layers at inference helps is a
+question about what the architecture already leaves out, which we ask on every
+backbone we evaluate. We add protected regions and a ban on adjacent removals
+to the ShortGPT selector, and choose the removed set on a disjoint split with
+no weight update.
 
 **Guarded reuse.** Where action repeat skips feedback blindly, our guarded
 reuse skips a model call only when the current image is stable and the recent
@@ -112,8 +113,8 @@ translational part of which our floor also reads. Against FlashVLA, ours
 differs in the signal. FlashVLA compares the visual token sets its previous two
 calls selected, whereas ours reads subsampled pixels of the current frame,
 which FlashVLA's gate never sees, at whole-frame and local scale, and adds a
-gripper-state check and a translation floor. Both read the angle between their
-two preceding actions and both cap consecutive reuse.
+gripper-state check and a translation floor. Both read the angle between the
+two most recent actions they inferred and both cap consecutive reuse.
 
 **Temporal fusion.** TTF-VLA fuses visual tokens across frames without
 training. It keeps the current token for patches flagged by grayscale pixel
@@ -137,11 +138,12 @@ the infrastructure around them. The vla-eval harness unifies fourteen
 benchmarks and documents evaluation pitfalls earlier work had left unrecorded,
 and StarVLA describes the field as fragmented across incompatible codebases.
 But infrastructure cannot supply the comparison itself. Among the papers we
-cite that test an intervention, those that use several backbones run at least
-one of them on a benchmark the others do not see (VLA-Cache, SpecPrune-VLA),
-and where one backbone does appear on two simulation benchmarks the others
-appear on one (VLA-Pruner, Gaze-Reg, VLA-IAP), so no cited grid shows whether
-an intervention's response to a change of benchmark holds across backbones. The
+cite that test an intervention, those that use several backbones either confine
+them to one simulation benchmark (MoLe-VLA) or run at least one of them on a
+benchmark the others do not see (VLA-Cache, SpecPrune-VLA), and where one
+backbone does appear on two simulation benchmarks the others appear on one
+(VLA-Pruner, Gaze-Reg, VLA-IAP), so no cited grid shows whether an
+intervention's response to a change of benchmark holds across backbones. The
 tables we cite report mean success rates, which cannot say on which episodes an
 intervention helped. A speedup also depends on the dense baseline it is
 measured against, and an eager attention baseline inflates it relative to a

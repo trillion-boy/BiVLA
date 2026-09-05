@@ -24,8 +24,8 @@
 % --- pipeline, left to right ---
 \node[box] (obs) {Observation\\$o_t$};
 \node[box, right=13mm of obs] (enc) {Visual\\encoder};
-\node[box, right=20mm of enc] (dec) {Decoder\\$N$ layers};
-\node[box, right=13mm of dec] (head) {Action\\head};
+\node[box, right=20mm of enc] (dec) {Decoder\\layers};
+\node[box, right=13mm of dec] (head) {Action\\output};
 \node[box, right=15mm of head] (env) {Environment};
 \draw[flow] (obs) -- (enc);
 \draw[flow] (enc) -- (dec);
@@ -37,11 +37,11 @@
       {one call every $h = m\,k$ steps} (obs.north);
 % --- the five methods, grouped by where each acts, with its role ---
 \node[tag, below=10mm of obs]  (t1) {\textbf{Foveation} (control)};
-\node[tag, below=10mm of enc, xshift=17.5mm] (t2) {\textbf{Temporal fusion} (candidate)};
+\node[tag, below=10mm of enc]  (t2) {\textbf{Temporal fusion} (candidate)};
 \node[tag, below=10mm of dec]  (t3) {\textbf{Depth pruning} (candidate)};
 \node[tag, below=10mm of head] (t4) {\textbf{Action repeat} (control)\\\textbf{Guarded reuse} (candidate)};
 \draw[->, dashed] (t1) -- (obs);
-\draw[->, dashed] (t2) -- (t2 |- enc.east);
+\draw[->, dashed] (t2.north) -- ([xshift=10mm]enc.east);
 \draw[->, dashed] (t3) -- (dec);
 \draw[->, dashed] (t4) -- (head);
 \end{tikzpicture}
