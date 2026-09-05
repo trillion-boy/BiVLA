@@ -16,7 +16,7 @@
 %     subsection states only what runs, with symbols, not values.
 %   - Rule for variants: Methods defines the knob and, where settings have
 %     names rather than numbers, what the names mean. Swept VALUES (keep
-%     20/50, k = 2/4, 1/2/4 blocks, the tau triples, keyframe and reuse
+%     20/50, k = 2/4, 1/2/4 layers, the tau triples, keyframe and reuse
 %     fraction) belong in IV.A Setup and Protocol, which the mentor writes,
 %     and the per-setting results in the ablation tables. Handoff list of
 %     every value that must appear in Setup:
@@ -27,8 +27,8 @@
 %                      same blur ran in the CogACT / SpatialVLA / UniVLA /
 %                      CronusVLA harness.
 %       action repeat  k = 2 default, k = 4 swept
-%       depth removal  budgets 1, 2, 4 blocks; protect first quarter and
-%                      final block; no two adjacent; calibration split
+%       depth pruning  budgets 1, 2, 4 layers; protect first quarter and
+%                      final layer; no two adjacent; calibration split
 %                      disjoint from test (CONFIRM: harness uses test tasks
 %                      and seed 42)
 %       guarded reuse  signature = every 8th pixel; whole-frame mean diff
@@ -136,13 +136,21 @@
 %   TASK-AWARE RELEVANCE is read from the preceding call (step t uses t-1),
 %     first step of an episode has none; verified for MiniVLA harness only.
 %
+% Eleventh pass, 2026-09-04 (recheck): lead-in "decoder blocks" -> "decoder
+%   layers" (missed in the tenth pass); "queries the policy on none of the
+%   repeated steps" -> "skips the model call on the repeated steps" (one name
+%   for the event, as everywhere else); handoff list says "depth pruning ...
+%   layers". Figure: chunk symbol is now m, not c, because the handoff list
+%   uses c for the cosine agreement threshold; Setup must not print that
+%   threshold as c if the figure keeps m, or must rename one of them.
+%
 % Style: no em-dashes, no semicolons, no prose colons. About 520 words by the paper word counter.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
 
 A VLA policy $\pi_\theta$ maps an image and an instruction to an action $a_t$
-through a visual encoder and a stack of decoder blocks. The reference is the
+through a visual encoder and a stack of decoder layers. The reference is the
 released policy run unchanged under fused attention. Every intervention below
 leaves $\theta$ frozen and changes one part of inference, at settings listed in
 Section~IV-A. The first two are controls and the last three are the candidates.
@@ -158,9 +166,9 @@ perceptual simplification alone.
 \subsection{Action Repeat}
 
 Unconditional action repeat executes each dense action for $k$ consecutive
-steps and queries the policy on none of the repeated steps. It divides model
-calls per environment step by $k$ and multiplies by $k$ the interval the robot
-acts on without fresh feedback, with no gate. Where the harness executes a full
+steps and skips the model call on the repeated steps. It divides model calls
+per environment step by $k$ and multiplies by $k$ the interval the robot acts
+on without fresh feedback, with no gate. Where the harness executes a full
 action chunk per call, one call then covers $k$ times the chunk length.
 
 \subsection{Depth Pruning}

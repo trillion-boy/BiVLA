@@ -1,5 +1,5 @@
 % ===========================================================================
-% STANDALONE preview of the pipeline figure (v2, all six methods).
+% STANDALONE preview of the pipeline figure (v3, the five methods).
 % Compile THIS FILE BY ITSELF in Overleaf to see the figure.
 % For main.tex, the two lines
 %     \usepackage{tikz}
@@ -34,10 +34,10 @@
 % --- feedback arrow above, carrying the horizon ---
 \draw[flow] (env.north) -- ++(0,7mm)
       -| node[above, pos=0.25, font=\footnotesize]
-      {re-query every $h = c\,r$ steps} (obs.north);
-% --- the six methods, grouped by where each acts, with its role ---
+      {one call every $h = m\,k$ steps} (obs.north);
+% --- the five methods, grouped by where each acts, with its role ---
 \node[tag, below=10mm of obs]  (t1) {\textbf{Foveation} (control)};
-\node[tag, below=10mm of enc]  (t2) {\textbf{VLA-Cache} (baseline)\\\textbf{Temporal fusion} (candidate)};
+\node[tag, below=10mm of enc]  (t2) {\textbf{Temporal fusion} (candidate)};
 \node[tag, below=10mm of dec]  (t3) {\textbf{Depth pruning} (candidate)};
 \node[tag, below=10mm of head] (t4) {\textbf{Action repeat} (control)\\\textbf{Guarded reuse} (candidate)};
 \draw[->, dashed] (t1) -- (obs);

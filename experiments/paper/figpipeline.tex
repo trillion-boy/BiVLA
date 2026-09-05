@@ -8,7 +8,7 @@
 %   \usetikzlibrary{positioning, arrows.meta}
 % Preview it on its own with figpipeline_standalone.tex.
 % Tenth pass 2026-09-04: five methods, VLA-Cache tag removed (no rollout
-% rows), symbols k and c match III.B. Restore the tag and "six" only if
+% rows), symbol k matches III.B, m is the chunk length (III.B names it in words). Restore the tag and "six" only if
 % VLA-Cache rows arrive.
 %
 % Spans both columns (figure*), placed near the top of Section III.
@@ -37,7 +37,7 @@
 % --- feedback arrow above, carrying the horizon ---
 \draw[flow] (env.north) -- ++(0,7mm)
       -| node[above, pos=0.25, font=\footnotesize]
-      {re-query every $h = c\,k$ steps} (obs.north);
+      {one call every $h = m\,k$ steps} (obs.north);
 % --- the five methods, grouped by where each acts, with its role ---
 \node[tag, below=10mm of obs]  (t1) {\textbf{Foveation} (control)};
 \node[tag, below=10mm of enc]  (t2) {\textbf{Temporal fusion} (candidate)};
@@ -53,8 +53,8 @@ tagged at the point it acts and by its role. The two controls degrade the
 input (foveation) or skip feedback unconditionally (action repeat). The
 candidates swap stable visual tokens for the previous step's (temporal
 fusion), remove decoder layers (depth pruning), or reuse a whole action under
-stability gates (guarded reuse). One query returns a chunk of $c$ actions and
-the action repeat $k$ holds each for $k$ steps, so the horizon $h = c\,k$
-sets how many environment steps pass between queries.}
+stability gates (guarded reuse). One call returns a chunk of $m$ actions and
+the action repeat $k$ holds each for $k$ steps, so the horizon $h = m\,k$
+sets how many environment steps pass between calls.}
 \label{fig:pipeline}
 \end{figure*}
