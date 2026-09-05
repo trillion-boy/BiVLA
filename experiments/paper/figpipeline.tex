@@ -40,11 +40,11 @@
       {one call every $h = m\,k$ steps} (obs.north);
 % --- the five methods, grouped by where each acts, with its role ---
 \node[tag, below=10mm of obs]  (t1) {\textbf{Foveation} (control)};
-\node[tag, below=10mm of enc]  (t2) {\textbf{Temporal fusion} (candidate)};
+\node[tag, below=10mm of enc, xshift=17.5mm] (t2) {\textbf{Temporal fusion} (candidate)};
 \node[tag, below=10mm of dec]  (t3) {\textbf{Depth pruning} (candidate)};
 \node[tag, below=10mm of head] (t4) {\textbf{Action repeat} (control)\\\textbf{Guarded reuse} (candidate)};
 \draw[->, dashed] (t1) -- (obs);
-\draw[->, dashed] (t2) -- (enc);
+\draw[->, dashed] (t2) -- (t2 |- enc.east);
 \draw[->, dashed] (t3) -- (dec);
 \draw[->, dashed] (t4) -- (head);
 \end{tikzpicture}
@@ -54,8 +54,7 @@ input (foveation) or skip feedback unconditionally (action repeat). The
 candidates swap reusable visual tokens for the previous step's before they
 enter the decoder (temporal fusion), remove decoder layers (depth pruning), or
 reuse a whole action under image and action gates (guarded reuse). One call
-yields $m$ executed actions and the action repeat $k$ holds each for $k$
-steps, so the horizon $h = m\,k$ sets how many environment steps pass between
+yields $m$ executed actions and action repeat holds each for $k$ steps, so the horizon $h = m\,k$ sets how many environment steps pass between
 calls when no reuse gate skips one.}
 \label{fig:pipeline}
 \end{figure*}

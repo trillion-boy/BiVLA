@@ -187,14 +187,22 @@
 %   OPENVLA ATTENTION BACKEND: verified in the microbenchmark script only
 %     (benchmark_openvla_14.py), not in the rollout harness that made the
 %     CSV rows.
+% Thirteenth pass, 2026-09-05: lead-in now admits frame history ("with
+%   whatever history the backbone keeps", UniVLA and CronusVLA) and defines
+%   m as the actions the harness EXECUTES per call, so m matches the figure
+%   (h = mk) and III.B ("one call covers mk environment steps"; the "Where
+%   the harness executes a full action chunk" sentence is gone). Task-aware
+%   attention is "of the preceding call" (run_minivla_simpler_eval.py feeds
+%   step t the map collected at t-1).
 %
-% Style: no em-dashes, no semicolons, no prose colons. About 520 words by the paper word counter.
+% Style: no em-dashes, no semicolons, no prose colons. About 540 words by the paper word counter.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
 
-A VLA policy $\pi_\theta$ maps the observation $o_t$ at step $t$ and an
-instruction to an action $a_t$, or to a chunk of $m$ actions, through a visual
+A VLA policy $\pi_\theta$ maps the observation $o_t$ at step $t$, with whatever
+history the backbone keeps, and an instruction to an action $a_t$, or to a
+chunk of actions of which the harness executes $m$ per call, through a visual
 encoder, a stack of decoder layers, and an action head. The reference, called
 dense below and Original policy in the tables, is the released policy run
 unchanged under fused attention. Every intervention below leaves $\theta$
@@ -212,10 +220,9 @@ perceptual simplification alone.
 \subsection{Action Repeat}
 
 Action repeat executes each dense action for $k$ consecutive steps and skips
-the model call on the repeated steps. It divides model calls per environment
-step by $k$ and multiplies by $k$ the interval over which the robot acts
-without fresh feedback, with no gate. Where the harness executes a full action
-chunk per call, one call then covers $k$ times the chunk length.
+the model call on the repeated steps, so one call covers $mk$ environment
+steps. It divides model calls per environment step by $k$ and multiplies by $k$
+the interval over which the robot acts without fresh feedback, with no gate.
 
 \subsection{Depth Pruning}
 
@@ -250,7 +257,7 @@ step while the others take the fresh token, and a dense keyframe every few
 steps bounds propagation. Fusion changes which tokens enter the decoder, not
 how many, so it is an accuracy candidate rather than a speed one. Three
 settings are evaluated. Motion-entropy builds the reusable set from motion and
-entropy alone, task-aware adds text-to-vision attention, and
-conservative-adaptive keeps the motion-entropy selection with a smaller reuse
-fraction, a shorter keyframe interval, and a forced keyframe whenever any patch
-moves beyond a second, higher motion threshold.
+entropy alone, task-aware adds the text-to-vision attention of the preceding
+call, and conservative-adaptive keeps the motion-entropy selection with a
+smaller reuse fraction, a shorter keyframe interval, and a forced keyframe
+whenever any patch moves beyond a second, higher motion threshold.
