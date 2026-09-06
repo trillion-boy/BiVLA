@@ -81,8 +81,27 @@ def box(ax, x, y, w, h, text="", fill=PIPE_FILL, edge=PIPE_EDGE, lw=0.8, fs=7, b
         ax.text(x + w / 2, ty, text, ha="center", va="center", fontsize=fs,
                 fontweight="bold" if bold else "normal", color=color)
     if sub:
-        ax.text(x + w / 2, y + h / 2 - 0.07, sub, ha="center", va="center", fontsize=subfs, color=GREY)
+        # baseline anchored, 0.35 em below the visual centre, italic symbols as text
+        rich_text(ax, x + w / 2, y + h / 2 - 0.07 - 0.35 * subfs / 72.0, sub, subfs, GREY)
     return p
+
+
+def rich_text(ax, x, y, text, fs, color, ha="center", va="baseline", fontstyle="normal"):
+    """Draw text whose $...$ segments are italic text, not mathtext, so the
+    baseline metric matches plain text. Returns the artists."""
+    from matplotlib.textpath import TextToPath
+    from matplotlib.font_manager import FontProperties
+    ttp = TextToPath()
+    segs = [(seg, "italic" if j % 2 else fontstyle) for j, seg in enumerate(text.split("$")) if seg]
+    widths = [ttp.get_text_width_height_descent(seg, FontProperties(family="Liberation Sans", style=st, size=fs), ismath=False)[0] / 72.0
+              for seg, st in segs]
+    total = sum(widths)
+    xx = x - total / 2 if ha == "center" else (x - total if ha == "right" else x)
+    out = []
+    for (seg, st), w in zip(segs, widths):
+        out.append(ax.text(xx, y, seg, ha="left", va=va, fontsize=fs, color=color, fontstyle=st))
+        xx += w
+    return out
 
 
 def arrow(ax, x0, y0, x1, y1, color=PIPE_EDGE, lw=0.8, dashed=False, ms=7, rad=0.0):
@@ -174,8 +193,8 @@ def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None, span="$k$ steps",
         ax.text(xx + w / 2, yb + bh / 2, lab, ha="center", va="center", fontsize=fs, color=INK)
     # bracket under the first k steps
     ax.plot([x + 0.06 * w, x + 0.06 * w, x + 4 * w - 0.06 * w, x + 4 * w - 0.06 * w],
-            [y + 0.33 * h, y + 0.26 * h, y + 0.26 * h, y + 0.33 * h], color=GREY, lw=0.6)
-    ax.text(x + 2 * w, y + 0.08 * h, span, ha="center", va="center", fontsize=fs, color=GREY)
+            [y + 0.33 * h, y + 0.26 * h, y + 0.26 * h, y + 0.33 * h], color=color, lw=0.6)
+    rich_text(ax, x + 2 * w, y + 0.08 * h - 0.35 * fs / 72.0, span, fs, color)
 
 
 # ------------------------------------------------------------- candidate A ---
@@ -642,7 +661,8 @@ def candidate_A3(verbose=True):
     # --- pipeline row (middle) ---
     py, ph = 1.28, 0.46
     bw = 0.84
-    xs = {"obs": 0.14, "enc": 1.28, "dec": 2.42, "out": 3.56, "act": 4.70, "env": 6.02}
+    x0 = (W3 - (6.02 + 0.84 - 0.14)) / 2   # centre the row on the page
+    xs = {k: v - 0.14 + x0 for k, v in {"obs": 0.14, "enc": 1.28, "dec": 2.42, "out": 3.56, "act": 4.70, "env": 6.02}.items()}
     mid = py + ph / 2
     box(ax, xs["obs"], py, bw, ph, "Observation", fs=FS_BODY, sub="image, instruction", subfs=FS_SUB)
     box(ax, xs["enc"], py, bw, ph, "Visual encoder", fs=FS_BODY, sub="patch tokens", subfs=FS_SUB)
@@ -747,7 +767,7 @@ def candidate_A3(verbose=True):
     dot(ox, py - 0.01, C_CTRL)
     x = W3 - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
-    icon_repeat(ax, x + 0.10, ky + 0.05, 1.24, fs=FS_SUB, h=0.42, span="$k$ steps", labels=("call", "hold", "…", "hold"))
+    icon_repeat(ax, x + 0.10, ky + 0.04, 1.24, fs=FS_SUB, h=0.46, span="$k$ steps", labels=("call", "hold", "…", "hold"))
     sentence(x + 1.42, ky + (kh - 0.22) / 2, "Each action is\nheld for $k$ steps\nwith one call.", body)
     rx = (xs["act"] + bw + xs["env"]) / 2
     leader([(rx, ky + kh), (rx, mid - 0.03)], C_CTRL)
