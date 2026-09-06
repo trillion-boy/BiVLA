@@ -58,7 +58,7 @@ C_DEPTH = "#6f4fa3"
 C_REUSE = "#d9731a"
 C_CTRL = "#7a8089"
 C_REF = "#2b6cb0"
-LIGHT = {C_FUSION: "#dff2ec", C_DEPTH: "#e9e2f5", C_REUSE: "#fbe8d6", C_CTRL: "#e6e8eb", C_REF: "#dce9f7"}
+LIGHT = {C_FUSION: "#bfe7d9", C_DEPTH: "#e9e2f5", C_REUSE: "#fbe8d6", C_CTRL: "#e6e8eb", C_REF: "#dce9f7"}
 
 
 def canvas(h, w=W):
@@ -629,22 +629,23 @@ def foveation_real(keep_ratio=0.20, size=224):
 
 # ieeeconf letterpaper sets \textwidth to 7.0 in (505.89 pt), not IEEEtran's
 # 7.16 in, so the final figure is drawn at 7.0 in and placed unscaled.
-W3 = 7.0
+W3 = 505.89 / 72.0   # 7.026 in, exactly \textwidth
 C_REUSE3 = "#c25e05"   # darker orange, grey value 110 against the controls' 127
 
 
-def icon_depth2(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5)):
-    """decoder stack before and after: the ranked-out layers dashed on the
-    left, the shorter stack that actually runs on the right"""
-    sw = 0.36 * s
+def icon_depth2(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1, 7)):
+    """decoder stack before and after: the kept ends shaded and the ranked-out
+    layers dashed on the left, the shorter stack that actually runs on the right"""
+    sw = 0.33 * s
     h = s / n
     for i in range(n):
         yy = y + i * h
         if i in removed:
             ax.add_patch(Rectangle((x, yy + 0.15 * h), sw, 0.7 * h, fc="white", ec=color, lw=0.6, ls="--"))
         else:
-            ax.add_patch(Rectangle((x, yy + 0.15 * h), sw, 0.7 * h, fc="white", ec=PIPE_EDGE, lw=0.5))
-    arrow(ax, x + sw + 0.04, y + s / 2, x + s - sw - 0.04, y + s / 2, color=color, lw=0.7, ms=5)
+            fc = LIGHT[color] if i in protected else "white"
+            ax.add_patch(Rectangle((x, yy + 0.15 * h), sw, 0.7 * h, fc=fc, ec=PIPE_EDGE, lw=0.5))
+    arrow(ax, x + sw + 0.03, y + s / 2, x + s - sw - 0.03, y + s / 2, color=color, lw=0.7, ms=5)
     m = n - len(removed)
     y0 = y + (n - m) * h / 2
     for i in range(m):
@@ -665,7 +666,7 @@ def icon_gate(ax, x, y, s, color, fs):
                         lw=0.7, color=color, ls="--", shrinkA=0, shrinkB=0)
     ax.add_patch(a)
     t1 = ax.text(cx + d + 0.15 * s, cy + 0.03, "fail", ha="center", va="bottom", fontsize=fs, color=INK)
-    t2 = ax.text(cx + 0.06 * s, cy - d - 0.16 * s, "pass", ha="left", va="center", fontsize=fs, color=color)
+    t2 = ax.text(cx + 0.10 * s, cy - d - 0.16 * s, "pass", ha="left", va="center", fontsize=fs, color=color)
     return t1, t2
 
 
@@ -684,7 +685,7 @@ def candidate_A3(verbose=True):
     box(ax, xs["enc"], py, bw, ph, "Visual encoder", fs=FS_BODY, sub="patch tokens", subfs=FS_SUB)
     box(ax, xs["dec"], py, bw, ph, "")
     for i in range(5):
-        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.17 + i * 0.054), bw - 0.2, 0.038, fc="white", ec=PIPE_EDGE, lw=0.5))
+        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.16 + i * 0.050), bw - 0.2, 0.036, fc="white", ec=PIPE_EDGE, lw=0.5))
     ax.text(xs["dec"] + bw / 2, py + 0.075, "Decoder layers", ha="center", va="center", fontsize=FS_BODY, color=INK)
     box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or values", subfs=FS_SUB)
     box(ax, xs["act"], py, bw, ph, "Action", fs=FS_BODY, sub="$m$ per call", subfs=FS_SUB)
@@ -731,7 +732,7 @@ def candidate_A3(verbose=True):
     body = card(x, cy, cw, ch, CR, "Guarded reuse")
     for t in icon_gate(ax, x + 0.10, cy + 0.10, 0.50, CR, FS_SUB):
         fit.append((t, body))
-    sentence(x + 0.78, bm, "When the image and action\ngates pass, the call is\nskipped and the previous\naction repeated, consecutive\nskips capped.", body)
+    sentence(x + 0.78, bm, "When the image and action\ngates pass, the call is\nskipped and the previous\naction repeated, and\nconsecutive skips are capped.", body)
     leader([(gx, cy), (gx, mid + d + 0.01)], CR)
     # temporal fusion, on the encoder-to-decoder edge
     x = 0.10 + cw + gap
@@ -745,9 +746,9 @@ def candidate_A3(verbose=True):
     x = 0.10 + 2 * (cw + gap)
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
     icon_depth2(ax, x + 0.10, cy + 0.11, 0.50)
-    sentence(x + 0.70, bm, "With the first layers and the\nlast kept, the layers lowest in\nBlock Influence are removed,\nno two adjacent.", body)
+    sentence(x + 0.70, bm, "With the first layers and the\nlast kept, the layers lowest in\nBlock Influence are removed,\nand no two are adjacent.", body)
     dx = xs["dec"] + bw / 2
-    leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.24), (dx, cy - 0.24), (dx, py + ph + 0.04)], C_DEPTH)
+    leader([(x + 0.55, cy), (x + 0.55, cy - 0.24), (dx, cy - 0.24), (dx, py + ph + 0.04)], C_DEPTH)
     dot(dx, py + ph + 0.01, C_DEPTH)
 
     # --- controls below, in the outer columns ---
@@ -766,7 +767,7 @@ def candidate_A3(verbose=True):
     dot(ox, py - 0.01, C_CTRL)
     x = W3 - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
-    icon_repeat(ax, x + 0.10, ky + 0.08, 1.24, fs=FS_SUB, h=0.44, span="$k$ steps", labels=("call", "hold", "…", "hold"))
+    icon_repeat(ax, x + 0.10, ky + 0.06, 1.24, fs=FS_SUB, h=0.48, span="$k$ steps", labels=("call", "hold", "…", "hold"))
     sentence(x + 1.42, ky + (kh - 0.22) / 2, "Each action is\nheld for $k$ steps,\nwith a call only\non the first.", body)
     rx = (xs["act"] + bw + xs["env"]) / 2
     leader([(rx, ky + kh), (rx, mid - 0.04)], C_CTRL)

@@ -1,14 +1,14 @@
 % Overview figure (Fig. 1). Rendered by experiments/paper/make_overview.py
-% (candidate A3) into figures/overview_A3.pdf at 7.0 in, the \textwidth of
-% ieeeconf letterpaper (505.89 pt), so width=\textwidth places it unscaled.
+% (candidate A3) into figures/overview_A3.pdf at 505.89 pt, the \textwidth of
+% ieeeconf letterpaper, so width=\textwidth places it unscaled.
 % Fonts 7 pt body, 6.5 pt sub-text, 8 pt card titles, all Liberation Sans
 % including the math. Copy figures/overview_A3.pdf to Overleaf next to main.tex.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/overview_A3.pdf}
   \caption{Where each intervention enters the control loop of a frozen VLA
-  policy. Candidates (top) act on the visual tokens, the decoder depth, and
-  the model call. Controls (bottom) act on the input image and on how long
+  policy. Candidates (top) act on the model call, the visual tokens, and the
+  decoder depth. Controls (bottom) act on the input image and on how long
   each action is held. Every intervention is compared with the dense
   reference on matched episodes.}
   \label{fig:overview}
