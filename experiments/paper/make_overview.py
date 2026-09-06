@@ -578,9 +578,12 @@ def candidate_A2(verbose=True):
 # one plain sentence per card instead of keyword fragments, and the foveation
 # thumbnail is the real transform on the real Bridge scene.
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-BRIDGE_BG = [
+# A real SimplerEnv WidowX Bridge observation (put eggplant in basket), the
+# raw 640x480 frame captured in commit f9d54a0, with the empty Bridge
+# background photograph from ManiSkill2_real2sim as a fallback.
+FRAMES = [
+    os.path.join(ROOT, "experiments", "figures", "obs_eggplant_raw.png"),
     os.path.join(ROOT, "SimplerEnv", "ManiSkill2_real2sim", "data", "real_inpainting", "bridge_real_eval_1.png"),
-    os.path.join(ROOT, "RetinaBased", "PythonProject", "SimplerEnv", "ManiSkill2_real2sim", "data", "real_inpainting", "bridge_real_eval_1.png"),
 ]
 
 
@@ -588,11 +591,11 @@ def foveation_real(keep_ratio=0.20, size=224):
     """The fixed-foveation transform as run in the MiniVLA harness
     (vla_tricks/foveation.py::foveate_blur on the 224 px policy input):
     sharp disc of area keep_ratio, then a blend into Gaussian sigma 3 and
-    sigma 9 copies with distance. Applied to the SimplerEnv WidowX Bridge
-    background photograph shipped with ManiSkill2_real2sim."""
+    sigma 9 copies with distance. Applied to a real Bridge observation
+    resized to the policy input size, as the harness does."""
     import cv2
     from PIL import Image
-    path = next(p for p in BRIDGE_BG if os.path.exists(p))
+    path = next(p for p in FRAMES if os.path.exists(p))
     frame = np.asarray(Image.open(path).convert("RGB").resize((size, size), Image.BILINEAR), dtype=np.uint8)
     h, w = frame.shape[:2]
     cx, cy = w / 2.0, h / 2.0
