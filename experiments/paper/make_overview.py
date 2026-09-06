@@ -124,7 +124,8 @@ def icon_depth(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1,
             ax.add_patch(Rectangle((x, yy + 0.15 * h), s, 0.7 * h, fc=fc, ec=PIPE_EDGE, lw=0.5))
 
 
-def icon_reuse(ax, x, y, s, color=C_REUSE, fs=5.4, fs_gate=5.6):
+def icon_reuse(ax, x, y, s, color=C_REUSE, fs=5.4, fs_gate=5.6,
+               labels=("all pass: reuse $a_{t-1}$", "any fails: dense call")):
     """gate diamond with two exits, drawn in a box of width 1.1 s and height s.
     Returns the two exit-label artists so callers can check their fit."""
     cx, cy = x + 0.34 * s, y + 0.5 * s
@@ -134,8 +135,8 @@ def icon_reuse(ax, x, y, s, color=C_REUSE, fs=5.4, fs_gate=5.6):
     ax.text(cx, cy, "gates", ha="center", va="center", fontsize=fs_gate, color=color)
     arrow(ax, cx + d, cy, cx + d + 0.30 * s, cy + 0.34 * s, color=color, lw=0.7, ms=5, rad=-0.25)
     arrow(ax, cx + d, cy, cx + d + 0.30 * s, cy - 0.34 * s, color=PIPE_EDGE, lw=0.7, ms=5, rad=0.25)
-    t1 = ax.text(cx + d + 0.34 * s, cy + 0.34 * s, "all pass: reuse $a_{t-1}$", ha="left", va="center", fontsize=fs, color=color)
-    t2 = ax.text(cx + d + 0.34 * s, cy - 0.34 * s, "any fails: dense call", ha="left", va="center", fontsize=fs, color=INK)
+    t1 = ax.text(cx + d + 0.34 * s, cy + 0.34 * s, labels[0], ha="left", va="center", fontsize=fs, color=color)
+    t2 = ax.text(cx + d + 0.34 * s, cy - 0.34 * s, labels[1], ha="left", va="center", fontsize=fs, color=INK)
     return t1, t2
 
 
@@ -571,9 +572,136 @@ def candidate_A2(verbose=True):
     return fig
 
 
+# ------------------------------------------------------------ candidate A3 ---
+# A2 with the slide-deck look removed: no protocol block (it lives in the
+# caption and Section IV-A), no candidate/control tags (one legend line),
+# one plain sentence per card instead of keyword fragments, and the foveation
+# thumbnail is the real transform on the real Bridge scene.
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+BRIDGE_BG = [
+    os.path.join(ROOT, "SimplerEnv", "ManiSkill2_real2sim", "data", "real_inpainting", "bridge_real_eval_1.png"),
+    os.path.join(ROOT, "RetinaBased", "PythonProject", "SimplerEnv", "ManiSkill2_real2sim", "data", "real_inpainting", "bridge_real_eval_1.png"),
+]
+
+
+def foveation_real(keep_ratio=0.20, size=224):
+    """The fixed-foveation transform as run in the MiniVLA harness
+    (vla_tricks/foveation.py::foveate_blur on the 224 px policy input):
+    sharp disc of area keep_ratio, then a blend into Gaussian sigma 3 and
+    sigma 9 copies with distance. Applied to the SimplerEnv WidowX Bridge
+    background photograph shipped with ManiSkill2_real2sim."""
+    import cv2
+    from PIL import Image
+    path = next(p for p in BRIDGE_BG if os.path.exists(p))
+    frame = np.asarray(Image.open(path).convert("RGB").resize((size, size), Image.BILINEAR), dtype=np.uint8)
+    h, w = frame.shape[:2]
+    cx, cy = w / 2.0, h / 2.0
+    sharp_r = np.sqrt(keep_ratio * h * w / np.pi)
+    max_r = np.hypot(max(cx, w - cx), max(cy, h - cy))
+    ys, xs = np.mgrid[0:h, 0:w]
+    dist = np.hypot(xs - cx, ys - cy)
+    t = np.clip((dist - sharp_r) / max(max_r - sharp_r, 1e-6), 0, 1).astype(np.float32)
+    middle = cv2.GaussianBlur(frame, (0, 0), sigmaX=3.0)
+    far = cv2.GaussianBlur(frame, (0, 0), sigmaX=9.0)
+    far_w = np.clip(2 * t - 1, 0, 1)[..., None]
+    mid_w = np.clip(2 * t, 0, 1)[..., None] - far_w
+    out = frame * (1 - mid_w - far_w) + middle * mid_w + far * far_w
+    out = np.clip(np.rint(out), 0, 255).astype(np.uint8)
+    out[dist <= sharp_r] = frame[dist <= sharp_r]
+    return out, sharp_r / w
+
+
+def candidate_A3(verbose=True):
+    H = 3.16
+    fig, ax = canvas(H)
+    fit = []
+    # --- pipeline row (middle) ---
+    py, ph = 1.40, 0.46
+    bw = 0.86
+    xs = {"obs": 0.14, "enc": 1.32, "dec": 2.50, "out": 3.68, "act": 4.86, "env": 6.14}
+    box(ax, xs["obs"], py, bw, ph, "Observation $o_t$", fs=FS_BODY, sub="image, instruction", subfs=FS_SUB)
+    box(ax, xs["enc"], py, bw, ph, "Visual encoder", fs=FS_BODY, sub="patch tokens", subfs=FS_SUB)
+    box(ax, xs["dec"], py, bw, ph, "")
+    for i in range(5):
+        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.06 + i * 0.068), bw - 0.2, 0.05, fc="white", ec=PIPE_EDGE, lw=0.4))
+    ax.text(xs["dec"] + bw / 2, py - 0.045, "Decoder layers", ha="center", va="top", fontsize=FS_BODY, color=INK)
+    box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or head", subfs=FS_SUB)
+    box(ax, xs["act"], py, bw, ph, "Action $a_t$", fs=FS_BODY, sub="$m$ per call", subfs=FS_SUB)
+    box(ax, xs["env"], py, bw, ph, "Environment", fs=FS_BODY, sub="one step", subfs=FS_SUB)
+    for a, b in [("obs", "enc"), ("enc", "dec"), ("dec", "out"), ("out", "act"), ("act", "env")]:
+        arrow(ax, xs[a] + bw, py + ph / 2, xs[b], py + ph / 2)
+    loop_y = py - 0.28
+    ax.plot([xs["env"] + bw / 2, xs["env"] + bw / 2, xs["obs"] + bw / 2], [py, loop_y, loop_y], color=PIPE_EDGE, lw=0.8)
+    arrow(ax, xs["obs"] + bw / 2, loop_y, xs["obs"] + bw / 2, py - 0.01)
+    ax.text(3.6, loop_y - 0.04, "next observation $o_{t+1}$", ha="center", va="top", fontsize=FS_SUB, color=GREY)
+
+    def card(x, y, w, h, col, title):
+        box(ax, x, y, w, h, fill="white", edge=col, lw=1.0, rounding=0.06)
+        ax.add_patch(Rectangle((x, y + h - 0.22), w, 0.22, fc=LIGHT[col], ec="none"))
+        ax.text(x + 0.08, y + h - 0.11, title, ha="left", va="center", fontsize=FS_TITLE, fontweight="bold", color=col)
+        return (x, y, x + w, y + h - 0.22)
+
+    def sentence(x, y, text, body, col=INK):
+        t = ax.text(x, y, text, ha="left", va="center", fontsize=FS_BODY, color=col, linespacing=1.3)
+        fit.append((t, body))
+
+    def attach(x0, y0, x1, y1, col):
+        line(ax, x0, y0, x1, y1, color=col, lw=0.8)
+        ax.add_patch(Circle((x1, y1), 0.03, fc=col, ec="none"))
+
+    # --- candidates above ---
+    cy, ch, cw = 2.16, 0.94, 2.28
+    bm = cy + (ch - 0.22) / 2
+    x = 0.10
+    body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
+    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48)
+    sentence(x + 0.68, bm, "Patches that did not move keep\nthe token from the previous call.", body)
+    attach(x + cw / 2, cy, xs["enc"] + bw + 0.16, py + ph + 0.01, C_FUSION)
+    x = 2.44
+    body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
+    icon_depth(ax, x + 0.12, cy + 0.11, 0.48)
+    sentence(x + 0.66, bm, "Layers lowest in block influence\nare removed, the ends are kept.", body)
+    attach(x + cw / 2, cy, xs["dec"] + bw / 2, py + ph + 0.01, C_DEPTH)
+    x = 4.78
+    body = card(x, cy, cw, ch, C_REUSE, "Guarded reuse")
+    for t in icon_reuse(ax, x + 0.08, cy + 0.17, 0.38, fs=FS_SUB, fs_gate=FS_SUB, labels=("pass", "fail")):
+        fit.append((t, body))
+    sentence(x + 0.72, bm, "The call is skipped and $a_{t-1}$\nrepeated while the gates pass.", body)
+    attach(x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, C_REUSE)
+
+    # --- controls below, in the outer columns ---
+    ky, kh, kw = 0.22, 0.80, 2.28
+    x = 0.10
+    body = card(x, ky, kw, kh, C_CTRL, "Foveation")
+    img, r_frac = foveation_real()
+    ts = 0.52
+    ext = [x + 0.08, x + 0.08 + ts, ky + 0.03, ky + 0.03 + ts]
+    ax.imshow(img, extent=ext, interpolation="bilinear", zorder=3)
+    ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), ts * r_frac, fc="none", ec="white", lw=0.6, zorder=4))
+    ax.add_patch(Rectangle((ext[0], ext[2]), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
+    sentence(x + 0.68, ky + (kh - 0.22) / 2, "Blurred outside a central disc,\nthe token count is unchanged.", body)
+    attach(x + kw / 2, ky + kh, xs["obs"] + bw + 0.16, py - 0.01, C_CTRL)
+    x = W - 0.10 - kw
+    body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
+    icon_repeat(ax, x + 0.10, ky + 0.08, 1.30, fs=FS_SUB, h=0.46)
+    sentence(x + 1.46, ky + (kh - 0.22) / 2, "Each action is\nheld $k$ steps.", body)
+    attach(x + kw / 2, ky + kh, xs["env"] + bw / 2, py - 0.01, C_CTRL)
+
+    # --- legend, one line ---
+    t = ax.text(W / 2, 0.09, "Coloured cards are the candidates, each gated by a signal it computes at run time. "
+                "Grey cards are the ungated controls. Dots mark where each enters the loop.",
+                ha="center", va="center", fontsize=FS_SUB, color=GREY)
+    fit.append((t, (0, 0, W, H)))
+    if verbose:
+        n = check_fit(fig, ax, fit)
+        print("fit check:", "clean" if n == 0 else f"{n} overflow(s)")
+    return fig
+
+
 if __name__ == "__main__":
-    fig = candidate_A2()
-    for ext in ("pdf", "png"):
-        fig.savefig(os.path.join(OUT, f"overview_A2.{ext}"), dpi=300 if ext == "png" else None)
-    plt.close(fig)
-    print("wrote overview_A2.pdf/png")
+    for name, fn in (("A2", candidate_A2), ("A3", candidate_A3)):
+        fig = fn()
+        for ext in ("pdf", "png"):
+            fig.savefig(os.path.join(OUT, f"overview_{name}.{ext}"), dpi=300 if ext == "png" else None)
+        plt.close(fig)
+        print(f"wrote overview_{name}.pdf/png")
