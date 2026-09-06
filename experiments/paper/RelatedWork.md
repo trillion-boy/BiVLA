@@ -113,9 +113,9 @@ translational part of which our floor also reads. Against FlashVLA, ours
 differs in the signal. FlashVLA compares the visual token sets its previous two
 calls selected, whereas ours reads subsampled pixels of the current frame,
 which FlashVLA's gate never sees, at whole-frame and local scale, and adds a
-gripper-state check and a translation floor. Both read the angle between the
-two most recent actions they inferred, ours over the pose dimensions, and both
-cap consecutive reuse.
+gripper-state check and a translation floor. Both cap consecutive reuse, and
+both read the angle between the two most recent actions they inferred, which
+ours takes over the pose dimensions alone.
 
 **Temporal fusion.** TTF-VLA fuses visual tokens across frames without
 training. It keeps the current token for patches flagged by grayscale pixel
