@@ -783,13 +783,17 @@ def candidate_A3(verbose=True):
     ky, kh, kw = 0.06, 0.72, 2.22
     x = 0.10
     body = card(x, ky, kw, kh, C_CTRL, "Foveation")
-    img, r_frac = foveation_real()
-    ts = 0.42
-    ext = [x + 0.08, x + 0.08 + ts, ky + 0.04, ky + 0.04 + ts]
-    ax.imshow(img, extent=ext, interpolation="none", zorder=3)
-    ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), ts * r_frac, fc="none", ec="white", lw=0.6, zorder=4))
-    ax.add_patch(Rectangle((ext[0], ext[2]), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
-    sentence(x + 0.62, ky + (kh - 0.22) / 2, "The image is blurred outside\na central disc, the token\ncount unchanged.", body)
+    img, r_frac, raw = foveation_real()
+    # before and after, the same grammar as the depth and fusion icons
+    ts, gap = 0.32, 0.14
+    ty = ky + 0.13
+    for i, (im, lab) in enumerate(((raw, "input"), (img, "foveated"))):
+        x0 = x + 0.10 + i * (ts + gap)
+        ax.imshow(im, extent=[x0, x0 + ts, ty, ty + ts], interpolation="none", zorder=3)
+        ax.add_patch(Rectangle((x0, ty), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
+        ax.text(x0 + ts / 2, ky + 0.05, lab, ha="center", va="baseline", fontsize=FS_SUB, color=GREY)
+    arrow(ax, x + 0.10 + ts + 0.03, ty + ts / 2, x + 0.10 + ts + gap - 0.03, ty + ts / 2, color=C_CTRL, lw=0.7, ms=5)
+    sentence(x + 0.10 + 2 * ts + gap + 0.10, ky + (kh - 0.22) / 2, "The image is blurred\noutside a central disc, the\ntoken count unchanged.", body)
     ox = xs["obs"] + bw / 2 + 0.16
     leader([(ox, ky + kh), (ox, py - 0.04)], C_CTRL)
     dot(ox, py - 0.01, C_CTRL)
@@ -832,7 +836,7 @@ def foveation_real(keep_ratio=0.20, size=224):
     out = frame * (1 - mid_w - far_w) + middle * mid_w + far * far_w
     out = np.clip(np.rint(out), 0, 255).astype(np.uint8)
     out[dist <= sharp_r] = frame[dist <= sharp_r]
-    return out, sharp_r / w
+    return out, sharp_r / w, frame
 
 
 
