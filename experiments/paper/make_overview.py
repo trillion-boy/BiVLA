@@ -97,7 +97,7 @@ def icon_foveation(ax, x, y, s):
     ax.add_patch(Circle((x + s / 2, y + s / 2), 0.26 * s, fc="white", ec=PIPE_EDGE, lw=0.5))
 
 
-def icon_fusion(ax, x, y, s, color=C_FUSION):
+def icon_fusion(ax, x, y, s, color=C_FUSION, ring=True):
     """4x4 token grid, reused cells filled, fresh cells white, ring around a flagged cell"""
     n = 4
     c = s / n
@@ -108,7 +108,8 @@ def icon_fusion(ax, x, y, s, color=C_FUSION):
             ax.add_patch(Rectangle((x + j * c, y + (n - 1 - i) * c), c, c, fc=fc, ec=PIPE_EDGE, lw=0.4))
     # flagged patch (moving) and its protective ring
     ax.add_patch(Rectangle((x + 2 * c, y + (n - 1 - 2) * c), c, c, fc=color, ec=PIPE_EDGE, lw=0.4))
-    ax.add_patch(Rectangle((x + 1 * c, y + (n - 1 - 3) * c), 3 * c, 3 * c, fc="none", ec=color, lw=0.9))
+    if ring:
+        ax.add_patch(Rectangle((x + 1 * c, y + (n - 1 - 3) * c), 3 * c, 3 * c, fc="none", ec=color, lw=0.9))
 
 
 def icon_depth(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1, 2, 7)):
@@ -626,8 +627,8 @@ def candidate_A3(verbose=True):
     box(ax, xs["enc"], py, bw, ph, "Visual encoder", fs=FS_BODY, sub="patch tokens", subfs=FS_SUB)
     box(ax, xs["dec"], py, bw, ph, "")
     for i in range(5):
-        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.06 + i * 0.068), bw - 0.2, 0.05, fc="white", ec=PIPE_EDGE, lw=0.4))
-    ax.text(xs["dec"] + bw / 2, py - 0.045, "Decoder layers", ha="center", va="top", fontsize=FS_BODY, color=INK)
+        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.17 + i * 0.054), bw - 0.2, 0.038, fc="white", ec=PIPE_EDGE, lw=0.4))
+    ax.text(xs["dec"] + bw / 2, py + 0.075, "Decoder layers", ha="center", va="center", fontsize=FS_SUB, color=GREY)
     box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or head", subfs=FS_SUB)
     box(ax, xs["act"], py, bw, ph, "Action $a_t$", fs=FS_BODY, sub="$m$ per call", subfs=FS_SUB)
     box(ax, xs["env"], py, bw, ph, "Environment", fs=FS_BODY, sub="one step", subfs=FS_SUB)
@@ -637,6 +638,13 @@ def candidate_A3(verbose=True):
     ax.plot([xs["env"] + bw / 2, xs["env"] + bw / 2, xs["obs"] + bw / 2], [py, loop_y, loop_y], color=PIPE_EDGE, lw=0.8)
     arrow(ax, xs["obs"] + bw / 2, loop_y, xs["obs"] + bw / 2, py - 0.01)
     ax.text(3.6, loop_y - 0.04, "next observation $o_{t+1}$", ha="center", va="top", fontsize=FS_SUB, color=GREY)
+    # guarded reuse: the gates branch off the observation edge and, when they
+    # pass, hand a_{t-1} straight to the action box, so the model is not called
+    gx, by = xs["obs"] + bw + 0.16, py - 0.13
+    ax.plot([gx, gx, xs["act"] + bw / 2], [py + ph / 2, by, by], color=C_REUSE, lw=0.8, ls="--")
+    arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.01, color=C_REUSE)
+    ax.add_patch(Circle((gx, py + ph / 2), 0.03, fc=C_REUSE, ec="none"))
+    ax.text(4.27, by + 0.065, "gates pass, reuse $a_{t-1}$", ha="center", va="center", fontsize=FS_SUB, color=C_REUSE)
 
     def card(x, y, w, h, col, title):
         box(ax, x, y, w, h, fill="white", edge=col, lw=1.0, rounding=0.06)
@@ -657,12 +665,12 @@ def candidate_A3(verbose=True):
     bm = cy + (ch - 0.22) / 2
     x = 0.10
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48)
+    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48, ring=False)
     sentence(x + 0.68, bm, "Patches no signal flags keep the\ntoken from the previous call.", body)
     attach(x + cw / 2, cy, xs["enc"] + bw + 0.16, py + ph + 0.01, C_FUSION)
     x = 2.44
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
-    icon_depth(ax, x + 0.12, cy + 0.11, 0.48)
+    icon_depth(ax, x + 0.12, cy + 0.11, 0.48, protected=())
     sentence(x + 0.66, bm, "Layers lowest in block influence\nare removed, the ends are kept.", body)
     attach(x + cw / 2, cy, xs["dec"] + bw / 2, py + ph + 0.01, C_DEPTH)
     x = 4.78
@@ -670,7 +678,7 @@ def candidate_A3(verbose=True):
     for t in icon_reuse(ax, x + 0.08, cy + 0.17, 0.38, fs=FS_SUB, fs_gate=FS_SUB, labels=("pass", "fail")):
         fit.append((t, body))
     sentence(x + 0.72, bm, "The call is skipped and $a_{t-1}$\nrepeated while the gates pass.", body)
-    attach(x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, C_REUSE)
+    line(ax, x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, color=C_REUSE, lw=0.8)  # the reuse dot is the gate on the observation edge
 
     # --- controls below, in the outer columns ---
     ky, kh, kw = 0.22, 0.80, 2.28
@@ -683,7 +691,7 @@ def candidate_A3(verbose=True):
     ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), ts * r_frac, fc="none", ec="white", lw=0.6, zorder=4))
     ax.add_patch(Rectangle((ext[0], ext[2]), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
     sentence(x + 0.68, ky + (kh - 0.22) / 2, "Blurred outside a central disc,\nthe token count is unchanged.", body)
-    attach(x + kw / 2, ky + kh, xs["obs"] + bw + 0.16, py - 0.01, C_CTRL)
+    attach(x + kw / 2, ky + kh, xs["obs"] + bw / 2 + 0.16, py - 0.01, C_CTRL)
     x = W - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
     icon_repeat(ax, x + 0.10, ky + 0.08, 1.30, fs=FS_SUB, h=0.46, span="$mk$ steps")
