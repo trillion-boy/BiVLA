@@ -645,7 +645,7 @@ def icon_fusion2(ax, x, y, s, color=C_FUSION, fs=6.5, n=3, reused=((0, 1), (2, 2
     per-patch selection, not a sum."""
     g = 0.26 * s               # grid side
     c = g / n
-    sep, arr_w = 0.07 * s, 0.15 * s
+    sep, arr_w = 0.16 * s, 0.12 * s
     xs_ = (x, x + g + sep, x + 2 * g + sep + arr_w)
     y0 = y + 0.24 * s
     fills = (lambda i, j: FUSION_TINT, lambda i, j: GREY_FILL, lambda i, j: FUSION_TINT if (i, j) in reused else GREY_FILL)
@@ -657,7 +657,7 @@ def icon_fusion2(ax, x, y, s, color=C_FUSION, fs=6.5, n=3, reused=((0, 1), (2, 2
     # new tokens go straight into the fused grid, the carried tokens arrive
     # from the previous grid over the top, in the tint they keep
     arrow(ax, xs_[1] + g + 0.03, ym, xs_[2] - 0.03, ym, color=PIPE_EDGE, lw=0.7, ms=5)
-    arrow(ax, xs_[0] + g - 0.02, y0 + g + 0.01, xs_[2] + 1.5 * c, y0 + g + 0.01, color=color, lw=0.7, ms=5, rad=-0.28)
+    arrow(ax, xs_[0] + g - 0.02, y0 + g + 0.01, xs_[2] + 1.5 * c, y0 + g + 0.01, color=color, lw=0.7, ms=5, rad=-0.16)
     ax.text(xs_[0], y + 0.09 * s, "previous", ha="left", va="baseline", fontsize=fs, color=GREY)
     ax.text(xs_[1] + g, y + 0.09 * s, "new", ha="right", va="baseline", fontsize=fs, color=GREY)
     ax.text(xs_[2] + g / 2, y + 0.09 * s, "fused", ha="center", va="baseline", fontsize=fs, color=GREY)
@@ -765,7 +765,7 @@ def candidate_A3(verbose=True):
     # temporal fusion, on the encoder-to-decoder edge
     x = 0.10 + cw + gap
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion2(ax, x + 0.08, cy + 0.08, 0.96, fs=FS_SUB)
+    icon_fusion2(ax, x + 0.08, cy + 0.06, 0.92, fs=FS_SUB)
     sentence(x + 1.10, bm, "Unprotected patches\nkeep their token\nfrom the previous\ncall, up to a fixed\nshare of all patches.", body)
     fx = xs["enc"] + bw + 0.15
     leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.12), (fx, cy - 0.12), (fx, mid + 0.03)], C_FUSION)
@@ -774,7 +774,7 @@ def candidate_A3(verbose=True):
     x = 0.10 + 2 * (cw + gap)
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
     icon_depth2(ax, x + 0.10, cy + 0.07, 0.48)
-    sentence(x + 0.70, bm, "The layers lowest in Block\nInfluence are removed, the\nfirst layers and the last kept.", body)
+    sentence(x + 0.70, bm, "The layers lowest in Block\nInfluence are removed, none\nadjacent, the first layers\nand the last kept.", body)
     dx = xs["dec"] + bw / 2
     leader([(x + 0.55, cy), (x + 0.55, cy - 0.19), (dx, cy - 0.19), (dx, py + ph + 0.04)], C_DEPTH)
     dot(dx, py + ph + 0.01, C_DEPTH)
