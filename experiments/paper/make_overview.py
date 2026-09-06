@@ -13,7 +13,8 @@ organisation:
                                        dense inference and each intervention
 
 Vector PDF (Type 42 fonts, IEEE PDF eXpress safe) and a PNG preview.
-Width 7.16 in = IEEE double column. Run from the repo root:
+Candidates A, B, C, A2 are 7.16 in wide (IEEEtran); the final A3 is drawn at
+ieeeconf's \textwidth, 505.89 pt. Run from the repo root:
 
     python3 experiments/paper/make_overview.py
 
@@ -459,28 +460,6 @@ def foveation_thumb(n=64, keep=0.28, passes=10, k=5):
     return out, disc
 
 
-def check_fit(fig, ax, items, tol=0.01):
-    """items: (text artist, (x0, y0, x1, y1) in data units). Prints any text
-    whose rendered extent leaves its box or the canvas. Returns the count."""
-    fig.canvas.draw()
-    rend = fig.canvas.get_renderer()
-    bad = 0
-    W = ax.get_xlim()[1]
-    Hh = ax.get_ylim()[1]
-    for txt, (x0, y0, x1, y1) in items:
-        bb = txt.get_window_extent(rend).transformed(ax.transData.inverted())
-        if bb.x0 < x0 - tol or bb.x1 > x1 + tol or bb.y0 < y0 - tol or bb.y1 > y1 + tol:
-            bad += 1
-            print(f"OVERFLOW {txt.get_text()[:40]!r}: text [{bb.x0:.2f},{bb.x1:.2f}]x[{bb.y0:.2f},{bb.y1:.2f}]"
-                  f" box [{x0:.2f},{x1:.2f}]x[{y0:.2f},{y1:.2f}]")
-        if bb.x0 < -tol or bb.x1 > W + tol or bb.y0 < -tol or bb.y1 > Hh + tol:
-            bad += 1
-            print(f"OFF-CANVAS {txt.get_text()[:40]!r}")
-    return bad
-
-
-# Font floor for print (IEEE two-column, figure* at 7.16 in, no scaling):
-# body text 7 pt, sub-text and icon labels 6.5 pt, card titles 8 pt.
 FS_BODY, FS_SUB, FS_TITLE = 7.0, 6.5, 8.0
 
 
@@ -599,36 +578,6 @@ FRAMES = [
 ]
 
 
-def foveation_real(keep_ratio=0.20, size=224):
-    """The fixed-foveation transform as run in the MiniVLA harness
-    (vla_tricks/foveation.py::foveate_blur on the tricks branch, applied to
-    the 224 px policy input):
-    sharp disc of area keep_ratio, then a blend into Gaussian sigma 3 and
-    sigma 9 copies with distance. Applied to a real Bridge observation
-    resized to the policy input size, as the harness does."""
-    import cv2
-    from PIL import Image
-    path = next(p for p in FRAMES if os.path.exists(p))
-    frame = np.asarray(Image.open(path).convert("RGB").resize((size, size), Image.BILINEAR), dtype=np.uint8)
-    h, w = frame.shape[:2]
-    cx, cy = w / 2.0, h / 2.0
-    sharp_r = np.sqrt(keep_ratio * h * w / np.pi)
-    max_r = np.hypot(max(cx, w - cx), max(cy, h - cy))
-    ys, xs = np.mgrid[0:h, 0:w]
-    dist = np.hypot(xs - cx, ys - cy)
-    t = np.clip((dist - sharp_r) / max(max_r - sharp_r, 1e-6), 0, 1).astype(np.float32)
-    middle = cv2.GaussianBlur(frame, (0, 0), sigmaX=3.0)
-    far = cv2.GaussianBlur(frame, (0, 0), sigmaX=9.0)
-    far_w = np.clip(2 * t - 1, 0, 1)[..., None]
-    mid_w = np.clip(2 * t, 0, 1)[..., None] - far_w
-    out = frame * (1 - mid_w - far_w) + middle * mid_w + far * far_w
-    out = np.clip(np.rint(out), 0, 255).astype(np.uint8)
-    out[dist <= sharp_r] = frame[dist <= sharp_r]
-    return out, sharp_r / w
-
-
-# ieeeconf letterpaper sets \textwidth to 7.0 in (505.89 pt), not IEEEtran's
-# 7.16 in, so the final figure is drawn at 7.0 in and placed unscaled.
 W3 = 505.89 / 72.0   # 7.026 in, exactly \textwidth
 C_REUSE3 = "#c25e05"   # darker orange, grey value 110 against the controls' 127
 
@@ -646,11 +595,12 @@ def icon_depth2(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1
             fc = LIGHT[color] if i in protected else "white"
             ax.add_patch(Rectangle((x, yy + 0.15 * h), sw, 0.7 * h, fc=fc, ec=PIPE_EDGE, lw=0.5))
     arrow(ax, x + sw + 0.03, y + s / 2, x + s - sw - 0.03, y + s / 2, color=color, lw=0.7, ms=5)
-    m = n - len(removed)
-    y0 = y + (n - m) * h / 2
-    for i in range(m):
-        yy = y0 + i * h
-        ax.add_patch(Rectangle((x + s - sw, yy + 0.15 * h), sw, 0.7 * h, fc="white", ec=PIPE_EDGE, lw=0.5))
+    kept = [i for i in range(n) if i not in removed]
+    y0 = y + (n - len(kept)) * h / 2
+    for j, i in enumerate(kept):
+        yy = y0 + j * h
+        fc = LIGHT[color] if i in protected else "white"
+        ax.add_patch(Rectangle((x + s - sw, yy + 0.15 * h), sw, 0.7 * h, fc=fc, ec=PIPE_EDGE, lw=0.5))
 
 
 def icon_gate(ax, x, y, s, color, fs):
@@ -671,22 +621,21 @@ def icon_gate(ax, x, y, s, color, fs):
 
 
 def candidate_A3(verbose=True):
-    H = 3.10
+    H = 2.96
     fig, ax = canvas(H, W3)
     fit = []
     CR = C_REUSE3
     LIGHT[CR] = LIGHT[C_REUSE]
     # --- pipeline row (middle) ---
-    py, ph = 1.42, 0.46
+    py, ph = 1.28, 0.46
     bw = 0.84
     xs = {"obs": 0.14, "enc": 1.28, "dec": 2.42, "out": 3.56, "act": 4.70, "env": 6.02}
     mid = py + ph / 2
     box(ax, xs["obs"], py, bw, ph, "Observation", fs=FS_BODY, sub="image, instruction", subfs=FS_SUB)
     box(ax, xs["enc"], py, bw, ph, "Visual encoder", fs=FS_BODY, sub="patch tokens", subfs=FS_SUB)
-    box(ax, xs["dec"], py, bw, ph, "")
-    for i in range(5):
-        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.16 + i * 0.050), bw - 0.2, 0.036, fc="white", ec=PIPE_EDGE, lw=0.5))
-    ax.text(xs["dec"] + bw / 2, py + 0.075, "Decoder layers", ha="center", va="center", fontsize=FS_BODY, color=INK)
+    box(ax, xs["dec"], py, bw, ph, "Decoder layers", fs=FS_BODY)
+    for i in range(3):
+        ax.add_patch(Rectangle((xs["dec"] + 0.16, py + 0.07 + i * 0.045), bw - 0.32, 0.03, fc="white", ec=PIPE_EDGE, lw=0.5))
     box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or values", subfs=FS_SUB)
     box(ax, xs["act"], py, bw, ph, "Action", fs=FS_BODY, sub="$m$ per call", subfs=FS_SUB)
     box(ax, xs["env"], py, bw, ph, "Environment", fs=FS_BODY, sub="one step", subfs=FS_SUB)
@@ -695,16 +644,15 @@ def candidate_A3(verbose=True):
     loop_y = py - 0.34
     ax.plot([xs["env"] + bw / 2, xs["env"] + bw / 2, xs["obs"] + bw / 2], [py, loop_y, loop_y], color=PIPE_EDGE, lw=0.8)
     arrow(ax, xs["obs"] + bw / 2, loop_y, xs["obs"] + bw / 2, py - 0.01)
-    lx = 3.30
-    ax.text(lx, loop_y - 0.04, "next observation", ha="center", va="top", fontsize=FS_SUB, color=GREY)
+    ax.text((xs["env"] + xs["obs"] + bw) / 2, loop_y - 0.04, "next observation", ha="center", va="top", fontsize=FS_SUB, color=GREY)
     # guarded reuse: gates on the observation edge, a dashed skip path into the action box
     gx, by = xs["obs"] + bw + 0.11, py - 0.13
-    ax.plot([gx, gx, xs["act"] + bw / 2], [mid, by, by], color=PIPE_EDGE, lw=0.8, ls="--")
-    arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.01, color=PIPE_EDGE)
+    ax.plot([gx, gx, xs["act"] + bw / 2], [mid, by, by], color=CR, lw=0.8, ls="--")
+    arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.01, color=CR)
     d = 0.05
     ax.add_patch(Polygon([(gx - d, mid), (gx, mid + d), (gx + d, mid), (gx, mid - d)], closed=True,
                          fc=LIGHT[CR], ec=CR, lw=0.8, zorder=5))
-    ax.text(lx, (by + loop_y) / 2, "call skipped, previous action repeated", ha="center", va="center", fontsize=FS_SUB, color=GREY)
+    ax.text((gx + xs["act"] + bw / 2) / 2, (by + loop_y) / 2, "call skipped, previous action repeated", ha="center", va="center", fontsize=FS_SUB, color=CR)
 
     def card(x, y, w, h, col, title):
         box(ax, x, y, w, h, fill="white", edge=col, lw=0.8, rounding=0.02)
@@ -713,8 +661,12 @@ def candidate_A3(verbose=True):
         return (x, y, x + w, y + h - 0.22)
 
     def sentence(x, y, text, body, col=INK):
-        t = ax.text(x, y, text, ha="left", va="center", fontsize=FS_BODY, color=col, linespacing=1.3)
-        fit.append((t, body))
+        lines = text.split("\n")
+        pitch = 1.3 * FS_BODY / 72.0
+        top = y + (len(lines) - 1) * pitch / 2
+        for i, ln in enumerate(lines):
+            t = ax.text(x, top - i * pitch, ln, ha="left", va="center", fontsize=FS_BODY, color=col)
+            fit.append((t, body))
 
     def dot(x, y, col):
         ax.add_patch(Circle((x, y), 0.03, fc=col, ec="white", lw=0.5, zorder=6))
@@ -724,7 +676,7 @@ def candidate_A3(verbose=True):
         ax.plot(xs_, ys_, color=col, lw=0.5, ls="-", solid_capstyle="round", zorder=4)
 
     # --- candidates above, left to right in pipeline order ---
-    cy, ch, cw = 2.18, 0.84, 2.22
+    cy, ch, cw = 2.04, 0.84, 2.22
     gap = (W3 - 0.20 - 3 * cw) / 2
     bm = cy + (ch - 0.22) / 2
     # guarded reuse, its mark is the diamond on the observation edge
@@ -737,7 +689,7 @@ def candidate_A3(verbose=True):
     # temporal fusion, on the encoder-to-decoder edge
     x = 0.10 + cw + gap
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion(ax, x + 0.10, cy + 0.08, 0.46, ring=False, reused={(0, 1), (0, 3), (1, 0), (2, 3), (3, 1), (2, 1)}, flagged=False)
+    icon_fusion(ax, x + 0.10, cy + 0.08, 0.46, ring=False, reused={(0, 0), (0, 1), (1, 0), (1, 1), (3, 0), (3, 1)}, flagged=False)
     sentence(x + 0.68, bm, "A capped number of\nunprotected patches keep their\ntoken from the previous call.", body)
     fx = xs["enc"] + bw + 0.15
     leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.16), (fx, cy - 0.16), (fx, mid + 0.03)], C_FUSION)
@@ -752,16 +704,16 @@ def candidate_A3(verbose=True):
     dot(dx, py + ph + 0.01, C_DEPTH)
 
     # --- controls below, in the outer columns ---
-    ky, kh, kw = 0.20, 0.72, 2.22
+    ky, kh, kw = 0.06, 0.72, 2.22
     x = 0.10
     body = card(x, ky, kw, kh, C_CTRL, "Foveation")
     img, r_frac = foveation_real()
-    ts = 0.46
-    ext = [x + 0.08, x + 0.08 + ts, ky + 0.03, ky + 0.03 + ts]
+    ts = 0.42
+    ext = [x + 0.08, x + 0.08 + ts, ky + 0.04, ky + 0.04 + ts]
     ax.imshow(img, extent=ext, interpolation="none", zorder=3)
     ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), ts * r_frac, fc="none", ec="white", lw=0.6, zorder=4))
     ax.add_patch(Rectangle((ext[0], ext[2]), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
-    sentence(x + 0.66, ky + (kh - 0.22) / 2, "Blurred outside a central disc,\nthe token count unchanged.", body)
+    sentence(x + 0.62, ky + (kh - 0.22) / 2, "The image is blurred outside\na central disc, the token\ncount unchanged.", body)
     ox = xs["obs"] + bw / 2 + 0.16
     leader([(ox, ky + kh), (ox, py - 0.04)], C_CTRL)
     dot(ox, py - 0.01, C_CTRL)
@@ -773,10 +725,6 @@ def candidate_A3(verbose=True):
     leader([(rx, ky + kh), (rx, mid - 0.04)], C_CTRL)
     dot(rx, mid, C_CTRL)
 
-    # --- legend, one line ---
-    t = ax.text(W3 / 2, 0.11, "Dots and the diamond mark where each intervention takes effect, and the dashed path marks the skipped call.",
-                ha="center", va="center", fontsize=FS_SUB, color=GREY)
-    fit.append((t, (0, 0, W3, H)))
     if verbose:
         n = check_fit(fig, ax, fit)
         print("fit check:", "clean" if n == 0 else f"{n} overflow(s)")
