@@ -639,25 +639,24 @@ FUSION_TINT = "#9fdcc6"   # one step darker than LIGHT[C_FUSION] so the cells pr
 
 
 def icon_fusion2(ax, x, y, s, color=C_FUSION, fs=6.5, n=3, reused=((0, 1), (2, 2))):
-    """two token grids, previous call on the left and current call on the
-    right; the reused cells are tinted in both and an arrow carries each
-    across, so the reuse reads as a step in time"""
-    g = 0.42 * s               # grid side
-    gap = s - 2 * g            # space between the grids
+    """old tokens plus new tokens give the fused grid: the old grid is fully
+    tinted, the new grid is white, the fused grid is white with the carried
+    cells tinted, so the mixing itself is what the eye sees"""
+    g = 0.24 * s               # grid side
     c = g / n
-    y0 = y + 0.20 * s          # grid bottom, labels sit below
-    # previous call: every cell holds an old token (all tinted). current call:
-    # fresh tokens are white, the carried cells keep the old tint
-    for k, gx in enumerate((x, x + g + gap)):
+    plus_w, arr_w = 0.12 * s, 0.16 * s
+    xs_ = (x, x + g + plus_w, x + 2 * g + plus_w + arr_w)
+    y0 = y + 0.24 * s
+    fills = (lambda i, j: FUSION_TINT, lambda i, j: GREY_FILL, lambda i, j: FUSION_TINT if (i, j) in reused else GREY_FILL)
+    for gx, fill in zip(xs_, fills):
         for i in range(n):
             for j in range(n):
-                fc = FUSION_TINT if (k == 0 or (i, j) in reused) else "white"
-                ax.add_patch(Rectangle((gx + j * c, y0 + (n - 1 - i) * c), c, c, fc=fc, ec=PIPE_EDGE, lw=0.5))
-    for (i, j) in reused:
-        yy = y0 + (n - 1 - i) * c + c / 2
-        arrow(ax, x + g + 0.02, yy, x + g + gap - 0.02, yy, color=color, lw=0.7, ms=5)
-    ax.text(x, y + 0.02 * s, "previous", ha="left", va="baseline", fontsize=fs, color=GREY)
-    ax.text(x + s, y + 0.02 * s, "current", ha="right", va="baseline", fontsize=fs, color=GREY)
+                ax.add_patch(Rectangle((gx + j * c, y0 + (n - 1 - i) * c), c, c, fc=fill(i, j), ec=PIPE_EDGE, lw=0.5))
+    ym = y0 + g / 2
+    ax.text(xs_[0] + g + plus_w / 2, ym, "+", ha="center", va="center", fontsize=fs + 1.5, color=color)
+    arrow(ax, xs_[1] + g + 0.02, ym, xs_[2] - 0.02, ym, color=color, lw=0.7, ms=5)
+    for gx, lab in zip(xs_, ("old", "new", "fused")):
+        ax.text(gx + g / 2, y + 0.09 * s, lab, ha="center", va="baseline", fontsize=fs, color=GREY)
 
 
 def icon_gate(ax, x, y, s, color, fs):
@@ -678,7 +677,7 @@ def icon_gate(ax, x, y, s, color, fs):
 
 
 def candidate_A3(verbose=True):
-    H = 2.96
+    H = 3.02
     fig, ax = canvas(H, W3)
     fit = []
     CR = C_REUSE3
@@ -749,7 +748,7 @@ def candidate_A3(verbose=True):
         ax.plot(xs_, ys_, color=col, lw=0.5, ls="-", solid_capstyle="round", zorder=4)
 
     # --- candidates above, left to right in pipeline order ---
-    cy, ch, cw = 2.04, 0.84, 2.22
+    cy, ch, cw = 2.04, 0.90, 2.22
     gap = (W3 - 0.20 - 3 * cw) / 2
     bm = cy + (ch - 0.22) / 2
     # guarded reuse, its mark is the diamond on the observation edge
@@ -762,8 +761,8 @@ def candidate_A3(verbose=True):
     # temporal fusion, on the encoder-to-decoder edge
     x = 0.10 + cw + gap
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion2(ax, x + 0.08, cy + 0.05, 0.72, fs=FS_SUB)
-    sentence(x + 0.88, bm, "Up to a fixed share of\nunprotected patches keep\ntheir token from the\nprevious call.", body)
+    icon_fusion2(ax, x + 0.08, cy + 0.08, 1.0, fs=FS_SUB)
+    sentence(x + 1.14, bm, "Up to a fixed share\nof unprotected\npatches keep their\ntoken from the\nprevious call.", body)
     fx = xs["enc"] + bw + 0.15
     leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.12), (fx, cy - 0.12), (fx, mid + 0.03)], C_FUSION)
     dot(fx, mid, C_FUSION)
