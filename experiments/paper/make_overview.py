@@ -774,7 +774,7 @@ def candidate_A3(verbose=True):
     x = 0.10 + 2 * (cw + gap)
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
     icon_depth2(ax, x + 0.10, cy + 0.07, 0.48)
-    sentence(x + 0.70, bm, "The layers lowest in Block\nInfluence are removed,\nthe ends kept.", body)
+    sentence(x + 0.70, bm, "The layers lowest in Block\nInfluence are removed, the\nfirst layers and the last kept.", body)
     dx = xs["dec"] + bw / 2
     leader([(x + 0.55, cy), (x + 0.55, cy - 0.19), (dx, cy - 0.19), (dx, py + ph + 0.04)], C_DEPTH)
     dot(dx, py + ph + 0.01, C_DEPTH)

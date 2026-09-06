@@ -221,71 +221,117 @@
 %     the sixteenth pass.
 %
 % Style: no em-dashes, no semicolons, no prose colons. About 550 words by the paper word counter.
+% Eighteenth pass, 2026-09-06, six-reviewer attack. Applied:
+%   - Lead-in: m defined for both the single-action and the chunk case ("the
+%     m actions the evaluation harness executes per model call, a single
+%     action or a chunk"); a_t dropped (unused); "with whatever history" ->
+%     "with the preceding observations where the backbone keeps them";
+%     "Original policy in the tables" -> "Original" (the manuscript's row
+%     label); "one part of inference" -> "one part of the control loop"
+%     (repeat and reuse change when the policy is called); controls defined
+%     ("which use no signal"); "Related Work" -> "Section II".
+%   - Names now match the headings and tables: "Foveation", "Depth pruning",
+%     "Guarded reuse" open their subsections.
+%   - III.A: "tests perceptual simplification alone" -> "the model
+%     computation is the same and the blur adds only its own time to each
+%     step" (Table I shows foveation latency rising in every cell).
+%   - III.B: "dense action" -> "inferred action" (dense is the reference
+%     configuration, III.D and RW say "inferred"); "with no gate" attached to
+%     the verb; "multiplies by k the interval" un-inverted.
+%   - III.C: Block Influence spelled out per token position and averaged;
+%     "calibration split" -> "calibration frames disjoint from the test
+%     episodes" (one reset frame per task); the selector described as the
+%     greedy walk it is (ascending score, skip if adjacent to a removed
+%     layer, until the budget); "so this is removal rather than an identity
+%     layer" -> "rather than bypassed by an identity layer".
+%   - III.D: "stable against the previous signature"; "inferred actions";
+%     "commanded translation is small"; exhausted cap also returns to dense;
+%     "The image gates read the current image at every call"; the sweep
+%     sentence now says which thresholds move and that the cap rises only in
+%     the aggressive preset (scripts/experiments/guarded_reuse_*.py).
+%   - III.E: protection rule stated by kind (motion threshold, top fraction
+%     by entropy or attention, adjacency); "ascending order of their summed
+%     scores" (perception.py risk = motion + entropy + relevance); "fresh
+%     tokens" plural, "propagation of stale tokens"; the selector's and the
+%     attention collection's time named before "accuracy candidate".
+%   Still pending the mentor (unchanged): attention backend per backbone,
+%   depth mechanism on the non-MiniVLA harnesses, CronusVLA depth 4 rows,
+%   the attention map producer for task-aware (aware.awre_vla, not in the
+%   export), motion-entropy row flags on MiniVLA, forced-keyframe rate under
+%   conservative-adaptive (Results).
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
 
-A VLA policy $\pi_\theta$ maps the observation $o_t$ at step $t$, with whatever
-history the backbone keeps, and an instruction to an action $a_t$, or to a
-chunk of actions of which the harness executes $m$ per call, through a visual
-encoder, a stack of decoder layers, and an output stage that emits the action
-as tokens from the language head or as continuous values from a separate action
-head. The reference, called dense below and Original policy in the tables, is
-the released policy run unchanged under fused attention. Every intervention
-below leaves $\theta$ frozen and changes one part of inference, at settings
-listed in Section~IV-A. The first two are controls and the last three are the
-candidates. Related Work gives the lineage of each. Here we state only what
-runs.
+A VLA policy $\pi_\theta$ maps an instruction and the observation $o_t$ at step
+$t$, with the preceding observations where the backbone keeps them, to the $m$
+actions the evaluation harness executes per model call, a single action or a
+chunk. It does so through a visual encoder, a stack of decoder layers, and an
+output stage that emits the actions as tokens from the language head or as
+continuous values from a separate action head. The reference policy, called
+dense below and Original in the tables, is the released policy run unchanged
+under fused attention. Every intervention below leaves $\theta$ frozen and
+changes one part of the control loop, with the settings listed in Section~IV-A.
+The first two, which use no signal, are controls and the last three are the
+candidates. Section~II gives the lineage of each. Here we state only what runs.
 
 \subsection{Foveation}
 
-Fixed foveation keeps sharp a central disc covering a keep ratio $\rho$ of the
-image area and blends increasingly blurred copies of the frame outside it.
-Output resolution and visual token count are unchanged, so foveation tests
-perceptual simplification alone.
+Foveation keeps a central disc sharp, a disc covering a keep ratio $\rho$ of
+the image area, and blends increasingly blurred copies of the frame outside the
+disc. Output resolution and visual token count are unchanged, so the model
+computation is the same and the blur adds only its own time to each step.
 
 \subsection{Action Repeat}
 
-Action repeat executes each dense action for $k$ consecutive steps and skips
-the model call on the repeated steps, so one call covers $mk$ environment
-steps. It divides model calls per environment step by $k$ and multiplies by $k$
-the interval over which the robot acts without fresh feedback, with no gate.
+Action repeat executes each inferred action for $k$ consecutive steps with no
+gate and skips the model call on the repeated steps, so one call covers $mk$
+environment steps. It divides model calls per environment step by $k$ and
+multiplies the interval over which the robot acts without fresh feedback by
+$k$.
 
 \subsection{Depth Pruning}
 
-Calibrated depth pruning scores each decoder layer by ShortGPT Block Influence,
-one minus the mean cosine between its input and output hidden
-states~\cite{shortgpt}, on a calibration split disjoint from the test episodes.
-The selector protects a leading fraction of the stack and the final layer,
-forbids removing adjacent layers, removes the lowest-scoring layers that remain
-eligible, and fixes the removed set before testing.
-Removed layers are excised and the generation cache reindexed, so this is
-removal rather than an identity layer. The budget, how many layers are removed,
-is the swept quantity.
+Depth pruning scores each decoder layer by ShortGPT's Block
+Influence~\cite{shortgpt}, one minus the cosine similarity between the layer's
+input and output hidden states at each token position, averaged over positions
+and over calibration frames disjoint from the test episodes. The selector
+protects a leading fraction of the stack and the final layer, walks the
+remaining layers in ascending score, removes each that is not adjacent to a
+layer already removed until the budget is met, and fixes the removed set before
+testing. Removed layers are excised and the generation cache reindexed rather
+than bypassed by an identity layer. The budget, how many layers are removed, is
+the swept quantity.
 
 \subsection{Guarded Reuse}
 
-Guarded action reuse repeats the previous action only when a subsampled pixel
-signature is stable at whole-frame and local scale, the two most recent dense
-actions agree in direction and gripper state, and the commanded translation is
-above a floor, so reuse never fires while the commanded motion is small.
-Consecutive reuse is capped, and any failed gate returns to dense inference.
-The gates read a current image at every step, so only the model call is
-skipped. The image and agreement thresholds and the cap are swept together as
-one setting, strict, moderate, or aggressive, from the tightest to the loosest,
-with the translation floor fixed.
+Guarded reuse repeats the previous action only when three gates pass. A
+subsampled pixel signature must be stable against the previous signature at
+whole-frame and local scale, the two most recent inferred actions must agree in
+direction and gripper state, and the commanded translation must exceed a floor,
+so reuse never fires while the commanded translation is small. Consecutive
+reuse is capped, and a failed gate or an exhausted cap returns the step to
+dense inference. The image gates read the current image at every call, and a
+reused step skips the model call alone. The two image thresholds and the
+agreement threshold are swept together as one setting, strict, moderate, or
+aggressive, from the tightest to the loosest, the cap rises only in the
+aggressive setting, and the translation floor is fixed.
 
 \subsection{Temporal Fusion}
 
 Temporal fusion scores each visual patch by motion, image entropy, and optional
-text-to-vision attention, protects patches high in any of these or adjacent to
-one, and marks reusable at most a fixed fraction of all patches, drawn from the
-rest with the lowest scores first. A reusable patch keeps the token that entered
-the decoder at the previous call while the others take the fresh token, and a
-dense keyframe every few calls bounds propagation. Fusion changes which tokens enter the decoder, not
-how many, so it is an accuracy candidate rather than a speed one. Three
-settings are evaluated. Motion-entropy builds the reusable set from motion and
-entropy alone, task-aware adds the text-to-vision attention of the preceding
-call, and conservative-adaptive keeps the motion-entropy selection with a
-smaller reuse fraction, a shorter keyframe interval, and a forced keyframe
-whenever any patch moves beyond a second, higher motion threshold.
+text-to-vision attention. It protects every patch whose motion exceeds a
+threshold or that falls in a top fraction by entropy or by attention, and every
+patch adjacent to one, and it marks at most a fixed fraction of all patches as
+reusable, taking the unprotected patches in ascending order of their summed
+scores. A reusable patch keeps the token that entered the decoder at the
+previous call, the other patches take their fresh tokens, and a dense keyframe
+every few calls bounds the propagation of stale tokens. Fusion changes which
+tokens enter the decoder, not how many, so the model computation is unchanged
+and the selector, with the attention collection in the task-aware setting, adds
+its own time to each call. It is an accuracy candidate rather than a speed one.
+Three settings are evaluated. Motion-entropy builds the reusable set from
+motion and entropy alone, task-aware adds the text-to-vision attention of the
+preceding call, and conservative-adaptive keeps the motion-entropy selection
+with a smaller reuse fraction, a shorter keyframe interval, and a forced
+keyframe whenever any patch moves beyond a second, higher motion threshold.

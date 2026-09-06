@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-SECTIONS = ["introduction.tex", "relatedwork.tex"]
+SECTIONS = ["introduction.tex", "relatedwork.tex", "bagoftricks.tex", "figoverview.tex"]
 
 
 def cited():
