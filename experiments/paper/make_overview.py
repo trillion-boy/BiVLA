@@ -97,11 +97,13 @@ def icon_foveation(ax, x, y, s):
     ax.add_patch(Circle((x + s / 2, y + s / 2), 0.26 * s, fc="white", ec=PIPE_EDGE, lw=0.5))
 
 
-def icon_fusion(ax, x, y, s, color=C_FUSION, ring=True):
-    """4x4 token grid, reused cells filled, fresh cells white, ring around a flagged cell"""
+def icon_fusion(ax, x, y, s, color=C_FUSION, ring=True, reused=None):
+    """4x4 token grid, reused cells filled, fresh cells white, ring around a flagged cell.
+    reused=() draws a two-tone grid: the flagged cell dark, everything else white."""
     n = 4
     c = s / n
-    reused = {(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 3), (3, 0), (3, 3), (3, 1)}
+    if reused is None:
+        reused = {(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 3), (3, 0), (3, 3), (3, 1)}
     for i in range(n):
         for j in range(n):
             fc = LIGHT[color] if (i, j) in reused else "white"
@@ -141,12 +143,14 @@ def icon_reuse(ax, x, y, s, color=C_REUSE, fs=5.4, fs_gate=5.6,
     return t1, t2
 
 
-def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None, span="$k$ steps"):
-    """timeline of width s: call, hold, ..., hold, call, with a bracket for k steps.
-    h: total height (defaults to 0.42 s, the original square-ish proportion)."""
+def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None, span="$k$ steps",
+                labels=("call", "hold", "\u2026", "hold", "call")):
+    """timeline of width s over the given labels, with a bracket under the
+    first four boxes (one action and its holds). h: total height (defaults
+    to 0.42 s, the original square-ish proportion)."""
     if h is None:
         h = 0.42 * s
-    labels = ["call", "hold", "\u2026", "hold", "call"]
+    labels = list(labels)
     w = s / len(labels)
     bh = 0.55 * h            # box height
     yb = y + 0.40 * h        # box bottom
@@ -590,7 +594,8 @@ FRAMES = [
 
 def foveation_real(keep_ratio=0.20, size=224):
     """The fixed-foveation transform as run in the MiniVLA harness
-    (vla_tricks/foveation.py::foveate_blur on the 224 px policy input):
+    (vla_tricks/foveation.py::foveate_blur on the tricks branch, applied to
+    the 224 px policy input):
     sharp disc of area keep_ratio, then a blend into Gaussian sigma 3 and
     sigma 9 copies with distance. Applied to a real Bridge observation
     resized to the policy input size, as the harness does."""
@@ -629,7 +634,7 @@ def candidate_A3(verbose=True):
     for i in range(5):
         ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.17 + i * 0.054), bw - 0.2, 0.038, fc="white", ec=PIPE_EDGE, lw=0.4))
     ax.text(xs["dec"] + bw / 2, py + 0.075, "Decoder layers", ha="center", va="center", fontsize=FS_BODY, color=INK)
-    box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or head", subfs=FS_SUB)
+    box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or values", subfs=FS_SUB)
     box(ax, xs["act"], py, bw, ph, "Action $a_t$", fs=FS_BODY, sub="$m$ per call", subfs=FS_SUB)
     box(ax, xs["env"], py, bw, ph, "Environment", fs=FS_BODY, sub="one step", subfs=FS_SUB)
     for a, b in [("obs", "enc"), ("enc", "dec"), ("dec", "out"), ("out", "act"), ("act", "env")]:
@@ -643,8 +648,10 @@ def candidate_A3(verbose=True):
     gx, by = xs["obs"] + bw + 0.16, py - 0.13
     ax.plot([gx, gx, xs["act"] + bw / 2], [py + ph / 2, by, by], color=C_REUSE, lw=0.8, ls="--")
     arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.01, color=C_REUSE)
-    ax.add_patch(Circle((gx, py + ph / 2), 0.03, fc=C_REUSE, ec="none"))
-    ax.text(4.27, by + 0.065, "gates pass, reuse $a_{t-1}$", ha="center", va="center", fontsize=FS_SUB, color=C_REUSE)
+    d = 0.05
+    ax.add_patch(Polygon([(gx - d, py + ph / 2), (gx, py + ph / 2 + d), (gx + d, py + ph / 2), (gx, py + ph / 2 - d)],
+                         closed=True, fc=LIGHT[C_REUSE], ec=C_REUSE, lw=0.8, zorder=5))
+    ax.text(4.20, by + 0.065, "gates pass, skip the call, repeat $a_{t-1}$", ha="center", va="center", fontsize=FS_SUB, color=C_REUSE)
 
     def card(x, y, w, h, col, title):
         box(ax, x, y, w, h, fill="white", edge=col, lw=1.0, rounding=0.06)
@@ -665,20 +672,20 @@ def candidate_A3(verbose=True):
     bm = cy + (ch - 0.22) / 2
     x = 0.10
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48, ring=False)
-    sentence(x + 0.68, bm, "Patches no signal flags keep the\ntoken from the previous call.", body)
+    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48, ring=False, reused=())
+    sentence(x + 0.68, bm, "Between keyframes a capped\nshare of unprotected patches\nkeeps the previous call's token.", body)
     attach(x + cw / 2, cy, xs["enc"] + bw + 0.16, py + ph + 0.01, C_FUSION)
     x = 2.44
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
     icon_depth(ax, x + 0.12, cy + 0.11, 0.48, protected=())
-    sentence(x + 0.66, bm, "Layers lowest in block influence\nare removed, the ends are kept.", body)
+    sentence(x + 0.66, bm, "Layers lowest in Block Influence\nare removed, the first layers\nand the last are kept.", body)
     attach(x + cw / 2, cy, xs["dec"] + bw / 2, py + ph + 0.01, C_DEPTH)
     x = 4.78
     body = card(x, cy, cw, ch, C_REUSE, "Guarded reuse")
     for t in icon_reuse(ax, x + 0.08, cy + 0.17, 0.38, fs=FS_SUB, fs_gate=FS_SUB, labels=("pass", "fail")):
         fit.append((t, body))
-    sentence(x + 0.72, bm, "While image and action gates\npass, the call is skipped\nand $a_{t-1}$ repeated.", body)
-    line(ax, x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, color=C_REUSE, lw=0.8)  # the reuse dot is the gate on the observation edge
+    sentence(x + 0.72, bm, "When image and action gates\npass, the call is skipped and\n$a_{t-1}$ repeated, up to a cap.", body)
+    attach(x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, C_REUSE)
 
     # --- controls below, in the outer columns ---
     ky, kh, kw = 0.22, 0.80, 2.28
@@ -694,13 +701,12 @@ def candidate_A3(verbose=True):
     attach(x + kw / 2, ky + kh, xs["obs"] + bw / 2 + 0.16, py - 0.01, C_CTRL)
     x = W - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
-    icon_repeat(ax, x + 0.10, ky + 0.08, 1.30, fs=FS_SUB, h=0.46, span="$mk$ steps")
+    icon_repeat(ax, x + 0.10, ky + 0.08, 1.30, fs=FS_SUB, h=0.46, span="$k$ steps", labels=("call", "hold", "\u2026", "hold"))
     sentence(x + 1.46, ky + (kh - 0.22) / 2, "Each action is\nheld $k$ steps.", body)
-    attach(x + kw / 2, ky + kh, xs["env"] + bw / 2, py - 0.01, C_CTRL)
+    attach(x + kw / 2, ky + kh, (xs["act"] + bw + xs["env"]) / 2, py + ph / 2 - 0.01, C_CTRL)
 
     # --- legend, one line ---
-    t = ax.text(W / 2, 0.09, "Coloured cards are the candidates, each acting only where a measured signal allows it. "
-                "Grey cards are the ungated controls. Dots mark where each enters the loop.",
+    t = ax.text(W / 2, 0.09, "Dots mark where each intervention enters the loop and the diamond marks the reuse gates.",
                 ha="center", va="center", fontsize=FS_SUB, color=GREY)
     fit.append((t, (0, 0, W, H)))
     if verbose:
