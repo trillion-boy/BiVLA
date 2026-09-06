@@ -25,7 +25,7 @@
 \node[box] (obs) {Observation\\$o_t$};
 \node[box, right=13mm of obs] (enc) {Visual\\encoder};
 \node[box, right=20mm of enc] (dec) {Decoder\\layers};
-\node[box, right=13mm of dec] (head) {Action\\output};
+\node[box, right=15mm of dec] (head) {Action\\output};
 \node[box, right=15mm of head] (env) {Environment};
 \draw[flow] (obs) -- (enc);
 \draw[flow] (enc) -- (dec);

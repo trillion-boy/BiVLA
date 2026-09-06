@@ -1,7 +1,7 @@
 # Related Work
 
 *Reading draft of `relatedwork.tex`, citations spelled out, same content.
-1479 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
+1488 words of prose. This is the LONG six-family draft (v3, 2026-09-03). The
 final target is 0.75 page, about 800 words in ieeeconf, so roughly 390 words
 come out in polishing. Cut candidates are listed under "Notes for the
 co-authors". Provenance for every claim: `RelatedWork_Sources.md`, the new
@@ -49,7 +49,7 @@ training-time attention regularizer (Gaze-Reg). Every encoder we run splits the
 image into a uniform grid, so at a fixed output resolution an edit in pixel
 space leaves the visual token count and the model computation unchanged.
 Foveation before the encoder therefore tests whether the policy survives losing
-its periphery, not whether it runs faster. Methods that foveate inside the
+peripheral detail, not whether it runs faster. Methods that foveate inside the
 encoder do shed tokens, but they give up pretrained weights fitted to a uniform
 grid (Look Focus Act). On the first axis, when the policy runs, executing one
 action over several environment steps reduces model calls per step in
@@ -73,8 +73,8 @@ success. Later work on training-free VLA acceleration adopts it as a baseline
 (VLA-Pruner, EfficientVLA, SpecPrune-VLA), and it is not a contribution of
 ours. The same paper also reports that two token pruning methods developed for
 vision-language models (FastV, SparseVLM) transfer poorly to VLAs. It
-attributes the success loss to their working within a single frame, which
-disrupts spatial fidelity, and the missing speedup to their targeting long
+attributes the success loss to their working within a single frame and
+disrupting spatial fidelity, and the missing speedup to their targeting long
 output sequences, whereas a VLA emits a few action tokens. VLA-Pruner
 reproduces the loss on the same OpenVLA setting and attributes it instead to a
 mismatch between the attention patterns of the prefill and the action-decode
@@ -114,7 +114,8 @@ differs in the signal. FlashVLA compares the visual token sets its previous two
 calls selected, whereas ours reads subsampled pixels of the current frame,
 which FlashVLA's gate never sees, at whole-frame and local scale, and adds a
 gripper-state check and a translation floor. Both read the angle between the
-two most recent actions they inferred and both cap consecutive reuse.
+two most recent actions they inferred, ours over the pose dimensions, and both
+cap consecutive reuse.
 
 **Temporal fusion.** TTF-VLA fuses visual tokens across frames without
 training. It keeps the current token for patches flagged by grayscale pixel
@@ -138,29 +139,29 @@ the infrastructure around them. The vla-eval harness unifies fourteen
 benchmarks and documents evaluation pitfalls earlier work had left unrecorded,
 and StarVLA describes the field as fragmented across incompatible codebases.
 But infrastructure cannot supply the comparison itself. Among the papers we
-cite that test an intervention, those that use several backbones either confine
-them to one simulation benchmark (MoLe-VLA) or run at least one of them on a
-benchmark the others do not see (VLA-Cache, SpecPrune-VLA), and where one
-backbone does appear on two simulation benchmarks the others appear on one
-(VLA-Pruner, Gaze-Reg, VLA-IAP), so no cited grid shows whether an
-intervention's response to a change of benchmark holds across backbones. The
-tables we cite report mean success rates, which cannot say on which episodes an
-intervention helped. A speedup also depends on the dense baseline it is
-measured against, and an eager attention baseline inflates it relative to a
-fused one. We remove both, by pairing episodes and by measuring every speedup
-against fused attention. We exclude quantization, which lowers numerical
-precision rather than any of the three resources above, and learned early exit,
-which trains the exits into the policy (DeeR-VLA). Evaluating a set of tricks
-under one protocol, rather than one per paper, is an established practice (Bag
-of Tricks for CNNs, Bag of Tricks for LLMs). We evaluate the six families under
-one protocol on three evaluation environments, the WidowX Bridge and Google
-Robot (Fractal) environments of SimplerEnv and LIBERO with its four suites, and
-run each backbone on every environment for which a checkpoint at the size we
-evaluate is released, as listed in Section IV-A. Every comparison is on matched
-episodes against dense inference under fused attention. A candidate is called
-positive only when it lowers end-to-end latency, with the cost of its own
-signals included, or raises success, while the other stays within a
-preregistered margin of dense.
+cite that test an intervention on a robot policy, those that use several
+backbones either confine them to one simulation benchmark (MoLe-VLA) or run at
+least one of them on a benchmark the others do not see (VLA-Cache,
+SpecPrune-VLA), and where one backbone does appear on two simulation benchmarks
+the others appear on one (VLA-Pruner, Gaze-Reg, VLA-IAP), so no cited grid
+shows whether an intervention's response to a change of benchmark holds across
+backbones. The tables we cite report mean success rates, which cannot say on
+which episodes an intervention helped. A speedup also depends on the dense
+baseline it is measured against, and an eager attention baseline inflates it
+relative to a fused one. We remove both, by pairing episodes and by measuring
+every speedup against fused attention. We exclude quantization, which lowers
+numerical precision rather than any of the three resources above, and learned
+early exit, which trains the exits into the policy (DeeR-VLA). Evaluating a set
+of tricks under one protocol, rather than one per paper, is an established
+practice (Bag of Tricks for CNNs, Bag of Tricks for LLMs). We evaluate the six
+families under one protocol on three evaluation environments, the WidowX Bridge
+and Google Robot (Fractal) environments of SimplerEnv and LIBERO with its four
+suites, and run each backbone on every environment for which a checkpoint at
+the size we evaluate is released, as listed in Section IV-A. Every comparison
+is on matched episodes against dense inference under fused attention. A
+candidate is called positive only when it lowers end-to-end latency, with the
+cost of its own signals included, or raises success, while the other stays
+within a preregistered margin of dense.
 
 ---
 
