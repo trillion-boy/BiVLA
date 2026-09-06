@@ -204,6 +204,9 @@
 %   "or as continuous values from a separate action head" (CogACT diffusion
 %   head, CronusVLA DiT). Figure: head box moved from 13mm to 15mm after the
 %   decoder so the depth and repeat tags do not touch.
+% Sixteenth pass, 2026-09-06: temporal fusion "at the previous step" is now
+%   "at the previous call". Tokens exist only where the encoder ran, so with
+%   m > 1 the previous step may have had no call. Matches Fig. 1 wording.
 %
 % Style: no em-dashes, no semicolons, no prose colons. About 550 words by the paper word counter.
 % ---------------------------------------------------------------------------
@@ -265,7 +268,7 @@ Temporal fusion scores each visual patch by motion, image entropy, and optional
 text-to-vision attention, protects patches high in any of these or adjacent to
 one, and marks reusable at most a fixed fraction of all patches, drawn from the
 rest. A reusable patch keeps the token that entered the decoder at the previous
-step while the others take the fresh token, and a dense keyframe every few
+call while the others take the fresh token, and a dense keyframe every few
 steps bounds propagation. Fusion changes which tokens enter the decoder, not
 how many, so it is an accuracy candidate rather than a speed one. Three
 settings are evaluated. Motion-entropy builds the reusable set from motion and

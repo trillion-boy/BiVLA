@@ -628,7 +628,7 @@ def candidate_A3(verbose=True):
     box(ax, xs["dec"], py, bw, ph, "")
     for i in range(5):
         ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.17 + i * 0.054), bw - 0.2, 0.038, fc="white", ec=PIPE_EDGE, lw=0.4))
-    ax.text(xs["dec"] + bw / 2, py + 0.075, "Decoder layers", ha="center", va="center", fontsize=FS_SUB, color=GREY)
+    ax.text(xs["dec"] + bw / 2, py + 0.075, "Decoder layers", ha="center", va="center", fontsize=FS_BODY, color=INK)
     box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or head", subfs=FS_SUB)
     box(ax, xs["act"], py, bw, ph, "Action $a_t$", fs=FS_BODY, sub="$m$ per call", subfs=FS_SUB)
     box(ax, xs["env"], py, bw, ph, "Environment", fs=FS_BODY, sub="one step", subfs=FS_SUB)
@@ -677,7 +677,7 @@ def candidate_A3(verbose=True):
     body = card(x, cy, cw, ch, C_REUSE, "Guarded reuse")
     for t in icon_reuse(ax, x + 0.08, cy + 0.17, 0.38, fs=FS_SUB, fs_gate=FS_SUB, labels=("pass", "fail")):
         fit.append((t, body))
-    sentence(x + 0.72, bm, "The call is skipped and $a_{t-1}$\nrepeated while the gates pass.", body)
+    sentence(x + 0.72, bm, "While image and action gates\npass, the call is skipped\nand $a_{t-1}$ repeated.", body)
     line(ax, x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, color=C_REUSE, lw=0.8)  # the reuse dot is the gate on the observation edge
 
     # --- controls below, in the outer columns ---
@@ -699,7 +699,7 @@ def candidate_A3(verbose=True):
     attach(x + kw / 2, ky + kh, xs["env"] + bw / 2, py - 0.01, C_CTRL)
 
     # --- legend, one line ---
-    t = ax.text(W / 2, 0.09, "Coloured cards are the candidates, each gated by a signal it computes at run time. "
+    t = ax.text(W / 2, 0.09, "Coloured cards are the candidates, each acting only where a measured signal allows it. "
                 "Grey cards are the ungated controls. Dots mark where each enters the loop.",
                 ha="center", va="center", fontsize=FS_SUB, color=GREY)
     fit.append((t, (0, 0, W, H)))
