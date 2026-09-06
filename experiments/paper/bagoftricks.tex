@@ -207,6 +207,18 @@
 % Sixteenth pass, 2026-09-06: temporal fusion "at the previous step" is now
 %   "at the previous call". Tokens exist only where the encoder ran, so with
 %   m > 1 the previous step may have had no call. Matches Fig. 1 wording.
+% Seventeenth pass, 2026-09-06 (Fig. 1 cross-check against the code): three
+%   gaps in Methods that the figure had to fill on its own.
+%   - Depth: the direction of the score was never stated. Added "removes the
+%     lowest-scoring layers that remain eligible" (depth.py select_non_adjacent
+%     sorts ascending by Block Influence).
+%   - Fusion: "drawn from the rest" now "drawn from the rest with the lowest
+%     scores first" (perception.py picks the lowest motion+entropy+relevance
+%     among unprotected patches when they exceed the cap).
+%   - Fusion: keyframe "every few steps" now "every few calls". The keyframe
+%     counter increments once per prepare(), which runs once per model call
+%     (perception.py, run_minivla_simpler_eval.py), the same m > 1 reason as
+%     the sixteenth pass.
 %
 % Style: no em-dashes, no semicolons, no prose colons. About 550 words by the paper word counter.
 % ---------------------------------------------------------------------------
@@ -245,7 +257,8 @@ Calibrated depth pruning scores each decoder layer by ShortGPT Block Influence,
 one minus the mean cosine between its input and output hidden
 states~\cite{shortgpt}, on a calibration split disjoint from the test episodes.
 The selector protects a leading fraction of the stack and the final layer,
-forbids removing adjacent layers, and fixes the removed set before testing.
+forbids removing adjacent layers, removes the lowest-scoring layers that remain
+eligible, and fixes the removed set before testing.
 Removed layers are excised and the generation cache reindexed, so this is
 removal rather than an identity layer. The budget, how many layers are removed,
 is the swept quantity.
@@ -267,9 +280,9 @@ with the translation floor fixed.
 Temporal fusion scores each visual patch by motion, image entropy, and optional
 text-to-vision attention, protects patches high in any of these or adjacent to
 one, and marks reusable at most a fixed fraction of all patches, drawn from the
-rest. A reusable patch keeps the token that entered the decoder at the previous
-call while the others take the fresh token, and a dense keyframe every few
-steps bounds propagation. Fusion changes which tokens enter the decoder, not
+rest with the lowest scores first. A reusable patch keeps the token that entered
+the decoder at the previous call while the others take the fresh token, and a
+dense keyframe every few calls bounds propagation. Fusion changes which tokens enter the decoder, not
 how many, so it is an accuracy candidate rather than a speed one. Three
 settings are evaluated. Motion-entropy builds the reusable set from motion and
 entropy alone, task-aware adds the text-to-vision attention of the preceding
