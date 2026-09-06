@@ -640,10 +640,11 @@ working within a single frame and one for reading the prefill alone.
 is safe, once at calibration for depth pruning, at every step for guarded
 reuse, and at every call for temporal fusion. Each is a recipe assembled from
 published parts, and our contribution is the protocol under which they are
-compared. \emph{Depth pruning.} Decoder layers in language models are
-redundant~\cite{shortgpt, gromov}, and the recipes built on that redundancy
-disagree on which layers to remove. ShortGPT ranks every layer by Block
-Influence, the criterion we adopt, and imposes no further
+compared. Fig.~\ref{fig:overview} places the three above the control loop and
+the two controls below it. \emph{Depth pruning.} Decoder layers in language
+models are redundant~\cite{shortgpt, gromov}, and the recipes built on that
+redundancy disagree on which layers to remove. ShortGPT ranks every layer by
+Block Influence, the criterion we adopt, and imposes no further
 constraint~\cite{shortgpt}. Gromov et al.\ instead remove one contiguous block,
 chosen by the similarity between its input and output, and offer finetuning as
 an optional step to heal the cut~\cite{gromov}. EfficientVLA applies the same
