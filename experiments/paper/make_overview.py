@@ -124,37 +124,44 @@ def icon_depth(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1,
             ax.add_patch(Rectangle((x, yy + 0.15 * h), s, 0.7 * h, fc=fc, ec=PIPE_EDGE, lw=0.5))
 
 
-def icon_reuse(ax, x, y, s, color=C_REUSE):
-    """gate diamond with two exits, drawn in a box of width 1.1 s and height s"""
+def icon_reuse(ax, x, y, s, color=C_REUSE, fs=5.4, fs_gate=5.6):
+    """gate diamond with two exits, drawn in a box of width 1.1 s and height s.
+    Returns the two exit-label artists so callers can check their fit."""
     cx, cy = x + 0.34 * s, y + 0.5 * s
     d = 0.38 * s
     ax.add_patch(Polygon([(cx - d, cy), (cx, cy + d), (cx + d, cy), (cx, cy - d)], closed=True,
                          fc=LIGHT[color], ec=color, lw=0.8))
-    ax.text(cx, cy, "gates", ha="center", va="center", fontsize=5.6, color=color)
+    ax.text(cx, cy, "gates", ha="center", va="center", fontsize=fs_gate, color=color)
     arrow(ax, cx + d, cy, cx + d + 0.30 * s, cy + 0.34 * s, color=color, lw=0.7, ms=5, rad=-0.25)
     arrow(ax, cx + d, cy, cx + d + 0.30 * s, cy - 0.34 * s, color=PIPE_EDGE, lw=0.7, ms=5, rad=0.25)
-    ax.text(cx + d + 0.34 * s, cy + 0.34 * s, "all pass: reuse $a_{t-1}$", ha="left", va="center", fontsize=5.4, color=color)
-    ax.text(cx + d + 0.34 * s, cy - 0.34 * s, "any fails: dense call", ha="left", va="center", fontsize=5.4, color=INK)
+    t1 = ax.text(cx + d + 0.34 * s, cy + 0.34 * s, "all pass: reuse $a_{t-1}$", ha="left", va="center", fontsize=fs, color=color)
+    t2 = ax.text(cx + d + 0.34 * s, cy - 0.34 * s, "any fails: dense call", ha="left", va="center", fontsize=fs, color=INK)
+    return t1, t2
 
 
-def icon_repeat(ax, x, y, s, color=C_CTRL):
-    """timeline of width s: call, hold, ..., hold, call, with a bracket for k steps"""
+def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None):
+    """timeline of width s: call, hold, ..., hold, call, with a bracket for k steps.
+    h: total height (defaults to 0.42 s, the original square-ish proportion)."""
+    if h is None:
+        h = 0.42 * s
     labels = ["call", "hold", "\u2026", "hold", "call"]
     w = s / len(labels)
+    bh = 0.55 * h            # box height
+    yb = y + 0.40 * h        # box bottom
     for i, lab in enumerate(labels):
         xx = x + i * w
         if lab == "\u2026":
-            ax.text(xx + w / 2, y + 0.30 * s, lab, ha="center", va="center", fontsize=7, color=GREY)
+            ax.text(xx + w / 2, yb + bh / 2, lab, ha="center", va="center", fontsize=fs + 1, color=GREY)
             continue
         call = lab == "call"
-        ax.add_patch(Rectangle((xx + 0.06 * w, y + 0.18 * s), 0.88 * w, 0.24 * s,
+        ax.add_patch(Rectangle((xx + 0.06 * w, yb), 0.88 * w, bh,
                                fc=(LIGHT[color] if call else "white"), ec=(color if call else PIPE_EDGE),
                                lw=0.6, ls=("-" if call else "--")))
-        ax.text(xx + w / 2, y + 0.30 * s, lab, ha="center", va="center", fontsize=6, color=INK)
+        ax.text(xx + w / 2, yb + bh / 2, lab, ha="center", va="center", fontsize=fs, color=INK)
     # bracket under the first k steps
     ax.plot([x + 0.06 * w, x + 0.06 * w, x + 4 * w - 0.06 * w, x + 4 * w - 0.06 * w],
-            [y + 0.14 * s, y + 0.10 * s, y + 0.10 * s, y + 0.14 * s], color=GREY, lw=0.6)
-    ax.text(x + 2 * w, y + 0.02 * s, "$k$ steps", ha="center", va="center", fontsize=6, color=GREY)
+            [y + 0.32 * h, y + 0.24 * h, y + 0.24 * h, y + 0.32 * h], color=GREY, lw=0.6)
+    ax.text(x + 2 * w, y + 0.08 * h, "$k$ steps", ha="center", va="center", fontsize=fs, color=GREY)
 
 
 # ------------------------------------------------------------- candidate A ---
@@ -411,12 +418,17 @@ if __name__ == "__main__":
 import numpy as np
 
 
-def foveation_thumb(n=48, keep=0.28):
-    """synthetic tabletop frame: sharp inside a disc, box-blurred outside"""
+def foveation_thumb(n=64, keep=0.28, passes=10, k=5):
+    """synthetic tabletop frame: sharp inside a disc, heavily box-blurred outside.
+
+    passes x k: 10 passes of a 5x5 box give a blur sigma of about 4.5 px on a
+    64 px frame, roughly twice the earlier 6 passes of 3x3 on 48 px, so the
+    periphery still reads as blurred after the thumbnail is printed at 0.46 in.
+    """
     yy, xx = np.mgrid[0:n, 0:n] / n
     img = 0.35 + 0.25 * yy                       # table gradient
     img[yy < 0.45] = 0.85 - 0.3 * yy[yy < 0.45]  # back wall
-    # a few objects: a cube, a cylinder, a thin bar
+    # a few objects: a cube, a cylinder, a thin bar, a small dark part
     img[(xx > 0.22) & (xx < 0.40) & (yy > 0.50) & (yy < 0.68)] = 0.15
     img[np.hypot(xx - 0.66, yy - 0.62) < 0.10] = 0.95
     img[(xx > 0.05) & (xx < 0.95) & (yy > 0.78) & (yy < 0.82)] = 0.55
@@ -424,97 +436,138 @@ def foveation_thumb(n=48, keep=0.28):
     rng = np.random.default_rng(3)
     img = np.clip(img + 0.06 * rng.standard_normal((n, n)), 0, 1)
     blurred = img.copy()
-    for _ in range(6):
-        pad = np.pad(blurred, 1, mode="edge")
-        blurred = sum(pad[i:i + n, j:j + n] for i in range(3) for j in range(3)) / 9.0
-    r = np.hypot(xx - 0.5, yy - 0.5)
-    disc = r <= np.sqrt(keep / np.pi)
+    r = k // 2
+    for _ in range(passes):
+        pad = np.pad(blurred, r, mode="edge")
+        blurred = sum(pad[i:i + n, j:j + n] for i in range(k) for j in range(k)) / float(k * k)
+    rr = np.hypot(xx - 0.5, yy - 0.5)
+    disc = rr <= np.sqrt(keep / np.pi)
     out = np.where(disc, img, blurred)
     return out, disc
 
 
-def candidate_A2():
-    H = 3.30
+def check_fit(fig, ax, items, tol=0.01):
+    """items: (text artist, (x0, y0, x1, y1) in data units). Prints any text
+    whose rendered extent leaves its box or the canvas. Returns the count."""
+    fig.canvas.draw()
+    rend = fig.canvas.get_renderer()
+    bad = 0
+    W = ax.get_xlim()[1]
+    Hh = ax.get_ylim()[1]
+    for txt, (x0, y0, x1, y1) in items:
+        bb = txt.get_window_extent(rend).transformed(ax.transData.inverted())
+        if bb.x0 < x0 - tol or bb.x1 > x1 + tol or bb.y0 < y0 - tol or bb.y1 > y1 + tol:
+            bad += 1
+            print(f"OVERFLOW {txt.get_text()[:40]!r}: text [{bb.x0:.2f},{bb.x1:.2f}]x[{bb.y0:.2f},{bb.y1:.2f}]"
+                  f" box [{x0:.2f},{x1:.2f}]x[{y0:.2f},{y1:.2f}]")
+        if bb.x0 < -tol or bb.x1 > W + tol or bb.y0 < -tol or bb.y1 > Hh + tol:
+            bad += 1
+            print(f"OFF-CANVAS {txt.get_text()[:40]!r}")
+    return bad
+
+
+# Font floor for print (IEEE two-column, figure* at 7.16 in, no scaling):
+# body text 7 pt, sub-text and icon labels 6.5 pt, card titles 8 pt.
+FS_BODY, FS_SUB, FS_TITLE = 7.0, 6.5, 8.0
+
+
+def candidate_A2(verbose=True):
+    H = 3.45
     fig, ax = canvas(H)
+    fit = []  # (text artist, allowed box) pairs for check_fit
     # --- pipeline row (middle) ---
-    py, ph = 1.42, 0.44
-    bw = 0.84
-    xs = {"obs": 0.16, "enc": 1.34, "dec": 2.52, "out": 3.70, "act": 4.88, "env": 6.14}
-    box(ax, xs["obs"], py, bw, ph, "Observation $o_t$", sub="image, instruction")
-    box(ax, xs["enc"], py, bw, ph, "Visual encoder", sub="patch tokens")
+    py, ph = 1.50, 0.46
+    bw = 0.86
+    xs = {"obs": 0.14, "enc": 1.32, "dec": 2.50, "out": 3.68, "act": 4.86, "env": 6.14}
+    box(ax, xs["obs"], py, bw, ph, "Observation $o_t$", fs=FS_BODY, sub="image, instruction", subfs=FS_SUB)
+    box(ax, xs["enc"], py, bw, ph, "Visual encoder", fs=FS_BODY, sub="patch tokens", subfs=FS_SUB)
     box(ax, xs["dec"], py, bw, ph, "")
     for i in range(5):
-        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.06 + i * 0.064), bw - 0.2, 0.048, fc="white", ec=PIPE_EDGE, lw=0.4))
-    ax.text(xs["dec"] + bw / 2, py - 0.05, "Decoder layers", ha="center", va="top", fontsize=6.5, color=INK)
-    box(ax, xs["out"], py, bw, ph, "Output stage", sub="tokens or head")
-    box(ax, xs["act"], py, 0.84, ph, "Action $a_t$", sub="$m$ per call")
-    box(ax, xs["env"], py, 0.84, ph, "Environment", sub="one step")
+        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.06 + i * 0.068), bw - 0.2, 0.05, fc="white", ec=PIPE_EDGE, lw=0.4))
+    t = ax.text(xs["dec"] + bw / 2, py - 0.045, "Decoder layers", ha="center", va="top", fontsize=FS_BODY, color=INK)
+    box(ax, xs["out"], py, bw, ph, "Output stage", fs=FS_BODY, sub="tokens or head", subfs=FS_SUB)
+    box(ax, xs["act"], py, bw, ph, "Action $a_t$", fs=FS_BODY, sub="$m$ per call", subfs=FS_SUB)
+    box(ax, xs["env"], py, bw, ph, "Environment", fs=FS_BODY, sub="one step", subfs=FS_SUB)
     for a, b in [("obs", "enc"), ("enc", "dec"), ("dec", "out"), ("out", "act"), ("act", "env")]:
         arrow(ax, xs[a] + bw, py + ph / 2, xs[b], py + ph / 2)
     # feedback loop below the pipeline
-    loop_y = py - 0.30
-    ax.plot([xs["env"] + 0.42, xs["env"] + 0.42, xs["obs"] + bw / 2], [py, loop_y, loop_y], color=PIPE_EDGE, lw=0.8)
+    loop_y = py - 0.28
+    ax.plot([xs["env"] + bw / 2, xs["env"] + bw / 2, xs["obs"] + bw / 2], [py, loop_y, loop_y], color=PIPE_EDGE, lw=0.8)
     arrow(ax, xs["obs"] + bw / 2, loop_y, xs["obs"] + bw / 2, py - 0.01)
-    ax.text(3.6, loop_y - 0.05, "next observation $o_{t+1}$", ha="center", va="top", fontsize=6, color=GREY)
+    ax.text(3.6, loop_y - 0.04, "next observation $o_{t+1}$", ha="center", va="top", fontsize=FS_SUB, color=GREY)
 
     def card(x, y, w, h, col, title, role):
         box(ax, x, y, w, h, fill="white", edge=col, lw=1.0, rounding=0.06)
-        ax.add_patch(Rectangle((x, y + h - 0.21), w, 0.21, fc=LIGHT[col], ec="none"))
-        ax.text(x + 0.08, y + h - 0.105, title, ha="left", va="center", fontsize=7.6, fontweight="bold", color=col)
-        ax.text(x + w - 0.07, y + h - 0.105, role, ha="right", va="center", fontsize=5.8, color=col, style="italic")
+        ax.add_patch(Rectangle((x, y + h - 0.22), w, 0.22, fc=LIGHT[col], ec="none"))
+        ax.text(x + 0.08, y + h - 0.11, title, ha="left", va="center", fontsize=FS_TITLE, fontweight="bold", color=col)
+        ax.text(x + w - 0.07, y + h - 0.11, role, ha="right", va="center", fontsize=FS_SUB, color=col, style="italic")
+        return (x, y, x + w, y + h - 0.22)  # body box for fit checks
 
-    def keywords(x, y, lines, col=INK, fs=6.2):
-        ax.text(x, y, "\n".join(lines), ha="left", va="center", fontsize=fs, color=col, linespacing=1.25)
+    def keywords(x, y, lines, body, col=INK, fs=FS_BODY):
+        t = ax.text(x, y, "\n".join(lines), ha="left", va="center", fontsize=fs, color=col, linespacing=1.3)
+        fit.append((t, body))
 
     # --- candidates above (larger) ---
-    cy, ch, cw = 2.18, 1.02, 2.02
+    cy, ch, cw = 2.30, 1.06, 2.28
+    body_mid = cy + (ch - 0.22) / 2
     # temporal fusion, attached to the encoder->decoder edge
-    x = 0.92
-    card(x, cy, cw, ch, C_FUSION, "Temporal fusion", "candidate")
-    icon_fusion(ax, x + 0.10, cy + 0.16, 0.48)
-    keywords(x + 0.68, cy + 0.42, ["motion, entropy, attention mask", "stable patches keep the $t-1$ token", "capped, keyframes bound drift"], fs=5.9)
-    line(ax, x + cw / 2, cy, xs["enc"] + bw + 0.17, py + ph + 0.01, color=C_FUSION, lw=0.8)
-    ax.add_patch(Circle((xs["enc"] + bw + 0.17, py + ph + 0.01), 0.03, fc=C_FUSION, ec="none"))
+    x = 0.10
+    body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion", "candidate")
+    icon_fusion(ax, x + 0.10, cy + 0.18, 0.48)
+    keywords(x + 0.68, body_mid, ["motion, entropy, attention", "stable patches keep $t-1$ tokens", "capped, keyframes bound drift"], body)
+    line(ax, x + cw / 2, cy, xs["enc"] + bw + 0.16, py + ph + 0.01, color=C_FUSION, lw=0.8)
+    ax.add_patch(Circle((xs["enc"] + bw + 0.16, py + ph + 0.01), 0.03, fc=C_FUSION, ec="none"))
     # depth pruning, attached to the decoder
-    x = 3.00
-    card(x, cy, cw, ch, C_DEPTH, "Depth pruning", "candidate")
-    icon_depth(ax, x + 0.12, cy + 0.14, 0.48)
-    keywords(x + 0.72, cy + 0.42, ["Block Influence ranking", "ends protected, none adjacent", "layers removed, not bypassed"], fs=5.9)
+    x = 2.44
+    body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning", "candidate")
+    icon_depth(ax, x + 0.12, cy + 0.16, 0.48)
+    keywords(x + 0.72, body_mid, ["Block Influence ranking", "ends protected, none adjacent", "layers removed, not bypassed"], body)
     line(ax, x + cw / 2, cy, xs["dec"] + bw / 2, py + ph + 0.01, color=C_DEPTH, lw=0.8)
     ax.add_patch(Circle((xs["dec"] + bw / 2, py + ph + 0.01), 0.03, fc=C_DEPTH, ec="none"))
     # guarded reuse, attached to the action box
-    x = 5.08
-    card(x, cy, cw, ch, C_REUSE, "Guarded reuse", "candidate")
-    icon_reuse(ax, x + 0.10, cy + 0.36, 0.38)
-    keywords(x + 0.08, cy + 0.17, ["image and action gates before the call", "pass: skip the call, reuse $a_{t-1}$"], fs=6.0)
-    line(ax, x + cw / 2, cy, xs["act"] + 0.42, py + ph + 0.01, color=C_REUSE, lw=0.8)
-    ax.add_patch(Circle((xs["act"] + 0.42, py + ph + 0.01), 0.03, fc=C_REUSE, ec="none"))
+    x = 4.78
+    body = card(x, cy, cw, ch, C_REUSE, "Guarded reuse", "candidate")
+    for t in icon_reuse(ax, x + 0.10, cy + 0.40, 0.40, fs=FS_SUB, fs_gate=FS_SUB):
+        fit.append((t, body))
+    keywords(x + 0.08, cy + 0.19, ["image and action gates before the call", "pass: skip the call, reuse $a_{t-1}$"], body)
+    line(ax, x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, color=C_REUSE, lw=0.8)
+    ax.add_patch(Circle((xs["act"] + bw / 2, py + ph + 0.01), 0.03, fc=C_REUSE, ec="none"))
 
     # --- controls below (smaller, grey) ---
-    ky, kh, kw = 0.28, 0.80, 1.55
-    x = 0.16
-    card(x, ky, kw, kh, C_CTRL, "Foveation", "control")
+    ky, kh, kw = 0.16, 0.92, 1.90
+    x = 0.10
+    body = card(x, ky, kw, kh, C_CTRL, "Foveation", "control")
     img, disc = foveation_thumb()
-    ext = [x + 0.10, x + 0.10 + 0.44, ky + 0.08, ky + 0.08 + 0.44]
-    ax.imshow(img, cmap="gray", vmin=0, vmax=1, extent=ext, interpolation="nearest", zorder=3)
-    ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), 0.44 * np.sqrt(0.28 / np.pi), fc="none", ec="white", lw=0.6, zorder=4))
-    ax.add_patch(Rectangle((ext[0], ext[2]), 0.44, 0.44, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
-    keywords(x + 0.62, ky + 0.30, ["sharp disc, blurred", "periphery, same tokens"], fs=6.0)
-    line(ax, x + kw / 2, ky + kh, xs["obs"] + bw + 0.17, py - 0.01, color=C_CTRL, lw=0.8)
-    ax.add_patch(Circle((xs["obs"] + bw + 0.17, py - 0.01), 0.03, fc=C_CTRL, ec="none"))
-    x = 5.45
-    card(x, ky, kw, kh, C_CTRL, "Action repeat", "control")
-    icon_repeat(ax, x + 0.10, ky + 0.06, 1.15)
-    line(ax, x + kw / 2, ky + kh, xs["env"] + 0.42, py - 0.01, color=C_CTRL, lw=0.8)
-    ax.add_patch(Circle((xs["env"] + 0.42, py - 0.01), 0.03, fc=C_CTRL, ec="none"))
-    ax.text(x + kw / 2, ky - 0.06, "hold each action $k$ steps, no gate", ha="center", va="top", fontsize=5.8, color=GREY)
+    ts = 0.48
+    ext = [x + 0.09, x + 0.09 + ts, ky + 0.07, ky + 0.07 + ts]
+    ax.imshow(img, cmap="gray", vmin=0, vmax=1, extent=ext, interpolation="bilinear", zorder=3)
+    ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), ts * np.sqrt(0.28 / np.pi), fc="none", ec="white", lw=0.7, zorder=4))
+    ax.add_patch(Rectangle((ext[0], ext[2]), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
+    keywords(x + 0.66, ky + (kh - 0.22) / 2, ["sharp disc, blurred", "periphery, same", "token count"], body)
+    line(ax, x + kw / 2, ky + kh, xs["obs"] + bw + 0.16, py - 0.01, color=C_CTRL, lw=0.8)
+    ax.add_patch(Circle((xs["obs"] + bw + 0.16, py - 0.01), 0.03, fc=C_CTRL, ec="none"))
+    x = W - 0.10 - kw
+    body = card(x, ky, kw, kh, C_CTRL, "Action repeat", "control")
+    icon_repeat(ax, x + 0.10, ky + 0.22, kw - 0.20, fs=FS_SUB, h=kh - 0.22 - 0.26)
+    t = ax.text(x + kw / 2, ky + 0.07, "hold each action $k$ steps, no gate", ha="center", va="bottom", fontsize=FS_SUB, color=GREY)
+    fit.append((t, body))
+    line(ax, x + kw / 2, ky + kh, xs["env"] + bw / 2, py - 0.01, color=C_CTRL, lw=0.8)
+    ax.add_patch(Circle((xs["env"] + bw / 2, py - 0.01), 0.03, fc=C_CTRL, ec="none"))
 
-    # --- protocol line (one row) ---
-    ax.text(1.95, 0.98, "Protocol", ha="left", va="center", fontsize=7, fontweight="bold", color=C_REF)
-    ax.text(1.95, 0.60, "dense reference under fused attention, weights frozen\n"
-            "matched episodes, paired by seed, on every backbone and environment with a checkpoint\n"
-            "positive only if latency falls, own signal cost included, or success rises, other within a margin",
-            ha="left", va="center", fontsize=5.8, color=INK, linespacing=1.5)
+    # --- protocol lines between the controls ---
+    px0, px1 = 0.10 + kw + 0.18, W - 0.10 - kw - 0.18
+    t = ax.text(px0, ky + kh - 0.02, "Protocol", ha="left", va="top", fontsize=FS_BODY + 0.5, fontweight="bold", color=C_REF)
+    fit.append((t, (px0, ky, px1, ky + kh)))
+    t = ax.text(px0, ky + kh - 0.19, "dense reference under fused attention, weights frozen\n"
+                "matched episodes paired by seed, on every backbone\n"
+                "and environment with a checkpoint\n"
+                "positive only if latency falls, own signal cost included,\n"
+                "or success rises, the other within a margin",
+                ha="left", va="top", fontsize=FS_SUB, color=INK, linespacing=1.4)
+    fit.append((t, (px0, ky, px1, ky + kh)))
+    if verbose:
+        n = check_fit(fig, ax, fit)
+        print("fit check:", "clean" if n == 0 else f"{n} overflow(s)")
     return fig
 
 
