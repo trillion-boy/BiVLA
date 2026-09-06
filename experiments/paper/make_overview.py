@@ -654,9 +654,13 @@ def icon_fusion2(ax, x, y, s, color=C_FUSION, fs=6.5, n=3, reused=((0, 1), (2, 2
             for j in range(n):
                 ax.add_patch(Rectangle((gx + j * c, y0 + (n - 1 - i) * c), c, c, fc=fill(i, j), ec=PIPE_EDGE, lw=0.5))
     ym = y0 + g / 2
-    arrow(ax, xs_[1] + g + 0.03, ym, xs_[2] - 0.03, ym, color=color, lw=0.7, ms=5)
-    for gx, lab in zip(xs_, ("previous", "new", "fused")):
-        ax.text(gx + g / 2, y + 0.09 * s, lab, ha="center", va="baseline", fontsize=fs, color=GREY)
+    # new tokens go straight into the fused grid, the carried tokens arrive
+    # from the previous grid over the top, in the tint they keep
+    arrow(ax, xs_[1] + g + 0.03, ym, xs_[2] - 0.03, ym, color=PIPE_EDGE, lw=0.7, ms=5)
+    arrow(ax, xs_[0] + g - 0.02, y0 + g + 0.01, xs_[2] + 0.02, y0 + g + 0.01, color=color, lw=0.7, ms=5, rad=-0.28)
+    ax.text(xs_[0], y + 0.09 * s, "previous", ha="left", va="baseline", fontsize=fs, color=GREY)
+    ax.text(xs_[1] + g, y + 0.09 * s, "new", ha="right", va="baseline", fontsize=fs, color=GREY)
+    ax.text(xs_[2] + g / 2, y + 0.09 * s, "fused", ha="center", va="baseline", fontsize=fs, color=GREY)
 
 
 def icon_gate(ax, x, y, s, color, fs):
