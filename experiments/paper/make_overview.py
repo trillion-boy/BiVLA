@@ -671,13 +671,13 @@ def icon_gate(ax, x, y, s, color, fs):
 
 
 def candidate_A3(verbose=True):
-    H = 3.24
+    H = 3.10
     fig, ax = canvas(H, W3)
     fit = []
     CR = C_REUSE3
     LIGHT[CR] = LIGHT[C_REUSE]
     # --- pipeline row (middle) ---
-    py, ph = 1.48, 0.46
+    py, ph = 1.42, 0.46
     bw = 0.84
     xs = {"obs": 0.14, "enc": 1.28, "dec": 2.42, "out": 3.56, "act": 4.70, "env": 6.02}
     mid = py + ph / 2
@@ -724,51 +724,51 @@ def candidate_A3(verbose=True):
         ax.plot(xs_, ys_, color=col, lw=0.5, ls="-", solid_capstyle="round", zorder=4)
 
     # --- candidates above, left to right in pipeline order ---
-    cy, ch, cw = 2.24, 0.94, 2.22
+    cy, ch, cw = 2.18, 0.84, 2.22
     gap = (W3 - 0.20 - 3 * cw) / 2
     bm = cy + (ch - 0.22) / 2
     # guarded reuse, its mark is the diamond on the observation edge
     x = 0.10
     body = card(x, cy, cw, ch, CR, "Guarded reuse")
-    for t in icon_gate(ax, x + 0.10, cy + 0.10, 0.50, CR, FS_SUB):
+    for t in icon_gate(ax, x + 0.10, cy + 0.07, 0.48, CR, FS_SUB):
         fit.append((t, body))
-    sentence(x + 0.78, bm, "When the image and action\ngates pass, the call is\nskipped and the previous\naction repeated, and\nconsecutive skips are capped.", body)
+    sentence(x + 0.78, bm, "While the image and action\ngates pass, the call is skipped\nand the previous action\nrepeated, up to a cap.", body)
     leader([(gx, cy), (gx, mid + d + 0.01)], CR)
     # temporal fusion, on the encoder-to-decoder edge
     x = 0.10 + cw + gap
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48, ring=False, reused={(0, 1), (0, 3), (1, 0), (2, 3), (3, 1), (2, 1)}, flagged=False)
-    sentence(x + 0.68, bm, "Between keyframes, a capped\nnumber of unprotected patches\nkeep the token the decoder\nsaw at the previous call.", body)
+    icon_fusion(ax, x + 0.10, cy + 0.08, 0.46, ring=False, reused={(0, 1), (0, 3), (1, 0), (2, 3), (3, 1), (2, 1)}, flagged=False)
+    sentence(x + 0.68, bm, "A capped number of\nunprotected patches keep their\ntoken from the previous call.", body)
     fx = xs["enc"] + bw + 0.15
     leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.16), (fx, cy - 0.16), (fx, mid + 0.03)], C_FUSION)
     dot(fx, mid, C_FUSION)
     # depth pruning, on the decoder stack
     x = 0.10 + 2 * (cw + gap)
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
-    icon_depth2(ax, x + 0.10, cy + 0.11, 0.50)
-    sentence(x + 0.70, bm, "With the first layers and the\nlast kept, the layers lowest in\nBlock Influence are removed,\nand no two are adjacent.", body)
+    icon_depth2(ax, x + 0.10, cy + 0.07, 0.48)
+    sentence(x + 0.70, bm, "The layers lowest in Block\nInfluence are removed,\nthe ends kept.", body)
     dx = xs["dec"] + bw / 2
     leader([(x + 0.55, cy), (x + 0.55, cy - 0.24), (dx, cy - 0.24), (dx, py + ph + 0.04)], C_DEPTH)
     dot(dx, py + ph + 0.01, C_DEPTH)
 
     # --- controls below, in the outer columns ---
-    ky, kh, kw = 0.20, 0.78, 2.22
+    ky, kh, kw = 0.20, 0.72, 2.22
     x = 0.10
     body = card(x, ky, kw, kh, C_CTRL, "Foveation")
     img, r_frac = foveation_real()
-    ts = 0.50
+    ts = 0.46
     ext = [x + 0.08, x + 0.08 + ts, ky + 0.03, ky + 0.03 + ts]
     ax.imshow(img, extent=ext, interpolation="none", zorder=3)
     ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), ts * r_frac, fc="none", ec="white", lw=0.6, zorder=4))
     ax.add_patch(Rectangle((ext[0], ext[2]), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
-    sentence(x + 0.66, ky + (kh - 0.22) / 2, "The image is increasingly\nblurred outside a central disc\nand keeps its token count.", body)
+    sentence(x + 0.66, ky + (kh - 0.22) / 2, "Blurred outside a central disc,\nthe token count unchanged.", body)
     ox = xs["obs"] + bw / 2 + 0.16
     leader([(ox, ky + kh), (ox, py - 0.04)], C_CTRL)
     dot(ox, py - 0.01, C_CTRL)
     x = W3 - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
-    icon_repeat(ax, x + 0.10, ky + 0.06, 1.24, fs=FS_SUB, h=0.48, span="$k$ steps", labels=("call", "hold", "…", "hold"))
-    sentence(x + 1.42, ky + (kh - 0.22) / 2, "Each action is\nheld for $k$ steps,\nwith a call only\non the first.", body)
+    icon_repeat(ax, x + 0.10, ky + 0.05, 1.24, fs=FS_SUB, h=0.42, span="$k$ steps", labels=("call", "hold", "…", "hold"))
+    sentence(x + 1.42, ky + (kh - 0.22) / 2, "Each action is\nheld for $k$ steps\nwith one call.", body)
     rx = (xs["act"] + bw + xs["env"]) / 2
     leader([(rx, ky + kh), (rx, mid - 0.04)], C_CTRL)
     dot(rx, mid, C_CTRL)
