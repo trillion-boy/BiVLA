@@ -403,3 +403,124 @@ if __name__ == "__main__":
             fig.savefig(os.path.join(OUT, f"overview_{name}.{ext}"), dpi=300 if ext == "png" else None)
         plt.close(fig)
         print("wrote", f"overview_{name}.pdf/png")
+
+
+# ------------------------------------------------------------ candidate A2 ---
+# A with the text moved to the caption: candidates above the loop and larger,
+# controls below and smaller, a thin protocol line, and a thumbnail foveation.
+import numpy as np
+
+
+def foveation_thumb(n=48, keep=0.28):
+    """synthetic tabletop frame: sharp inside a disc, box-blurred outside"""
+    yy, xx = np.mgrid[0:n, 0:n] / n
+    img = 0.35 + 0.25 * yy                       # table gradient
+    img[yy < 0.45] = 0.85 - 0.3 * yy[yy < 0.45]  # back wall
+    # a few objects: a cube, a cylinder, a thin bar
+    img[(xx > 0.22) & (xx < 0.40) & (yy > 0.50) & (yy < 0.68)] = 0.15
+    img[np.hypot(xx - 0.66, yy - 0.62) < 0.10] = 0.95
+    img[(xx > 0.05) & (xx < 0.95) & (yy > 0.78) & (yy < 0.82)] = 0.55
+    img[np.hypot(xx - 0.50, yy - 0.40) < 0.05] = 0.05
+    rng = np.random.default_rng(3)
+    img = np.clip(img + 0.06 * rng.standard_normal((n, n)), 0, 1)
+    blurred = img.copy()
+    for _ in range(6):
+        pad = np.pad(blurred, 1, mode="edge")
+        blurred = sum(pad[i:i + n, j:j + n] for i in range(3) for j in range(3)) / 9.0
+    r = np.hypot(xx - 0.5, yy - 0.5)
+    disc = r <= np.sqrt(keep / np.pi)
+    out = np.where(disc, img, blurred)
+    return out, disc
+
+
+def candidate_A2():
+    H = 3.30
+    fig, ax = canvas(H)
+    # --- pipeline row (middle) ---
+    py, ph = 1.42, 0.44
+    bw = 0.84
+    xs = {"obs": 0.16, "enc": 1.34, "dec": 2.52, "out": 3.70, "act": 4.88, "env": 6.14}
+    box(ax, xs["obs"], py, bw, ph, "Observation $o_t$", sub="image, instruction")
+    box(ax, xs["enc"], py, bw, ph, "Visual encoder", sub="patch tokens")
+    box(ax, xs["dec"], py, bw, ph, "")
+    for i in range(5):
+        ax.add_patch(Rectangle((xs["dec"] + 0.10, py + 0.06 + i * 0.064), bw - 0.2, 0.048, fc="white", ec=PIPE_EDGE, lw=0.4))
+    ax.text(xs["dec"] + bw / 2, py - 0.05, "Decoder layers", ha="center", va="top", fontsize=6.5, color=INK)
+    box(ax, xs["out"], py, bw, ph, "Output stage", sub="tokens or head")
+    box(ax, xs["act"], py, 0.84, ph, "Action $a_t$", sub="$m$ per call")
+    box(ax, xs["env"], py, 0.84, ph, "Environment", sub="one step")
+    for a, b in [("obs", "enc"), ("enc", "dec"), ("dec", "out"), ("out", "act"), ("act", "env")]:
+        arrow(ax, xs[a] + bw, py + ph / 2, xs[b], py + ph / 2)
+    # feedback loop below the pipeline
+    loop_y = py - 0.30
+    ax.plot([xs["env"] + 0.42, xs["env"] + 0.42, xs["obs"] + bw / 2], [py, loop_y, loop_y], color=PIPE_EDGE, lw=0.8)
+    arrow(ax, xs["obs"] + bw / 2, loop_y, xs["obs"] + bw / 2, py - 0.01)
+    ax.text(3.6, loop_y - 0.05, "next observation $o_{t+1}$", ha="center", va="top", fontsize=6, color=GREY)
+
+    def card(x, y, w, h, col, title, role):
+        box(ax, x, y, w, h, fill="white", edge=col, lw=1.0, rounding=0.06)
+        ax.add_patch(Rectangle((x, y + h - 0.21), w, 0.21, fc=LIGHT[col], ec="none"))
+        ax.text(x + 0.08, y + h - 0.105, title, ha="left", va="center", fontsize=7.6, fontweight="bold", color=col)
+        ax.text(x + w - 0.07, y + h - 0.105, role, ha="right", va="center", fontsize=5.8, color=col, style="italic")
+
+    def keywords(x, y, lines, col=INK, fs=6.2):
+        ax.text(x, y, "\n".join(lines), ha="left", va="center", fontsize=fs, color=col, linespacing=1.25)
+
+    # --- candidates above (larger) ---
+    cy, ch, cw = 2.18, 1.02, 2.02
+    # temporal fusion, attached to the encoder->decoder edge
+    x = 0.92
+    card(x, cy, cw, ch, C_FUSION, "Temporal fusion", "candidate")
+    icon_fusion(ax, x + 0.10, cy + 0.16, 0.48)
+    keywords(x + 0.68, cy + 0.42, ["motion, entropy, attention mask", "stable patches keep the $t-1$ token", "capped, keyframes bound drift"], fs=5.9)
+    line(ax, x + cw / 2, cy, xs["enc"] + bw + 0.17, py + ph + 0.01, color=C_FUSION, lw=0.8)
+    ax.add_patch(Circle((xs["enc"] + bw + 0.17, py + ph + 0.01), 0.03, fc=C_FUSION, ec="none"))
+    # depth pruning, attached to the decoder
+    x = 3.00
+    card(x, cy, cw, ch, C_DEPTH, "Depth pruning", "candidate")
+    icon_depth(ax, x + 0.12, cy + 0.14, 0.48)
+    keywords(x + 0.72, cy + 0.42, ["Block Influence ranking", "ends protected, none adjacent", "layers removed, not bypassed"], fs=5.9)
+    line(ax, x + cw / 2, cy, xs["dec"] + bw / 2, py + ph + 0.01, color=C_DEPTH, lw=0.8)
+    ax.add_patch(Circle((xs["dec"] + bw / 2, py + ph + 0.01), 0.03, fc=C_DEPTH, ec="none"))
+    # guarded reuse, attached to the action box
+    x = 5.08
+    card(x, cy, cw, ch, C_REUSE, "Guarded reuse", "candidate")
+    icon_reuse(ax, x + 0.10, cy + 0.36, 0.38)
+    keywords(x + 0.08, cy + 0.17, ["image and action gates before the call", "pass: skip the call, reuse $a_{t-1}$"], fs=6.0)
+    line(ax, x + cw / 2, cy, xs["act"] + 0.42, py + ph + 0.01, color=C_REUSE, lw=0.8)
+    ax.add_patch(Circle((xs["act"] + 0.42, py + ph + 0.01), 0.03, fc=C_REUSE, ec="none"))
+
+    # --- controls below (smaller, grey) ---
+    ky, kh, kw = 0.28, 0.80, 1.55
+    x = 0.16
+    card(x, ky, kw, kh, C_CTRL, "Foveation", "control")
+    img, disc = foveation_thumb()
+    ext = [x + 0.10, x + 0.10 + 0.44, ky + 0.08, ky + 0.08 + 0.44]
+    ax.imshow(img, cmap="gray", vmin=0, vmax=1, extent=ext, interpolation="nearest", zorder=3)
+    ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), 0.44 * np.sqrt(0.28 / np.pi), fc="none", ec="white", lw=0.6, zorder=4))
+    ax.add_patch(Rectangle((ext[0], ext[2]), 0.44, 0.44, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
+    keywords(x + 0.62, ky + 0.30, ["sharp disc, blurred", "periphery, same tokens"], fs=6.0)
+    line(ax, x + kw / 2, ky + kh, xs["obs"] + bw + 0.17, py - 0.01, color=C_CTRL, lw=0.8)
+    ax.add_patch(Circle((xs["obs"] + bw + 0.17, py - 0.01), 0.03, fc=C_CTRL, ec="none"))
+    x = 5.45
+    card(x, ky, kw, kh, C_CTRL, "Action repeat", "control")
+    icon_repeat(ax, x + 0.10, ky + 0.06, 1.15)
+    line(ax, x + kw / 2, ky + kh, xs["env"] + 0.42, py - 0.01, color=C_CTRL, lw=0.8)
+    ax.add_patch(Circle((xs["env"] + 0.42, py - 0.01), 0.03, fc=C_CTRL, ec="none"))
+    ax.text(x + kw / 2, ky - 0.06, "hold each action $k$ steps, no gate", ha="center", va="top", fontsize=5.8, color=GREY)
+
+    # --- protocol line (one row) ---
+    ax.text(1.95, 0.98, "Protocol", ha="left", va="center", fontsize=7, fontweight="bold", color=C_REF)
+    ax.text(1.95, 0.60, "dense reference under fused attention, weights frozen\n"
+            "matched episodes, paired by seed, on every backbone and environment with a checkpoint\n"
+            "positive only if latency falls, own signal cost included, or success rises, other within a margin",
+            ha="left", va="center", fontsize=5.8, color=INK, linespacing=1.5)
+    return fig
+
+
+if __name__ == "__main__":
+    fig = candidate_A2()
+    for ext in ("pdf", "png"):
+        fig.savefig(os.path.join(OUT, f"overview_A2.{ext}"), dpi=300 if ext == "png" else None)
+    plt.close(fig)
+    print("wrote overview_A2.pdf/png")
