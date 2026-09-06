@@ -76,7 +76,7 @@ FAMILIES = [
 
 # Condition label per CSV configuration name.
 LABEL = {
-    "original": "Original policy",
+    "original": "Original",
     "fixed_foveation_keep20": "Foveation keep 20\\%",
     "fixed_foveation_keep50": "Foveation keep 50\\%",
     "action_repeat2": "Action repeat 2",

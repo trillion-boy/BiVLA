@@ -26,70 +26,70 @@
 \toprule
 & Backbone & Condition & Success (\%) & Latency (ms) & Avg.\ steps \\
 \midrule
-\multirow{36}{*}{\rotatebox[origin=c]{90}{Bridge}} & \multirow{6}{*}{UniVLA} & Original policy & $87.5$ & $191$ & $30.2$ \\
+\multirow{36}{*}{\rotatebox[origin=c]{90}{Bridge}} & \multirow{6}{*}{UniVLA} & Original & $87.5$ & $191$ & $30.2$ \\
  &  & Foveation keep 20\% & $79.0$ & $192$ & $34.6$ \\
  &  & Action repeat 2 & $12.5$ & $113$ & $71.9$ \\
  &  & Depth pruning 2 & $82.0$ & $183$ & $31.6$ \\
  &  & Guarded reuse moderate & $87.5$ & $190$ & $30.1$ \\
  &  & Temporal fusion conservative-adaptive & $87.5$ & $192$ & $30.2$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{CogACT} & Original policy & $50.0$ & $141$ & $50.8$ \\
+ & \multirow{6}{*}{CogACT} & Original & $50.0$ & $141$ & $50.8$ \\
  &  & Foveation keep 20\% & $52.5$ & $160$ & $46.6$ \\
  &  & Action repeat 2 & $12.0$ & $92$ & $70.6$ \\
  &  & Depth pruning 2 & $59.5$ & $137$ & $47.1$ \\
  &  & Guarded reuse aggressive & $53.0$ & $139$ & $49.8$ \\
  &  & Temporal fusion motion-entropy & $58.0$ & $142$ & $47.4$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{OpenVLA} & Original policy & $43.5$ & $210$ & $50.9$ \\
+ & \multirow{6}{*}{OpenVLA} & Original & $43.5$ & $210$ & $50.9$ \\
  &  & Foveation keep 50\% & $30.0$ & $218$ & $62.5$ \\
  &  & Action repeat 2 & $28.0$ & $130$ & $60.5$ \\
  &  & Depth pruning 2 & $47.5$ & $199$ & $51.2$ \\
  &  & Guarded reuse strict & $45.5$ & $203$ & $49.7$ \\
  &  & Temporal fusion task-aware & $50.5$ & $222$ & $50.5$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{SpatialVLA} & Original policy & $45.0$ & $424$ & $45.1$ \\
+ & \multirow{6}{*}{SpatialVLA} & Original & $45.0$ & $424$ & $45.1$ \\
  &  & Foveation keep 20\% & $50.0$ & $446$ & $45.6$ \\
  &  & Action repeat 2 & $41.0$ & $235$ & $49.4$ \\
  &  & Depth pruning 1 & $38.5$ & $408$ & $49.7$ \\
  &  & Guarded reuse aggressive & $45.5$ & $423$ & $45.1$ \\
  &  & Temporal fusion motion-entropy & $46.0$ & $428$ & $45.3$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{CronusVLA} & Original policy & $34.0$ & $126$ & $50.6$ \\
+ & \multirow{6}{*}{CronusVLA} & Original & $34.0$ & $126$ & $50.6$ \\
  &  & Foveation keep 20\% & $36.5$ & $146$ & $48.9$ \\
  &  & Action repeat 2 & $3.5$ & $85$ & $73.4$ \\
  &  & Depth pruning 1 & $35.0$ & $123$ & $52.2$ \\
  &  & Guarded reuse strict & $36.0$ & $125$ & $49.7$ \\
  &  & Temporal fusion motion-entropy & $33.5$ & $127$ & $51.2$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{MiniVLA} & Original policy & $36.0$ & $149$ & $63.8$ \\
+ & \multirow{6}{*}{MiniVLA} & Original & $36.0$ & $149$ & $63.8$ \\
  &  & Foveation keep 50\% & $35.0$ & $156$ & $62.9$ \\
  &  & Action repeat 2 & $30.0$ & $99$ & $66.9$ \\
  &  & Depth pruning 1 & $18.5$ & $146$ & $67.4$ \\
  &  & Guarded reuse strict & $38.5$ & $146$ & $62.6$ \\
  &  & Temporal fusion motion-entropy & $39.0$ & $150$ & $61.2$ \\
 \midrule
-\multirow{24}{*}{\rotatebox[origin=c]{90}{Fractal}} & \multirow{6}{*}{CogACT} & Original policy & $66.8$ & $169$ & $44.8$ \\
+\multirow{24}{*}{\rotatebox[origin=c]{90}{Fractal}} & \multirow{6}{*}{CogACT} & Original & $66.8$ & $169$ & $44.8$ \\
  &  & Foveation keep 50\% & $67.2$ & $195$ & $44.3$ \\
  &  & Action repeat 2 & $65.6$ & $121$ & $46.7$ \\
  &  & Depth pruning 4 & $66.8$ & $164$ & $43.9$ \\
  &  & Guarded reuse moderate & $67.2$ & $170$ & $44.4$ \\
  &  & Temporal fusion conservative-adaptive & $65.6$ & $171$ & $44.5$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{OpenVLA} & Original policy & $35.6$ & $240$ & $64.3$ \\
+ & \multirow{6}{*}{OpenVLA} & Original & $35.6$ & $240$ & $64.3$ \\
  &  & Foveation keep 50\% & $24.4$ & $249$ & $68.2$ \\
  &  & Action repeat 2 & $40.0$ & $159$ & $62.9$ \\
  &  & Depth pruning 2 & $40.8$ & $231$ & $61.9$ \\
  &  & Guarded reuse moderate & $36.4$ & $237$ & $64.2$ \\
  &  & Temporal fusion task-aware & $42.4$ & $254$ & $61.4$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{SpatialVLA} & Original policy & $59.2$ & $450$ & $49.6$ \\
+ & \multirow{6}{*}{SpatialVLA} & Original & $59.2$ & $450$ & $49.6$ \\
  &  & Foveation keep 50\% & $57.2$ & $478$ & $49.1$ \\
  &  & Action repeat 2 & $59.2$ & $263$ & $50.4$ \\
  &  & Depth pruning 2 & $56.8$ & $426$ & $50.7$ \\
  &  & Guarded reuse moderate & $60.0$ & $447$ & $49.4$ \\
  &  & Temporal fusion task-aware & $60.0$ & $453$ & $47.7$ \\
 \cmidrule(l){2-6}
- & \multirow{6}{*}{CronusVLA} & Original policy & $55.6$ & $155$ & $51.3$ \\
+ & \multirow{6}{*}{CronusVLA} & Original & $55.6$ & $155$ & $51.3$ \\
  &  & Foveation keep 50\% & $56.8$ & $180$ & $50.1$ \\
  &  & Action repeat 2 & $58.4$ & $112$ & $57.4$ \\
  &  & Depth pruning 1 & $59.2$ & $150$ & $49.8$ \\

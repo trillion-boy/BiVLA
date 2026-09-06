@@ -259,6 +259,14 @@
 %   the attention map producer for task-aware (aware.awre_vla, not in the
 %   export), motion-entropy row flags on MiniVLA, forced-keyframe rate under
 %   conservative-adaptive (Results).
+%   Second half: III.D "at every call" was self-contradictory (a reused step
+%   has no call) -> "at every step ... skips only the model call" (temporal.py
+%   computes the signature every controller step); "excised ... reindexed
+%   rather than bypassed" un-parallelled; sweep sentence split; III.A blur
+%   time "each call" to match III.E; III.E protection sentence split;
+%   "the controls, and". Lead-in keeps "Original in the tables" because the
+%   manuscript's rows read "Original"; the repo's tabletricks.tex row label
+%   is changed to match.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}
@@ -272,15 +280,17 @@ continuous values from a separate action head. The reference policy, called
 dense below and Original in the tables, is the released policy run unchanged
 under fused attention. Every intervention below leaves $\theta$ frozen and
 changes one part of the control loop, with the settings listed in Section~IV-A.
-The first two, which use no signal, are controls and the last three are the
-candidates. Section~II gives the lineage of each. Here we state only what runs.
+The first two, which use no signal, are the controls, and the last three are
+the candidates. Section~II gives the lineage of each. Here we state only what
+runs.
 
 \subsection{Foveation}
 
-Foveation keeps a central disc sharp, a disc covering a keep ratio $\rho$ of
-the image area, and blends increasingly blurred copies of the frame outside the
-disc. Output resolution and visual token count are unchanged, so the model
-computation is the same and the blur adds only its own time to each step.
+Foveation keeps sharp a central disc whose area is a fraction $\rho$ of the
+image, the keep ratio, and blends increasingly blurred copies of the frame
+outside the disc. Output resolution and visual token count are unchanged, so
+the model computation is the same and the blur adds only its own time to each
+call.
 
 \subsection{Action Repeat}
 
@@ -297,37 +307,37 @@ Influence~\cite{shortgpt}, one minus the cosine similarity between the layer's
 input and output hidden states at each token position, averaged over positions
 and over calibration frames disjoint from the test episodes. The selector
 protects a leading fraction of the stack and the final layer, walks the
-remaining layers in ascending score, removes each that is not adjacent to a
-layer already removed until the budget is met, and fixes the removed set before
-testing. Removed layers are excised and the generation cache reindexed rather
-than bypassed by an identity layer. The budget, how many layers are removed, is
-the swept quantity.
+remaining layers in ascending order of score, removes each that is not adjacent
+to a layer already removed until the budget is met, and fixes the removed set
+before testing. Removed layers are excised rather than bypassed by an identity
+layer, and the generation cache is reindexed. The budget, how many layers are
+removed, is the swept quantity.
 
 \subsection{Guarded Reuse}
 
 Guarded reuse repeats the previous action only when three gates pass. A
 subsampled pixel signature must be stable against the previous signature at
 whole-frame and local scale, the two most recent inferred actions must agree in
-direction and gripper state, and the commanded translation must exceed a floor,
-so reuse never fires while the commanded translation is small. Consecutive
-reuse is capped, and a failed gate or an exhausted cap returns the step to
-dense inference. The image gates read the current image at every call, and a
-reused step skips the model call alone. The two image thresholds and the
+direction and gripper state, and the commanded translation must exceed a floor.
+The floor keeps reuse from firing while the commanded translation is small.
+Consecutive reuse is capped, and a failed gate or an exhausted cap returns the
+step to dense inference. The image gates read the current image at every step,
+and a reused step skips only the model call. The two image thresholds and the
 agreement threshold are swept together as one setting, strict, moderate, or
-aggressive, from the tightest to the loosest, the cap rises only in the
+aggressive, from the tightest to the loosest. The cap rises only in the
 aggressive setting, and the translation floor is fixed.
 
 \subsection{Temporal Fusion}
 
 Temporal fusion scores each visual patch by motion, image entropy, and optional
 text-to-vision attention. It protects every patch whose motion exceeds a
-threshold or that falls in a top fraction by entropy or by attention, and every
-patch adjacent to one, and it marks at most a fixed fraction of all patches as
+threshold or whose entropy or attention falls in a top fraction, and every
+patch adjacent to one. It then marks at most a fixed fraction of all patches as
 reusable, taking the unprotected patches in ascending order of their summed
 scores. A reusable patch keeps the token that entered the decoder at the
 previous call, the other patches take their fresh tokens, and a dense keyframe
 every few calls bounds the propagation of stale tokens. Fusion changes which
-tokens enter the decoder, not how many, so the model computation is unchanged
+tokens enter the decoder, not how many, so the model computation is unchanged,
 and the selector, with the attention collection in the task-aware setting, adds
 its own time to each call. It is an accuracy candidate rather than a speed one.
 Three settings are evaluated. Motion-entropy builds the reusable set from

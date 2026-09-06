@@ -557,13 +557,25 @@
 %   27 s vs 5.77 s episode time) and matches no current CSV column; rows
 %   carry no setting name; CronusVLA "1.5B" vs the 0.5B checkpoint; OpenVLA
 %   LIBERO cell empty against "every environment with a released checkpoint".
+%   Second half (two verifiers on the changed sentences): "nonzero
+%   translation" -> "a translation above a floor" (III.D floor); "at every
+%   call for the other two" -> per family (reuse gates run every step, fusion
+%   per call); the pair sentence no longer claims to isolate the gates (skip
+%   rates differ); positive gate: one margin per quantity, fixed in Setup;
+%   "prompt-prefill" -> VLA-Pruner's "vision-language prefill"; FlashVLA
+%   "at every token budget it tests"; grammar items (them/tokens, marks as,
+%   open-loop, 14 benchmarks, namely, loss of success, that redundancy).
+%   FOR THE MENTOR (data): CogACT task-aware rows equal the motion-entropy
+%   rows in every column, so no attention was collected there; CronusVLA
+%   fusion rows are identical (keyframe interval 1). III.E describes the
+%   method as designed; Results must scope these rows.
 % ---------------------------------------------------------------------------
 
 \section{Related Work}
 
 We cover the cost of VLA inference, the six intervention families we evaluate,
 grouped by the role each plays in our argument, and how the literature tests
-such claims.
+efficiency claims.
 
 \textbf{Inference cost in VLA policies.} Most VLA policies adapt pretrained
 vision-language models to output robot actions and inherit the size and latency
@@ -575,17 +587,17 @@ whose lineage runs from the frame skip of Atari agents~\cite{dqn} to action
 chunking~\cite{act, diffusionpolicy, openvlaoft}. 2)~The second is \emph{what
 the policy is shown}. The image is degraded before the encoder, or its visual
 tokens are reduced or reused. 3)~The third is \emph{how much of the decoder
-each call runs}. Layers are removed. Each claim we consider changes one of
-these three things, so we treat them as axes rather than as competing methods,
-and each of the six families below acts on one axis.
+each call runs}. Layers are removed. Each method we consider changes one of
+these three things, so we treat the three as axes rather than as competing
+methods, and each of the six families below acts on one axis.
 
 \textbf{Generic shortcuts, used as controls.} The simplest shortcuts degrade
-the input or skip feedback unconditionally. Both remove detail or feedback
-without a signal. On the second axis, what the policy is shown, foveation keeps
-resolution at the center and sheds it outward. Schwartz modeled this pattern as
-a log-polar mapping~\cite{schwartz}, robot vision took it up to cut data while
-preserving central resolution~\cite{traver}, and robot learning has used it as
-a gaze-centered foveated tokenizer in a Vision Transformer (ViT)
+the input or skip feedback unconditionally, with no signal to say when. On the
+second axis, what the policy is shown, foveation keeps resolution at the center
+and sheds it outward. Schwartz modeled this pattern as a log-polar
+mapping~\cite{schwartz}, robot vision took it up to cut data while preserving
+central resolution~\cite{traver}, and robot learning built it into a
+gaze-centered foveated tokenizer for a Vision Transformer (ViT)
 policy~\cite{lookfocusact}. Gaze also enters a VLA with the input left
 unchanged, as a training-time attention regularizer~\cite{gazereg}. Every
 encoder we run splits the image into a uniform grid, so at a fixed image
@@ -596,47 +608,48 @@ that foveate inside the encoder do shed tokens, but they give up pretrained
 weights fitted to a uniform grid~\cite{lookfocusact}. On the first axis, when
 the policy runs, executing one action over several environment steps reduces
 model calls per step in proportion to the number of steps. But the repeated
-action is executed open loop through contact. FlashVLA gates its action reuse,
+action is executed open-loop through contact. FlashVLA gates its action reuse,
 yet its LIBERO-Spatial ablation with pruned inference disabled shows the gated
-reuse lowering success below dense at every reduced token
-budget~\cite{flashvla}. SpecPrune-VLA, which prunes tokens rather than calls,
-keeps more of them in the contact phases where failures under pruning
-cluster~\cite{specprune}. We run foveation and action repeat as controls.
-Action repeat is the ungated limit of guarded reuse, holding each action for a
-fixed number of steps, and that pair separates what skipping calls costs from
-what the reuse gates buy. Foveation degrades the input with no signal and
+reuse lowering success below dense at every token budget it
+tests~\cite{flashvla}. SpecPrune-VLA, which prunes tokens rather than calls,
+keeps more tokens in the contact phases, where failures cluster under
+pruning~\cite{specprune}. We run foveation and action repeat as controls.
+Action repeat holds each action for a fixed number of steps and is the ungated
+limit of guarded reuse, so the pair shows what ungated skipping costs and how
+much skipping the gates admit. Foveation degrades the input with no signal and
 establishes what perceptual simplification alone does to success.
 
 \textbf{The published baseline.} VLA-Cache reuses the cached key-value entries
 of visually static patches and recomputes those that move or that the decoder's
-attention marks task-relevant~\cite{vlacache}. On OpenVLA's task-finetuned
-LIBERO checkpoints it reports an average success of 74.7\% against 75.0\% dense
-at 39\% lower CUDA latency, a speed result at nearly unchanged success. Later
-work on training-free VLA acceleration adopts it as a baseline~\cite{vlapruner,
-efficientvla, specprune}. The same paper reports that two visual token
-reduction methods developed for vision-language models~\cite{fastv, sparsevlm}
-transfer poorly to VLAs. It attributes their success loss to working within a
-single frame and disrupting spatial fidelity, and their lack of speedup to
-targeting long output sequences, whereas a VLA emits only a few action
-tokens~\cite{vlacache}. VLA-Pruner reproduces the loss on the same OpenVLA
-setup and attributes it to a mismatch between the attention patterns of the
-prompt-prefill stage and the action-decode stage~\cite{vlapruner}. Both
-accounts fault how the tokens are chosen, one for working within a single frame
-and one for reading the prefill alone.
+attention marks as task-relevant~\cite{vlacache}. On OpenVLA's task-finetuned
+LIBERO checkpoints, it reports an average success of 74.7\% against 75.0\%
+dense at 39\% lower CUDA latency, a speed result at nearly unchanged success.
+Later work on training-free VLA acceleration adopts it as a
+baseline~\cite{vlapruner, efficientvla, specprune}. The same paper reports that
+two visual token reduction methods developed for vision-language
+models~\cite{fastv, sparsevlm} transfer poorly to VLAs. It attributes their
+loss of success to working within a single frame and disrupting spatial
+fidelity, and their lack of speedup to targeting long output sequences, whereas
+a VLA emits only a few action tokens~\cite{vlacache}. VLA-Pruner reproduces the
+loss on the same OpenVLA setup and attributes it to a mismatch between the
+attention patterns of the vision-language prefill stage and the action-decode
+stage~\cite{vlapruner}. Both accounts fault how the tokens are chosen, one for
+working within a single frame and one for reading the prefill alone.
 
 \textbf{Conditional candidates.} Three families act only where a signal says it
-is safe, once at calibration for depth and at every call for the other two.
-Each is a recipe assembled from published parts, and the contribution is the
-protocol under which they are compared. \emph{Depth pruning.} Decoder layers in
-language models are redundant~\cite{shortgpt, gromov}, and the recipes built on
-that disagree on which layers to remove. ShortGPT ranks every layer by Block
+is safe, once at calibration for depth pruning, at every step for guarded
+reuse, and at every call for temporal fusion. Each is a recipe assembled from
+published parts, and our contribution is the protocol under which they are
+compared. \emph{Depth pruning.} Decoder layers in language models are
+redundant~\cite{shortgpt, gromov}, and the recipes built on that redundancy
+disagree on which layers to remove. ShortGPT ranks every layer by Block
 Influence, the criterion we adopt, and imposes no further
 constraint~\cite{shortgpt}. Gromov et al.\ instead remove one contiguous block,
 chosen by the similarity between its input and output, and offer finetuning as
 an optional step to heal the cut~\cite{gromov}. EfficientVLA applies the same
-unconstrained ranking to a VLA without training, which it calls non-contiguous
-pruning~\cite{efficientvla}, and MoLe-VLA trains a layer router end to end with
-self-distillation~\cite{molevla}, which places it outside a training-free
+unconstrained ranking, which it calls non-contiguous pruning, to a VLA without
+training~\cite{efficientvla}, and MoLe-VLA trains a layer router end to end
+with self-distillation~\cite{molevla}, so it falls outside a training-free
 study. Several recent compact VLAs build the reduction in, keeping only part of
 the language model's layers~\cite{flower, smolvla} or dropping the language
 model from the action path altogether~\cite{turbovla}. Whether removing layers
@@ -646,16 +659,16 @@ add protected regions and a ban on adjacent removals to the ShortGPT selector
 and choose the removed set on calibration frames disjoint from the test
 episodes, with no weight update. \emph{Guarded reuse.} Where action repeat
 skips feedback blindly, our guarded reuse skips a model call only when the
-current image is stable, the recent actions agree, and those actions command a
-nonzero translation. It falls back to dense inference the moment any gate
-fails. FlashVLA gates reuse on action similarity and visual token
-stability~\cite{flashvla}, and SpecPrune-VLA sets its pruning budget by the
-end-effector speed that it infers from the actions it has already
+current image is stable, the recent actions agree, and the latest of them
+commands a translation above a floor. It falls back to dense inference the
+moment any gate fails. FlashVLA gates reuse on action similarity and visual
+token stability~\cite{flashvla}, and SpecPrune-VLA sets its pruning budget by
+the end-effector speed that it infers from the actions it has already
 emitted~\cite{specprune}, a signal whose translational part our translation
 floor also reads. Our guarded reuse differs from FlashVLA in the signal.
 FlashVLA compares the visual token sets that its previous two calls selected,
-whereas ours reads subsampled pixels of the current frame at whole-frame and
-local scale, a frame FlashVLA's gate never sees, and adds a gripper-state check
+whereas ours reads subsampled pixels of the current frame, which FlashVLA's
+gate never sees, at whole-frame and local scale, and adds a gripper-state check
 and a translation floor. Both cap consecutive reuse, and both read the angle
 between the two most recent actions they inferred, an angle ours computes over
 the pose dimensions alone. \emph{Temporal fusion.} TTF-VLA fuses visual tokens
@@ -673,11 +686,11 @@ adds an image-entropy term of the kind VLA-InfoEntropy uses and a protective
 ring around every flagged patch, and it caps the reusable fraction, which
 TTF-VLA fixes per suite in its VLA-Cache experiments and leaves to the mask in
 its OpenVLA experiments. We test it against dense inference under fused
-attention on matched episodes on every backbone we evaluate.
+attention on matched episodes for every backbone we evaluate.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
-addresses the infrastructure around them. The vla-eval harness unifies fourteen
+addresses the infrastructure around them. The vla-eval harness unifies 14
 benchmarks and documents evaluation pitfalls that earlier work had left
 unrecorded~\cite{vlaeval}, and StarVLA describes the field as fragmented across
 incompatible codebases~\cite{starvla}. But infrastructure cannot supply the
@@ -699,11 +712,12 @@ three things above, and learned early exit, which trains the exits into the
 policy~\cite{deervla}. Evaluating a set of tricks under one protocol, rather
 than under a different protocol per paper, is an established
 practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six families
-under one protocol in three environments, the WidowX Bridge and Google Robot
-(Fractal) environments of SimplerEnv, and LIBERO with its four suites. Each
-backbone runs in every environment for which a checkpoint at the evaluated size
-is released, as listed in Section~IV-A. Every comparison is on matched episodes
-against dense inference under fused attention. A candidate is called positive
-only when it lowers latency, with the cost of any run-time signal included, or
-raises success, in either case by more than a preregistered margin, while the
-other of the two stays within that margin of the dense value.
+under one protocol in three environments, namely the WidowX Bridge and Google
+Robot (Fractal) environments of SimplerEnv and LIBERO with its four suites.
+Each backbone runs in every environment for which a checkpoint at the evaluated
+size is released, as listed in Section~IV-A. Every comparison is on matched
+episodes against dense inference under fused attention. A candidate is called
+positive only when it lowers latency, with the cost of any run-time signal
+included, or raises success, by more than the preregistered margin that
+Section~IV-A fixes for that quantity. The quantity it does not improve must
+stay within its own margin of the dense value.
