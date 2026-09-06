@@ -97,9 +97,9 @@ def icon_foveation(ax, x, y, s):
     ax.add_patch(Circle((x + s / 2, y + s / 2), 0.26 * s, fc="white", ec=PIPE_EDGE, lw=0.5))
 
 
-def icon_fusion(ax, x, y, s, color=C_FUSION, ring=True, reused=None):
+def icon_fusion(ax, x, y, s, color=C_FUSION, ring=True, reused=None, flagged=True):
     """4x4 token grid, reused cells filled, fresh cells white, ring around a flagged cell.
-    reused=() draws a two-tone grid: the flagged cell dark, everything else white."""
+    reused=() draws only the flagged cell; flagged=False draws only the reused cells."""
     n = 4
     c = s / n
     if reused is None:
@@ -109,7 +109,8 @@ def icon_fusion(ax, x, y, s, color=C_FUSION, ring=True, reused=None):
             fc = LIGHT[color] if (i, j) in reused else "white"
             ax.add_patch(Rectangle((x + j * c, y + (n - 1 - i) * c), c, c, fc=fc, ec=PIPE_EDGE, lw=0.4))
     # flagged patch (moving) and its protective ring
-    ax.add_patch(Rectangle((x + 2 * c, y + (n - 1 - 2) * c), c, c, fc=color, ec=PIPE_EDGE, lw=0.4))
+    if flagged:
+        ax.add_patch(Rectangle((x + 2 * c, y + (n - 1 - 2) * c), c, c, fc=color, ec=PIPE_EDGE, lw=0.4))
     if ring:
         ax.add_patch(Rectangle((x + 1 * c, y + (n - 1 - 3) * c), 3 * c, 3 * c, fc="none", ec=color, lw=0.9))
 
@@ -646,12 +647,12 @@ def candidate_A3(verbose=True):
     # guarded reuse: the gates branch off the observation edge and, when they
     # pass, hand a_{t-1} straight to the action box, so the model is not called
     gx, by = xs["obs"] + bw + 0.16, py - 0.13
-    ax.plot([gx, gx, xs["act"] + bw / 2], [py + ph / 2, by, by], color=C_REUSE, lw=0.8, ls="--")
-    arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.01, color=C_REUSE)
+    ax.plot([gx, gx, xs["act"] + bw / 2], [py + ph / 2, by, by], color=PIPE_EDGE, lw=0.8, ls="--")
+    arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.01, color=PIPE_EDGE)
     d = 0.05
     ax.add_patch(Polygon([(gx - d, py + ph / 2), (gx, py + ph / 2 + d), (gx + d, py + ph / 2), (gx, py + ph / 2 - d)],
                          closed=True, fc=LIGHT[C_REUSE], ec=C_REUSE, lw=0.8, zorder=5))
-    ax.text(4.20, by + 0.065, "gates pass, skip the call, repeat $a_{t-1}$", ha="center", va="center", fontsize=FS_SUB, color=C_REUSE)
+    ax.text(3.30, by - 0.07, "call skipped, $a_{t-1}$ repeated", ha="center", va="center", fontsize=FS_SUB, color=GREY)
 
     def card(x, y, w, h, col, title):
         box(ax, x, y, w, h, fill="white", edge=col, lw=1.0, rounding=0.06)
@@ -665,26 +666,26 @@ def candidate_A3(verbose=True):
 
     def attach(x0, y0, x1, y1, col):
         line(ax, x0, y0, x1, y1, color=col, lw=0.8)
-        ax.add_patch(Circle((x1, y1), 0.03, fc=col, ec="none"))
+        ax.add_patch(Circle((x1, y1), 0.032, fc=col, ec="white", lw=0.6, zorder=6))
 
     # --- candidates above ---
     cy, ch, cw = 2.16, 0.94, 2.28
     bm = cy + (ch - 0.22) / 2
     x = 0.10
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48, ring=False, reused=())
-    sentence(x + 0.68, bm, "Between keyframes a capped\nshare of unprotected patches\nkeeps the previous call's token.", body)
-    attach(x + cw / 2, cy, xs["enc"] + bw + 0.16, py + ph + 0.01, C_FUSION)
+    icon_fusion(ax, x + 0.10, cy + 0.12, 0.48, ring=False, flagged=False)
+    sentence(x + 0.68, bm, "Between keyframes a capped\nnumber of unprotected patches\nkeeps the previous call's token.", body)
+    attach(x + cw / 2, cy, xs["enc"] + bw + 0.16, py + ph / 2, C_FUSION)
     x = 2.44
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
     icon_depth(ax, x + 0.12, cy + 0.11, 0.48, protected=())
-    sentence(x + 0.66, bm, "Layers lowest in Block Influence\nare removed, the first layers\nand the last are kept.", body)
+    sentence(x + 0.66, bm, "With the first layers and the last\nkept, the lowest in Block Influence\nare removed, none adjacent.", body)
     attach(x + cw / 2, cy, xs["dec"] + bw / 2, py + ph + 0.01, C_DEPTH)
     x = 4.78
     body = card(x, cy, cw, ch, C_REUSE, "Guarded reuse")
-    for t in icon_reuse(ax, x + 0.08, cy + 0.17, 0.38, fs=FS_SUB, fs_gate=FS_SUB, labels=("pass", "fail")):
+    for t in icon_reuse(ax, x + 0.06, cy + 0.15, 0.42, fs=FS_SUB, fs_gate=FS_SUB, labels=("pass", "fail")):
         fit.append((t, body))
-    sentence(x + 0.72, bm, "When image and action gates\npass, the call is skipped and\n$a_{t-1}$ repeated, up to a cap.", body)
+    sentence(x + 0.76, bm, "When image and action gates\npass, the call is skipped and\n$a_{t-1}$ repeated, up to a cap.", body)
     attach(x + cw / 2, cy, xs["act"] + bw / 2, py + ph + 0.01, C_REUSE)
 
     # --- controls below, in the outer columns ---
@@ -697,16 +698,16 @@ def candidate_A3(verbose=True):
     ax.imshow(img, extent=ext, interpolation="bilinear", zorder=3)
     ax.add_patch(Circle(((ext[0] + ext[1]) / 2, (ext[2] + ext[3]) / 2), ts * r_frac, fc="none", ec="white", lw=0.6, zorder=4))
     ax.add_patch(Rectangle((ext[0], ext[2]), ts, ts, fc="none", ec=PIPE_EDGE, lw=0.5, zorder=4))
-    sentence(x + 0.68, ky + (kh - 0.22) / 2, "Blurred outside a central disc,\nthe token count is unchanged.", body)
+    sentence(x + 0.68, ky + (kh - 0.22) / 2, "The image is blurred outside\na central disc and keeps\nits token count.", body)
     attach(x + kw / 2, ky + kh, xs["obs"] + bw / 2 + 0.16, py - 0.01, C_CTRL)
     x = W - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
     icon_repeat(ax, x + 0.10, ky + 0.08, 1.30, fs=FS_SUB, h=0.46, span="$k$ steps", labels=("call", "hold", "\u2026", "hold"))
-    sentence(x + 1.46, ky + (kh - 0.22) / 2, "Each action is\nheld $k$ steps.", body)
-    attach(x + kw / 2, ky + kh, (xs["act"] + bw + xs["env"]) / 2, py + ph / 2 - 0.01, C_CTRL)
+    sentence(x + 1.46, ky + (kh - 0.22) / 2, "Each action is\nheld $k$ steps, the\ncall skipped.", body)
+    attach(x + kw / 2, ky + kh, 4.70, by, C_CTRL)
 
     # --- legend, one line ---
-    t = ax.text(W / 2, 0.09, "Dots mark where each intervention enters the loop and the diamond marks the reuse gates.",
+    t = ax.text(W / 2, 0.09, "Dots mark where each intervention enters the loop, the diamond marks the reuse gates, and the dashed path is a skipped call.",
                 ha="center", va="center", fontsize=FS_SUB, color=GREY)
     fit.append((t, (0, 0, W, H)))
     if verbose:
