@@ -184,16 +184,16 @@ def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None, span="$k$ steps",
     for i, lab in enumerate(labels):
         xx = x + i * w
         if lab == "\u2026":
-            ax.text(xx + w / 2, yb + bh / 2, lab, ha="center", va="center", fontsize=fs, color=GREY)
+            ax.text(xx + w / 2, yb + bh / 2, lab, ha="center", va="center", fontsize=fs, color=color)
             continue
         call = lab == "call"
         ax.add_patch(Rectangle((xx + 0.06 * w, yb), 0.88 * w, bh,
-                               fc=(LIGHT[color] if call else "white"), ec=(color if call else PIPE_EDGE),
+                               fc=(LIGHT[color] if call else "white"), ec=color,
                                lw=0.6, ls=("-" if call else ":")))
         ax.text(xx + w / 2, yb + bh / 2, lab, ha="center", va="center", fontsize=fs, color=INK)
     # bracket under the first k steps
     ax.plot([x + 0.06 * w, x + 0.06 * w, x + 4 * w - 0.06 * w, x + 4 * w - 0.06 * w],
-            [y + 0.33 * h, y + 0.26 * h, y + 0.26 * h, y + 0.33 * h], color=color, lw=0.6)
+            [y + 0.31 * h, y + 0.24 * h, y + 0.24 * h, y + 0.31 * h], color=color, lw=0.6)
     rich_text(ax, x + 2 * w, y + 0.08 * h - 0.35 * fs / 72.0, span, fs, color)
 
 
@@ -767,7 +767,7 @@ def candidate_A3(verbose=True):
     dot(ox, py - 0.01, C_CTRL)
     x = W3 - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
-    icon_repeat(ax, x + 0.10, ky + 0.04, 1.24, fs=FS_SUB, h=0.46, span="$k$ steps", labels=("call", "hold", "…", "hold"))
+    icon_repeat(ax, x + 0.10, ky + 0.06, 1.24, fs=FS_SUB, h=0.42, span="$k$ steps", labels=("call", "hold", "…", "hold"))
     sentence(x + 1.42, ky + (kh - 0.22) / 2, "Each action is\nheld for $k$ steps\nwith one call.", body)
     rx = (xs["act"] + bw + xs["env"]) / 2
     leader([(rx, ky + kh), (rx, mid - 0.03)], C_CTRL)
