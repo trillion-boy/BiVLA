@@ -635,6 +635,29 @@ def icon_depth2(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1
         ax.add_patch(Rectangle((x + s - sw, yy + 0.15 * h), sw, 0.7 * h, fc=fc, ec=PIPE_EDGE, lw=0.5))
 
 
+FUSION_TINT = "#9fdcc6"   # one step darker than LIGHT[C_FUSION] so the cells print
+
+
+def icon_fusion2(ax, x, y, s, color=C_FUSION, fs=6.5, n=3, reused=((0, 1), (2, 2))):
+    """two token grids, previous call on the left and current call on the
+    right; the reused cells are tinted in both and an arrow carries each
+    across, so the reuse reads as a step in time"""
+    g = 0.42 * s               # grid side
+    gap = s - 2 * g            # space between the grids
+    c = g / n
+    y0 = y + 0.20 * s          # grid bottom, labels sit below
+    for k, gx in enumerate((x, x + g + gap)):
+        for i in range(n):
+            for j in range(n):
+                fc = FUSION_TINT if (i, j) in reused else "white"
+                ax.add_patch(Rectangle((gx + j * c, y0 + (n - 1 - i) * c), c, c, fc=fc, ec=PIPE_EDGE, lw=0.5))
+    for (i, j) in reused:
+        yy = y0 + (n - 1 - i) * c + c / 2
+        arrow(ax, x + g + 0.02, yy, x + g + gap - 0.02, yy, color=color, lw=0.7, ms=5)
+    ax.text(x, y + 0.02 * s, "previous", ha="left", va="baseline", fontsize=fs, color=GREY)
+    ax.text(x + s, y + 0.02 * s, "current", ha="right", va="baseline", fontsize=fs, color=GREY)
+
+
 def icon_gate(ax, x, y, s, color, fs):
     """gate diamond as it sits in the pipeline: fail continues right (solid),
     pass drops down the dashed skip path. Returns the label artists."""
@@ -737,8 +760,8 @@ def candidate_A3(verbose=True):
     # temporal fusion, on the encoder-to-decoder edge
     x = 0.10 + cw + gap
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
-    icon_fusion(ax, x + 0.10, cy + 0.08, 0.46, ring=False, reused={(0, 0), (0, 1), (1, 0), (1, 1), (3, 0), (3, 1)}, flagged=False)
-    sentence(x + 0.68, bm, "A capped number of\nunprotected patches keep their\ntoken from the previous call.", body)
+    icon_fusion2(ax, x + 0.08, cy + 0.05, 0.72, fs=FS_SUB)
+    sentence(x + 0.88, bm, "Up to a fixed share of\nunprotected patches keep\ntheir token from the\nprevious call.", body)
     fx = xs["enc"] + bw + 0.15
     leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.12), (fx, cy - 0.12), (fx, mid + 0.03)], C_FUSION)
     dot(fx, mid, C_FUSION)
