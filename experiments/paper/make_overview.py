@@ -111,7 +111,7 @@ def icon_fusion(ax, x, y, s, color=C_FUSION):
     ax.add_patch(Rectangle((x + 1 * c, y + (n - 1 - 3) * c), 3 * c, 3 * c, fc="none", ec=color, lw=0.9))
 
 
-def icon_depth(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1, 7)):
+def icon_depth(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1, 2, 7)):
     """decoder stack, removed layers dashed, protected layers shaded"""
     h = s / n
     for i in range(n):
@@ -126,28 +126,35 @@ def icon_depth(ax, x, y, s, color=C_DEPTH, n=8, removed=(3, 5), protected=(0, 1,
 
 def icon_reuse(ax, x, y, s, color=C_REUSE):
     """gate diamond with two exits, drawn in a box of width 1.1 s and height s"""
-    cx, cy = x + 0.28 * s, y + 0.5 * s
-    d = 0.30 * s
+    cx, cy = x + 0.34 * s, y + 0.5 * s
+    d = 0.38 * s
     ax.add_patch(Polygon([(cx - d, cy), (cx, cy + d), (cx + d, cy), (cx, cy - d)], closed=True,
                          fc=LIGHT[color], ec=color, lw=0.8))
-    ax.text(cx, cy, "gates", ha="center", va="center", fontsize=5.2, color=color)
+    ax.text(cx, cy, "gates", ha="center", va="center", fontsize=5.6, color=color)
     arrow(ax, cx + d, cy, cx + d + 0.30 * s, cy + 0.34 * s, color=color, lw=0.7, ms=5, rad=-0.25)
     arrow(ax, cx + d, cy, cx + d + 0.30 * s, cy - 0.34 * s, color=PIPE_EDGE, lw=0.7, ms=5, rad=0.25)
     ax.text(cx + d + 0.34 * s, cy + 0.34 * s, "all pass: reuse $a_{t-1}$", ha="left", va="center", fontsize=5.4, color=color)
     ax.text(cx + d + 0.34 * s, cy - 0.34 * s, "any fails: dense call", ha="left", va="center", fontsize=5.4, color=INK)
 
 
-def icon_repeat(ax, x, y, s, color=C_CTRL, k=2, steps=4):
-    """timeline of width s: one call, then held steps; height 0.45 s"""
-    w = s / steps
-    for i in range(steps):
+def icon_repeat(ax, x, y, s, color=C_CTRL):
+    """timeline of width s: call, hold, ..., hold, call, with a bracket for k steps"""
+    labels = ["call", "hold", "\u2026", "hold", "call"]
+    w = s / len(labels)
+    for i, lab in enumerate(labels):
         xx = x + i * w
-        call = (i % k == 0)
+        if lab == "\u2026":
+            ax.text(xx + w / 2, y + 0.30 * s, lab, ha="center", va="center", fontsize=7, color=GREY)
+            continue
+        call = lab == "call"
         ax.add_patch(Rectangle((xx + 0.06 * w, y + 0.18 * s), 0.88 * w, 0.24 * s,
                                fc=(LIGHT[color] if call else "white"), ec=(color if call else PIPE_EDGE),
                                lw=0.6, ls=("-" if call else "--")))
-        ax.text(xx + w / 2, y + 0.30 * s, "call" if call else "hold", ha="center", va="center", fontsize=5, color=INK)
-        ax.text(xx + w / 2, y + 0.07 * s, f"$t{'+' + str(i) if i else ''}$", ha="center", va="center", fontsize=5, color=GREY)
+        ax.text(xx + w / 2, y + 0.30 * s, lab, ha="center", va="center", fontsize=6, color=INK)
+    # bracket under the first k steps
+    ax.plot([x + 0.06 * w, x + 0.06 * w, x + 4 * w - 0.06 * w, x + 4 * w - 0.06 * w],
+            [y + 0.14 * s, y + 0.10 * s, y + 0.10 * s, y + 0.14 * s], color=GREY, lw=0.6)
+    ax.text(x + 2 * w, y + 0.02 * s, "$k$ steps", ha="center", va="center", fontsize=6, color=GREY)
 
 
 # ------------------------------------------------------------- candidate A ---
@@ -175,19 +182,19 @@ def candidate_A():
     top = py + ph + 0.28
     ax.plot([xs["env"] + 0.39, xs["env"] + 0.39, xs["obs"] + bw / 2], [py + ph, top, top], color=PIPE_EDGE, lw=0.8)
     arrow(ax, xs["obs"] + bw / 2, top, xs["obs"] + bw / 2, py + ph + 0.01)
-    ax.text((xs["obs"] + xs["env"]) / 2 + 0.4, top + 0.04, "next observation $o_{t+1}$, one model call per environment step under dense inference",
+    ax.text((xs["obs"] + xs["env"]) / 2 + 0.4, top + 0.04, "next observation $o_{t+1}$. Dense inference makes one call per $m$ executed actions",
             ha="center", va="bottom", fontsize=6.2, color=GREY)
     ax.text(xs["enc"] + bw + 0.19, py + ph / 2 + 0.07, "tokens", ha="center", va="bottom", fontsize=5.5, color=GREY)
 
     # --- intervention cards ---
-    cy, ch = 0.98, 1.10
+    cy, ch = 1.00, 1.12
     cw = 1.30
     cards = [
         # x, colour, role, title, icon, caption, attach x (pipeline)
         (0.10, C_CTRL, "control", "Foveation", "fov", "sharp disc of keep\nratio $\\rho$, blur outside,\ntoken count same", xs["obs"] + bw + 0.19),
-        (1.52, C_FUSION, "candidate", "Temporal fusion", "fus", "stable tokens carried\nfrom $t-1$, capped,\nkeyframes bound drift", xs["enc"] + bw + 0.19),
-        (2.94, C_DEPTH, "candidate", "Depth pruning", "dep", "lowest Block Influence\nlayers removed, none\nadjacent, ends protected", xs["dec"] + bw / 2),
-        (4.36, C_REUSE, "candidate", "Guarded reuse", "reu", "image stable, actions agree,\nmotion commanded, capped", xs["act"] + 0.39),
+        (1.52, C_FUSION, "candidate", "Temporal fusion", "fus", "patches low in motion,\nentropy, attention take\nthe $t-1$ token, ring\nprotected, capped,\nkeyframes bound drift", xs["enc"] + bw + 0.19),
+        (2.94, C_DEPTH, "candidate", "Depth pruning", "dep", "lowest Block\nInfluence layers\nremoved, ends kept,\nnone adjacent, set\non a calibration split", xs["dec"] + bw / 2),
+        (4.36, C_REUSE, "candidate", "Guarded reuse", "reu", "before the call: if image stable,\nactions agree, motion commanded,\nskip the call and emit $a_{t-1}$, capped", xs["act"] + 0.39),
         (5.78, C_CTRL, "control", "Action repeat", "rep", "hold each action $k$ steps,\nno gate", xs["env"] + 0.39),
     ]
     for x, col, role, title, ic, cap, ax_x in cards:
@@ -203,30 +210,33 @@ def candidate_A():
         elif ic == "dep":
             icon_depth(ax, x + 0.10, cy + 0.22, s)
         elif ic == "reu":
-            icon_reuse(ax, x + 0.08, cy + 0.36, 0.36)
+            icon_reuse(ax, x + 0.08, cy + 0.44, 0.34)
         elif ic == "rep":
-            icon_repeat(ax, x + 0.10, cy + 0.36, 1.05)
+            icon_repeat(ax, x + 0.08, cy + 0.36, 1.14)
         if ic in ("reu", "rep"):
-            ax.text(x + 0.07, cy + 0.08, cap, ha="left", va="bottom", fontsize=5.6, color=INK, linespacing=1.15)
+            ax.text(x + 0.07, cy + 0.07, cap, ha="left", va="bottom", fontsize=5.3, color=INK, linespacing=1.15)
         else:
-            ax.text(x + 0.57, cy + 0.45, cap, ha="left", va="center", fontsize=5.6, color=INK, linespacing=1.15)
+            ax.text(x + 0.56, cy + 0.45, cap, ha="left", va="center", fontsize=5.3, color=INK, linespacing=1.15)
         # connector to the pipeline
         line(ax, x + cw / 2, cy + ch, ax_x, py - 0.02, color=col, lw=0.7)
         ax.add_patch(Circle((ax_x, py - 0.02), 0.03, fc=col, ec="none"))
 
     # --- protocol strip ---
-    sy, sh = 0.12, 0.62
+    sy, sh = 0.10, 0.60
     box(ax, 0.10, sy, W - 0.20, sh, fill="#fbfbfc", edge=GREY, lw=0.6, rounding=0.06)
     ax.text(0.20, sy + sh - 0.10, "Protocol", ha="left", va="center", fontsize=7, fontweight="bold", color=C_REF)
     cols = [
         (0.20, "Reference", "the released policy, weights frozen,\ndense inference under fused attention"),
-        (2.05, "Matched episodes", "same seeds for every condition,\npaired comparison on each backbone"),
-        (3.95, "Grid", "six backbones on WidowX Bridge and Google\nRobot, plus LIBERO where a checkpoint exists"),
-        (5.75, "Positive gate", "latency down, own signal cost included,\nor success up, the other within a margin"),
+        (1.95, "Matched episodes", "same seeds for every condition,\npaired comparison on each backbone"),
+        (3.70, "Grid", "every backbone on each environment with a\nreleased checkpoint at the evaluated size"),
+        (5.50, "Positive gate", "latency down, own signal cost included,\nor success up, the other within a margin"),
     ]
     for x, t, s in cols:
         ax.text(x, sy + 0.34, t, ha="left", va="center", fontsize=6.4, fontweight="bold", color=INK)
-        ax.text(x, sy + 0.15, s, ha="left", va="center", fontsize=5.5, color=GREY, linespacing=1.15)
+        ax.text(x, sy + 0.15, s, ha="left", va="center", fontsize=5.3, color=GREY, linespacing=1.15)
+    # legend for the icon fills
+    ax.text(0.10, cy - 0.10, "icons: light fill = token reused from $t-1$ or protected layer, dark = flagged patch, ring = protected neighbours, "
+            "dashed struck = removed layer, grey = blurred", ha="left", va="center", fontsize=5.2, color=GREY)
     return fig
 
 
@@ -264,9 +274,9 @@ def candidate_B():
         elif ic == "dep":
             icon_depth(ax, x + 0.12, body_mid - s / 2, s)
         elif ic == "reu":
-            icon_reuse(ax, x + 0.10, y + 0.42, 0.36)
+            icon_reuse(ax, x + 0.10, y + 0.46, 0.36)
         elif ic == "rep":
-            icon_repeat(ax, x + 0.10, y + 0.26, 1.10)
+            icon_repeat(ax, x + 0.10, y + 0.20, 1.15)
         if ic in ("reu", "rep"):
             ax.text(x + 0.08, y + 0.08, cap, ha="left", va="bottom", fontsize=5.7, color=INK, linespacing=1.15)
         else:
@@ -274,28 +284,28 @@ def candidate_B():
 
     # controls row
     cell(colx[0], 1.42, 0.98, C_CTRL, "Action repeat", "rep", "hold each action $k$ steps, no gate")
-    cell(colx[1], 1.42, 0.98, C_CTRL, "Fixed foveation", "fov", "sharp disc of keep ratio $\\rho$,\nblur outside, token count same")
+    cell(colx[1], 1.42, 0.98, C_CTRL, "Foveation", "fov", "sharp disc of keep ratio $\\rho$,\nblur outside, token count same")
     cell(colx[2], 1.42, 0.98, None, "", "", "no control on this axis", empty=True)
     # candidates row
-    cell(colx[0], 0.12, 1.18, C_REUSE, "Guarded reuse", "reu", "skip the call only when the image is stable,\nthe last two dense actions agree and still\ncommand motion, capped")
-    cell(colx[1], 0.12, 1.18, C_FUSION, "Temporal fusion", "fus", "stable tokens carried from $t-1$,\ncapped, entropy and attention\nprotect, keyframes bound drift")
-    cell(colx[2], 0.12, 1.18, C_DEPTH, "Depth pruning", "dep", "Block Influence ranking, protected\nregions, no adjacent removals,\nset fixed on a calibration split")
+    cell(colx[0], 0.12, 1.18, C_REUSE, "Guarded reuse", "reu", "before the call: skip it and emit $a_{t-1}$\nonly when the image is stable, the last two\ndense actions agree and command motion, capped")
+    cell(colx[1], 0.12, 1.18, C_FUSION, "Temporal fusion", "fus", "patches low in motion, entropy\nand optional attention take the\n$t-1$ token, ring, cap, keyframes")
+    cell(colx[2], 0.12, 1.18, C_DEPTH, "Depth pruning", "dep", "lowest Block Influence layers\nremoved, ends kept, none adjacent,\nset on a calibration split")
     # right panel: protocol
     px = 6.22
     box(ax, px, 0.12, W - px - 0.10, 2.76, fill="#fbfbfc", edge=C_REF, lw=0.7, rounding=0.06)
     ax.text(px + 0.42, 2.70, "Protocol", ha="center", va="center", fontsize=7, fontweight="bold", color=C_REF)
     items = [
         ("Reference", "released policy,\nfused attention"),
-        ("Backbones", "six, 0.5B to 7B"),
+        ("Grid", "every backbone on\neach environment\nwith a checkpoint"),
         ("Environments", "WidowX Bridge,\nGoogle Robot,\nLIBERO suites"),
-        ("Episodes", "matched seeds,\npaired test"),
-        ("Positive gate", "latency down or\nsuccess up, other\nwithin a margin"),
+        ("Episodes", "matched seeds,\npaired by seed"),
+        ("Positive gate", "latency down, own\nsignal cost in, or\nsuccess up, other\nwithin a margin"),
     ]
-    yy = 2.42
+    yy = 2.46
     for t, s in items:
         ax.text(px + 0.07, yy, t, ha="left", va="top", fontsize=6.2, fontweight="bold")
         ax.text(px + 0.07, yy - 0.13, s, ha="left", va="top", fontsize=5.5, color=GREY, linespacing=1.15)
-        yy -= 0.47
+        yy -= 0.45
     return fig
 
 
@@ -308,12 +318,12 @@ def candidate_C():
     steps = 6
     sw = (tx1 - tx0) / steps
     rows = [
-        ("Dense reference", C_REF, "one full call per step", "dense"),
+        ("Dense reference", C_REF, "one full call per $m$ executed actions", "dense"),
         ("Action repeat", C_CTRL, "control: call every $k$ steps,\nhold between", "repeat"),
         ("Guarded reuse", C_REUSE, "candidate: skip a call only\nwhen every gate passes", "reuse"),
         ("Depth pruning", C_DEPTH, "candidate: every call runs\nfewer decoder layers", "depth"),
         ("Temporal fusion", C_FUSION, "candidate: stable tokens from\n$t-1$, keyframes fully fresh", "fusion"),
-        ("Fixed foveation", C_CTRL, "control: same call, periphery\nblurred before the encoder", "fov"),
+        ("Foveation", C_CTRL, "control: same call, periphery\nblurred before the encoder", "fov"),
     ]
     rh = 0.40
     y0 = 2.92
@@ -321,7 +331,7 @@ def candidate_C():
     for i in range(steps):
         ax.text(tx0 + (i + 0.5) * sw, y0 + 0.12, f"$t{'+' + str(i) if i else ''}$", ha="center", va="bottom", fontsize=6, color=GREY)
     ax.text(tx0 + steps * sw / 2, y0 + 0.30, "environment steps", ha="center", va="bottom", fontsize=6.2, color=GREY)
-    ax.text(6.10, y0 + 0.12, "changes", ha="center", va="bottom", fontsize=6.2, color=GREY)
+    ax.text(5.42, y0 + 0.12, "what changes", ha="left", va="bottom", fontsize=6.2, color=GREY)
     for r, (name, col, desc, kind) in enumerate(rows):
         y = y0 - (r + 1) * rh - 0.02
         ax.text(lx, y + rh / 2 + 0.10, name, ha="left", va="center", fontsize=7, fontweight="bold", color=col)
@@ -338,20 +348,22 @@ def candidate_C():
                     ax.add_patch(Rectangle((x, y + 0.06), w, full, fc=LIGHT[col], ec=col, lw=0.6))
                 else:
                     ax.add_patch(Rectangle((x, y + 0.06), w, full, fc="white", ec=col, lw=0.6, ls="--"))
-                    ax.text(x + w / 2, y + 0.06 + full / 2, "hold", ha="center", va="center", fontsize=5.2, color=col)
+                    ax.text(x + w / 2, y + 0.06 + full / 2, "hold", ha="center", va="center", fontsize=6, color=col)
             elif kind == "reuse":
                 skip = (i == 3)
                 if skip:
                     ax.add_patch(Rectangle((x, y + 0.06), w, full, fc="white", ec=col, lw=0.6, ls="--"))
-                    ax.text(x + w / 2, y + 0.06 + full / 2, "gates pass\nreuse", ha="center", va="center", fontsize=4.8, color=col, linespacing=1.0)
+                    ax.text(x + w / 2, y + 0.06 + full / 2, "gates pass:\nreuse $a_{t-1}$", ha="center", va="center", fontsize=6, color=col, linespacing=1.0)
                 else:
                     ax.add_patch(Rectangle((x, y + 0.06), w, full, fc=LIGHT[col], ec=col, lw=0.6))
-                    ax.add_patch(Polygon([(x + w - 0.07, y + 0.06 + full - 0.02), (x + w - 0.02, y + 0.06 + full - 0.07),
-                                          (x + w - 0.07, y + 0.06 + full - 0.12), (x + w - 0.12, y + 0.06 + full - 0.07)],
-                                         closed=True, fc=col, ec="none"))
+                    ax.text(x + w / 2, y + 0.06 + full / 2, "gate fails:\ndense", ha="center", va="center", fontsize=6, color=INK, linespacing=1.0)
             elif kind == "depth":
-                ax.add_patch(Rectangle((x, y + 0.06), w, full * 0.68, fc=LIGHT[col], ec=col, lw=0.6))
-                ax.add_patch(Rectangle((x, y + 0.06 + full * 0.68), w, full * 0.32, fc="white", ec=col, lw=0.5, ls="--"))
+                nl = 7
+                lh = full / nl
+                for j in range(nl):
+                    removed = j in (2, 4)
+                    ax.add_patch(Rectangle((x, y + 0.06 + j * lh), w, lh, fc=("white" if removed else LIGHT[col]),
+                                           ec=col, lw=0.4, ls=("--" if removed else "-")))
             elif kind == "fusion":
                 key = (i % 3 == 0)
                 ax.add_patch(Rectangle((x, y + 0.06), w, full, fc=LIGHT[col] if key else "white", ec=col, lw=0.6))
@@ -359,25 +371,26 @@ def candidate_C():
                 n = 6
                 cw_ = w / n
                 for j in range(n):
-                    reused = (not key) and j in (0, 1, 4, 5)
+                    reused = (not key) and j in (0, 2, 5)
                     ax.add_patch(Rectangle((x + j * cw_, y + 0.06 + 0.16), cw_, 0.08, fc=(col if reused else "white"), ec=col, lw=0.3))
-                ax.text(x + w / 2, y + 0.115, "keyframe" if key else "fused", ha="center", va="center", fontsize=4.8, color=col)
+                ax.text(x + w / 2, y + 0.115, "keyframe" if key else "fused", ha="center", va="center", fontsize=6, color=col)
             elif kind == "fov":
                 ax.add_patch(Rectangle((x, y + 0.06), w, full, fc=LIGHT[C_CTRL], ec=col, lw=0.6))
                 icon_foveation(ax, x + w / 2 - 0.09, y + 0.11, 0.18)
         # right: what changes
         change = {
-            "dense": "calls per step 1\nlayers all, tokens all",
+            "dense": "calls per step 1/$m$\nlayers all, tokens fresh",
             "repeat": "calls per step 1/$k$\nfeedback interval $\\times k$",
             "reuse": "calls per step below 1\nonly where gates pass",
             "depth": "layers per call fewer\nby the swept budget",
-            "fusion": "tokens entering the\ndecoder: some from $t-1$",
-            "fov": "input detail reduced\ntokens and layers same",
+            "fusion": "some decoder-input tokens\nfrom $t-1$, same cost",
+            "fov": "input detail reduced\nsame cost",
         }[kind]
         ax.text(5.42, y + rh / 2, change, ha="left", va="center", fontsize=5.5, color=INK, linespacing=1.15)
     # protocol strip
     sy, sh = 0.06, 0.30
-    ax.text(lx, sy + sh / 2, "Every row runs on matched episodes against the dense reference under fused attention, on six backbones and three environments.\n"
+    ax.text(lx, sy + sh / 2, "Every row runs on matched episodes against the dense reference under fused attention, on every backbone and environment of the grid. "
+            "Repeat is drawn at $k$ = 2 and\nfusion with a keyframe every third step only to show the pattern. "
             "A candidate is positive if latency falls, its own signal cost included, or success rises, with the other within a margin.",
             ha="left", va="center", fontsize=5.6, color=INK, linespacing=1.2)
     return fig
