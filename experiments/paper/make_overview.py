@@ -140,7 +140,7 @@ def icon_reuse(ax, x, y, s, color=C_REUSE, fs=5.4, fs_gate=5.6,
     return t1, t2
 
 
-def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None):
+def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None, span="$k$ steps"):
     """timeline of width s: call, hold, ..., hold, call, with a bracket for k steps.
     h: total height (defaults to 0.42 s, the original square-ish proportion)."""
     if h is None:
@@ -162,7 +162,7 @@ def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None):
     # bracket under the first k steps
     ax.plot([x + 0.06 * w, x + 0.06 * w, x + 4 * w - 0.06 * w, x + 4 * w - 0.06 * w],
             [y + 0.32 * h, y + 0.24 * h, y + 0.24 * h, y + 0.32 * h], color=GREY, lw=0.6)
-    ax.text(x + 2 * w, y + 0.08 * h, "$k$ steps", ha="center", va="center", fontsize=fs, color=GREY)
+    ax.text(x + 2 * w, y + 0.08 * h, span, ha="center", va="center", fontsize=fs, color=GREY)
 
 
 # ------------------------------------------------------------- candidate A ---
@@ -658,7 +658,7 @@ def candidate_A3(verbose=True):
     x = 0.10
     body = card(x, cy, cw, ch, C_FUSION, "Temporal fusion")
     icon_fusion(ax, x + 0.10, cy + 0.12, 0.48)
-    sentence(x + 0.68, bm, "Patches that did not move keep\nthe token from the previous call.", body)
+    sentence(x + 0.68, bm, "Patches no signal flags keep the\ntoken from the previous call.", body)
     attach(x + cw / 2, cy, xs["enc"] + bw + 0.16, py + ph + 0.01, C_FUSION)
     x = 2.44
     body = card(x, cy, cw, ch, C_DEPTH, "Depth pruning")
@@ -686,7 +686,7 @@ def candidate_A3(verbose=True):
     attach(x + kw / 2, ky + kh, xs["obs"] + bw + 0.16, py - 0.01, C_CTRL)
     x = W - 0.10 - kw
     body = card(x, ky, kw, kh, C_CTRL, "Action repeat")
-    icon_repeat(ax, x + 0.10, ky + 0.08, 1.30, fs=FS_SUB, h=0.46)
+    icon_repeat(ax, x + 0.10, ky + 0.08, 1.30, fs=FS_SUB, h=0.46, span="$mk$ steps")
     sentence(x + 1.46, ky + (kh - 0.22) / 2, "Each action is\nheld $k$ steps.", body)
     attach(x + kw / 2, ky + kh, xs["env"] + bw / 2, py - 0.01, C_CTRL)
 
