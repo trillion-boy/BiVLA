@@ -646,10 +646,12 @@ def icon_fusion2(ax, x, y, s, color=C_FUSION, fs=6.5, n=3, reused=((0, 1), (2, 2
     gap = s - 2 * g            # space between the grids
     c = g / n
     y0 = y + 0.20 * s          # grid bottom, labels sit below
+    # previous call: every cell holds an old token (all tinted). current call:
+    # fresh tokens are white, the carried cells keep the old tint
     for k, gx in enumerate((x, x + g + gap)):
         for i in range(n):
             for j in range(n):
-                fc = FUSION_TINT if (i, j) in reused else "white"
+                fc = FUSION_TINT if (k == 0 or (i, j) in reused) else "white"
                 ax.add_patch(Rectangle((gx + j * c, y0 + (n - 1 - i) * c), c, c, fc=fc, ec=PIPE_EDGE, lw=0.5))
     for (i, j) in reused:
         yy = y0 + (n - 1 - i) * c + c / 2
