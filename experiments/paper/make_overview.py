@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Three candidate overview figures for the paper (one will be Fig. 1).
+"""Candidate overview figures for the paper. A3 is Fig. 1.
 
-All three put the five interventions of Section III on one VLA inference
-loop and show the evaluation protocol of Section II. They differ in
-organisation:
+All of them put the five interventions of Section III on one VLA inference
+loop. The first three also show the evaluation protocol of Section II. They
+differ in organisation:
 
   A  pipeline with insertion points   the VLA loop left to right, each
                                        intervention plugged in where it acts
@@ -174,7 +174,7 @@ def icon_repeat(ax, x, y, s, color=C_CTRL, fs=6, h=None, span="$k$ steps",
         ax.text(xx + w / 2, yb + bh / 2, lab, ha="center", va="center", fontsize=fs, color=INK)
     # bracket under the first k steps
     ax.plot([x + 0.06 * w, x + 0.06 * w, x + 4 * w - 0.06 * w, x + 4 * w - 0.06 * w],
-            [y + 0.36 * h, y + 0.29 * h, y + 0.29 * h, y + 0.36 * h], color=GREY, lw=0.6)
+            [y + 0.33 * h, y + 0.26 * h, y + 0.26 * h, y + 0.33 * h], color=GREY, lw=0.6)
     ax.text(x + 2 * w, y + 0.08 * h, span, ha="center", va="center", fontsize=fs, color=GREY)
 
 
@@ -657,12 +657,12 @@ def candidate_A3(verbose=True):
         arrow(ax, xs[a_] + bw, mid, xs[b_], mid)
     loop_y = py - 0.34
     ax.plot([xs["env"] + bw / 2, xs["env"] + bw / 2, xs["obs"] + bw / 2], [py, loop_y, loop_y], color=PIPE_EDGE, lw=0.8)
-    arrow(ax, xs["obs"] + bw / 2, loop_y, xs["obs"] + bw / 2, py - 0.01)
+    arrow(ax, xs["obs"] + bw / 2, loop_y, xs["obs"] + bw / 2, py - 0.004)
     ax.text((xs["env"] + xs["obs"] + bw) / 2, loop_y - 0.04, "next observation", ha="center", va="top", fontsize=FS_SUB, color=GREY)
     # guarded reuse: gates on the observation edge, a dashed skip path into the action box
     gx, by = xs["obs"] + bw + 0.11, py - 0.13
     ax.plot([gx, gx, xs["act"] + bw / 2], [mid, by, by], color=CR, lw=0.8, ls="--")
-    arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.01, color=CR)
+    arrow(ax, xs["act"] + bw / 2, by, xs["act"] + bw / 2, py - 0.004, color=CR)
     d = 0.05
     ax.add_patch(Polygon([(gx - d, mid), (gx, mid + d), (gx + d, mid), (gx, mid - d)], closed=True,
                          fc=LIGHT[CR], ec=CR, lw=0.8, zorder=5))
@@ -678,18 +678,22 @@ def candidate_A3(verbose=True):
         lines = text.split("\n")
         pitch = 1.3 * FS_BODY / 72.0
         top = y + (len(lines) - 1) * pitch / 2 - 0.35 * FS_BODY / 72.0   # first baseline
-        rend = fig.canvas.get_renderer()
+        from matplotlib.textpath import TextToPath
+        from matplotlib.font_manager import FontProperties
+        ttp = TextToPath()
         for i, ln in enumerate(lines):
             # italic symbols are drawn as text segments, not mathtext, so every
-            # line shares one baseline metric and the pitch stays exact
+            # line shares one baseline metric and the pitch stays exact; the
+            # segment advance comes from the font metrics, not the pixel grid
             xx = x
             for j, seg in enumerate(ln.split("$")):
                 if not seg:
                     continue
-                t = ax.text(xx, top - i * pitch, seg, ha="left", va="baseline", fontsize=FS_BODY, color=col,
-                            fontstyle="italic" if j % 2 else "normal")
+                style = "italic" if j % 2 else "normal"
+                t = ax.text(xx, top - i * pitch, seg, ha="left", va="baseline", fontsize=FS_BODY, color=col, fontstyle=style)
                 fit.append((t, body))
-                xx = t.get_window_extent(rend).transformed(ax.transData.inverted()).x1
+                w_pt = ttp.get_text_width_height_descent(seg, FontProperties(family="Liberation Sans", style=style, size=FS_BODY), ismath=False)[0]
+                xx += w_pt / 72.0
 
 
     def dot(x, y, col):
@@ -716,7 +720,7 @@ def candidate_A3(verbose=True):
     icon_fusion(ax, x + 0.10, cy + 0.08, 0.46, ring=False, reused={(0, 0), (0, 1), (1, 0), (1, 1), (3, 0), (3, 1)}, flagged=False)
     sentence(x + 0.68, bm, "A capped number of\nunprotected patches keep their\ntoken from the previous call.", body)
     fx = xs["enc"] + bw + 0.15
-    leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.16), (fx, cy - 0.16), (fx, mid + 0.03)], C_FUSION)
+    leader([(x + cw / 2, cy), (x + cw / 2, cy - 0.12), (fx, cy - 0.12), (fx, mid + 0.03)], C_FUSION)
     dot(fx, mid, C_FUSION)
     # depth pruning, on the decoder stack
     x = 0.10 + 2 * (cw + gap)
@@ -724,7 +728,7 @@ def candidate_A3(verbose=True):
     icon_depth2(ax, x + 0.10, cy + 0.07, 0.48)
     sentence(x + 0.70, bm, "The layers lowest in Block\nInfluence are removed,\nthe ends kept.", body)
     dx = xs["dec"] + bw / 2
-    leader([(x + 0.55, cy), (x + 0.55, cy - 0.24), (dx, cy - 0.24), (dx, py + ph + 0.04)], C_DEPTH)
+    leader([(x + 0.55, cy), (x + 0.55, cy - 0.19), (dx, cy - 0.19), (dx, py + ph + 0.04)], C_DEPTH)
     dot(dx, py + ph + 0.01, C_DEPTH)
 
     # --- controls below, in the outer columns ---
@@ -746,7 +750,7 @@ def candidate_A3(verbose=True):
     icon_repeat(ax, x + 0.10, ky + 0.05, 1.24, fs=FS_SUB, h=0.42, span="$k$ steps", labels=("call", "hold", "…", "hold"))
     sentence(x + 1.42, ky + (kh - 0.22) / 2, "Each action is\nheld for $k$ steps\nwith one call.", body)
     rx = (xs["act"] + bw + xs["env"]) / 2
-    leader([(rx, ky + kh), (rx, mid - 0.04)], C_CTRL)
+    leader([(rx, ky + kh), (rx, mid - 0.03)], C_CTRL)
     dot(rx, mid, C_CTRL)
 
     if verbose:
