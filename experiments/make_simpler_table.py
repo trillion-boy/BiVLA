@@ -191,8 +191,8 @@ def main():
     ref = load_ref()
     blocks = []
     for name, params, bk in BACKBONES:
-        lines = [f"\\multirow[c]{{{len(FAMILIES)}}}{{*}}{{{name}}} ",
-                 f"& \\multirow[c]{{{len(FAMILIES)}}}{{*}}{{{params}}} "]
+        lines = [f"\\multirow[c]{{{len(FAMILIES)}}}{{*}}{{{name}}}",
+                 f"& \\multirow[c]{{{len(FAMILIES)}}}{{*}}{{{params}}}"]
         for fi, (fam, label) in enumerate(FAMILIES):
             cells = []
             for ei, (env, _) in enumerate(ENVS):
@@ -218,7 +218,9 @@ def main():
 %% environment step, per the mentor's decision of 2026-09-08. It replaces the
 %% cycle_median_latency_ms values of the earlier Overleaf table. Success and
 %% Avg. Steps cells are the author's own cells (tableI_overleaf_ref.tex),
-%% verified against the CSVs; only the latency cells are new.
+%% verified against the CSVs; only the latency cells are new. As in the
+%% author's table, the parenthesis is the raw change rounded to two decimals,
+%% so it can differ by 0.01 from the difference of the two printed numbers.
 %% CronusVLA depth pruning rows are "--" until the mentor's rerun of those six
 %% settings arrives. UniVLA and MiniVLA have no Fractal checkpoint.
 %% Needs booktabs, multirow, xcolor. Spans both columns.
