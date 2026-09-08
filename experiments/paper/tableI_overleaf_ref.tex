@@ -1,8 +1,12 @@
 %% The author's Overleaf Table I source as of 2026-09-08, before the latency
 %% column was redefined. make_simpler_table.py copies its success and Avg.
-%% Steps cells verbatim (they were produced from data more precise than the
-%% 3-decimal CSVs, so x.xx5 midpoints cannot be re-rounded from the CSVs) and
-%% recomputes only the latency cells. Not compiled on its own.
+%% Steps cells verbatim and recomputes only the latency cells. The CSV means
+%% are exact (avg_steps x episodes is an integer), so cells such as 49.705 are
+%% true midpoints; the author's pipeline rounded them from floating-point
+%% sums whose last bits the CSV does not carry (50.845 -> 50.85 but 49.705 ->
+%% 49.70), so no rule applied to the CSV strings reproduces every cell, and
+%% the author's digits are kept for the two columns whose definition did not
+%% change. Not compiled on its own.
 \begin{table*}[t]
 \centering
 \caption{SimplerEnv results on WidowX and Google Robot/Fractal. Values in parentheses indicate the change relative to the original policy of the same model and environment.}

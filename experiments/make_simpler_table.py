@@ -21,13 +21,16 @@ CogACT, OpenVLA, SpatialVLA, CronusVLA, UniVLA, MiniVLA.
 
 Success and Avg. Steps cells are copied verbatim from the author's table
 (paper/tableI_overleaf_ref.tex) whenever that table has the cell. Their
-definition did not change, and the author produced them from data more
-precise than the 3-decimal CSVs: the CSV midpoints 50.845 and 49.705 print
-as 50.85 and 49.70 there, which no rounding rule applied to the CSV strings
-reproduces. Each copied cell is checked against the CSV (value within 0.011
-of the CSV value, sign of the change consistent) and the script stops on a
-disagreement. Cells the author's table lacks (a future CronusVLA depth
-rerun, new backbones) are computed from the CSV with half-up rounding.
+definition did not change. The CSV means are exact (avg_steps x episodes is
+an integer), so values such as 49.705 are true midpoints, and the author's
+pipeline rounded them from floating-point sums: 50.845 prints as 50.85 there
+but 49.705 as 49.70, which no rule applied to the CSV strings reproduces.
+Keeping the author's digits avoids 0.01 changes in columns that did not
+change. Each copied cell is checked against the CSV (value within 0.011 of
+the CSV value, change within 0.011 of the raw change, colour consistent
+with the sign) and the script stops on a disagreement. Cells the author's
+table lacks (a future CronusVLA depth rerun, new backbones) are computed
+from the CSV with half-up rounding.
 
 Latency cells are always computed: value = 1000 * avg_episode_time_s /
 avg_steps rounded half-up, change = raw difference from the Original row
