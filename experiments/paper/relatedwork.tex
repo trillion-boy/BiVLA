@@ -1,5 +1,6 @@
 % ---------------------------------------------------------------------------
-% II. Related Work -- SIX-FAMILY version, v3, 2026-09-03. The canonical file.
+% II. Related Work -- v3, 2026-09-03, five families since 2026-09-08 (VLA-Cache
+% is cited, not run). The canonical file.
 % The three-method version is kept as relatedwork_3method_backup.tex.
 %
 % Sources: docs/literature_review.md, docs/methodology.md and
@@ -9,8 +10,8 @@
 % Structure, in the order Methods (III.B) and Results walk through:
 %   1. Inference cost in VLA policies      the three resource axes
 %   2. Generic shortcuts as controls       foveation, unconditional repeat
-%   3. The recent baseline                 VLA-Cache, and why VLM token
-%                                          methods transfer poorly
+%   3. The published point of comparison   VLA-Cache (cited, not run), and
+%                                          why VLM token methods transfer poorly
 %   4. Conditional candidates              depth, guarded reuse,
 %                                          temporal fusion + shared mask
 %   5. How these claims are evaluated      benchmarks, the missing
@@ -31,11 +32,11 @@
 % paths, has no citable source and is not stated. See RelatedWork_Sources.md
 % row 31.
 %
-% Ownership: three of the six are first-party recipes (calibrated depth,
+% Ownership: three of the five are first-party recipes (calibrated depth,
 % guarded reuse, shared-mask fusion), per docs/literature_review.md line 22.
 % The text says "we add", "our guarded reuse", "we build" for those, and
-% "baseline" / "control" for the other three. Novelty of the mechanisms is
-% not claimed anywhere; the contribution is the protocol.
+% "control" for the other two. Novelty of the mechanisms is not claimed
+% anywhere; the contribution is the protocol.
 %
 % Data-driven edits, 2026-09-03, after the mentor's 12 CSVs arrived:
 %   "why the candidate methods need gates" -> "when". Fixed repeat 2 collapses
@@ -569,11 +570,28 @@
 %   rows in every column, so no attention was collected there; CronusVLA
 %   fusion rows are identical (keyframe interval 1). III.E describes the
 %   method as designed; Results must scope these rows.
+% Twentieth pass, 2026-09-08, the mentor's answers:
+%   - VLA-Cache is not run ("we can skip this"). "six intervention families"
+%     -> "five" in the lead-in, the axis paragraph and the closing paragraph.
+%     "The published baseline." -> "The published point of comparison." and
+%     one sentence added: "We do not run it and cite it as the point the
+%     field measures against." The paragraph stays as literature for the
+%     token-reuse candidates and the VLM-transfer finding.
+%   - Latency column: avg_episode_time_s / avg_steps (wall-clock per
+%     environment step), so the RW gate wording "lowers latency, with the
+%     cost of any run-time signal included" stands as is. tablesimpler.tex
+%     carries the Overleaf layout with that column.
+%   - SmolVLA is running and will arrive with the per-episode files; it
+%     becomes a seventh backbone in Table II. RW hardcodes no backbone count.
+%   - CronusVLA depth pruning is being rerun (six settings); tables print
+%     "--" for those rows until then.
+%   - Attention backend: the mentor points to a "Bag of Tricks" document not
+%     yet in the repo. "under fused attention" stays pending that document.
 % ---------------------------------------------------------------------------
 
 \section{Related Work}
 
-We cover the cost of VLA inference, the six intervention families we evaluate,
+We cover the cost of VLA inference, the five intervention families we evaluate,
 grouped by the role each plays in our argument, and how the literature tests
 efficiency claims.
 
@@ -589,7 +607,7 @@ the policy is shown}. The image is degraded before the encoder, or its visual
 tokens are reduced or reused. 3)~The third is \emph{how much of the decoder
 each call runs}. Layers are removed. Each method we consider changes one of
 these three things, so we treat the three as axes rather than as competing
-methods, and each of the six families below acts on one axis.
+methods, and each of the five families below acts on one axis.
 
 \textbf{Generic shortcuts, used as controls.} The simplest shortcuts degrade
 the input or skip feedback unconditionally, with no signal to say when. On the
@@ -619,13 +637,14 @@ limit of guarded reuse, so the pair shows what ungated skipping costs and how
 much skipping the gates admit. Foveation degrades the input with no signal and
 establishes what perceptual simplification alone does to success.
 
-\textbf{The published baseline.} VLA-Cache reuses the cached key-value entries
-of visually static patches and recomputes those that move or that the decoder's
-attention marks as task-relevant~\cite{vlacache}. On OpenVLA's task-finetuned
-LIBERO checkpoints, it reports an average success of 74.7\% against 75.0\%
-dense at 39\% lower CUDA latency, a speed result at nearly unchanged success.
-Later work on training-free VLA acceleration adopts it as a
-baseline~\cite{vlapruner, efficientvla, specprune}. The same paper reports that
+\textbf{The published point of comparison.} VLA-Cache reuses the cached
+key-value entries of visually static patches and recomputes those that move or
+that the decoder's attention marks as task-relevant~\cite{vlacache}. On
+OpenVLA's task-finetuned LIBERO checkpoints, it reports an average success of
+74.7\% against 75.0\% dense at 39\% lower CUDA latency, a speed result at
+nearly unchanged success. Later work on training-free VLA acceleration adopts
+it as a baseline~\cite{vlapruner, efficientvla, specprune}. We do not run it
+and cite it as the point the field measures against. The same paper reports that
 two visual token reduction methods developed for vision-language
 models~\cite{fastv, sparsevlm} transfer poorly to VLAs. It attributes their
 loss of success to working within a single frame and disrupting spatial
@@ -712,7 +731,7 @@ quantization, which lowers numerical precision rather than changing any of the
 three things above, and learned early exit, which trains the exits into the
 policy~\cite{deervla}. Evaluating a set of tricks under one protocol, rather
 than under a different protocol per paper, is an established
-practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the six families
+practice~\cite{bagoftricks_cnn, bagoftricks_llm}. We evaluate the five families
 under one protocol in three environments, namely the WidowX Bridge and Google
 Robot (Fractal) environments of SimplerEnv and LIBERO with its four suites.
 Each backbone runs in every environment for which a checkpoint at the evaluated

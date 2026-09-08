@@ -9,9 +9,8 @@
 %   - VLA-Cache is OUT of Methods. It is not in either table. Related Work
 %     keeps it as the literature baseline. If rollouts arrive, add a
 %     subsection B' between action repeat and depth pruning, three sentences.
-%     NOTE: Related Work still says "six intervention families". If the
-%     tables stay at five, RW changes to five and its VLA-Cache paragraph
-%     shrinks. Pending the mentor's rollout answer.
+%     RESOLVED 2026-09-08: the mentor skips VLA-Cache. Related Work now says
+%     five families and cites VLA-Cache as the published point of comparison.
 %   - Motivation and lineage are gone (Related Work has them). Each
 %     subsection states only what runs, with symbols, not values.
 %   - Rule for variants: Methods defines the knob and, where settings have
@@ -274,6 +273,15 @@
 %   (flashvla), translation floor as SpecPrune-VLA's speed signal (specprune),
 %   hard fusion and keyframe (ttfvla), image-entropy term (vlainfoentropy).
 %   Each attribution is the one Related Work already makes.
+% Twentieth pass, 2026-09-08, the mentor's answers. No body change. Resolved:
+%   latency column is avg_episode_time_s / avg_steps (per environment step,
+%   III.A "adds only its own time to each call" and III.D/E signal-time
+%   sentences stand); VLA-Cache skipped (five families everywhere); CronusVLA
+%   depth pruning rerun in progress (six settings); SmolVLA running, per-episode
+%   files to follow. Still pending: attention backend (mentor's "Bag of
+%   Tricks" document, not yet in the repo), depth mechanism on the non-MiniVLA
+%   harnesses, the task-aware attention producer, row setting names and the
+%   tie rule in the Overleaf tables, parameter counts.
 % ---------------------------------------------------------------------------
 
 \section{Bag of Tricks}

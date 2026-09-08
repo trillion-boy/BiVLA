@@ -37,6 +37,13 @@ step; MiniVLA repeat 4 has median 7.7 ms and p95 106 ms. The mean, episode
 time over steps, is the only summary that is a cost per step.
 
 Output: paper/tabletricks.tex  (needs booktabs, multirow, graphicx)
+
+2026-09-08: the mentor confirmed this latency definition ("replace
+cycle_median_latency_ms with avg_episode_time_s / avg_steps"). The Overleaf
+manuscript uses a different layout (backbone row groups, environment column
+groups, changes in parentheses); make_simpler_table.py writes that one as
+paper/tablesimpler.tex. CronusVLA depth pruning rows are being rerun by the
+mentor; the values here are the pre-rerun ones.
 """
 import csv
 import os
