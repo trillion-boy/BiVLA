@@ -19,11 +19,19 @@ model and its parameter count, cells "52.50 {\\scriptsize\\textcolor{...}
 zero and red otherwise, \\cmidrule(lr){1-9} between backbones, model order
 CogACT, OpenVLA, SpatialVLA, CronusVLA, UniVLA, MiniVLA.
 
-Rounding is half-up on the decimal strings in the CSV (50.845 -> 50.85), the
-convention the author's table uses, not Python's float formatting. The
-parenthesised change is the difference of the two printed values, so the
-arithmetic on the page closes. Table II should follow the same rule when it
-is regenerated.
+Success and Avg. Steps cells are copied verbatim from the author's table
+(paper/tableI_overleaf_ref.tex) whenever that table has the cell. Their
+definition did not change, and the author produced them from data more
+precise than the 3-decimal CSVs: the CSV midpoints 50.845 and 49.705 print
+as 50.85 and 49.70 there, which no rounding rule applied to the CSV strings
+reproduces. Each copied cell is checked against the CSV (value within 0.011
+of the CSV value, sign of the change consistent) and the script stops on a
+disagreement. Cells the author's table lacks (a future CronusVLA depth
+rerun, new backbones) are computed from the CSV with half-up rounding.
+
+Latency cells are always computed: value = 1000 * avg_episode_time_s /
+avg_steps rounded half-up, change = raw difference from the Original row
+rounded half-up, green when <= 0.
 
 CronusVLA depth pruning rows print "--": the mentor is rerunning those six
 settings (three budgets in two environments). Drop the pair from PENDING
@@ -35,6 +43,7 @@ on the mentor question list, as are the parameter counts printed here.
 """
 import csv
 import os
+import re
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -42,6 +51,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 CSV_DIR = os.path.join(ROOT, "artifacts", "results", "mentor_csv")
 OUT = os.path.join(HERE, "paper", "tablesimpler.tex")
+REF = os.path.join(HERE, "paper", "tableI_overleaf_ref.tex")
 
 ENVS = [
     ("simpler_widowx", "WidowX"),
@@ -75,11 +85,38 @@ DASH = "--"
 GOOD = "green!50!black"
 BAD = "red"
 CENT = Decimal("0.01")
+CELL_RE = re.compile(r"^([-\d.]+|--)(?: \{\\scriptsize\\textcolor\{"
+                     r"(green!50!black|red)\}\{\(([-+][\d.]+)\)\}\})?$")
 
 
 def q(x):
-    """Half-up rounding to two decimals, on a Decimal."""
     return x.quantize(CENT, rounding=ROUND_HALF_UP)
+
+
+def load_ref():
+    """{(backbone key, family prefix, env index, column): cell text} from the
+    author's table. Column 0 success, 1 latency, 2 steps."""
+    if not os.path.exists(REF):
+        return {}
+    out, model, fi = {}, None, 0
+    for line in open(REF):
+        line = line.strip()
+        m = re.search(r"\\multirow\[c\]\{\d+\}\{\*\}\{(\w+)\}", line)
+        if m and line.startswith("\\multirow"):
+            model = next(k for n, _, k in BACKBONES if n == m.group(1))
+            fi = 0
+            continue
+        if not line.endswith("\\\\") or not line.startswith("&") \
+                or "Success" in line or "multicolumn" in line:
+            continue
+        parts = [p.strip() for p in line[:-2].split("&") if p.strip() != ""]
+        cells = parts[1:]
+        fam = FAMILIES[fi][0]
+        fi += 1
+        for ei in range(len(ENVS)):
+            for col in range(3):
+                out[(model, fam, ei, col)] = cells[3 * ei + col]
+    return out
 
 
 def load(env_key):
@@ -97,42 +134,68 @@ def load(env_key):
 
 
 def metrics(row):
-    """(success, latency ms, steps) as printed, i.e. rounded half-up."""
+    """(success, latency ms, steps) as exact Decimals from the CSV strings."""
     steps = Decimal(row["avg_steps"])
     latency = Decimal(row["avg_episode_time_s"]) * 1000 / steps
-    return q(Decimal(row["success_rate_pct"])), q(latency), q(steps)
+    return Decimal(row["success_rate_pct"]), latency, steps
 
 
-def cell(value, base, higher_is_better):
+def computed(value, base, higher_is_better):
+    """Cell text from the CSV: half-up value, half-up raw change."""
     if base is None:
-        return f"{value:.2f}"
-    d = value - base
+        return f"{q(value):.2f}"
+    d = q(value - base)
     good = d >= 0 if higher_is_better else d <= 0
     colour = GOOD if good else BAD
-    return f"{value:.2f} {{\\scriptsize\\textcolor{{{colour}}}{{({d:+.2f})}}}}"
+    return f"{q(value):.2f} {{\\scriptsize\\textcolor{{{colour}}}{{({d:+.2f})}}}}"
 
 
-def triple(row, base_row):
+def checked_ref(text, value, base, higher_is_better, where):
+    """The author's cell, verified against the CSV before use."""
+    m = CELL_RE.match(text)
+    if not m or m.group(1) == DASH:
+        return None
+    if abs(Decimal(m.group(1)) - value) > Decimal("0.011"):
+        raise SystemExit(f"{where}: author's cell {text} vs CSV {value}")
+    if base is None:
+        if m.group(3) is not None:
+            raise SystemExit(f"{where}: Original row carries a change")
+        return text
+    if m.group(3) is None:
+        raise SystemExit(f"{where}: change missing in {text}")
+    d = Decimal(m.group(3))
+    if abs(d - (value - base)) > Decimal("0.011"):
+        raise SystemExit(f"{where}: author's change {text} vs CSV {value - base}")
+    good = d >= 0 if higher_is_better else d <= 0
+    if (m.group(2) == GOOD) != good:
+        raise SystemExit(f"{where}: colour disagrees with the sign in {text}")
+    return text
+
+
+def triple(row, base_row, ref, key):
     s, l, n = metrics(row)
-    if base_row is None:
-        return " & ".join(f"{v:.2f}" for v in (s, l, n))
-    bs, bl, bn = metrics(base_row)
-    return " & ".join([
-        cell(s, bs, True),
-        cell(l, bl, False),
-        cell(n, bn, False),
-    ])
+    bs, bl, bn = metrics(base_row) if base_row is not None else (None,) * 3
+    out = []
+    for col, (v, b, hib) in enumerate([(s, bs, True), (l, bl, False),
+                                        (n, bn, False)]):
+        text = None
+        if col != 1 and (key + (col,)) in ref:
+            text = checked_ref(ref[key + (col,)], v, b, hib,
+                               f"{key[0]}/{key[1]}/env{key[2]}/col{col}")
+        out.append(text if text is not None else computed(v, b, hib))
+    return " & ".join(out)
 
 
 def main():
     data = {env: load(env) for env, _ in ENVS}
+    ref = load_ref()
     blocks = []
     for name, params, bk in BACKBONES:
         lines = [f"\\multirow[c]{{{len(FAMILIES)}}}{{*}}{{{name}}} ",
                  f"& \\multirow[c]{{{len(FAMILIES)}}}{{*}}{{{params}}} "]
         for fi, (fam, label) in enumerate(FAMILIES):
             cells = []
-            for env, _ in ENVS:
+            for ei, (env, _) in enumerate(ENVS):
                 rows = data[env].get(bk)
                 if rows is None or (bk, fam) in PENDING:
                     cells.append(" & ".join([DASH] * 3))
@@ -140,7 +203,7 @@ def main():
                 if fam not in rows:
                     raise SystemExit(f"{env}/{bk}: no row for {fam}")
                 base = None if fam == "original" else rows["original"]
-                cells.append(triple(rows[fam], base))
+                cells.append(triple(rows[fam], base, ref, (bk, fam, ei)))
             prefix = "& " if fi == 0 else "& & "
             lines.append(f"{prefix}{label} & " + " & ".join(cells) + " \\\\")
         blocks.append("\n".join(lines))
@@ -153,8 +216,9 @@ def main():
 %%
 %% Latency is avg_episode_time_s * 1000 / avg_steps, wall-clock per
 %% environment step, per the mentor's decision of 2026-09-08. It replaces the
-%% cycle_median_latency_ms values of the earlier Overleaf table. Rounding is
-%% half-up; the parenthesis is the difference of the two printed values.
+%% cycle_median_latency_ms values of the earlier Overleaf table. Success and
+%% Avg. Steps cells are the author's own cells (tableI_overleaf_ref.tex),
+%% verified against the CSVs; only the latency cells are new.
 %% CronusVLA depth pruning rows are "--" until the mentor's rerun of those six
 %% settings arrives. UniVLA and MiniVLA have no Fractal checkpoint.
 %% Needs booktabs, multirow, xcolor. Spans both columns.

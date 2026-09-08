@@ -1,0 +1,83 @@
+%% The author's Overleaf Table I source as of 2026-09-08, before the latency
+%% column was redefined. make_simpler_table.py copies its success and Avg.
+%% Steps cells verbatim (they were produced from data more precise than the
+%% 3-decimal CSVs, so x.xx5 midpoints cannot be re-rounded from the CSVs) and
+%% recomputes only the latency cells. Not compiled on its own.
+\begin{table*}[t]
+\centering
+\caption{SimplerEnv results on WidowX and Google Robot/Fractal. Values in parentheses indicate the change relative to the original policy of the same model and environment.}
+\label{tab:simplerenv-results}
+\small
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{cclcccccc}
+\toprule
+\multirow{2}{*}{Model} & \multirow{2}{*}{Parameters} & \multirow{2}{*}{Policy}
+& \multicolumn{3}{c}{WidowX}
+& \multicolumn{3}{c}{Google Fractal} \\
+\cmidrule(lr){4-6}
+\cmidrule(lr){7-9}
+& & & Success $\uparrow$ (\%) & Latency $\downarrow$ (ms) & Avg. Steps $\downarrow$
+& Success $\uparrow$ (\%) & Latency $\downarrow$ (ms) & Avg. Steps $\downarrow$ \\
+\midrule
+
+\multirow[c]{6}{*}{CogACT}
+& \multirow[c]{6}{*}{7.6B}
+& Original & 50.00 & 141.48 & 50.85 & 66.80 & 167.19 & 44.78 \\
+& & Foveation & 52.50 {\scriptsize\textcolor{green!50!black}{(+2.50)}} & 159.79 {\scriptsize\textcolor{red}{(+18.31)}} & 46.57 {\scriptsize\textcolor{green!50!black}{(-4.28)}} & 67.20 {\scriptsize\textcolor{green!50!black}{(+0.40)}} & 192.83 {\scriptsize\textcolor{red}{(+25.64)}} & 44.34 {\scriptsize\textcolor{green!50!black}{(-0.44)}} \\
+& & Action repeat & 12.00 {\scriptsize\textcolor{red}{(-38.00)}} & 183.87 {\scriptsize\textcolor{red}{(+42.40)}} & 70.61 {\scriptsize\textcolor{red}{(+19.76)}} & 65.60 {\scriptsize\textcolor{red}{(-1.20)}} & 240.01 {\scriptsize\textcolor{red}{(+72.82)}} & 46.67 {\scriptsize\textcolor{red}{(+1.89)}} \\
+& & Depth pruning & 59.50 {\scriptsize\textcolor{green!50!black}{(+9.50)}} & 137.40 {\scriptsize\textcolor{green!50!black}{(-4.08)}} & 47.14 {\scriptsize\textcolor{green!50!black}{(-3.71)}} & 66.80 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 162.10 {\scriptsize\textcolor{green!50!black}{(-5.09)}} & 43.92 {\scriptsize\textcolor{green!50!black}{(-0.86)}} \\
+& & Guarded reuse & 53.00 {\scriptsize\textcolor{green!50!black}{(+3.00)}} & 138.72 {\scriptsize\textcolor{green!50!black}{(-2.76)}} & 49.77 {\scriptsize\textcolor{green!50!black}{(-1.08)}} & 67.20 {\scriptsize\textcolor{green!50!black}{(+0.40)}} & 167.58 {\scriptsize\textcolor{red}{(+0.39)}} & 44.43 {\scriptsize\textcolor{green!50!black}{(-0.35)}} \\
+& & Temporal fusion & 58.00 {\scriptsize\textcolor{green!50!black}{(+8.00)}} & 141.93 {\scriptsize\textcolor{red}{(+0.45)}} & 47.41 {\scriptsize\textcolor{green!50!black}{(-3.44)}} & 65.60 {\scriptsize\textcolor{red}{(-1.20)}} & 169.48 {\scriptsize\textcolor{red}{(+2.29)}} & 44.54 {\scriptsize\textcolor{green!50!black}{(-0.23)}} \\
+\cmidrule(lr){1-9}
+
+\multirow[c]{6}{*}{OpenVLA}
+& \multirow[c]{6}{*}{7.5B}
+& Original & 43.50 & 167.42 & 50.91 & 35.60 & 168.01 & 64.31 \\
+& & Foveation & 30.00 {\scriptsize\textcolor{red}{(-13.50)}} & 172.87 {\scriptsize\textcolor{red}{(+5.46)}} & 62.52 {\scriptsize\textcolor{red}{(+11.61)}} & 24.40 {\scriptsize\textcolor{red}{(-11.20)}} & 179.24 {\scriptsize\textcolor{red}{(+11.23)}} & 68.24 {\scriptsize\textcolor{red}{(+3.92)}} \\
+& & Action repeat & 28.00 {\scriptsize\textcolor{red}{(-15.50)}} & 87.08 {\scriptsize\textcolor{green!50!black}{(-80.33)}} & 60.50 {\scriptsize\textcolor{red}{(+9.59)}} & 40.00 {\scriptsize\textcolor{green!50!black}{(+4.40)}} & 87.53 {\scriptsize\textcolor{green!50!black}{(-80.48)}} & 62.91 {\scriptsize\textcolor{green!50!black}{(-1.40)}} \\
+& & Depth pruning & 47.50 {\scriptsize\textcolor{green!50!black}{(+4.00)}} & 157.14 {\scriptsize\textcolor{green!50!black}{(-10.28)}} & 51.25 {\scriptsize\textcolor{red}{(+0.34)}} & 40.80 {\scriptsize\textcolor{green!50!black}{(+5.20)}} & 158.57 {\scriptsize\textcolor{green!50!black}{(-9.44)}} & 61.86 {\scriptsize\textcolor{green!50!black}{(-2.46)}} \\
+& & Guarded reuse & 45.50 {\scriptsize\textcolor{green!50!black}{(+2.00)}} & 160.82 {\scriptsize\textcolor{green!50!black}{(-6.59)}} & 49.69 {\scriptsize\textcolor{green!50!black}{(-1.22)}} & 36.40 {\scriptsize\textcolor{green!50!black}{(+0.80)}} & 168.30 {\scriptsize\textcolor{red}{(+0.29)}} & 64.20 {\scriptsize\textcolor{green!50!black}{(-0.12)}} \\
+& & Temporal fusion & 50.50 {\scriptsize\textcolor{green!50!black}{(+7.00)}} & 180.09 {\scriptsize\textcolor{red}{(+12.68)}} & 50.53 {\scriptsize\textcolor{green!50!black}{(-0.38)}} & 42.40 {\scriptsize\textcolor{green!50!black}{(+6.80)}} & 182.03 {\scriptsize\textcolor{red}{(+14.02)}} & 61.44 {\scriptsize\textcolor{green!50!black}{(-2.88)}} \\
+\cmidrule(lr){1-9}
+
+\multirow[c]{6}{*}{SpatialVLA}
+& \multirow[c]{6}{*}{4.0B}
+& Original & 45.00 & 423.06 & 45.15 & 59.20 & 446.86 & 49.58 \\
+& & Foveation & 50.00 {\scriptsize\textcolor{green!50!black}{(+5.00)}} & 446.88 {\scriptsize\textcolor{red}{(+23.82)}} & 45.57 {\scriptsize\textcolor{red}{(+0.42)}} & 57.20 {\scriptsize\textcolor{red}{(-2.00)}} & 475.58 {\scriptsize\textcolor{red}{(+28.73)}} & 49.15 {\scriptsize\textcolor{green!50!black}{(-0.43)}} \\
+& & Action repeat & 41.00 {\scriptsize\textcolor{red}{(-4.00)}} & 467.81 {\scriptsize\textcolor{red}{(+44.74)}} & 49.38 {\scriptsize\textcolor{red}{(+4.23)}} & 59.20 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 520.24 {\scriptsize\textcolor{red}{(+73.39)}} & 50.40 {\scriptsize\textcolor{red}{(+0.83)}} \\
+& & Depth pruning & 38.50 {\scriptsize\textcolor{red}{(-6.50)}} & 408.57 {\scriptsize\textcolor{green!50!black}{(-14.49)}} & 49.70 {\scriptsize\textcolor{red}{(+4.56)}} & 56.80 {\scriptsize\textcolor{red}{(-2.40)}} & 425.88 {\scriptsize\textcolor{green!50!black}{(-20.97)}} & 50.74 {\scriptsize\textcolor{red}{(+1.16)}} \\
+& & Guarded reuse & 45.50 {\scriptsize\textcolor{green!50!black}{(+0.50)}} & 422.22 {\scriptsize\textcolor{green!50!black}{(-0.85)}} & 45.12 {\scriptsize\textcolor{green!50!black}{(-0.02)}} & 60.00 {\scriptsize\textcolor{green!50!black}{(+0.80)}} & 444.92 {\scriptsize\textcolor{green!50!black}{(-1.93)}} & 49.44 {\scriptsize\textcolor{green!50!black}{(-0.14)}} \\
+& & Temporal fusion & 46.00 {\scriptsize\textcolor{green!50!black}{(+1.00)}} & 427.96 {\scriptsize\textcolor{red}{(+4.90)}} & 45.34 {\scriptsize\textcolor{red}{(+0.19)}} & 60.00 {\scriptsize\textcolor{green!50!black}{(+0.80)}} & 450.54 {\scriptsize\textcolor{red}{(+3.68)}} & 47.71 {\scriptsize\textcolor{green!50!black}{(-1.87)}} \\
+\cmidrule(lr){1-9}
+
+\multirow[c]{6}{*}{CronusVLA}
+& \multirow[c]{6}{*}{1.5B}
+& Original & 34.00 & 126.30 & 50.56 & 55.60 & 152.56 & 51.34 \\
+& & Foveation & 36.50 {\scriptsize\textcolor{green!50!black}{(+2.50)}} & 145.94 {\scriptsize\textcolor{red}{(+19.64)}} & 48.92 {\scriptsize\textcolor{green!50!black}{(-1.64)}} & 56.80 {\scriptsize\textcolor{green!50!black}{(+1.20)}} & 178.65 {\scriptsize\textcolor{red}{(+26.09)}} & 50.10 {\scriptsize\textcolor{green!50!black}{(-1.24)}} \\
+& & Action repeat & 3.50 {\scriptsize\textcolor{red}{(-30.50)}} & 162.78 {\scriptsize\textcolor{red}{(+36.48)}} & 73.40 {\scriptsize\textcolor{red}{(+22.84)}} & 58.40 {\scriptsize\textcolor{green!50!black}{(+2.80)}} & 223.08 {\scriptsize\textcolor{red}{(+70.52)}} & 57.43 {\scriptsize\textcolor{red}{(+6.09)}} \\
+& & Depth pruning & 35.00 {\scriptsize\textcolor{green!50!black}{(+1.00)}} & 123.06 {\scriptsize\textcolor{green!50!black}{(-3.24)}} & 52.17 {\scriptsize\textcolor{red}{(+1.62)}} & 59.20 {\scriptsize\textcolor{green!50!black}{(+3.60)}} & 148.44 {\scriptsize\textcolor{green!50!black}{(-4.13)}} & 49.78 {\scriptsize\textcolor{green!50!black}{(-1.56)}} \\
+& & Guarded reuse & 36.00 {\scriptsize\textcolor{green!50!black}{(+2.00)}} & 123.88 {\scriptsize\textcolor{green!50!black}{(-2.42)}} & 49.74 {\scriptsize\textcolor{green!50!black}{(-0.82)}} & 56.80 {\scriptsize\textcolor{green!50!black}{(+1.20)}} & 152.18 {\scriptsize\textcolor{green!50!black}{(-0.38)}} & 50.73 {\scriptsize\textcolor{green!50!black}{(-0.60)}} \\
+& & Temporal fusion & 33.50 {\scriptsize\textcolor{red}{(-0.50)}} & 126.67 {\scriptsize\textcolor{red}{(+0.37)}} & 51.21 {\scriptsize\textcolor{red}{(+0.65)}} & 57.20 {\scriptsize\textcolor{green!50!black}{(+1.60)}} & 154.18 {\scriptsize\textcolor{red}{(+1.62)}} & 50.54 {\scriptsize\textcolor{green!50!black}{(-0.80)}} \\
+\cmidrule(lr){1-9}
+
+\multirow[c]{6}{*}{UniVLA}
+& \multirow[c]{6}{*}{8.5B}
+& Original & 87.50 & 904.87 & 30.21 & -- & -- & -- \\
+& & Foveation & 79.00 {\scriptsize\textcolor{red}{(-8.50)}} & 923.51 {\scriptsize\textcolor{red}{(+18.64)}} & 34.57 {\scriptsize\textcolor{red}{(+4.36)}} & -- & -- & -- \\
+& & Action repeat & 12.50 {\scriptsize\textcolor{red}{(-75.00)}} & 1122.39 {\scriptsize\textcolor{red}{(+217.52)}} & 71.93 {\scriptsize\textcolor{red}{(+41.72)}} & -- & -- & -- \\
+& & Depth pruning & 82.00 {\scriptsize\textcolor{red}{(-5.50)}} & 870.36 {\scriptsize\textcolor{green!50!black}{(-34.51)}} & 31.64 {\scriptsize\textcolor{red}{(+1.43)}} & -- & -- & -- \\
+& & Guarded reuse & 87.50 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 898.19 {\scriptsize\textcolor{green!50!black}{(-6.68)}} & 30.07 {\scriptsize\textcolor{green!50!black}{(-0.15)}} & -- & -- & -- \\
+& & Temporal fusion & 87.50 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 908.60 {\scriptsize\textcolor{red}{(+3.72)}} & 30.21 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & -- & -- & -- \\
+\cmidrule(lr){1-9}
+
+\multirow[c]{6}{*}{MiniVLA}
+& \multirow[c]{6}{*}{1.4B}
+& Original & 36.00 & 105.63 & 63.84 & -- & -- & -- \\
+& & Foveation & 35.00 {\scriptsize\textcolor{red}{(-1.00)}} & 113.15 {\scriptsize\textcolor{red}{(+7.53)}} & 62.91 {\scriptsize\textcolor{green!50!black}{(-0.93)}} & -- & -- & -- \\
+& & Action repeat & 30.00 {\scriptsize\textcolor{red}{(-6.00)}} & 56.88 {\scriptsize\textcolor{green!50!black}{(-48.75)}} & 66.94 {\scriptsize\textcolor{red}{(+3.10)}} & -- & -- & -- \\
+& & Depth pruning & 18.50 {\scriptsize\textcolor{red}{(-17.50)}} & 103.61 {\scriptsize\textcolor{green!50!black}{(-2.02)}} & 67.44 {\scriptsize\textcolor{red}{(+3.60)}} & -- & -- & -- \\
+& & Guarded reuse & 38.50 {\scriptsize\textcolor{green!50!black}{(+2.50)}} & 102.71 {\scriptsize\textcolor{green!50!black}{(-2.92)}} & 62.65 {\scriptsize\textcolor{green!50!black}{(-1.19)}} & -- & -- & -- \\
+& & Temporal fusion & 39.00 {\scriptsize\textcolor{green!50!black}{(+3.00)}} & 107.08 {\scriptsize\textcolor{red}{(+1.46)}} & 61.16 {\scriptsize\textcolor{green!50!black}{(-2.68)}} & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table*}
