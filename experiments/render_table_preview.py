@@ -45,16 +45,17 @@ def main():
     rows = parse()
     n = len(rows)
     fig_h = 0.28 * (n + 3)
-    fig, ax = plt.subplots(figsize=(13, fig_h))
+    fig = plt.figure(figsize=(16, fig_h))
+    ax = fig.add_axes([0.0, 0.0, 1.0, 1.0])
     ax.axis("off")
     heads = ["Model", "Policy", "Success (%)", "Latency (ms)", "Avg. Steps",
              "Success (%)", "Latency (ms)", "Avg. Steps"]
-    xs = [0.02, 0.11, 0.26, 0.40, 0.54, 0.68, 0.82, 0.96]
+    xs = [0.01, 0.10, 0.29, 0.43, 0.57, 0.71, 0.85, 0.99]
     y = 1.0
     dy = 1.0 / (n + 3)
-    ax.text(0.40, y, "WidowX", ha="center", va="top", fontsize=9,
+    ax.text(0.43, y, "WidowX", ha="center", va="top", fontsize=9,
             fontweight="bold", transform=ax.transAxes)
-    ax.text(0.82, y, "Google Fractal", ha="center", va="top", fontsize=9,
+    ax.text(0.85, y, "Google Fractal", ha="center", va="top", fontsize=9,
             fontweight="bold", transform=ax.transAxes)
     y -= dy
     for x, h in zip(xs, heads):
@@ -78,7 +79,7 @@ def main():
                 ax.text(x, y, val, ha="right", va="top", fontsize=8,
                         transform=ax.transAxes)
             else:
-                ax.text(x - 0.055, y, val, ha="right", va="top", fontsize=8,
+                ax.text(x - 0.05, y, val, ha="right", va="top", fontsize=8,
                         transform=ax.transAxes)
                 ax.text(x, y, f"({chg})", ha="right", va="top", fontsize=7,
                         color=col, transform=ax.transAxes)
