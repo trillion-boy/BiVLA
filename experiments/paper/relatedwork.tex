@@ -585,15 +585,36 @@
 %     becomes a seventh backbone in Table II. RW hardcodes no backbone count.
 %   - CronusVLA depth pruning is being rerun (six settings); tables print
 %     "--" for those rows until then.
-%   - Attention backend: the mentor points to a "Bag of Tricks" document not
-%     yet in the repo. "under fused attention" stays pending that document.
+%   - Attention backend, from the mentor's attention_backend.md (received
+%     2026-09-08) plus the exported harness code: SpatialVLA's Gemma2 decoder
+%     runs EAGER (logit softcapping fallback), CogACT / CronusVLA / MiniVLA
+%     resolve to SDPA implicitly under transformers 4.47.0, SmolVLA calls
+%     torch SDPA explicitly, OpenVLA (benchmark_openvla_14.py 159) and UniVLA
+%     (adaptive_sparse_vla/inference.py 796) request sdpa. SDPA picks its
+%     kernel at run time, so no backbone guarantees FlashAttention-2. The
+%     three "fused attention" sentences therefore use the Audit 4.4 fallback:
+%     fusion paragraph "against dense inference on matched episodes";
+%     evaluation paragraph "We remove the first confound by pairing episodes
+%     and disclose the second by measuring every speedup against the dense
+%     implementation each backbone ships with, under the attention backend
+%     that Section IV-A records for it"; closing "against dense inference
+%     with the implementation each backbone ships with". The SpecPrune-VLA
+%     eager-vs-fused sentence stays as the reason the backend is recorded.
+%     HANDOFF to Setup IV-A: a per-backbone line with torch and transformers
+%     versions and the resolved backend (explicit SDPA: OpenVLA, UniVLA,
+%     SmolVLA; implicit SDPA: CogACT, CronusVLA, MiniVLA; eager Gemma2
+%     decoder: SpatialVLA), and the eager fallback that output_attentions
+%     forces on the task-aware fusion path. OPEN: the document does not cover
+%     OpenVLA or UniVLA, and the repo's OpenVLA LIBERO loader
+%     (inference_openvla_libero.py 122) defaults to eager, so the backend of
+%     the OpenVLA LIBERO column needs the mentor's confirmation.
 % ---------------------------------------------------------------------------
 
 \section{Related Work}
 
 We cover the cost of VLA inference, the five intervention families we evaluate,
-grouped by the role each plays in our argument, and how the literature tests
-efficiency claims.
+grouped by the role each plays in our argument, the published method the field
+measures against, and how the literature tests efficiency claims.
 
 \textbf{Inference cost in VLA policies.} Most VLA policies adapt pretrained
 vision-language models to output robot actions and inherit the size and latency
@@ -643,8 +664,8 @@ that the decoder's attention marks as task-relevant~\cite{vlacache}. On
 OpenVLA's task-finetuned LIBERO checkpoints, it reports an average success of
 74.7\% against 75.0\% dense at 39\% lower CUDA latency, a speed result at
 nearly unchanged success. Later work on training-free VLA acceleration adopts
-it as a baseline~\cite{vlapruner, efficientvla, specprune}. We do not run it
-and cite it as the point the field measures against. The same paper reports that
+it as a baseline~\cite{vlapruner, efficientvla, specprune}. We do not run it,
+and we cite it as the point the field measures against. The same paper reports that
 two visual token reduction methods developed for vision-language
 models~\cite{fastv, sparsevlm} transfer poorly to VLAs. It attributes their
 loss of success to working within a single frame and disrupting spatial
@@ -705,8 +726,8 @@ text-to-vision attention, using the second in our task-aware setting only. It
 adds an image-entropy term of the kind VLA-InfoEntropy uses and a protective
 ring around every flagged patch, and it caps the reusable fraction, which
 TTF-VLA fixes per suite in its VLA-Cache experiments and leaves to the mask in
-its OpenVLA experiments. We test it against dense inference under fused
-attention on matched episodes for every backbone we evaluate.
+its OpenVLA experiments. We test it against dense inference on matched
+episodes for every backbone we evaluate.
 
 \textbf{How these claims are evaluated.} The field reports results on
 SimplerEnv~\cite{simplerenv} and LIBERO~\cite{libero}, and recent work
@@ -725,8 +746,10 @@ tables we cite report mean success rates, which cannot say on which episodes an
 intervention helped. A speedup also depends on the dense baseline it is
 measured against, and an eager, unfused attention baseline inflates it relative
 to a fused one, as SpecPrune-VLA's own FlashAttention comparison
-shows~\cite{specprune}. We remove both confounds, the first by pairing episodes
-and the second by measuring every speedup against fused attention. We exclude
+shows~\cite{specprune}. We remove the first confound by pairing episodes and
+disclose the second by measuring every speedup against the dense implementation
+each backbone ships with, under the attention backend that Section~IV-A records
+for it. We exclude
 quantization, which lowers numerical precision rather than changing any of the
 three things above, and learned early exit, which trains the exits into the
 policy~\cite{deervla}. Evaluating a set of tricks under one protocol, rather
@@ -736,7 +759,8 @@ under one protocol in three environments, namely the WidowX Bridge and Google
 Robot (Fractal) environments of SimplerEnv and LIBERO with its four suites.
 Each backbone runs in every environment for which a checkpoint at the evaluated
 size is released, as listed in Section~IV-A. Every comparison is on matched
-episodes against dense inference under fused attention. A candidate is called
+episodes against dense inference with the implementation each backbone ships
+with. A candidate is called
 positive only when it lowers latency, with the cost of any run-time signal
 included, or raises success, by more than the preregistered margin that
 Section~IV-A fixes for that quantity. The quantity it does not improve must

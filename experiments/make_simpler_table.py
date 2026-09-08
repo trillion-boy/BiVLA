@@ -18,6 +18,14 @@ settings (three budgets in two environments) and will send new CSVs.
 Colours: \\up{} and \\dn{} wrap the parenthesised change, green when the
 change is in the arrow's direction or zero, red otherwise. Both are
 \\providecommand, so an existing definition in main.tex wins.
+
+The parenthesised change is the difference of the two printed (rounded)
+values, not of the raw values, so the arithmetic on the page closes. Table II
+should follow the same rule when it is regenerated.
+
+Ties on success within a family (seven in the current CSVs) are broken the
+way the mentor's summary.csv breaks them; the rule is not documented and is
+on the mentor question list.
 """
 import csv
 import os
@@ -84,7 +92,10 @@ def metrics(row):
 def cell(value, base, higher_is_better):
     if base is None:
         return f"{value:.2f}"
-    d = value - base
+    # The change is the difference of the two printed values, so a reader
+    # who subtracts the numbers on the page recovers the parenthesis exactly.
+    d = round(value, 2) - round(base, 2)
+    d = 0.0 if abs(d) < 0.005 else d
     good = d >= 0 if higher_is_better else d <= 0
     macro = "up" if good else "dn"
     return f"{value:.2f} \\{macro}{{{d:+.2f}}}"
