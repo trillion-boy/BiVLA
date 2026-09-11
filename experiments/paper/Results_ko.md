@@ -42,7 +42,8 @@
 
 **도입 문단.** 표 두 개가 무엇을 보여주는지(dense 정책과 가족별 최고 설정,
 괄호는 dense 대비 변화, Latency는 스텝당 벽시계 시간), 그리고 검정 결과
-요약. 110칸 중 26칸이 유의하게 변하고 그중 22칸이 하락. 110번 비교하면
+요약. 110칸(백본 × 환경 조합 22개 × 개입 가족 5개, Original 행은 기준이라 세지
+않음) 중 26칸이 유의하게 변하고 그중 22칸이 하락. 110번 비교하면
 우연히 약 다섯 개가 문턱을 넘는데, 상승 4칸(CogACT WidowX depth +9.5, CogACT
 WidowX motion-entropy fusion +8.0, OpenVLA Fractal task-aware +6.8, UniVLA
 Goal foveation +7.0)은 딱 그 크기와 개수. 하락은 22칸 중 20칸이 10점 이상이고
