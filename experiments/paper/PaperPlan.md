@@ -418,3 +418,37 @@ per-step latency that means the same thing on every harness.
 - Bootstrap CIs on step change (already in `paired_results.csv`).
 - Reuse count per episode as a histogram for the reuse paragraph.
 - Per-GPU SmolVLA latency, if SmolVLA latency is kept with a footnote.
+
+## 8. Checklist for 2026-09-12
+
+Drafted and in the branch (2026-09-11): IV-A `setup.tex` (mentor's section,
+brackets for GPU, versions, calibration source), IV-B and IV-C
+`results.tex`, Korean explanations `Setup_ko.md`, `Results_ko.md`.
+
+Waiting on the mentor: the three reruns (UniVLA WidowX task-aware,
+CronusVLA WidowX reuse presets, CronusVLA fusion settings), SmolVLA stack
+decision, SmolVLA depth indices, GPU and versions for IV-A, CogACT
+task-aware confirmation, OpenVLA Long conservative-adaptive.
+
+To do next, in order:
+1. Introduction: send the mentor the two bundles (five result-driven edits,
+   three style edits) with before and after sentences; the results
+   paragraph is rewritten around the three claims (sign not of the rule,
+   sign not of the backbone, three distinct quantities plus gates).
+2. Results: replace "We propose no setting on the strength of these cells"
+   with the supported thesis sentence, and add the gate-record
+   recommendation at the end of IV-C (both drafted in chat, not applied).
+3. Section V Conclusion, Limitations, Future work: three conclusions, the
+   three recommendations the Intro promises, limitations (one seed, one
+   run, simulation only, SmolVLA mixed stack, CogACT no attention path,
+   thresholds not tuned per backbone, peak memory not measured), future
+   work (eligibility window from the August study, per-backbone threshold
+   sweep, real robot).
+4. Abstract: rewrite from the Overleaf three-method version.
+5. Related Work: drop or restate the "preregistered margin that Section
+   IV-A fixes" sentence, since IV-A uses the paired test instead.
+6. Optional: significance stars in Tables I and II (one flag in the two
+   generators).
+7. When reruns arrive: copy folders into artifacts/results/mentor_2026-09-11/,
+   rerun make_simpler_table.py, paired_analysis.py, update the three cells
+   and shrink the "Cells that are not what their row says" paragraph.
