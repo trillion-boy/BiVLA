@@ -223,29 +223,34 @@ F8(OpenVLA Long 한 설정 없음). F5의 depth 층 번호는 뜻을 물어봐�
 
 ## 7. 멘토님께 남은 질문 (한글)
 
+2026-09-11 멘토님 두 번째 답장으로 동률 규칙, 파라미터 수, depth 제거 방식,
+foveation 블러, conservative-adaptive 처리("값 0을 그대로 두고 ineffective로
+표시")는 해결됐습니다. 아래는 그 뒤에 남은 것입니다.
+
+**이번 답장에 넣은 세 가지 (재실행 또는 확인이 필요한 것).**
+
 1. UniVLA WidowX task-aware: 200개 중 81개가 CUDA OOM으로 죽어 실패로
    집계됨(48.0 %). 큰 GPU에서 재실행 가능한지, 아니면 "실행 못 함"으로 표기할지.
 2. CronusVLA WidowX guarded reuse: moderate, aggressive 폴더가 strict
    문턱값으로 기록돼 있고 결과가 동일함. 두 설정 재실행 가능한지.
-3. CronusVLA temporal fusion: fusion 인자가 기록에 없고 세 설정 결과가
-   동일하며 CSV는 keyframe 간격 1. 실제로 어떤 간격과 비율로 돌았는지, 재실행이
-   오는지.
-4. CogACT task-aware: attention을 수집하지 않아 motion-entropy와 같은 실행임.
-   CogACT에서 이 설정을 빼거나 각주로 할지.
-5. conservative-adaptive가 SpatialVLA, UniVLA에서 한 번도 재사용을 안 함
-   (keyframe = 호출 수, 재사용 토큰 0). 예상된 동작인지, 각주로 둘지.
-6. SmolVLA: (a) 29개 폴더가 다른 구현과 다섯 종류 GPU라 지연 시간 비교가
-   안 됨. 한 GPU, 한 구현으로 Original 등 재실행 가능한지, 아니면 SmolVLA
-   지연 시간을 표에서 뺄지. (b) depth 층 번호 30; 28,30; 24,26,28,30이 16층
-   VLM 범위를 넘고 calibrated: false임. 무엇을 가리키는 번호인지, 영향도
-   계산을 했는지.
-7. 표 선택: WidowX summary가 CronusVLA depth 1(35.5 %)을 depth 2(36.0 %)
-   대신 골랐고, LIBERO summary는 동률 8곳을 cycle latency로 깼음. 우리는
-   "성공률 최고, 동률이면 스텝 적은 쪽"으로 백본별 CSV에서 고름. 확인 요청.
-8. OpenVLA LIBERO Long conservative-adaptive가 없음. 실행 예정인지.
-9. Setup용: attention backend가 SpatialVLA, UniVLA에만 기록됨. torch
-   버전은 어디에도 없음. SmolVLA 옛 구현만 transformers 4.51.3, lerobot 0.4.4.
-   GPU는 SmolVLA 새 구현에만 기록됨.
+3. CogACT task-aware: `task_relevance_supported: false`이고 결과가
+   motion-entropy와 모든 과제에서 같음. 재실행은 필요 없고, "CogACT는 fusion
+   설정이 둘"이라고 각주로 적어도 되는지 확인.
+
+**다음 답장으로 미뤄 둔 것.**
+
+4. CronusVLA temporal fusion: fusion 인자가 기록에 없고 세 설정 결과가
+   동일하며 CSV는 keyframe 간격 1. 멘토님은 "다시 돌리고 로그를 올렸다"고
+   했지만 받은 파일에는 반영이 없음. 실제 간격과 비율, 재실행 여부.
+5. SmolVLA: (a) 29개 폴더가 다른 구현과 다섯 종류 GPU라 지연 시간 비교가
+   안 됨. 한 GPU, 한 구현으로 재실행할지, SmolVLA 지연 시간을 표에서 뺄지.
+   (b) depth 층 번호 30; 28,30; 24,26,28,30이 16층 VLM 범위를 넘고
+   calibrated: false. 무엇을 가리키는 번호인지.
+6. OpenVLA LIBERO Long conservative-adaptive가 없음. 실행 예정인지.
+7. 표 선택(낮은 우선순위): 멘토님 summary.csv가 규칙과 다른 9곳을 우리가
+   규칙대로 다시 골랐다는 통보.
+8. Setup용(멘토님 몫): attention backend가 SpatialVLA, UniVLA에만 기록됨,
+   torch 버전 없음, GPU는 SmolVLA 새 구현에만 기록됨.
 
 ## 8. 파일 위치
 
@@ -256,3 +261,24 @@ F8(OpenVLA Long 한 설정 없음). F5의 depth 층 번호는 뜻을 물어봐�
 - 짝지은 검정: `experiments/paper/PairedResults.md`(표 칸 110개),
   `PairedResultsAll.md`(전체 285 설정)
 - 표 생성: `experiments/make_simpler_table.py`, `make_libero_table.py`
+
+## 9. 세 질문의 답이 오기 전에 쓸 수 있는 부분
+
+세 질문은 표의 세 칸(UniVLA WidowX fusion, CronusVLA WidowX reuse, CogACT
+fusion 각주)에만 걸립니다. 그 세 칸을 "각주 자리"로 비워 두면 아래는 지금
+전부 쓸 수 있습니다.
+
+| 부분 | 지금 쓸 수 있는가 | 근거 자료 |
+|---|---|---|
+| IV-B Results, 표 해설 | 예. 세 칸만 각주 자리 | Table I, II, `PairedResults.md` |
+| IV-B 설정별 풀이(keep 20/50, k, 예산, preset, fusion 셋) | 예 | `PairedResultsAll.md`, `per_task_success.csv` |
+| IV-C Analysis(게이트 발동률, 상한 효과, 시간 분해, 과제 집중) | 예, 전부 | 이 문서 5절 |
+| V Conclusion, Limitation, Future work | 예 | 이 문서 4절, 6절 |
+| Abstract 다시 쓰기 | 예 | 위 결론 |
+| Intro 마무리 | 예, 숫자 두세 개만 Results에 맞춤 | `intro_mentor_revised.tex` |
+| 각주 다섯 개 문안 | 예, 미리 써 두고 답에 따라 넣거나 뺌 | 이 문서 4절 |
+| IV-A Setup | 멘토님 몫. 우리는 짝지은 검정 한 문장만 | |
+| RW, Methods | 수정 불필요 | 검증 결과 2절 |
+
+답이 바꾸는 것은 세 칸의 숫자와 각주 유무뿐이고, 본문의 결론(유의한 상승은
+두 칸, 통제군 붕괴, reuse 무반응)은 그 세 칸과 무관합니다.

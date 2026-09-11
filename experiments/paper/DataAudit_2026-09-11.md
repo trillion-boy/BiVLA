@@ -365,42 +365,47 @@ to the cap (R3).
 
 ## 7. Questions for the mentor
 
-Setup items (GPU per backbone, backends, versions) are the mentor's own
-section and are listed last. Kept short; each item names the file evidence.
+The mentor's second reply (2026-09-11) settled the tie rule, the parameter
+counts, the depth-pruning mechanism, the blur foveation and the
+conservative-adaptive zeros ("retain the value and flag the configuration
+as ineffective"). What remains, split by round.
+
+Sent in the current reply (a rerun or a confirmation is needed):
 
 1. UniVLA WidowX task-aware: 81 of 200 episodes crashed with CUDA out of
-   memory and are counted as failures (48.0 %). Can it be rerun on a larger
-   GPU, or should the setting be marked as not run for UniVLA WidowX?
+   memory and are counted as failures (48.0 %). Rerun on a larger GPU, or
+   mark the setting as not run for UniVLA WidowX?
 2. CronusVLA WidowX guarded reuse: the moderate and aggressive folders
    record the strict thresholds and give identical episodes. Rerun of the
    two settings?
-3. CronusVLA temporal fusion: no fusion arguments are recorded and the
+3. CogACT task-aware: `task_relevance_supported` is false and the setting
+   equals motion-entropy episode for episode. No rerun needed; confirm the
+   footnote "CogACT has two fusion settings rather than three".
+
+Held for the next round:
+
+4. CronusVLA temporal fusion: no fusion arguments are recorded and the
    three settings are episode-identical on both environments; the CSV says
-   keyframe interval 1. Which interval and reuse fraction ran, and is the
+   keyframe interval 1. The mentor reported a rerun and shared logs, but the
+   export does not contain it. Which interval and fraction ran, and is the
    rerun still coming?
-4. CogACT task-aware: `task_relevance_supported` is false and the setting
-   equals motion-entropy episode for episode. Drop the setting for CogACT
-   or footnote it?
-5. Conservative-adaptive never engages on SpatialVLA and UniVLA
-   (`keyframes == calls`, zero reusable tokens, UniVLA WidowX identical to
-   Original). Is that expected from the event threshold, and should those
-   cells be footnoted?
-6. SmolVLA: (a) the 29 reconstructed folders (reuse, fusion, most depth
-   runs) are a different implementation on five GPU types, so the latency
-   deltas against the legacy Original are not matched. Can Original,
-   foveation, action repeat and depth 1 be rerun on the new stack on one
-   GPU, or should SmolVLA latency be dropped from Table II? (b) The depth
-   layers 30; 28,30; 24,26,28,30 exceed the 16-layer VLM and are marked
-   uncalibrated. What do they index, and was Block Influence run?
-7. Selection: `simpler_widowx/summary.csv` picks CronusVLA depth_pruning1
-   (35.5 %) over depth_pruning2 (36.0 %), and `libero/summary.csv` breaks
-   eight ties by lower cycle latency. We select by highest success then
-   fewer steps from the per-backbone CSVs; please confirm.
-8. OpenVLA LIBERO Long conservative-adaptive is missing. Will it be run?
-9. Setup (for Section IV-A): the attention backend is recorded only for
-   SpatialVLA and UniVLA; no torch version is recorded; SmolVLA legacy runs
-   record transformers 4.51.3 and lerobot 0.4.4. The GPU is recorded only
-   in the SmolVLA reconstructed runs.
+5. SmolVLA: (a) the 29 reconstructed folders are a different implementation
+   on five GPU types, so latency deltas against the legacy Original are not
+   matched. Rerun on one GPU and one implementation, or drop SmolVLA latency
+   from Table II? (b) The depth layers 30; 28,30; 24,26,28,30 exceed the
+   16-layer VLM and are marked uncalibrated. What do they index?
+6. OpenVLA LIBERO Long conservative-adaptive is missing. Will it be run?
+7. Selection (low priority, a notice rather than a question): the nine
+   cells where the mentor's summary.csv departs from the rule were reselected
+   by the rule.
+8. Setup (the mentor's section): the attention backend is recorded only for
+   SpatialVLA and UniVLA; no torch version is recorded; the GPU is recorded
+   only in the SmolVLA reconstructed runs.
+
+Writable before any answer arrives: IV-B, IV-C, V, the abstract and the
+introduction, with the three affected cells left as footnote slots; the
+answers change those cells and the presence of footnotes, not the
+conclusions (two significant gains, control collapse, inert reuse).
 
 ## 8. Reproduction
 
