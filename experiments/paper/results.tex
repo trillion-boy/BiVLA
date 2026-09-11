@@ -37,17 +37,22 @@ either correction. The four nominal gains, depth pruning and motion-entropy
 fusion on CogACT WidowX ($+9.5$ and $+8.0$ points), task-aware fusion on
 OpenVLA Fractal ($+6.8$) and foveation on UniVLA Goal ($+7.0$), are of the
 size and number that 110 selected comparisons at one seed produce by chance,
-and we report them as observations to replicate rather than as effects. Six
+and we report them as observations to replicate rather than as effects. Four
 cells whose intervention never fired reproduce the dense outcome on every
-episode, so the rollouts are deterministic under the fixed seed and the
-one-seed limitation concerns other initial states, not measurement noise.
+episode, and two others with no fired step differ from dense on one and two
+episodes of 100 and 200, so run-to-run variation is about one episode in a
+hundred and the one-seed limitation concerns other initial states rather
+than measurement noise.
 
 \textbf{Cells that are not what their row says.} Some cells carry a row
 label their run did not earn, and we name them once here. The UniVLA WidowX
-and LIBERO Spatial fusion cells and the five UniVLA guarded reuse cells are
-the dense policy, because the selected setting never fired, and the
-SpatialVLA WidowX and CronusVLA WidowX reuse cells are dense to within a few
-steps. The CronusVLA fusion cells are one run whose fusion settings were not
+and LIBERO Spatial fusion cells are the dense policy, because the selected
+setting never fired, and the five UniVLA guarded reuse cells fired on 0 to
+5 steps of 6,000 to 65,600 and match the dense outcome on every episode but
+one. The SpatialVLA WidowX reuse cell fired on 38 steps of 9,025 and differs
+from dense on three episodes. The CronusVLA WidowX reuse cell fired on 5
+steps of 9,947 and still differs from dense on 14 of 200 episodes, so that
+harness, which records no seed, is not deterministic. The CronusVLA fusion cells are one run whose fusion settings were not
 recorded, and the CronusVLA WidowX reuse cell ran the strict setting only.
 %PENDING CronusVLA fusion and WidowX reuse reruns.
 The UniVLA WidowX task-aware run crashed on 81 of 200 episodes and is
@@ -115,8 +120,9 @@ On UniVLA it fires on fewer than one step in a thousand, and on SpatialVLA
 WidowX and CronusVLA WidowX on 2 to 38 steps of 9,000 to 9,950. Latency per
 step changes by under 4 percent on SimplerEnv and falls by 2 to 10 percent
 for OpenVLA on LIBERO, in proportion to the steps skipped. Loosening the
-gates from strict to aggressive raises the reuse share by 1.3 to 2.8 times
-where reuse fires on more than 1 percent of steps, and every setting stays
+gates from strict to aggressive raises
+the reuse share by 1.3 to 4.5 times where reuse fires on more than 1 percent
+of steps, and every setting stays
 within 7 points of dense, none significant.
 
 \textbf{Temporal fusion.} Motion-entropy and conservative-adaptive change
@@ -130,7 +136,8 @@ significant. CogACT exposes no text-to-vision attention at the point where
 the selector runs, so its task-aware setting reduces to motion-entropy and
 CogACT has two fusion settings. On SpatialVLA and UniVLA the
 conservative-adaptive setting selected no reusable patch, so those rows
-equal the dense policy, the SpatialVLA cells and the UniVLA Long, Goal and
+equal the dense policy on UniVLA and differ from it on two episodes on
+SpatialVLA WidowX, the SpatialVLA cells and the UniVLA Long, Goal and
 Object cells come from the other two settings, and on UniVLA WidowX
 motion-entropy loses 5.5 points ($p = 0.035$). On OpenVLA WidowX the two
 settings differ by 9.5 points, $+7.0$ under task-aware and $-2.5$ under
@@ -162,17 +169,18 @@ to 520 on LIBERO, so the mean episode length is a success-weighted average
 of the length of the successful episodes and the cap. The Avg. Steps columns
 therefore track the Success columns and are not an independent measure of
 efficiency. CronusVLA on Fractal is the exception, where 121 successful
-episodes also end at the cap.
+episodes across its 14 runs also end at the cap.
 
 \textbf{What a repeated call saves.} Latency per step under action repeat is
 0.52 to 0.72 of dense at two steps and 0.28 to 0.58 at four, against the
 0.50 and 0.25 that the call count alone predicts. The simulator step is paid
 on every environment step, and on the SimplerEnv harnesses other than UniVLA
-the elapsed time per call grows by 120 to 230 milliseconds under four steps,
+the elapsed time per call grows by about 120 to 230 milliseconds under four
+steps,
 since the call covers the steps it holds. Only the model computation scales
 with the number of calls. The same accounting bounds guarded reuse, whose
-saving is the reuse share times the call time and reaches 10 percent at
-most.
+saving is the reuse share times the call time and peaks at about 10
+percent.
 
 \textbf{Where the drops sit.} The per-episode record separates two ways an
 intervention loses success in this study. Action repeat loses it across
@@ -188,7 +196,8 @@ rising from 19 to 24.
 \textbf{Where the signal admits it.} The two run-time candidates act only
 where their signal fires. Guarded reuse needs a stable image, two agreeing
 inferred actions and a commanded translation above the floor on the same
-step, and finds all three on at most one step in ten. Conservative-adaptive
+step, and finds all three
+on at most 11 percent of steps. Conservative-adaptive
 fusion, with its smaller reuse fraction, shorter keyframe interval and
 forced keyframes, finds no reusable patch on SpatialVLA and UniVLA, and
 task-aware fusion finds no text-to-vision attention on CogACT. Their signals
