@@ -86,7 +86,7 @@ CronusVLA depth 행)를 파일에서 직접 다시 뽑아 대조했습니다.
 
 **F1. UniVLA WidowX task-aware fusion, 200개 중 81개가 OOM으로 죽음.**
 - 무슨 일: 가지 넣기 42개, 큐브 쌓기 39개 에피소드가 GPU 메모리 부족으로
-  5~55스텝 만에 죽었고, 그대로 "실패"로 집계됨.
+  5～55스텝 만에 죽었고, 그대로 "실패"로 집계됨.
 - 왜 문제: CSV에는 48.0 %(원래 정책 87.5 %)로 적혀 있는데, 이는 모델이
   못한 게 아니라 프로그램이 죽은 것. 안 죽은 119개만 보면 80.7 %.
 - 영향: Table I는 이 칸에 conservative-adaptive를 고르므로 값은 그대로.
@@ -103,7 +103,7 @@ CronusVLA depth 행)를 파일에서 직접 다시 뽑아 대조했습니다.
 - temporal fusion(두 환경 모두): 126개 CronusVLA 파일 어디에도 fusion 인자가
   없고, 세 설정이 성공, 스텝, 호출 수, 융합 패치 수까지 동일함. CSV에는
   keyframe 간격 1이라고 적혀 있는데, 간격 1이면 매번 새로 계산하므로
-  에피소드에 기록된 "호출당 융합 패치 102~118개"와 모순됨. 멘토님이 말씀한
+  에피소드에 기록된 "호출당 융합 패치 102～118개"와 모순됨. 멘토님이 말씀한
   재실행은 이 zip에 들어 있지 않음.
 - depth pruning은 정상: DiT(행동 생성기) 12블록 기준으로 규칙이 파일에
   명시돼 있고 검증됨(WidowX 10; 8,10; 4,6,8,10 / Fractal 3,6,8,10).
@@ -141,7 +141,7 @@ CronusVLA depth 행)를 파일에서 직접 다시 뽑아 대조했습니다.
   `calibrated: false`(영향도 계산 안 함). 지연 시간은 안 줄고(275 → 278 →
   277 ms) 성공률만 무너짐(Long 42 → 9 → 3 → 0). 우리 Methods가 말하는
   절차가 아님.
-- CSV에는 fusion 재사용 토큰이 0으로 적혀 있지만 에피소드에는 3~26개로
+- CSV에는 fusion 재사용 토큰이 0으로 적혀 있지만 에피소드에는 3～26개로
   기록됨.
 - 영향: Table II의 SmolVLA reuse, fusion, depth 2(Long, Goal), depth 4(Long,
   Goal, Object) 행의 지연 시간 변화는 비교가 성립하지 않음.
@@ -151,8 +151,8 @@ CronusVLA depth 행)를 파일에서 직접 다시 뽑아 대조했습니다.
 
 **F6. guarded reuse는 게이트가 거의 안 열림.**
 - 무슨 일: 재사용된 스텝 비율이 최대 10 %(OpenVLA LIBERO aggressive)이고,
-  UniVLA 두 환경, SpatialVLA WidowX, CronusVLA WidowX는 수천~수만 스텝 중
-  0~38번뿐.
+  UniVLA 두 환경, SpatialVLA WidowX, CronusVLA WidowX는 수천～수만 스텝 중
+  0～38번뿐.
 - 영향: "guarded reuse는 유의한 변화 없음"이라는 결과는 사실 "거의 실행이
   안 됐음"에 가까움. UniVLA WidowX strict와 UniVLA LIBERO Object, Spatial
   reuse 행은 성공, 스텝, 호출 수가 원래 정책과 같음.
@@ -177,11 +177,11 @@ OpenVLA Long fusion 칸은 두 설정 중에서 고른 것(motion-entropy 49 %).
   하네스마다 뜻이 다름(어떤 건 호출당, 어떤 건 스텝당, 어떤 건 chunk당).
   우리가 쓰는 per-step wall-clock(에피소드 시간 / 스텝)만 모든 백본에서
   뜻이 같고, 에피소드 파일에서 정확히 재계산됨.
-- **가족별 지연 시간.** foveation은 어디서나 스텝당 2~17 % 느려짐(블러
-  비용). action repeat는 k = 2에서 0.53~0.73배, k = 4에서 0.28~0.59배로
+- **가족별 지연 시간.** foveation은 어디서나 스텝당 2～17 % 느려짐(블러
+  비용). action repeat는 k = 2에서 0.53～0.73배, k = 4에서 0.28～0.59배로
   1/k만큼 줄지 않음(환경 시뮬레이션 시간은 그대로). depth pruning은
-  SmolVLA를 빼면 모든 백본에서 호출당 시간이 단조 감소(예산 4에서 0.87~0.95
-  배). task-aware는 UniVLA, MiniVLA, OpenVLA에서 호출당 7~20 % 느려지고
+  SmolVLA를 빼면 모든 백본에서 호출당 시간이 단조 감소(예산 4에서 0.87～0.95
+  배). task-aware는 UniVLA, MiniVLA, OpenVLA에서 호출당 7～20 % 느려지고
   CogACT, SpatialVLA에서는 안 느려짐. motion-entropy와 conservative-adaptive는
   어디서나 2 % 이내.
 - **Avg. Steps는 성공률을 따라감.** 실패는 전부 상한까지 돌기 때문에 평균
@@ -202,7 +202,7 @@ OpenVLA Long fusion 칸은 두 설정 중에서 고른 것(motion-entropy 49 %).
   Fractal task-aware fusion(+6.8점, p = 0.012), UniVLA Goal foveation keep
   50(+7, p = 0.039). 그 밖의 표 칸 상승은 유의하지 않음.
 - **에피소드별 지연 시간은 안정적.** CogACT, MiniVLA, OpenVLA, SpatialVLA는
-  10~90 백분위 폭이 중앙값의 0.3~1.5 %, UniVLA는 9~17 %. 이상치 에피소드
+  10～90 백분위 폭이 중앙값의 0.3～1.5 %, UniVLA는 9～17 %. 이상치 에피소드
   없음.
 
 ## 6. 재실행이 얼마나 필요한가
