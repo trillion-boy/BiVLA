@@ -50,10 +50,10 @@ than measurement noise.
 
 \textbf{Cells that are not what their row says.} Some cells carry a row
 label their run did not earn, and we name them once here. The UniVLA WidowX
-and LIBERO Spatial fusion cells are the dense policy, because the selected
-setting never fired, and the five UniVLA guarded reuse cells fired on 0 to
-5 steps of 6,000 to 65,600 and match the dense outcome on every episode but
-one. The SpatialVLA WidowX reuse cell fired on 38 steps of 9,025 and differs
+and LIBERO Spatial fusion cells are the conservative-adaptive setting, which
+was ineffective there and selected no reusable patch, so both cells equal
+the dense policy. The five UniVLA guarded reuse cells fired on 0 to 5 steps
+of 6,000 to 65,600 and match the dense outcome on every episode but one. The SpatialVLA WidowX reuse cell fired on 38 steps of 9,025 and differs
 from dense on three episodes. The CronusVLA WidowX reuse cell fired on 5
 steps of 9,947 and still differs from dense on 14 of 200 episodes, so that
 harness, which records no seed, is not deterministic. The CronusVLA fusion
@@ -140,9 +140,9 @@ LIBERO Spatial. The remaining cells lie between $-7.0$ and $+6.0$, none
 significant. CogACT exposes no text-to-vision attention at the point where
 the selector runs, so its task-aware setting reduces to motion-entropy and
 CogACT has two fusion settings. On SpatialVLA and UniVLA the
-conservative-adaptive setting selected no reusable patch, so those rows
-equal the dense policy on UniVLA and differ from it on two episodes on
-SpatialVLA WidowX, the SpatialVLA cells and the UniVLA Long, Goal and
+conservative-adaptive setting was ineffective and selected no reusable
+patch, so those rows equal the dense policy on UniVLA and differ from it on
+two episodes on SpatialVLA WidowX, the SpatialVLA cells and the UniVLA Long, Goal and
 Object cells come from the other two settings, and on UniVLA WidowX
 motion-entropy loses 5.5 points ($p = 0.035$). On OpenVLA WidowX the two
 settings differ by 9.5 points, $+7.0$ under task-aware and $-2.5$ under

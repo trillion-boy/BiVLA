@@ -55,7 +55,10 @@ Goal foveation +7.0)은 딱 그 크기와 개수. 하락은 22칸 중 20칸이 1
 
 **Cells that are not what their row says (행 이름과 실행이 다른 칸).**
 감사에서 찾은 예외를 한 문단에 모아 한 번만 말합니다. UniVLA WidowX와 Spatial
-fusion 칸은 설정이 한 번도 작동하지 않아 dense와 같음. UniVLA reuse 5칸은
+fusion 칸은 conservative-adaptive인데 그 설정이 거기서는 재사용 패치를 하나도
+고르지 않아(멘토님 표현으로 ineffective) dense와 같음. 시뮬레이션 오류가
+아니라 설계된 규칙이 그 두 백본에서 아무것도 고르지 않은 결과이고, 멘토님이
+"값은 두고 ineffective로 표시하라"고 답한 항목. UniVLA reuse 5칸은
 재사용이 0～5번뿐이라 한 에피소드만 빼고 dense와 같음. SpatialVLA WidowX reuse
 칸은 재사용 38번에 에피소드 3개 차이. CronusVLA WidowX reuse 칸은 재사용
 5번인데 에피소드 14개가 달라서, seed를 기록하지 않는 그 하네스는 결정적이지
