@@ -354,3 +354,67 @@ backbones we hold, so new models slot into the existing three axes.
 robot policy"* is a negative claim about the whole literature. We searched and
 found no counterexample, but absence of a counterexample in our reading is not
 proof. Ask whether anyone knows of one.
+
+## 7. What the per-episode files (2026-09-11) add, and what the paper now claims
+
+Written after the full audit (`DataAudit_2026-09-11.md`). Before the
+per-episode files the paper had aggregate rates only; now every table cell
+has a paired test, a per-task breakdown, gate-firing counts and a
+per-step latency that means the same thing on every harness.
+
+### Claims that got stronger
+
+1. Controls behave as controls. Action repeat k = 2 collapses on WidowX
+   and LIBERO in every task at once (UniVLA 2 wins / 152 losses, p below
+   1e-4) and is flat on Fractal. Foveation is slower everywhere (+2 to
+   +17 % per step) and its drops sit in one or two tasks. Both were
+   claims before; now they are paired, significant and localised.
+2. The "same trick, different backbone, opposite sign" claim is now
+   testable. Depth pruning: +9.5 on CogACT WidowX (p = 0.009) against
+   significant drops on MiniVLA, SpatialVLA, SmolVLA and OpenVLA Spatial.
+   Fusion: +8.0 CogACT WidowX and +6.8 OpenVLA Fractal against nothing
+   elsewhere. Only 26 of 110 table cells move significantly.
+3. Why guarded reuse does nothing is now known: the gates open on at most
+   10 % of steps and on UniVLA, SpatialVLA WidowX and CronusVLA WidowX
+   almost never. This turns "no effect" into a mechanism statement.
+4. Avg. Steps is explained: every non-crashed failure runs to the step cap
+   (21,495 of 21,495), so the column follows success. A reviewer can no
+   longer read it as an independent efficiency signal.
+5. Latency claims are on one footing. Per-step wall-clock reproduces
+   from the episodes for every harness; the CSV cycle/policy columns do
+   not (three definitions). Depth pruning is the only non-repeat family
+   that lowers per-call latency monotonically; task-aware costs +7 to
+   +20 % per call where attention is collected.
+
+### Claims that got weaker or need a footnote
+
+- UniVLA WidowX has no valid fusion result: task-aware crashed (81 OOM
+  episodes), conservative-adaptive never engaged.
+- CronusVLA WidowX guarded reuse is strict three times; CronusVLA fusion
+  is one unknown setting three times.
+- CogACT ran two fusion settings, not three (no attention path).
+- SmolVLA latency is not comparable across its two implementations and
+  five GPUs; its depth rows are not the Methods selector.
+- Conservative-adaptive is "ineffective" on SpatialVLA and UniVLA (the
+  mentor's word); report 0 and flag it.
+
+### What goes where
+
+- IV-B Results: Tables I and II with significance stars; one paragraph
+  per family unpacking the settings (keep 20 vs 50, k, budget, presets,
+  three fusion settings); the reversals across backbones and environments.
+- IV-C Analysis: gate-firing rates, step-cap effect, action-repeat time
+  not 1/k, task-aware cost, concentrated vs spread drops per task.
+- V Conclusion: two significant gains only, controls collapse, reuse
+  inert; limitations one seed, simulation only, SmolVLA mixed stack,
+  CogACT no attention, three settings per family.
+- Footnotes: the five items above, ready to insert or delete as the
+  mentor's answers arrive.
+
+### Still extractable, not yet used
+
+- Per-task tables for a supplementary figure (2,286 rows in
+  `experiments/data_audit_2026-09-11/per_task_success.csv`).
+- Bootstrap CIs on step change (already in `paired_results.csv`).
+- Reuse count per episode as a histogram for the reuse paragraph.
+- Per-GPU SmolVLA latency, if SmolVLA latency is kept with a footnote.
