@@ -26,14 +26,19 @@
 보정, 11칸은 Bonferroni 보정을 통과. 상승 4칸(CogACT WidowX depth +9.5,
 CogACT WidowX motion-entropy fusion +8.0, OpenVLA Fractal task-aware +6.8,
 UniVLA Goal foveation +7.0)은 보정을 통과하지 못하므로 "재현해야 할 관찰"로
-보고. 마지막 두 문장은 방어용입니다. 개입이 한 번도 작동하지 않은 6칸이 dense와
-에피소드 단위로 완전히 같으므로 시뮬레이션은 결정적이고, "seed 하나"의 한계는
-측정 잡음이 아니라 다른 초기 상태로의 일반화 문제라는 뜻입니다.
+보고. 마지막 문장은 방어용입니다. 개입이 한 번도 작동하지 않은 4칸은 dense와
+에피소드 단위로 완전히 같고, 작동한 스텝이 없는 다른 2칸은 100개와 200개 중
+1개, 2개 에피소드만 다르므로 실행 간 잡음은 100개 중 1개 수준이고, "seed
+하나"의 한계는 측정 잡음이 아니라 다른 초기 상태로의 일반화 문제라는
+뜻입니다.
 
 **Cells that are not what their row says (행 이름과 실행이 다른 칸).**
 감사에서 찾은 예외를 한 문단에 모아 한 번만 말합니다. UniVLA WidowX와 Spatial
-fusion 칸, UniVLA reuse 5칸은 설정이 한 번도 작동하지 않아 dense와 같음.
-SpatialVLA WidowX와 CronusVLA WidowX reuse 칸은 몇 스텝 차이로 dense와 같음.
+fusion 칸은 설정이 한 번도 작동하지 않아 dense와 같음. UniVLA reuse 5칸은
+재사용이 0~5번뿐이라 한 에피소드만 빼고 dense와 같음. SpatialVLA WidowX reuse
+칸은 재사용 38번에 에피소드 3개 차이. CronusVLA WidowX reuse 칸은 재사용
+5번인데 에피소드 14개가 달라서, seed를 기록하지 않는 그 하네스는 결정적이지
+않음(이 사실은 CronusVLA의 작은 변화량을 읽을 때 잡음 수준으로 쓰임).
 CronusVLA fusion 칸은 설정 기록이 없는 한 번의 실행, CronusVLA WidowX reuse
 칸은 strict만 실행. UniVLA WidowX task-aware는 81개 크래시로 모든 집계에서
 제외. SmolVLA의 reuse, fusion, 높은 depth 예산은 다른 구현과 GPU라 지연 시간을
@@ -77,7 +82,7 @@ aggressive에서 10 %, OpenVLA 나머지와 MiniVLA에서 2~6 %, 다른 백본�
 UniVLA는 천 스텝에 한 번 미만, SpatialVLA WidowX와 CronusVLA WidowX는
 9,000~9,950스텝 중 2~38번. 스텝당 시간은 SimplerEnv에서 4 % 미만 변화, OpenVLA
 LIBERO에서 2~10 % 감소로 건너뛴 스텝에 비례. preset을 느슨하게 하면 재사용
-비율이 1.3~2.8배 늘지만(재사용이 1 % 넘는 곳 기준) 성공률은 7점 이내로 유의한
+비율이 1.3~4.5배 늘지만(재사용이 1 % 넘는 곳 기준) 성공률은 7점 이내로 유의한
 변화 없음.
 
 **Temporal fusion.** motion-entropy와 conservative-adaptive는 호출당 시간을
@@ -110,15 +115,15 @@ depth)은 보정을 못 넘고 Fractal에서 0.0. "이 칸들을 근거로 어�
 **Episode length follows success.** 크래시 아닌 실패는 전부 스텝 상한(WidowX
 60 또는 120, Fractal 80, LIBERO 220~520)까지 가므로 평균 스텝은 "성공한
 에피소드 길이와 상한의 성공률 가중 평균"이고, 따라서 Avg. Steps 열은 Success
-열을 따라가며 독립적인 효율 지표가 아님. 예외는 CronusVLA Fractal로, 성공한
-에피소드 121개도 상한에서 끝남.
+열을 따라가며 독립적인 효율 지표가 아님. 예외는 CronusVLA Fractal로, 14개 실행을
+합쳐 성공한 에피소드 121개도 상한에서 끝남.
 
 **What a repeated call saves.** action repeat의 스텝당 시간은 k = 2에서
 0.52~0.72배, k = 4에서 0.28~0.58배로, 호출 수만 보면 0.50, 0.25여야 하는데 그
 만큼 안 줄어드는 이유: 시뮬레이터 스텝은 매 스텝 들고, UniVLA를 뺀 SimplerEnv
 하네스에서는 호출이 여러 스텝을 품기 때문에 호출당 시간이 k = 4에서 120~230
 ms 늘어남. 모델 계산만 호출 수에 비례. 같은 계산이 guarded reuse에도 적용되어
-절약은 "재사용 비율 × 호출 시간"이고 최대 10 %.
+절약은 "재사용 비율 × 호출 시간"이고 최대 약 10 %.
 
 **Where the drops sit.** 에피소드 기록으로 하락의 두 유형을 구분. action
 repeat는 한 백본의 모든 과제에서 동시에 떨어짐(UniVLA WidowX 42, 49, 44, 40
@@ -129,7 +134,7 @@ repeat는 한 백본의 모든 과제에서 동시에 떨어짐(UniVLA WidowX 42
 
 **Where the signal admits it.** 실행 중 신호를 쓰는 두 후보(reuse, fusion)는
 신호가 있을 때만 작동함. guarded reuse는 안정된 이미지, 일치하는 두 행동,
-바닥값 이상의 이동이 같은 스텝에 있어야 하는데 그런 스텝이 최대 10 %.
+바닥값 이상의 이동이 같은 스텝에 있어야 하는데 그런 스텝이 최대 11 %.
 conservative-adaptive는 SpatialVLA와 UniVLA에서 재사용 패치를 못 찾음.
 task-aware는 CogACT에서 attention을 못 찾음. 그래서 후보는 효과보다 먼저
 신호에 의해 한정되고, 신호가 한 번도 안 켜진 백본은 개입 이름 아래 dense
