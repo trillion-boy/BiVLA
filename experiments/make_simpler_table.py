@@ -36,9 +36,10 @@ Latency cells are always computed: value = 1000 * avg_episode_time_s /
 avg_steps rounded half-up, change = raw difference from the Original row
 rounded half-up, green when <= 0.
 
-CronusVLA depth pruning rows print "--": the mentor is rerunning those six
-settings (three budgets in two environments). Drop the pair from PENDING
-when the new CSVs land. UniVLA and MiniVLA have no Fractal checkpoint.
+CronusVLA depth pruning rows come from the 2026-09-11 rerun (constrained
+selector on the DiT action decoder); the author's reference table predates
+it, so those six cells are computed from the CSV rather than copied. UniVLA
+and MiniVLA have no Fractal checkpoint.
 
 Ties on success within a family (seven in the current CSVs) are broken by
 fewer average steps, the rule the mentor confirmed on 2026-09-11; the three-way
@@ -53,7 +54,11 @@ from decimal import Decimal, ROUND_HALF_UP
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-CSV_DIR = os.path.join(ROOT, "artifacts", "results", "mentor_csv")
+# 2026-09-11 export (per-episode files plus summarization CSVs). The
+# 2026-09-03 export in artifacts/results/mentor_csv/ differs only in the
+# CronusVLA depth-pruning rows and the MiniVLA motion-entropy setting cells.
+CSV_DIR = os.path.join(ROOT, "artifacts", "results", "mentor_2026-09-11",
+                       "summarization")
 OUT = os.path.join(HERE, "paper", "tablesimpler.tex")
 REF = os.path.join(HERE, "paper", "tableI_overleaf_ref.tex")
 
@@ -89,8 +94,14 @@ FAMILIES = [
     ("temporal_fusion", "Temporal fusion"),
 ]
 
-# (backbone key, family prefix) cells printed as "--" until the rerun lands.
-PENDING = {("cronusvla", "depth_pruning")}
+# (backbone key, family prefix) cells printed as "--". Empty since the
+# CronusVLA depth-pruning rerun arrived on 2026-09-11.
+PENDING = set()
+
+# (backbone key, family prefix) cells always computed from the CSV, never
+# copied from the author's reference table, because the reference predates
+# the rerun of those rows.
+RECOMPUTE = {("cronusvla", "depth_pruning")}
 
 DASH = "--"
 GOOD = "green!50!black"
@@ -190,7 +201,7 @@ def triple(row, base_row, ref, key):
     for col, (v, b, hib) in enumerate([(s, bs, True), (l, bl, False),
                                         (n, bn, False)]):
         text = None
-        if col != 1 and (key + (col,)) in ref:
+        if col != 1 and key[:2] not in RECOMPUTE and (key + (col,)) in ref:
             text = checked_ref(ref[key + (col,)], v, b, hib,
                                f"{key[0]}/{key[1]}/env{key[2]}/col{col}")
         out.append(text if text is not None else computed(v, b, hib))
