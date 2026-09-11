@@ -10,6 +10,9 @@
 % for the tables, the paired test named once, latency as wall-clock per
 % environment step, the chunk size per backbone, the decoder depth per
 % backbone, and the SmolVLA two-implementation caveat.
+% Peak memory was not measured in any run (no memory field in the export);
+% Section V states it as a limitation. Ask the mentor to log
+% torch.cuda.max_memory_allocated on the reruns.
 % Table~\ref{tab:backbones} below replaces tablebackbones.tex (three-backbone
 % version); do not include both.
 % ---------------------------------------------------------------------------
@@ -23,6 +26,9 @@ SmolVLA run on LIBERO, with the checkpoint each project released for that
 benchmark. Parameter counts are as reported by the original works. The
 decoder depth is the stack that depth pruning scores, the language decoder
 for six backbones and the twelve layer DiT action decoder for CronusVLA.
+Block Influence is defined on any residual block as one minus the cosine
+similarity of the block's input and output, so it applies to the DiT blocks
+unchanged, and the CronusVLA rows test that transfer rather than assume it.
 Actions per call is how many environment steps one model call covers.
 UniVLA executes its native chunk of five actions on SimplerEnv and ten on
 LIBERO, and every other harness executes one action per call. The attention
@@ -40,13 +46,18 @@ tasks at 10 episodes each and caps of 520, 300, 280 and 220. Every
 configuration of a backbone replays the same task instances and initial
 states, with the episode seed fixed as 42 plus the episode index, so each
 episode has a matched dense control. A failed episode runs to its cap.
+Every evaluation is in-distribution. Each checkpoint runs on the benchmark
+its training data targets, Bridge for WidowX, Fractal for Google Robot and
+the matching suite for LIBERO, under SimplerEnv's visual matching protocol,
+so success measures what an intervention does to a deployed policy rather
+than how the policy generalises.
 
 \textbf{Configurations.} Each backbone and environment pair runs the dense
 policy and thirteen settings, two or three per family. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area. Action repeat holds each
 action for two or four steps. Depth pruning removes one, two or four
-layers, chosen by Block Influence on calibration frames [drawn from ...]
-and fixed before the test episodes. Guarded reuse runs three presets,
+layers, chosen by Block Influence on calibration frames from episodes disjoint
+from the test episodes and fixed before the test episodes. %PENDING mentor: calibration source per backbone (CronusVLA records seed 10000 on the same task set). Guarded reuse runs three presets,
 strict, moderate and aggressive, with whole-frame and local signature
 thresholds of 0.01 and 0.03, 0.015 and 0.04, and 0.02 and 0.05, action
 agreement of 0.995, 0.99 and 0.98, a translation floor of 0.01 in all
@@ -74,6 +85,9 @@ that flipped from failure to success and the reverse. A change is called
 significant when an exact two-sided McNemar test on those flips gives
 $p < 0.05$. Each cell is one seed and one run, so the test speaks to these
 episodes, and generalisation to other initial states is left to Section~V.
+With 110 cells this threshold admits about five chance passes, so
+Section~IV-B reads gains against that count. Sixteen of the 22 significant
+drops also pass a false discovery rate correction at 0.05, and no gain does.
 
 \textbf{Hardware and implementation.} [GPU per backbone, one card model per
 backbone and environment.] SmolVLA ran under two implementations, the

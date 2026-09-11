@@ -43,6 +43,22 @@ McNemar test가 p < 0.05이면 significant라고 부른다." McNemar라는 이�
 돌았다는 사실과 지연 시간은 첫 그룹 안에서만 비교한다는 것, CogACT는
 attention 통로가 없어 task-aware가 motion-entropy와 같다는 것.
 
+## 2026-09-11 비평 반영 (여섯 항목)
+
+1. ID/OOD: Environments 끝에 "모든 평가는 in-distribution"이라는 문장 추가.
+   근거는 에피소드 파일의 `benchmark_protocol = released_bridge_visual_matching`과
+   벤치마크별 체크포인트.
+2. SmolVLA 스택 혼재: 멘토님 질문 6번(재실행 또는 지연 시간 삭제)으로 처리.
+3. 다중 비교: Pairing 문단 끝에 한 문장(우연 통과 약 다섯 개, FDR 보정 통과
+   하락 16칸, 상승 0칸). 보정 이름은 논문에서 여기 한 번.
+4. 보정 프레임: "from episodes disjoint from the test episodes"로 씀.
+   CronusVLA 기록(seed 10000, 같은 과제 목록)과 맞고, 나머지 백본은 Methods의
+   주장 이상을 하지 않음. 백본별 출처는 멘토님 몫(%PENDING).
+5. DiT에서 Block Influence: Backbones 문단에 정의가 residual block 일반에
+   적용된다는 것과 CronusVLA 행이 그 전이를 시험한다는 문장 추가.
+6. VRAM: 어느 파일에도 메모리 기록이 없어 지금은 못 씀. Limitations에 한 줄,
+   재실행 때 `torch.cuda.max_memory_allocated` 로그 부탁을 다음 답장에 넣을 것.
+
 ## 멘토님이 채울 것
 
 1. 백본별 GPU(표의 GPU 열)와 transformers, torch 버전.
