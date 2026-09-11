@@ -1,0 +1,634 @@
+# 1. summary median_ms vs median of per-episode medians, per backbone (folders with the field)
+| backbone_env | group | folders | policy: n>0.5ms | policy max|dev| | cycle: n>0.5ms | cycle max|dev| |
+|---|---|---|---|---|---|---|
+| cogact_base_simplerenv_bridge | action_repeat | 2 | 0 | 0.04 | 0 | 0.00 |
+| cogact_base_simplerenv_bridge | other | 12 | 0 | 0.14 | 0 | 0.00 |
+| cogact_base_simplerenv_fractal | action_repeat | 10 | 0 | 0.30 | 0 | 0.00 |
+| cogact_base_simplerenv_fractal | other | 60 | 0 | 0.41 | 0 | 0.00 |
+| minivla_simplerenv | action_repeat | 2 | 0 | 0.03 | 1 | 47.62 |
+| minivla_simplerenv | other | 12 | 0 | 0.36 | 0 | 0.28 |
+| openvla_libero | action_repeat | 8 | 0 | 0.16 | 4 | 78.03 |
+| openvla_libero | other | 47 | 0 | 0.43 | 0 | 0.43 |
+| openvla_simplerenv | action_repeat | 8 | 0 | 0.05 | 4 | 77.91 |
+| openvla_simplerenv | other | 48 | 0 | 0.15 | 0 | 0.38 |
+| openvla_simplerenv_fractal | action_repeat | 10 | 0 | 0.05 | 5 | 78.75 |
+| openvla_simplerenv_fractal | other | 60 | 0 | 0.39 | 0 | 0.25 |
+| smolvla_libero | action_repeat | 8 | 0 | 0.38 | 5 | 135.40 |
+| smolvla_libero | other | 19 | 0 | 0.38 | 0 | 0.45 |
+| spatialvla_simplerenv_bridge | action_repeat | 8 | 1 | 0.56 | 3 | 4.63 |
+| spatialvla_simplerenv_bridge | other | 48 | 4 | 0.66 | 4 | 1.96 |
+| spatialvla_simplerenv_fractal | action_repeat | 10 | 0 | 0.37 | 9 | 9.50 |
+| spatialvla_simplerenv_fractal | other | 60 | 9 | 1.75 | 42 | 9.52 |
+| univla_libero | action_repeat | 8 | 7 | 8.98 | 7 | 6.95 |
+| univla_libero | other | 48 | 39 | 14.71 | 45 | 19.71 |
+| univla_simplerenv_bridge | action_repeat | 8 | 7 | 8.10 | 7 | 16.90 |
+| univla_simplerenv_bridge | other | 48 | 34 | 52.44 | 44 | 81.28 |
+
+# 2. episodes with reuses > calls*cap/(cap+1) (as-stated bound); all satisfy reuses <= cap*calls
+  openvla_libero/guarded_reuse_aggressive/libero_10 ep8: steps=520 calls=258 reuses=262 cap=2 success=False
+  openvla_libero/guarded_reuse_aggressive/libero_goal ep9: steps=300 calls=152 reuses=148 cap=2 success=False
+  openvla_libero/guarded_reuse_aggressive/libero_goal ep4: steps=300 calls=121 reuses=179 cap=2 success=False
+  openvla_libero/guarded_reuse_aggressive/libero_object ep9: steps=280 calls=129 reuses=151 cap=2 success=False
+  openvla_libero/guarded_reuse_aggressive/libero_spatial ep1: steps=220 calls=128 reuses=92 cap=2 success=False
+  openvla_libero/guarded_reuse_moderate/libero_object ep9: steps=280 calls=175 reuses=105 cap=1 success=False
+  openvla_libero/guarded_reuse_moderate/libero_object ep8: steps=280 calls=176 reuses=104 cap=1 success=False
+  openvla_libero/guarded_reuse_strict/libero_10 ep4: steps=520 calls=346 reuses=174 cap=1 success=False
+  openvla_libero/guarded_reuse_strict/libero_object ep9: steps=280 calls=184 reuses=96 cap=1 success=False
+  openvla_libero/guarded_reuse_strict/libero_object ep8: steps=280 calls=181 reuses=99 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_carrot_on_plate ep4: steps=60 calls=32 reuses=28 cap=2 success=False
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_carrot_on_plate ep9: steps=60 calls=32 reuses=28 cap=2 success=False
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_carrot_on_plate ep36: steps=60 calls=32 reuses=28 cap=2 success=False
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_spoon_on_towel ep1: steps=60 calls=35 reuses=25 cap=2 success=False
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_stack_cube ep23: steps=60 calls=34 reuses=26 cap=2 success=False
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_stack_cube ep28: steps=60 calls=34 reuses=26 cap=2 success=False
+  openvla_simplerenv/guarded_reuse_moderate/widowx_carrot_on_plate ep4: steps=60 calls=39 reuses=21 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_moderate/widowx_carrot_on_plate ep9: steps=60 calls=39 reuses=21 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_moderate/widowx_carrot_on_plate ep36: steps=60 calls=39 reuses=21 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_moderate/widowx_stack_cube ep13: steps=60 calls=37 reuses=23 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_moderate/widowx_stack_cube ep18: steps=60 calls=37 reuses=23 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_strict/widowx_carrot_on_plate ep4: steps=60 calls=39 reuses=21 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_strict/widowx_carrot_on_plate ep9: steps=60 calls=39 reuses=21 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_strict/widowx_stack_cube ep13: steps=60 calls=37 reuses=23 cap=1 success=False
+  openvla_simplerenv/guarded_reuse_strict/widowx_stack_cube ep18: steps=60 calls=37 reuses=23 cap=1 success=False
+  openvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_open_drawer ep31: steps=80 calls=46 reuses=34 cap=2 success=False
+  spatialvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_open_drawer ep9: steps=80 calls=46 reuses=34 cap=2 success=False
+
+# 3. episode-level identity across settings (CronusVLA)
+  cronusvla_simplerenv_bridge guarded_reuse: success/steps/calls/reuses/fused identical across 3 settings = True; elapsed_ms identical = False
+  cronusvla_simplerenv_bridge temporal_fusion: success/steps/calls/reuses/fused identical across 3 settings = True; elapsed_ms identical = False
+  cronusvla_simplerenv_bridge: guarded_reuse_strict == original at episode level: False
+  cronusvla_simplerenv_fractal guarded_reuse: success/steps/calls/reuses/fused identical across 3 settings = False; elapsed_ms identical = False
+  cronusvla_simplerenv_fractal temporal_fusion: success/steps/calls/reuses/fused identical across 3 settings = True; elapsed_ms identical = False
+  cronusvla_simplerenv_fractal: guarded_reuse_strict == original at episode level: False
+
+# 4. folders whose summary lacks 'arguments' or latency blocks
+  cronusvla_simplerenv_bridge/action_repeat2/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/action_repeat2/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/action_repeat2/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/action_repeat2/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/action_repeat4/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/action_repeat4/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/action_repeat4/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/action_repeat4/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning1/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning1/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning1/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning1/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning2/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning2/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning2/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning2/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning4/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning4/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning4/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/depth_pruning4/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep20/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep20/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep20/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep20/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep50/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep50/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep50/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/fixed_foveation_keep50/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_moderate/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_moderate/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_moderate/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_moderate/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_strict/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_strict/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_strict/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/guarded_reuse_strict/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/original/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/original/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/original/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/original/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_carrot_on_plate: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_put_eggplant_in_basket: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_spoon_on_towel: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_stack_cube: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat2/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat2/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat2/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat2/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat2/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat4/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat4/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat4/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat4/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/action_repeat4/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning1/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning1/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning1/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning1/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning1/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning2/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning2/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning2/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning2/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning2/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning4/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning4/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning4/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning4/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/depth_pruning4/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_strict/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_strict/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_strict/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_strict/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/guarded_reuse_strict/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/original/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/original/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/original/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/original/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/original/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_close_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_move_near: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_open_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_pick_coke_can: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  cronusvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_place_apple_in_closed_top_drawer: missing ['policy_query_latency_ms', 'inference_cycle_latency_ms', 'success_rate', 'average_steps']
+  minivla_simplerenv/action_repeat2: missing ['episode_errors']
+  minivla_simplerenv/action_repeat4: missing ['episode_errors']
+  minivla_simplerenv/depth_pruning1: missing ['episode_errors']
+  minivla_simplerenv/depth_pruning2: missing ['episode_errors']
+  minivla_simplerenv/depth_pruning4: missing ['episode_errors']
+  minivla_simplerenv/fixed_foveation_keep20: missing ['episode_errors']
+  minivla_simplerenv/fixed_foveation_keep50: missing ['episode_errors']
+  minivla_simplerenv/guarded_reuse_aggressive: missing ['episode_errors']
+  minivla_simplerenv/guarded_reuse_moderate: missing ['episode_errors']
+  minivla_simplerenv/guarded_reuse_strict: missing ['episode_errors']
+  minivla_simplerenv/original: missing ['episode_errors']
+  minivla_simplerenv/temporal_fusion_conservative_adaptive: missing ['episode_errors']
+  minivla_simplerenv/temporal_fusion_motion_entropy: missing ['episode_errors']
+  minivla_simplerenv/temporal_fusion_task_aware: missing ['episode_errors']
+  openvla_simplerenv/action_repeat2/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/action_repeat2/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/action_repeat2/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/action_repeat2/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/action_repeat4/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/action_repeat4/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/action_repeat4/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/action_repeat4/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning1/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning1/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning1/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning1/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning2/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning2/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning2/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning2/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning4/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning4/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning4/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/depth_pruning4/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep20/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep20/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep20/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep20/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep50/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep50/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep50/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/fixed_foveation_keep50/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_aggressive/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_moderate/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_moderate/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_moderate/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_moderate/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_strict/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_strict/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_strict/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/guarded_reuse_strict/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/original/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/original/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/original/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/original/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_conservative_adaptive/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_conservative_adaptive/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_conservative_adaptive/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_conservative_adaptive/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_motion_entropy/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_motion_entropy/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_motion_entropy/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_motion_entropy/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_task_aware/widowx_carrot_on_plate: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_task_aware/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_task_aware/widowx_spoon_on_towel: missing ['episode_errors']
+  openvla_simplerenv/temporal_fusion_task_aware/widowx_stack_cube: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat2/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat2/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat2/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat2/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat2/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat4/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat4/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat4/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat4/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/action_repeat4/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning1/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning1/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning1/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning1/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning1/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning2/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning2/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning2/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning2/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning2/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning4/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning4/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning4/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning4/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/depth_pruning4/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_strict/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_strict/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_strict/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_strict/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/guarded_reuse_strict/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/original/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/original/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/original/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/original/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/original/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_close_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_move_near: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_open_drawer: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_pick_coke_can: missing ['episode_errors']
+  openvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  smolvla_libero/depth_pruning2/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/depth_pruning2/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/depth_pruning4/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/depth_pruning4/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/depth_pruning4/libero_object: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_aggressive/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_aggressive/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_aggressive/libero_object: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_aggressive/libero_spatial: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_moderate/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_moderate/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_moderate/libero_object: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_moderate/libero_spatial: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_strict/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_strict/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_strict/libero_object: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/guarded_reuse_strict/libero_spatial: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_conservative_adaptive/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_conservative_adaptive/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_conservative_adaptive/libero_object: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_conservative_adaptive/libero_spatial: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_motion_entropy/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_motion_entropy/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_motion_entropy/libero_object: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_motion_entropy/libero_spatial: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_task_aware/libero_10: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_task_aware/libero_goal: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_task_aware/libero_object: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  smolvla_libero/temporal_fusion_task_aware/libero_spatial: missing ['arguments', 'policy_query_latency_ms', 'inference_cycle_latency_ms']
+  spatialvla_simplerenv_bridge/action_repeat2/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/action_repeat2/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/action_repeat2/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/action_repeat2/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/action_repeat4/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/action_repeat4/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/action_repeat4/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/action_repeat4/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning1/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning1/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning1/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning1/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning2/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning2/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning2/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning2/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning4/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning4/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning4/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/depth_pruning4/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep20/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep20/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep20/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep20/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep50/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep50/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep50/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/fixed_foveation_keep50/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_aggressive/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_moderate/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_moderate/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_moderate/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_moderate/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_strict/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_strict/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_strict/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/guarded_reuse_strict/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/original/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/original/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/original/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/original/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_carrot_on_plate: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_spoon_on_towel: missing ['episode_errors']
+  spatialvla_simplerenv_bridge/temporal_fusion_task_aware/widowx_stack_cube: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat2/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat2/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat2/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat2/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat2/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat4/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat4/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat4/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat4/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/action_repeat4/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning1/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning1/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning1/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning1/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning1/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning2/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning2/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning2/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning2/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning2/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning4/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning4/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning4/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning4/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/depth_pruning4/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep20/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/fixed_foveation_keep50/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_moderate/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_strict/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_strict/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_strict/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_strict/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/guarded_reuse_strict/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/original/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/original/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/original/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/original/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/original/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_conservative_adaptive/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_motion_entropy/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_close_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_move_near: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_open_drawer: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_pick_coke_can: missing ['episode_errors']
+  spatialvla_simplerenv_fractal/temporal_fusion_task_aware/google_robot_place_apple_in_closed_top_drawer: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat2/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat2/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat2/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat2/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat4/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat4/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat4/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/action_repeat4/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning1/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning1/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning1/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning1/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning2/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning2/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning2/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning2/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning4/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning4/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning4/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/depth_pruning4/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep20/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep20/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep20/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep20/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep50/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep50/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep50/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/fixed_foveation_keep50/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_aggressive/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_aggressive/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_aggressive/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_aggressive/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_moderate/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_moderate/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_moderate/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_moderate/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_strict/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_strict/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_strict/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/guarded_reuse_strict/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/original/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/original/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/original/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/original/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_conservative_adaptive/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_motion_entropy/widowx_stack_cube: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_carrot_on_plate: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_put_eggplant_in_basket: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_spoon_on_towel: missing ['episode_errors']
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_stack_cube: missing ['episode_errors']
+
+# 5. CSV rows for univla_simpler_widowx temporal_fusion_task_aware
+   {'configuration': 'original', 'episodes': '200', 'successes': '175', 'success_rate_pct': '87.5', 'avg_steps': '30.21', 'avg_policy_calls': '6.375', 'avg_episode_time_s': '5.77', 'policy_median_latency_ms': '714.451', 'median_reusable_visual_tokens': '0.0'}
+   {'configuration': 'temporal_fusion_task_aware', 'episodes': '200', 'successes': '96', 'success_rate_pct': '48', 'avg_steps': '22.53', 'avg_policy_calls': '4.71', 'avg_episode_time_s': '5.03', 'policy_median_latency_ms': '861.266', 'median_reusable_visual_tokens': '147.25'}
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_carrot_on_plate: episodes=50 errors=0 successes=36 summary.successes=36 summary.episode_errors=None status=completed
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_put_eggplant_in_basket: episodes=50 errors=42 successes=8 summary.successes=8 summary.episode_errors=None status=completed
+     non-error episodes: 8, successes among them 8; error episodes steps min/max 5/25
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_spoon_on_towel: episodes=50 errors=0 successes=44 summary.successes=44 summary.episode_errors=None status=completed
+  univla_simplerenv_bridge/temporal_fusion_task_aware/widowx_stack_cube: episodes=50 errors=39 successes=8 summary.successes=8 summary.episode_errors=None status=completed
+     non-error episodes: 11, successes among them 8; error episodes steps min/max 5/55
+
+# 6. depth pruning: recorded set vs greedy without any protection (ascending influence, gap>=2)
+  cogact_base_simplerenv_bridge/depth_pruning1 : recorded [17]; protection binding (unprotected greedy -> [3]); gap rule binding (plain lowest-1 -> [3])
+  cogact_base_simplerenv_bridge/depth_pruning2 : recorded [17, 23]; protection binding (unprotected greedy -> [3, 5]); gap rule binding (plain lowest-2 -> [3, 5])
+  cogact_base_simplerenv_bridge/depth_pruning4 : recorded [17, 20, 23, 25]; protection binding (unprotected greedy -> [3, 5, 17, 23]); gap rule binding (plain lowest-4 -> [2, 3, 5, 17])
+  cogact_base_simplerenv_fractal/depth_pruning1 google_robot_close_drawer: recorded [23]; protection binding (unprotected greedy -> [2]); gap rule binding (plain lowest-1 -> [2])
+  cogact_base_simplerenv_fractal/depth_pruning2 google_robot_close_drawer: recorded [17, 23]; protection binding (unprotected greedy -> [2, 4]); gap rule binding (plain lowest-2 -> [2, 3])
+  cogact_base_simplerenv_fractal/depth_pruning4 google_robot_close_drawer: recorded [17, 19, 23, 25]; protection binding (unprotected greedy -> [2, 4, 17, 23]); gap rule binding (plain lowest-4 -> [2, 3, 4, 5])
+  cronusvla_simplerenv_bridge/depth_pruning1 widowx_carrot_on_plate: recorded [10]; neither protection nor gap rule was binding
+  cronusvla_simplerenv_bridge/depth_pruning2 widowx_carrot_on_plate: recorded [8, 10]; gap rule binding (plain lowest-2 -> [10, 11])
+  cronusvla_simplerenv_bridge/depth_pruning4 widowx_carrot_on_plate: recorded [4, 6, 8, 10]; gap rule binding (plain lowest-4 -> [8, 9, 10, 11])
+  cronusvla_simplerenv_fractal/depth_pruning1 google_robot_close_drawer: recorded [10]; neither protection nor gap rule was binding
+  cronusvla_simplerenv_fractal/depth_pruning2 google_robot_close_drawer: recorded [8, 10]; gap rule binding (plain lowest-2 -> [10, 11])
+  cronusvla_simplerenv_fractal/depth_pruning4 google_robot_close_drawer: recorded [3, 6, 8, 10]; gap rule binding (plain lowest-4 -> [8, 9, 10, 11])
+  minivla_simplerenv/depth_pruning1 : recorded [13]; neither protection nor gap rule was binding
+  minivla_simplerenv/depth_pruning2 : recorded [11, 13]; neither protection nor gap rule was binding
+  minivla_simplerenv/depth_pruning4 : recorded [7, 9, 11, 13]; protection binding (unprotected greedy -> [4, 7, 11, 13]); gap rule binding (plain lowest-4 -> [7, 11, 12, 13])
+  openvla_libero/depth_pruning1 libero_10: recorded [23]; protection binding (unprotected greedy -> [3]); gap rule binding (plain lowest-1 -> [3])
+  openvla_libero/depth_pruning1 libero_goal: recorded [17]; protection binding (unprotected greedy -> [2]); gap rule binding (plain lowest-1 -> [2])
+  openvla_libero/depth_pruning1 libero_spatial: recorded [8]; protection binding (unprotected greedy -> [2]); gap rule binding (plain lowest-1 -> [2])
+  openvla_libero/depth_pruning2 libero_10: recorded [23, 25]; protection binding (unprotected greedy -> [3, 5]); gap rule binding (plain lowest-2 -> [3, 4])
+  openvla_libero/depth_pruning2 libero_goal: recorded [17, 20]; protection binding (unprotected greedy -> [2, 4]); gap rule binding (plain lowest-2 -> [2, 3])
+  openvla_libero/depth_pruning2 libero_object: recorded [17, 19]; protection binding (unprotected greedy -> [2, 5]); gap rule binding (plain lowest-2 -> [2, 3])
+  openvla_libero/depth_pruning2 libero_spatial: recorded [8, 20]; protection binding (unprotected greedy -> [2, 4]); gap rule binding (plain lowest-2 -> [2, 3])
+  openvla_libero/depth_pruning4 libero_10: recorded [19, 21, 23, 25]; protection binding (unprotected greedy -> [3, 5, 7, 23]); gap rule binding (plain lowest-4 -> [2, 3, 4, 5])
+  openvla_libero/depth_pruning4 libero_goal: recorded [8, 17, 20, 23]; protection binding (unprotected greedy -> [2, 4, 6, 17]); gap rule binding (plain lowest-4 -> [2, 3, 4, 5])
+  openvla_libero/depth_pruning4 libero_object: recorded [17, 19, 21, 23]; protection binding (unprotected greedy -> [2, 5, 7, 17]); gap rule binding (plain lowest-4 -> [2, 3, 4, 5])
+  openvla_libero/depth_pruning4 libero_spatial: recorded [8, 20, 23, 25]; protection binding (unprotected greedy -> [2, 4, 6, 8]); gap rule binding (plain lowest-4 -> [2, 3, 4, 5])
+  openvla_simplerenv/depth_pruning1 widowx_carrot_on_plate: recorded [23]; protection binding (unprotected greedy -> [3]); gap rule binding (plain lowest-1 -> [3])
+  openvla_simplerenv/depth_pruning2 widowx_carrot_on_plate: recorded [23, 25]; protection binding (unprotected greedy -> [3, 5]); gap rule binding (plain lowest-2 -> [2, 3])
+  openvla_simplerenv/depth_pruning4 widowx_carrot_on_plate: recorded [17, 23, 25, 27]; protection binding (unprotected greedy -> [3, 5, 23, 25]); gap rule binding (plain lowest-4 -> [2, 3, 4, 5])
+  openvla_simplerenv_fractal/depth_pruning1 google_robot_close_drawer: recorded [23]; protection binding (unprotected greedy -> [2]); gap rule binding (plain lowest-1 -> [2])
+  openvla_simplerenv_fractal/depth_pruning2 google_robot_close_drawer: recorded [23, 25]; protection binding (unprotected greedy -> [2, 4]); gap rule binding (plain lowest-2 -> [2, 3])
+  openvla_simplerenv_fractal/depth_pruning4 google_robot_close_drawer: recorded [17, 23, 25, 27]; protection binding (unprotected greedy -> [2, 4, 23, 25]); gap rule binding (plain lowest-4 -> [2, 3, 4, 23])
+  spatialvla_simplerenv_bridge/depth_pruning1 widowx_carrot_on_plate: recorded [8]; neither protection nor gap rule was binding
+  spatialvla_simplerenv_bridge/depth_pruning2 widowx_carrot_on_plate: recorded [8, 10]; gap rule binding (plain lowest-2 -> [8, 9])
+  spatialvla_simplerenv_bridge/depth_pruning4 widowx_carrot_on_plate: recorded [8, 10, 13, 23]; protection binding (unprotected greedy -> [5, 8, 10, 13]); gap rule binding (plain lowest-4 -> [5, 8, 9, 10])
+  spatialvla_simplerenv_fractal/depth_pruning1 google_robot_close_drawer: recorded [8]; neither protection nor gap rule was binding
+  spatialvla_simplerenv_fractal/depth_pruning2 google_robot_close_drawer: recorded [8, 10]; protection binding (unprotected greedy -> [5, 8]); gap rule binding (plain lowest-2 -> [8, 9])
+  spatialvla_simplerenv_fractal/depth_pruning4 google_robot_close_drawer: recorded [8, 10, 13, 23]; protection binding (unprotected greedy -> [5, 8, 10, 23]); gap rule binding (plain lowest-4 -> [5, 8, 9, 10])
+  univla_libero/depth_pruning1 libero_10: recorded [19]; protection binding (unprotected greedy -> [3]); gap rule binding (plain lowest-1 -> [3])
+  univla_libero/depth_pruning2 libero_10: recorded [19, 21]; protection binding (unprotected greedy -> [3, 19]); gap rule binding (plain lowest-2 -> [2, 3])
+  univla_libero/depth_pruning2 libero_spatial: recorded [19, 22]; protection binding (unprotected greedy -> [3, 19]); gap rule binding (plain lowest-2 -> [3, 4])
+  univla_libero/depth_pruning4 libero_10: recorded [19, 21, 26, 30]; protection binding (unprotected greedy -> [3, 5, 19, 21]); gap rule binding (plain lowest-4 -> [2, 3, 4, 19])
+  univla_libero/depth_pruning4 libero_goal: recorded [19, 21, 26, 29]; protection binding (unprotected greedy -> [3, 5, 19, 21]); gap rule binding (plain lowest-4 -> [2, 3, 4, 19])
+  univla_libero/depth_pruning4 libero_spatial: recorded [19, 22, 26, 29]; protection binding (unprotected greedy -> [3, 5, 19, 22]); gap rule binding (plain lowest-4 -> [2, 3, 4, 19])
+  univla_simplerenv_bridge/depth_pruning1 widowx_carrot_on_plate: recorded [26]; protection binding (unprotected greedy -> [2]); gap rule binding (plain lowest-1 -> [2])
+  univla_simplerenv_bridge/depth_pruning2 widowx_carrot_on_plate: recorded [26, 30]; protection binding (unprotected greedy -> [2, 4]); gap rule binding (plain lowest-2 -> [2, 4])
+  univla_simplerenv_bridge/depth_pruning4 widowx_carrot_on_plate: recorded [21, 24, 26, 30]; protection binding (unprotected greedy -> [2, 4, 26, 30]); gap rule binding (plain lowest-4 -> [2, 3, 4, 26])
+
+# 7. CSV cycle_median candidates for OpenVLA action_repeat rows
+  simpler_widowx/openvla_simplerenv_widowx.csv:action_repeat2 csv=86.765 summary_median(mean over folders)=163.222, summary_mean_ms(mean over folders)=87.084, median_of_episode_medians=86.272, mean_of_episode_means=87.365, median_of_episode_means=86.765
+  simpler_widowx/openvla_simplerenv_widowx.csv:action_repeat4 csv=47.479 summary_median(mean over folders)=7.826, summary_mean_ms(mean over folders)=47.873, median_of_episode_medians=7.825, mean_of_episode_means=48.082, median_of_episode_means=47.479
+  google_robot_fractal/openvla_simplerenv_fractal.csv:action_repeat2 csv=87.531 summary_median(mean over folders)=149.551, summary_mean_ms(mean over folders)=87.953, median_of_episode_medians=86.816, mean_of_episode_means=88.272, median_of_episode_means=87.531
+  google_robot_fractal/openvla_simplerenv_fractal.csv:action_repeat4 csv=47.82 summary_median(mean over folders)=7.646, summary_mean_ms(mean over folders)=48.312, median_of_episode_medians=7.642, mean_of_episode_means=48.802, median_of_episode_means=47.820
+  libero/openvla_libero_10.csv:action_repeat2 csv=157.213 summary_median(mean over folders)=157.213, summary_mean_ms(mean over folders)=80.853, median_of_episode_medians=80.340, mean_of_episode_means=80.881, median_of_episode_means=80.819
+  libero/openvla_libero_10.csv:action_repeat4 csv=2.243 summary_median(mean over folders)=2.243, summary_mean_ms(mean over folders)=41.636, median_of_episode_medians=2.252, mean_of_episode_means=41.638, median_of_episode_means=41.634
+  libero/openvla_libero_goal.csv:action_repeat2 csv=159.759 summary_median(mean over folders)=159.759, summary_mean_ms(mean over folders)=82.303, median_of_episode_medians=81.998, mean_of_episode_means=82.368, median_of_episode_means=82.405
+  libero/openvla_libero_goal.csv:action_repeat4 csv=2.242 summary_median(mean over folders)=2.242, summary_mean_ms(mean over folders)=41.934, median_of_episode_medians=2.256, mean_of_episode_means=42.054, median_of_episode_means=41.902
+  libero/openvla_libero_object.csv:action_repeat2 csv=157.482 summary_median(mean over folders)=157.482, summary_mean_ms(mean over folders)=80.988, median_of_episode_medians=80.828, mean_of_episode_means=81.020, median_of_episode_means=80.972
+  libero/openvla_libero_object.csv:action_repeat4 csv=2.24 summary_median(mean over folders)=2.240, summary_mean_ms(mean over folders)=41.574, median_of_episode_medians=2.254, mean_of_episode_means=41.656, median_of_episode_means=41.473
+  libero/openvla_libero_spatial.csv:action_repeat2 csv=159.918 summary_median(mean over folders)=159.918, summary_mean_ms(mean over folders)=82.473, median_of_episode_medians=81.887, mean_of_episode_means=82.601, median_of_episode_means=82.539
+  libero/openvla_libero_spatial.csv:action_repeat4 csv=2.249 summary_median(mean over folders)=2.249, summary_mean_ms(mean over folders)=42.597, median_of_episode_medians=2.256, mean_of_episode_means=42.676, median_of_episode_means=42.537
+
+# 8. SmolVLA mixed-implementation folders: success by implementation
+  smolvla_libero/depth_pruning2/libero_10: legacy(no tag): 3/83; smolvla-reconstructed-sdpa-v1: 0/17
+  smolvla_libero/depth_pruning2/libero_goal: legacy(no tag): 41/74; smolvla-reconstructed-sdpa-v1: 12/26
+  smolvla_libero/depth_pruning4/libero_10: legacy(no tag): 0/38; smolvla-reconstructed-sdpa-v1: 0/62
+
+# 9. backbones recording reuses=0 under action repeat (repeated steps not counted as reuses)
+  cogact_base_simplerenv_bridge: sum reuses=0, sum(steps-calls)=7055
+  cogact_base_simplerenv_fractal: sum reuses=0, sum(steps-calls)=5792
+  cronusvla_simplerenv_bridge: sum reuses=7337, sum(steps-calls)=7337
+  cronusvla_simplerenv_fractal: sum reuses=7147, sum(steps-calls)=7147
+  minivla_simplerenv: sum reuses=6679, sum(steps-calls)=6679
+  openvla_libero: sum reuses=44864, sum(steps-calls)=44864
+  openvla_simplerenv: sum reuses=6033, sum(steps-calls)=6033
+  openvla_simplerenv_fractal: sum reuses=7839, sum(steps-calls)=7839
+  smolvla_libero: sum reuses=46178, sum(steps-calls)=46178
+  spatialvla_simplerenv_bridge: sum reuses=0, sum(steps-calls)=4905
+  spatialvla_simplerenv_fractal: sum reuses=0, sum(steps-calls)=6266
+  univla_libero: sum reuses=59720, sum(steps-calls)=112458
+  univla_simplerenv_bridge: sum reuses=7250, sum(steps-calls)=12936

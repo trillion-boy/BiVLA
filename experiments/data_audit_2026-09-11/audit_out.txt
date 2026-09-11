@@ -1,0 +1,1437 @@
+FILES OPENED: 25
+
+## 1. STRUCTURE
+| file | rows | cols | CRLF | LF-only | CR-only | BOM | trailing CRLF | has suite col | N/A cells | empty cells |
+|---|---|---|---|---|---|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| google_robot_fractal/summary.csv | 24 | 23 | 25 | 0 | 0 | False | True | False | 60 | 0 |
+| libero/openvla_libero_10.csv | 13 | 24 | 14 | 0 | 0 | False | True | True | 32 | 0 |
+| libero/openvla_libero_goal.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/openvla_libero_object.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/openvla_libero_spatial.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/smolvla_libero_10.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/smolvla_libero_goal.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/smolvla_libero_object.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/smolvla_libero_spatial.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/summary.csv | 72 | 23 | 73 | 0 | 0 | False | True | False | 180 | 0 |
+| libero/univla_libero_10.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/univla_libero_goal.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/univla_libero_object.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| libero/univla_libero_spatial.csv | 14 | 24 | 15 | 0 | 0 | False | True | True | 33 | 0 |
+| simpler_widowx/cogact_base_simpler_widowx.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| simpler_widowx/cronusvla_simpler_widowx.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| simpler_widowx/minivla_simpler_widowx.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| simpler_widowx/openvla_simplerenv_widowx.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| simpler_widowx/spatialvla_simpler_widowx.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+| simpler_widowx/summary.csv | 36 | 23 | 37 | 0 | 0 | False | True | False | 90 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv | 14 | 23 | 15 | 0 | 0 | False | True | False | 33 | 0 |
+
+Base header (23 cols): model_name,environment,checkpoint_model_id,configuration,tasks,episodes,successes,success_rate_pct,avg_steps,avg_policy_calls,avg_reuses,policy_median_latency_ms,policy_p95_latency_ms,cycle_median_latency_ms,cycle_p95_latency_ms,avg_episode_time_s,control_frequency_hz,action_repeat,depth_layers,selected_depth_layers,fusion_keyframe_interval,fusion_max_reuse_fraction,median_reusable_visual_tokens
+  libero/openvla_libero_10.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/openvla_libero_goal.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/openvla_libero_object.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/openvla_libero_spatial.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/smolvla_libero_10.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/smolvla_libero_goal.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/smolvla_libero_object.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/smolvla_libero_spatial.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/univla_libero_10.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/univla_libero_goal.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/univla_libero_object.csv: extra=['suite'] missing=[] position_of_suite=3
+  libero/univla_libero_spatial.csv: extra=['suite'] missing=[] position_of_suite=3
+
+### Numeric representation per column (int-like vs float-like vs N/A vs other), aggregated over all files
+  tasks: {'int': 439}
+  episodes: {'int': 439}
+  successes: {'int': 439}
+  success_rate_pct: {'float': 139, 'int': 300}
+  avg_steps: {'float': 435, 'int': 4}
+  avg_policy_calls: {'float': 435, 'int': 4}
+  avg_reuses: {'int': 117, 'float': 322}
+  policy_median_latency_ms: {'float': 438, 'int': 1}
+  policy_p95_latency_ms: {'float': 439}
+  cycle_median_latency_ms: {'float': 438, 'int': 1}
+  cycle_p95_latency_ms: {'float': 438, 'int': 1}
+  avg_episode_time_s: {'float': 430, 'int': 9}
+  control_frequency_hz: {'float': 438, 'int': 1}
+  action_repeat: {'int': 439}
+  depth_layers: {'int': 439}
+  fusion_keyframe_interval: {'N/A': 352, 'int': 87}
+  fusion_max_reuse_fraction: {'N/A': 352, 'float': 87}
+  median_reusable_visual_tokens: {'float': 288, 'int': 151}
+
+### Per-file representation of always-integer-valued columns (success_rate_pct / avg_reuses / median_reusable_visual_tokens / avg_steps)
+  success_rate_pct:
+     google_robot_fractal/cogact_base_simplerenv_fractal.csv: {'float': 13, 'int': 1}
+     google_robot_fractal/cronusvla_simplerenv_fractal.csv: {'float': 13, 'int': 1}
+     google_robot_fractal/openvla_simplerenv_fractal.csv: {'float': 11, 'int': 3}
+     google_robot_fractal/spatialvla_simplerenv_fractal.csv: {'float': 10, 'int': 4}
+     google_robot_fractal/summary.csv: {'float': 21, 'int': 3}
+     libero/openvla_libero_10.csv: {'int': 13}
+     libero/openvla_libero_goal.csv: {'int': 14}
+     libero/openvla_libero_object.csv: {'int': 14}
+     libero/openvla_libero_spatial.csv: {'int': 14}
+     libero/smolvla_libero_10.csv: {'int': 13, 'float': 1}
+     libero/smolvla_libero_goal.csv: {'int': 14}
+     libero/smolvla_libero_object.csv: {'int': 14}
+     libero/smolvla_libero_spatial.csv: {'int': 14}
+     libero/summary.csv: {'int': 72}
+     libero/univla_libero_10.csv: {'int': 14}
+     libero/univla_libero_goal.csv: {'int': 13, 'float': 1}
+     libero/univla_libero_object.csv: {'int': 14}
+     libero/univla_libero_spatial.csv: {'int': 13, 'float': 1}
+     simpler_widowx/cogact_base_simpler_widowx.csv: {'int': 8, 'float': 6}
+     simpler_widowx/cronusvla_simpler_widowx.csv: {'int': 7, 'float': 7}
+     simpler_widowx/minivla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/openvla_simplerenv_widowx.csv: {'float': 9, 'int': 5}
+     simpler_widowx/spatialvla_simpler_widowx.csv: {'int': 11, 'float': 3}
+     simpler_widowx/summary.csv: {'float': 22, 'int': 14}
+     simpler_widowx/univla_simpler_widowx.csv: {'float': 7, 'int': 7}
+  avg_reuses:
+     google_robot_fractal/cogact_base_simplerenv_fractal.csv: {'int': 11, 'float': 3}
+     google_robot_fractal/cronusvla_simplerenv_fractal.csv: {'int': 9, 'float': 5}
+     google_robot_fractal/openvla_simplerenv_fractal.csv: {'int': 9, 'float': 5}
+     google_robot_fractal/spatialvla_simplerenv_fractal.csv: {'int': 11, 'float': 3}
+     google_robot_fractal/summary.csv: {'int': 18, 'float': 6}
+     libero/openvla_libero_10.csv: {'float': 13}
+     libero/openvla_libero_goal.csv: {'float': 14}
+     libero/openvla_libero_object.csv: {'float': 14}
+     libero/openvla_libero_spatial.csv: {'float': 14}
+     libero/smolvla_libero_10.csv: {'float': 14}
+     libero/smolvla_libero_goal.csv: {'float': 14}
+     libero/smolvla_libero_object.csv: {'float': 14}
+     libero/smolvla_libero_spatial.csv: {'float': 14}
+     libero/summary.csv: {'float': 72}
+     libero/univla_libero_10.csv: {'float': 14}
+     libero/univla_libero_goal.csv: {'float': 13, 'int': 1}
+     libero/univla_libero_object.csv: {'float': 13, 'int': 1}
+     libero/univla_libero_spatial.csv: {'float': 13, 'int': 1}
+     simpler_widowx/cogact_base_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/cronusvla_simpler_widowx.csv: {'int': 9, 'float': 5}
+     simpler_widowx/minivla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/openvla_simplerenv_widowx.csv: {'int': 9, 'float': 5}
+     simpler_widowx/spatialvla_simpler_widowx.csv: {'int': 11, 'float': 3}
+     simpler_widowx/summary.csv: {'int': 17, 'float': 19}
+     simpler_widowx/univla_simpler_widowx.csv: {'int': 10, 'float': 4}
+  median_reusable_visual_tokens:
+     google_robot_fractal/cogact_base_simplerenv_fractal.csv: {'float': 13, 'int': 1}
+     google_robot_fractal/cronusvla_simplerenv_fractal.csv: {'int': 11, 'float': 3}
+     google_robot_fractal/openvla_simplerenv_fractal.csv: {'float': 11, 'int': 3}
+     google_robot_fractal/spatialvla_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/summary.csv: {'float': 17, 'int': 7}
+     libero/openvla_libero_10.csv: {'float': 11, 'int': 2}
+     libero/openvla_libero_goal.csv: {'float': 11, 'int': 3}
+     libero/openvla_libero_object.csv: {'float': 11, 'int': 3}
+     libero/openvla_libero_spatial.csv: {'float': 11, 'int': 3}
+     libero/smolvla_libero_10.csv: {'int': 14}
+     libero/smolvla_libero_goal.csv: {'int': 14}
+     libero/smolvla_libero_object.csv: {'int': 14}
+     libero/smolvla_libero_spatial.csv: {'int': 14}
+     libero/summary.csv: {'float': 41, 'int': 31}
+     libero/univla_libero_10.csv: {'float': 12, 'int': 2}
+     libero/univla_libero_goal.csv: {'float': 12, 'int': 2}
+     libero/univla_libero_object.csv: {'float': 12, 'int': 2}
+     libero/univla_libero_spatial.csv: {'float': 12, 'int': 2}
+     simpler_widowx/cogact_base_simpler_widowx.csv: {'float': 11, 'int': 3}
+     simpler_widowx/cronusvla_simpler_widowx.csv: {'int': 11, 'float': 3}
+     simpler_widowx/minivla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/openvla_simplerenv_widowx.csv: {'float': 12, 'int': 2}
+     simpler_widowx/spatialvla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/summary.csv: {'float': 29, 'int': 7}
+     simpler_widowx/univla_simpler_widowx.csv: {'float': 14}
+  avg_steps:
+     google_robot_fractal/cogact_base_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/cronusvla_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/openvla_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/spatialvla_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/summary.csv: {'float': 24}
+     libero/openvla_libero_10.csv: {'float': 13}
+     libero/openvla_libero_goal.csv: {'float': 14}
+     libero/openvla_libero_object.csv: {'float': 14}
+     libero/openvla_libero_spatial.csv: {'float': 14}
+     libero/smolvla_libero_10.csv: {'float': 13, 'int': 1}
+     libero/smolvla_libero_goal.csv: {'float': 14}
+     libero/smolvla_libero_object.csv: {'float': 14}
+     libero/smolvla_libero_spatial.csv: {'float': 14}
+     libero/summary.csv: {'float': 72}
+     libero/univla_libero_10.csv: {'float': 14}
+     libero/univla_libero_goal.csv: {'float': 13, 'int': 1}
+     libero/univla_libero_object.csv: {'float': 14}
+     libero/univla_libero_spatial.csv: {'float': 13, 'int': 1}
+     simpler_widowx/cogact_base_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/cronusvla_simpler_widowx.csv: {'float': 13, 'int': 1}
+     simpler_widowx/minivla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/openvla_simplerenv_widowx.csv: {'float': 14}
+     simpler_widowx/spatialvla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/summary.csv: {'float': 36}
+     simpler_widowx/univla_simpler_widowx.csv: {'float': 14}
+  avg_policy_calls:
+     google_robot_fractal/cogact_base_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/cronusvla_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/openvla_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/spatialvla_simplerenv_fractal.csv: {'float': 14}
+     google_robot_fractal/summary.csv: {'float': 24}
+     libero/openvla_libero_10.csv: {'float': 13}
+     libero/openvla_libero_goal.csv: {'float': 14}
+     libero/openvla_libero_object.csv: {'float': 14}
+     libero/openvla_libero_spatial.csv: {'float': 14}
+     libero/smolvla_libero_10.csv: {'float': 13, 'int': 1}
+     libero/smolvla_libero_goal.csv: {'float': 14}
+     libero/smolvla_libero_object.csv: {'float': 14}
+     libero/smolvla_libero_spatial.csv: {'float': 14}
+     libero/summary.csv: {'float': 72}
+     libero/univla_libero_10.csv: {'float': 14}
+     libero/univla_libero_goal.csv: {'float': 13, 'int': 1}
+     libero/univla_libero_object.csv: {'float': 13, 'int': 1}
+     libero/univla_libero_spatial.csv: {'float': 13, 'int': 1}
+     simpler_widowx/cogact_base_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/cronusvla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/minivla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/openvla_simplerenv_widowx.csv: {'float': 14}
+     simpler_widowx/spatialvla_simpler_widowx.csv: {'float': 14}
+     simpler_widowx/summary.csv: {'float': 36}
+     simpler_widowx/univla_simpler_widowx.csv: {'float': 14}
+  fusion_max_reuse_fraction:
+     google_robot_fractal/cogact_base_simplerenv_fractal.csv: {'N/A': 11, 'float': 3}
+     google_robot_fractal/cronusvla_simplerenv_fractal.csv: {'N/A': 11, 'float': 3}
+     google_robot_fractal/openvla_simplerenv_fractal.csv: {'N/A': 11, 'float': 3}
+     google_robot_fractal/spatialvla_simplerenv_fractal.csv: {'N/A': 11, 'float': 3}
+     google_robot_fractal/summary.csv: {'N/A': 20, 'float': 4}
+     libero/openvla_libero_10.csv: {'N/A': 11, 'float': 2}
+     libero/openvla_libero_goal.csv: {'N/A': 11, 'float': 3}
+     libero/openvla_libero_object.csv: {'N/A': 11, 'float': 3}
+     libero/openvla_libero_spatial.csv: {'N/A': 11, 'float': 3}
+     libero/smolvla_libero_10.csv: {'N/A': 11, 'float': 3}
+     libero/smolvla_libero_goal.csv: {'N/A': 11, 'float': 3}
+     libero/smolvla_libero_object.csv: {'N/A': 11, 'float': 3}
+     libero/smolvla_libero_spatial.csv: {'N/A': 11, 'float': 3}
+     libero/summary.csv: {'N/A': 60, 'float': 12}
+     libero/univla_libero_10.csv: {'N/A': 11, 'float': 3}
+     libero/univla_libero_goal.csv: {'N/A': 11, 'float': 3}
+     libero/univla_libero_object.csv: {'N/A': 11, 'float': 3}
+     libero/univla_libero_spatial.csv: {'N/A': 11, 'float': 3}
+     simpler_widowx/cogact_base_simpler_widowx.csv: {'N/A': 11, 'float': 3}
+     simpler_widowx/cronusvla_simpler_widowx.csv: {'N/A': 11, 'float': 3}
+     simpler_widowx/minivla_simpler_widowx.csv: {'N/A': 11, 'float': 3}
+     simpler_widowx/openvla_simplerenv_widowx.csv: {'N/A': 11, 'float': 3}
+     simpler_widowx/spatialvla_simpler_widowx.csv: {'N/A': 11, 'float': 3}
+     simpler_widowx/summary.csv: {'N/A': 30, 'float': 6}
+     simpler_widowx/univla_simpler_widowx.csv: {'N/A': 11, 'float': 3}
+
+### selected_depth_layers separators
+  google_robot_fractal/cogact_base_simplerenv_fractal.csv: {'single': 1, ';': 2}  values=['23', '17;23', '17;19;23;25']
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv: {'single': 1, ',': 2}  values=['10', '8,10', '3,6,8,10']
+  google_robot_fractal/openvla_simplerenv_fractal.csv: {'single': 1, ';': 2}  values=['23', '23;25', '17;23;25;27']
+  google_robot_fractal/spatialvla_simplerenv_fractal.csv: {'single': 1, ';': 2}  values=['8', '8;10', '8;10;13;23']
+  google_robot_fractal/summary.csv: {';': 3, 'single': 1}  values=['17;19;23;25', '23;25', '8;10', '10']
+  libero/openvla_libero_10.csv: {'single': 1, ';': 2}  values=['23', '23;25', '19;21;23;25']
+  libero/openvla_libero_goal.csv: {'single': 1, ';': 2}  values=['17', '17;20', '8;17;20;23']
+  libero/openvla_libero_object.csv: {'single': 1, ';': 2}  values=['17', '17;19', '17;19;21;23']
+  libero/openvla_libero_spatial.csv: {'single': 1, ';': 2}  values=['8', '8;20', '8;20;23;25']
+  libero/smolvla_libero_10.csv: {'single': 1, ';': 2}  values=['30', '28;30', '24;26;28;30']
+  libero/smolvla_libero_goal.csv: {'single': 1, ';': 2}  values=['30', '28;30', '24;26;28;30']
+  libero/smolvla_libero_object.csv: {'single': 1, ';': 2}  values=['30', '28;30', '24;26;28;30']
+  libero/smolvla_libero_spatial.csv: {'single': 1, ';': 2}  values=['30', '28;30', '24;26;28;30']
+  libero/summary.csv: {';': 1, 'single': 11}  values=['19;21', '19', '19', '19', '23', '17', '17', '8', '30', '30', '30', '30']
+  libero/univla_libero_10.csv: {'single': 1, ';': 2}  values=['19', '19;21', '19;21;26;30']
+  libero/univla_libero_goal.csv: {'single': 1, ';': 2}  values=['19', '19;21', '19;21;26;29']
+  libero/univla_libero_object.csv: {'single': 1, ';': 2}  values=['19', '19;21', '19;21;26;29']
+  libero/univla_libero_spatial.csv: {'single': 1, ';': 2}  values=['19', '19;22', '19;22;26;29']
+  simpler_widowx/cogact_base_simpler_widowx.csv: {'single': 1, ';': 2}  values=['17', '17;23', '17;20;23;25']
+  simpler_widowx/cronusvla_simpler_widowx.csv: {'single': 1, ',': 2}  values=['10', '8,10', '4,6,8,10']
+  simpler_widowx/minivla_simpler_widowx.csv: {'single': 1, ';': 2}  values=['13', '11;13', '7;9;11;13']
+  simpler_widowx/openvla_simplerenv_widowx.csv: {'single': 1, ';': 2}  values=['23', '23;25', '17;23;25;27']
+  simpler_widowx/spatialvla_simpler_widowx.csv: {'single': 1, ';': 2}  values=['8', '8;10', '8;10;13;23']
+  simpler_widowx/summary.csv: {';': 3, 'single': 3}  values=['26;30', '17;23', '23;25', '8', '10', '13']
+  simpler_widowx/univla_simpler_widowx.csv: {'single': 1, ';': 2}  values=['26', '26;30', '21;24;26;30']
+
+### Quoted fields in raw lines
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv: 2 quoted lines, e.g. cronusvla_simplerenv_fractal,simpler_google_robot_fractal,CronusVLA-0.5B-Bridge-RT-1-Fractal,depth_pruning2,5,250,129,51.6,53.392,53.392,0,147.2,160.353,147.2,1
+  simpler_widowx/cronusvla_simpler_widowx.csv: 2 quoted lines, e.g. cronusvla_simplerenv_bridge,simpler_widowx,CronusVLA-0.5B-Bridge-RT-1,depth_pruning2,4,200,72,36,50.52,50.52,0,119.129,122.946,119.129,122.946,6,8.396,1,2,"8,10
+
+## 2. COLUMN SEMANTICS
+
+### 2a. cycle_median vs policy_median per backbone/env (non-action-repeat rows): ratio and difference
+| file | rows | cycle-policy diff min..max (ms) | cycle/policy min..max | equal? |
+|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | 12 | 63.690..87.757 | 1.644..1.884 | 0/12 exactly equal |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | 12 | -3.551..0.000 | 0.977..1.000 | 9/12 exactly equal |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | 12 | 7.698..18.358 | 1.050..1.114 | 0/12 exactly equal |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | 12 | 62.569..97.090 | 1.166..1.257 | 0/12 exactly equal |
+| libero/openvla_libero_10.csv | 11 | 2.312..8.093 | 1.015..1.051 | 0/11 exactly equal |
+| libero/openvla_libero_goal.csv | 12 | 2.310..7.941 | 1.014..1.050 | 0/12 exactly equal |
+| libero/openvla_libero_object.csv | 12 | 2.314..8.163 | 1.015..1.052 | 0/12 exactly equal |
+| libero/openvla_libero_spatial.csv | 12 | 2.302..8.031 | 1.014..1.050 | 0/12 exactly equal |
+| libero/smolvla_libero_10.csv | 12 | 12.603..28.029 | 1.048..1.101 | 0/12 exactly equal |
+| libero/smolvla_libero_goal.csv | 12 | 14.021..29.786 | 1.053..1.109 | 0/12 exactly equal |
+| libero/smolvla_libero_object.csv | 12 | 12.894..28.668 | 1.049..1.103 | 0/12 exactly equal |
+| libero/smolvla_libero_spatial.csv | 12 | 18.166..34.275 | 1.069..1.123 | 0/12 exactly equal |
+| libero/univla_libero_10.csv | 12 | 108.263..127.188 | 1.215..1.310 | 0/12 exactly equal |
+| libero/univla_libero_goal.csv | 12 | 129.718..152.161 | 1.252..1.322 | 0/12 exactly equal |
+| libero/univla_libero_object.csv | 12 | 118.041..136.263 | 1.237..1.298 | 0/12 exactly equal |
+| libero/univla_libero_spatial.csv | 12 | 182.410..195.498 | 1.317..1.404 | 0/12 exactly equal |
+| simpler_widowx/cogact_base_simpler_widowx.csv | 12 | 39.634..61.976 | 1.404..1.625 | 0/12 exactly equal |
+| simpler_widowx/cronusvla_simpler_widowx.csv | 12 | 0.000..0.000 | 1.000..1.000 | 12/12 exactly equal |
+| simpler_widowx/minivla_simpler_widowx.csv | 12 | 7.730..14.630 | 1.076..1.149 | 0/12 exactly equal |
+| simpler_widowx/openvla_simplerenv_widowx.csv | 12 | 7.279..14.814 | 1.046..1.094 | 0/12 exactly equal |
+| simpler_widowx/spatialvla_simpler_widowx.csv | 12 | 38.900..63.947 | 1.101..1.167 | 0/12 exactly equal |
+| simpler_widowx/univla_simpler_widowx.csv | 12 | 173.343..212.759 | 1.201..1.298 | 0/12 exactly equal |
+
+### 2b. action_repeat rows: policy vs cycle latency; orig cycle; cycle/policy; steps, calls, reuses, steps-calls; freq candidates
+| file | cfg | policy_med | cycle_med | orig_cycle | cycle/policy | steps | calls | reuses | steps-calls | hz | 1000/cycle | steps/t | calls/t |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | action_repeat2 | 98.777 | 230.844 | 162.727 | 2.337 | 46.668 | 23.5 | 0 | 23.168 | 4.17 | 4.332 | 8.231 | 4.145 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | action_repeat4 | 99.563 | 398.814 | 162.727 | 4.006 | 58.108 | 14.72 | 0 | 43.388 | 2.6 | 2.507 | 10.248 | 2.596 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | action_repeat2 | 223.077 | 111.593 | 152.561 | 0.500 | 57.428 | 28.84 | 28.588 | 28.588 | 9.012 | 8.961 | 8.899 | 4.469 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | action_repeat4 | 356.375 | 89.509 | 152.561 | 0.251 | 74.132 | 18.596 | 55.536 | 55.536 | 11.164 | 11.172 | 11.126 | 2.791 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | action_repeat2 | 159.141 | 87.531 | 168.012 | 0.550 | 62.912 | 31.556 | 31.356 | 31.356 | 11.33 | 11.425 | 6.285 | 3.152 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | action_repeat4 | 159.859 | 47.82 | 168.012 | 0.299 | 67.02 | 16.896 | 50.124 | 50.124 | 20.49 | 20.912 | 8.409 | 2.120 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | action_repeat2 | 377.128 | 520.24 | 446.855 | 1.379 | 50.404 | 25.34 | 0 | 25.064 | 1.93 | 1.922 | 3.804 | 1.912 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | action_repeat4 | 375.818 | 655.635 | 446.855 | 1.745 | 65.88 | 16.6 | 0 | 49.280 | 1.53 | 1.525 | 6.022 | 1.517 |
+| libero/openvla_libero_10.csv/libero_10 | action_repeat2 | 156.735 | 157.213 | 158.417 | 1.003 | 407.47 | 203.85 | 203.62 | 203.620 | 10.735 | 6.361 | 10.734 | 5.370 |
+| libero/openvla_libero_10.csv/libero_10 | action_repeat4 | 157.217 | 2.243 | 158.417 | 0.014 | 461.14 | 115.36 | 345.78 | 345.780 | 18.621 | 445.831 | 18.624 | 4.659 |
+| libero/openvla_libero_goal.csv/libero_goal | action_repeat2 | 159.713 | 159.759 | 161.915 | 1.000 | 175.16 | 87.74 | 87.42 | 87.420 | 10.387 | 6.259 | 10.389 | 5.204 |
+| libero/openvla_libero_goal.csv/libero_goal | action_repeat4 | 157.489 | 2.242 | 161.915 | 0.014 | 192.74 | 48.41 | 144.33 | 144.330 | 17.979 | 446.030 | 17.979 | 4.516 |
+| libero/openvla_libero_object.csv/libero_object | action_repeat2 | 156.752 | 157.482 | 159.54 | 1.005 | 173.96 | 87.22 | 86.74 | 86.740 | 10.668 | 6.350 | 10.666 | 5.348 |
+| libero/openvla_libero_object.csv/libero_object | action_repeat4 | 156.311 | 2.24 | 159.54 | 0.014 | 212.01 | 53.24 | 158.77 | 158.770 | 18.41 | 446.429 | 18.404 | 4.622 |
+| libero/openvla_libero_spatial.csv/libero_spatial | action_repeat2 | 159.658 | 159.918 | 162.448 | 1.002 | 142.05 | 71.19 | 70.86 | 70.860 | 9.886 | 6.253 | 9.885 | 4.954 |
+| libero/openvla_libero_spatial.csv/libero_spatial | action_repeat4 | 160.192 | 2.249 | 162.448 | 0.014 | 176.24 | 44.22 | 132.02 | 132.020 | 16.31 | 444.642 | 16.303 | 4.091 |
+| libero/smolvla_libero_10.csv/libero_10 | action_repeat2 | 278.117 | 286.798 | 288.922 | 1.031 | 443.45 | 221.8 | 221.65 | 221.650 | 6.573 | 3.487 | 6.574 | 3.288 |
+| libero/smolvla_libero_10.csv/libero_10 | action_repeat4 | 272.208 | 12.523 | 288.922 | 0.046 | 470.22 | 117.64 | 352.58 | 352.580 | 12.413 | 79.853 | 12.413 | 3.106 |
+| libero/smolvla_libero_goal.csv/libero_goal | action_repeat2 | 278.549 | 290.92 | 294.455 | 1.044 | 164.22 | 82.31 | 81.91 | 81.910 | 6.486 | 3.437 | 6.486 | 3.251 |
+| libero/smolvla_libero_goal.csv/libero_goal | action_repeat4 | 276.63 | 13.777 | 294.455 | 0.050 | 197.32 | 49.51 | 147.81 | 147.810 | 11.968 | 72.585 | 11.966 | 3.002 |
+| libero/smolvla_libero_object.csv/libero_object | action_repeat2 | 272.586 | 282.899 | 292.596 | 1.038 | 169.02 | 84.75 | 84.27 | 84.270 | 6.66 | 3.535 | 6.660 | 3.339 |
+| libero/smolvla_libero_object.csv/libero_object | action_repeat4 | 274.652 | 12.711 | 292.596 | 0.046 | 202.02 | 50.74 | 151.28 | 151.280 | 12.195 | 78.672 | 12.192 | 3.062 |
+| libero/smolvla_libero_spatial.csv/libero_spatial | action_repeat2 | 275.324 | 290.476 | 291.895 | 1.055 | 148.18 | 74.23 | 73.95 | 73.950 | 6.34 | 3.443 | 6.341 | 3.176 |
+| libero/smolvla_libero_spatial.csv/libero_spatial | action_repeat4 | 272.469 | 18.867 | 291.895 | 0.069 | 189.73 | 47.59 | 142.14 | 142.140 | 11.447 | 53.003 | 11.450 | 2.872 |
+| libero/univla_libero_10.csv/libero_10 | action_repeat2 | 455.152 | 700.237 | 573.526 | 1.538 | 465.5 | 23.42 | 234.2 | 442.080 | 1.401 | 1.428 | 27.858 | 1.402 |
+| libero/univla_libero_10.csv/libero_10 | action_repeat4 | 472.219 | 950.686 | 573.526 | 2.013 | 517.42 | 12.94 | 388.2 | 504.480 | 1.039 | 1.052 | 41.526 | 1.039 |
+| libero/univla_libero_goal.csv/libero_goal | action_repeat2 | 497.332 | 770.81 | 625.057 | 1.550 | 244.05 | 12.34 | 123.4 | 231.710 | 1.272 | 1.297 | 25.160 | 1.272 |
+| libero/univla_libero_goal.csv/libero_goal | action_repeat4 | 500.971 | 1010.853 | 625.057 | 2.018 | 300.0 | 8.0 | 240 | 292.000 | 0.988 | 0.989 | 37.037 | 0.988 |
+| libero/univla_libero_object.csv/libero_object | action_repeat2 | 483.359 | 721.154 | 589.388 | 1.492 | 266.12 | 13.41 | 134.1 | 252.710 | 1.34 | 1.387 | 26.585 | 1.340 |
+| libero/univla_libero_object.csv/libero_object | action_repeat4 | 485.553 | 969.437 | 589.388 | 1.997 | 279.9 | 7.0 | 210 | 272.900 | 1.006 | 1.032 | 40.216 | 1.006 |
+| libero/univla_libero_spatial.csv/libero_spatial | action_repeat2 | 525.242 | 903.456 | 695.601 | 1.720 | 208.63 | 10.55 | 105.5 | 198.080 | 1.09 | 1.107 | 21.553 | 1.090 |
+| libero/univla_libero_spatial.csv/libero_spatial | action_repeat4 | 518.206 | 1230.528 | 695.601 | 2.375 | 220.0 | 6.0 | 180 | 214.000 | 0.824 | 0.813 | 30.220 | 0.824 |
+| simpler_widowx/cogact_base_simpler_widowx.csv | action_repeat2 | 98.63 | 179.663 | 139.604 | 1.822 | 70.605 | 35.33 | 0.0 | 35.275 | 5.44 | 5.566 | 10.862 | 5.435 |
+| simpler_widowx/cogact_base_simpler_widowx.csv | action_repeat4 | 98.519 | 257.876 | 139.604 | 2.618 | 74.27 | 18.575 | 0.0 | 55.695 | 3.7 | 3.878 | 14.795 | 3.700 |
+| simpler_widowx/cronusvla_simpler_widowx.csv | action_repeat2 | 162.782 | 81.45 | 126.3 | 0.500 | 73.395 | 36.71 | 36.685 | 36.685 | 11.986 | 12.277 | 11.806 | 5.905 |
+| simpler_widowx/cronusvla_simpler_widowx.csv | action_repeat4 | 239.703 | 59.926 | 126.3 | 0.250 | 75.0 | 18.75 | 56.25 | 56.250 | 16.084 | 16.687 | 15.664 | 3.916 |
+| simpler_widowx/minivla_simpler_widowx.csv | action_repeat2 | 97.14 | 103.64 | 104.86 | 1.067 | 66.94 | 33.545 | 33.395 | 33.395 | 10.09 | 9.649 | 10.081 | 5.052 |
+| simpler_widowx/minivla_simpler_widowx.csv | action_repeat4 | 98.04 | 7.74 | 104.86 | 0.079 | 66.915 | 16.83 | 50.085 | 50.085 | 13.5 | 129.199 | 13.491 | 3.393 |
+| simpler_widowx/openvla_simplerenv_widowx.csv | action_repeat2 | 157.581 | 86.765 | 167.068 | 0.551 | 60.495 | 30.33 | 30.165 | 30.165 | 11.45 | 11.525 | 7.677 | 3.849 |
+| simpler_widowx/openvla_simplerenv_widowx.csv | action_repeat4 | 158.215 | 47.479 | 167.068 | 0.300 | 68.41 | 17.165 | 51.245 | 51.245 | 20.8 | 21.062 | 11.070 | 2.778 |
+| simpler_widowx/spatialvla_simpler_widowx.csv | action_repeat2 | 384.455 | 464.222 | 421.339 | 1.207 | 49.375 | 24.85 | 0 | 24.525 | 2.14 | 2.154 | 4.253 | 2.140 |
+| simpler_widowx/spatialvla_simpler_widowx.csv | action_repeat4 | 381.676 | 539.256 | 421.339 | 1.413 | 62.4 | 15.78 | 0 | 46.620 | 1.84 | 1.854 | 7.256 | 1.835 |
+| simpler_widowx/univla_simpler_widowx.csv | action_repeat2 | 717.583 | 1116.491 | 902.345 | 1.556 | 71.93 | 7.25 | 36.25 | 64.680 | 0.89 | 0.896 | 8.815 | 0.888 |
+| simpler_widowx/univla_simpler_widowx.csv | action_repeat4 | 727.874 | 1497.394 | 902.345 | 2.057 | 74.515 | 3.74 | 56.1 | 70.775 | 0.65 | 0.668 | 12.738 | 0.639 |
+
+### 2c. control_frequency_hz: which definition fits, per file (all rows). Reporting max abs relative error of each candidate
+| file | 1000/cycle_med maxrelerr | steps/t maxrelerr | calls/t maxrelerr | 1000/policy_med maxrelerr | best |
+|---|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | 0.0459 | 2.9417 | 0.0256 | 2.8630 | calls/t |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | 0.0089 | 0.0174 | 0.7500 | 0.7487 | 1000/cycle |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | 0.0226 | 0.5896 | 0.8965 | 0.6947 | 1000/cycle |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | 0.0055 | 2.9359 | 0.0251 | 0.7391 | 1000/cycle |
+| google_robot_fractal/summary.csv | 0.0388 | 0.9738 | 0.7218 | 1.4278 | 1000/cycle |
+| libero/openvla_libero_10.csv | 22.9424 | 0.0002 | 0.7498 | 0.6584 | steps/t |
+| libero/openvla_libero_goal.csv | 23.8084 | 0.0002 | 0.7488 | 0.6468 | steps/t |
+| libero/openvla_libero_object.csv | 23.2492 | 0.0003 | 0.7490 | 0.6525 | steps/t |
+| libero/openvla_libero_spatial.csv | 26.2619 | 0.0004 | 0.7492 | 0.6173 | steps/t |
+| libero/smolvla_libero_10.csv | 5.4330 | 0.0192 | 0.7498 | 0.7040 | steps/t |
+| libero/smolvla_libero_goal.csv | 5.0649 | 0.0119 | 0.7491 | 0.6979 | steps/t |
+| libero/smolvla_libero_object.csv | 5.4512 | 0.0225 | 0.7489 | 0.7014 | steps/t |
+| libero/smolvla_libero_spatial.csv | 3.6303 | 0.0167 | 0.7491 | 0.6794 | steps/t |
+| libero/summary.csv | 0.4700 | 18.8841 | 0.4998 | 0.7467 | 1000/cycle |
+| libero/univla_libero_10.csv | 0.0319 | 38.9677 | 0.0056 | 1.0382 | calls/t |
+| libero/univla_libero_goal.csv | 0.0207 | 36.4869 | 0.0006 | 1.0204 | calls/t |
+| libero/univla_libero_object.csv | 0.0408 | 38.9757 | 0.0007 | 1.0472 | calls/t |
+| libero/univla_libero_spatial.csv | 0.0208 | 35.6745 | 0.0208 | 1.3419 | calls/t |
+| simpler_widowx/cogact_base_simpler_widowx.csv | 0.0481 | 2.9986 | 0.0268 | 1.7433 | calls/t |
+| simpler_widowx/cronusvla_simpler_widowx.csv | 0.0375 | 0.0261 | 0.7565 | 0.7406 | steps/t |
+| simpler_widowx/minivla_simpler_widowx.csv | 8.5703 | 0.0009 | 0.7487 | 0.6126 | steps/t |
+| simpler_widowx/openvla_simplerenv_widowx.csv | 0.0423 | 0.4678 | 0.8665 | 0.6961 | 1000/cycle |
+| simpler_widowx/spatialvla_simpler_widowx.csv | 0.0078 | 2.9434 | 0.0058 | 0.4239 | calls/t |
+| simpler_widowx/summary.csv | 0.4255 | 8.9044 | 0.6638 | 0.8638 | 1000/cycle |
+| simpler_widowx/univla_simpler_widowx.csv | 0.0274 | 18.5963 | 0.0445 | 1.1136 | 1000/cycle |
+
+#### control_frequency_hz per-row detail where best-fit (steps/t) rel err > 2%
+  google_robot_fractal/openvla_simplerenv_fractal.csv  action_repeat4: hz=20.49 1000/cycle=20.912 steps/t=8.409 calls/t=2.120
+  google_robot_fractal/openvla_simplerenv_fractal.csv  guarded_reuse_aggressive: hz=6.09 1000/cycle=5.952 steps/t=4.260 calls/t=4.095
+  libero/smolvla_libero_object.csv libero_object temporal_fusion_motion_entropy: hz=3.116 1000/cycle=3.591 steps/t=3.186 calls/t=3.186
+  simpler_widowx/cronusvla_simpler_widowx.csv  action_repeat4: hz=16.084 1000/cycle=16.687 steps/t=15.664 calls/t=3.916
+  simpler_widowx/openvla_simplerenv_widowx.csv  guarded_reuse_strict: hz=6.18 1000/cycle=6.039 steps/t=4.934 calls/t=4.751
+  simpler_widowx/openvla_simplerenv_widowx.csv  guarded_reuse_moderate: hz=6.21 1000/cycle=6.046 steps/t=4.963 calls/t=4.724
+  simpler_widowx/openvla_simplerenv_widowx.csv  guarded_reuse_aggressive: hz=6.3 1000/cycle=6.034 steps/t=5.009 calls/t=4.695
+  simpler_widowx/summary.csv  guarded_reuse_strict: hz=6.18 1000/cycle=6.039 steps/t=4.934 calls/t=4.751
+
+### 2d. avg_reuses accounting
+| file | cfg family | rows | reuses==0 | reuses==steps-calls (|d|<0.01) | reuses < steps-calls (guarded) | other |
+|---|---|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | original | 1 | {'zero&steps==calls': 1} |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | action_repeat | 2 | {'zero_but_steps!=calls': 2} |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | original | 1 | {'zero&steps==calls': 1} |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | original | 1 | {'zero&steps==calls': 1} |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| google_robot_fractal/openvla_simplerenv_fractal.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | original | 1 | {'zero&steps==calls': 1} |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | action_repeat | 2 | {'zero_but_steps!=calls': 2} |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/openvla_libero_10.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/openvla_libero_10.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/openvla_libero_10.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/openvla_libero_10.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/openvla_libero_10.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/openvla_libero_10.csv | temporal_fusion | 2 | {'zero&steps==calls': 2} |
+| libero/openvla_libero_goal.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/openvla_libero_goal.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/openvla_libero_goal.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/openvla_libero_goal.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/openvla_libero_goal.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/openvla_libero_goal.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/openvla_libero_object.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/openvla_libero_object.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/openvla_libero_object.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/openvla_libero_object.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/openvla_libero_object.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/openvla_libero_object.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/openvla_libero_spatial.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/openvla_libero_spatial.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/openvla_libero_spatial.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/openvla_libero_spatial.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/openvla_libero_spatial.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/openvla_libero_spatial.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_10.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/smolvla_libero_10.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/smolvla_libero_10.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/smolvla_libero_10.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_10.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/smolvla_libero_10.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_goal.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/smolvla_libero_goal.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/smolvla_libero_goal.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/smolvla_libero_goal.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_goal.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/smolvla_libero_goal.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_object.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/smolvla_libero_object.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/smolvla_libero_object.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/smolvla_libero_object.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_object.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/smolvla_libero_object.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_spatial.csv | original | 1 | {'zero&steps==calls': 1} |
+| libero/smolvla_libero_spatial.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| libero/smolvla_libero_spatial.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| libero/smolvla_libero_spatial.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| libero/smolvla_libero_spatial.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| libero/smolvla_libero_spatial.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| libero/univla_libero_10.csv | original | 1 | {'zero_but_steps!=calls': 1} |
+| libero/univla_libero_10.csv | fixed_foveation | 2 | {'zero_but_steps!=calls': 2} |
+| libero/univla_libero_10.csv | action_repeat | 2 | {'other(ru=234.2,s-c=442.080)': 1, 'other(ru=388.2,s-c=504.480)': 1} |
+| libero/univla_libero_10.csv | depth_pruning | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_10.csv | guarded_reuse | 3 | {'other(ru=0.05,s-c=252.180)': 1, 'other(ru=0.06,s-c=252.470)': 1, 'other(ru=0.17,s-c=252.890)': 1} |
+| libero/univla_libero_10.csv | temporal_fusion | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_goal.csv | original | 1 | {'zero_but_steps!=calls': 1} |
+| libero/univla_libero_goal.csv | fixed_foveation | 2 | {'zero_but_steps!=calls': 2} |
+| libero/univla_libero_goal.csv | action_repeat | 2 | {'other(ru=123.4,s-c=231.710)': 1, 'other(ru=240.0,s-c=292.000)': 1} |
+| libero/univla_libero_goal.csv | depth_pruning | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_goal.csv | guarded_reuse | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_goal.csv | temporal_fusion | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_object.csv | original | 1 | {'zero_but_steps!=calls': 1} |
+| libero/univla_libero_object.csv | fixed_foveation | 2 | {'zero_but_steps!=calls': 2} |
+| libero/univla_libero_object.csv | action_repeat | 2 | {'other(ru=134.1,s-c=252.710)': 1, 'other(ru=210.0,s-c=272.900)': 1} |
+| libero/univla_libero_object.csv | depth_pruning | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_object.csv | guarded_reuse | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_object.csv | temporal_fusion | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_spatial.csv | original | 1 | {'zero_but_steps!=calls': 1} |
+| libero/univla_libero_spatial.csv | fixed_foveation | 2 | {'zero_but_steps!=calls': 2} |
+| libero/univla_libero_spatial.csv | action_repeat | 2 | {'other(ru=105.5,s-c=198.080)': 1, 'other(ru=180.0,s-c=214.000)': 1} |
+| libero/univla_libero_spatial.csv | depth_pruning | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_spatial.csv | guarded_reuse | 3 | {'zero_but_steps!=calls': 3} |
+| libero/univla_libero_spatial.csv | temporal_fusion | 3 | {'zero_but_steps!=calls': 3} |
+| simpler_widowx/cogact_base_simpler_widowx.csv | original | 1 | {'zero&steps==calls': 1} |
+| simpler_widowx/cogact_base_simpler_widowx.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| simpler_widowx/cogact_base_simpler_widowx.csv | action_repeat | 2 | {'zero_but_steps!=calls': 2} |
+| simpler_widowx/cogact_base_simpler_widowx.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/cogact_base_simpler_widowx.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| simpler_widowx/cogact_base_simpler_widowx.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/cronusvla_simpler_widowx.csv | original | 1 | {'zero&steps==calls': 1} |
+| simpler_widowx/cronusvla_simpler_widowx.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| simpler_widowx/cronusvla_simpler_widowx.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| simpler_widowx/cronusvla_simpler_widowx.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/cronusvla_simpler_widowx.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| simpler_widowx/cronusvla_simpler_widowx.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/minivla_simpler_widowx.csv | original | 1 | {'zero&steps==calls': 1} |
+| simpler_widowx/minivla_simpler_widowx.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| simpler_widowx/minivla_simpler_widowx.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/minivla_simpler_widowx.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| simpler_widowx/minivla_simpler_widowx.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| simpler_widowx/minivla_simpler_widowx.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/openvla_simplerenv_widowx.csv | original | 1 | {'zero&steps==calls': 1} |
+| simpler_widowx/openvla_simplerenv_widowx.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| simpler_widowx/openvla_simplerenv_widowx.csv | action_repeat | 2 | {'==steps-calls': 2} |
+| simpler_widowx/openvla_simplerenv_widowx.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/openvla_simplerenv_widowx.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| simpler_widowx/openvla_simplerenv_widowx.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/spatialvla_simpler_widowx.csv | original | 1 | {'zero&steps==calls': 1} |
+| simpler_widowx/spatialvla_simpler_widowx.csv | fixed_foveation | 2 | {'zero&steps==calls': 2} |
+| simpler_widowx/spatialvla_simpler_widowx.csv | action_repeat | 2 | {'zero_but_steps!=calls': 2} |
+| simpler_widowx/spatialvla_simpler_widowx.csv | depth_pruning | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/spatialvla_simpler_widowx.csv | guarded_reuse | 3 | {'==steps-calls': 3} |
+| simpler_widowx/spatialvla_simpler_widowx.csv | temporal_fusion | 3 | {'zero&steps==calls': 3} |
+| simpler_widowx/univla_simpler_widowx.csv | original | 1 | {'zero_but_steps!=calls': 1} |
+| simpler_widowx/univla_simpler_widowx.csv | fixed_foveation | 2 | {'zero_but_steps!=calls': 2} |
+| simpler_widowx/univla_simpler_widowx.csv | action_repeat | 2 | {'other(ru=36.25,s-c=64.680)': 1, 'other(ru=56.1,s-c=70.775)': 1} |
+| simpler_widowx/univla_simpler_widowx.csv | depth_pruning | 3 | {'zero_but_steps!=calls': 3} |
+| simpler_widowx/univla_simpler_widowx.csv | guarded_reuse | 3 | {'zero_but_steps!=calls': 1, 'other(ru=0.005,s-c=23.720)': 1, 'other(ru=0.01,s-c=24.125)': 1} |
+| simpler_widowx/univla_simpler_widowx.csv | temporal_fusion | 3 | {'zero_but_steps!=calls': 3} |
+
+### 2e. action_repeat / depth_layers columns in non-repeat / non-depth rows
+  google_robot_fractal/cogact_base_simplerenv_fractal.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '23'), 'depth_pruning2': ('2', '17;23'), 'depth_pruning4': ('4', '17;19;23;25')}
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv: action_repeat in non-AR rows={'1': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'0': 11}; DP rows={'depth_pruning1': ('1', '10'), 'depth_pruning2': ('2', '8,10'), 'depth_pruning4': ('4', '3,6,8,10')}
+  google_robot_fractal/openvla_simplerenv_fractal.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '23'), 'depth_pruning2': ('2', '23;25'), 'depth_pruning4': ('4', '17;23;25;27')}
+  google_robot_fractal/spatialvla_simplerenv_fractal.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '8'), 'depth_pruning2': ('2', '8;10'), 'depth_pruning4': ('4', '8;10;13;23')}
+  libero/openvla_libero_10.csv: action_repeat in non-AR rows={'2': 11}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 10}; DP rows={'depth_pruning1': ('1', '23'), 'depth_pruning2': ('2', '23;25'), 'depth_pruning4': ('4', '19;21;23;25')}
+  libero/openvla_libero_goal.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '17'), 'depth_pruning2': ('2', '17;20'), 'depth_pruning4': ('4', '8;17;20;23')}
+  libero/openvla_libero_object.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '17'), 'depth_pruning2': ('2', '17;19'), 'depth_pruning4': ('4', '17;19;21;23')}
+  libero/openvla_libero_spatial.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '8'), 'depth_pruning2': ('2', '8;20'), 'depth_pruning4': ('4', '8;20;23;25')}
+  libero/smolvla_libero_10.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '30'), 'depth_pruning2': ('2', '28;30'), 'depth_pruning4': ('4', '24;26;28;30')}
+  libero/smolvla_libero_goal.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '30'), 'depth_pruning2': ('2', '28;30'), 'depth_pruning4': ('4', '24;26;28;30')}
+  libero/smolvla_libero_object.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '30'), 'depth_pruning2': ('2', '28;30'), 'depth_pruning4': ('4', '24;26;28;30')}
+  libero/smolvla_libero_spatial.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '30'), 'depth_pruning2': ('2', '28;30'), 'depth_pruning4': ('4', '24;26;28;30')}
+  libero/univla_libero_10.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '19'), 'depth_pruning2': ('2', '19;21'), 'depth_pruning4': ('4', '19;21;26;30')}
+  libero/univla_libero_goal.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '19'), 'depth_pruning2': ('2', '19;21'), 'depth_pruning4': ('4', '19;21;26;29')}
+  libero/univla_libero_object.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '19'), 'depth_pruning2': ('2', '19;21'), 'depth_pruning4': ('4', '19;21;26;29')}
+  libero/univla_libero_spatial.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '19'), 'depth_pruning2': ('2', '19;22'), 'depth_pruning4': ('4', '19;22;26;29')}
+  simpler_widowx/cogact_base_simpler_widowx.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '17'), 'depth_pruning2': ('2', '17;23'), 'depth_pruning4': ('4', '17;20;23;25')}
+  simpler_widowx/cronusvla_simpler_widowx.csv: action_repeat in non-AR rows={'1': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'0': 11}; DP rows={'depth_pruning1': ('1', '10'), 'depth_pruning2': ('2', '8,10'), 'depth_pruning4': ('4', '4,6,8,10')}
+  simpler_widowx/minivla_simpler_widowx.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '13'), 'depth_pruning2': ('2', '11;13'), 'depth_pruning4': ('4', '7;9;11;13')}
+  simpler_widowx/openvla_simplerenv_widowx.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '23'), 'depth_pruning2': ('2', '23;25'), 'depth_pruning4': ('4', '17;23;25;27')}
+  simpler_widowx/spatialvla_simpler_widowx.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '8'), 'depth_pruning2': ('2', '8;10'), 'depth_pruning4': ('4', '8;10;13;23')}
+  simpler_widowx/univla_simpler_widowx.csv: action_repeat in non-AR rows={'2': 12}; AR rows={'action_repeat2': '2', 'action_repeat4': '4'}; depth_layers in non-DP rows={'1': 11}; DP rows={'depth_pruning1': ('1', '26'), 'depth_pruning2': ('2', '26;30'), 'depth_pruning4': ('4', '21;24;26;30')}
+
+### 2f. fusion columns in non-fusion rows / fusion rows
+  google_robot_fractal/cogact_base_simplerenv_fractal.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '107.4'), 'task_aware': ('3', '0.5', '107.4'), 'conservative_adaptive': ('2', '0.25', '64')}
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0'): 11}; fusion rows={'motion_entropy': ('1', '0.5', '115.285'), 'task_aware': ('1', '0.5', '115.285'), 'conservative_adaptive': ('1', '0.5', '115.285')}
+  google_robot_fractal/openvla_simplerenv_fractal.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '111'), 'task_aware': ('3', '0.5', '55'), 'conservative_adaptive': ('2', '0.25', '64')}
+  google_robot_fractal/spatialvla_simplerenv_fractal.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '95.8'), 'task_aware': ('3', '0.5', '33.8'), 'conservative_adaptive': ('2', '0.25', '0.0')}
+  libero/openvla_libero_10.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '128'), 'task_aware': ('3', '0.5', '69')}
+  libero/openvla_libero_goal.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '128'), 'task_aware': ('3', '0.5', '77'), 'conservative_adaptive': ('2', '0.25', '64')}
+  libero/openvla_libero_object.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '128'), 'task_aware': ('3', '0.5', '65'), 'conservative_adaptive': ('2', '0.25', '64')}
+  libero/openvla_libero_spatial.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '124'), 'task_aware': ('3', '0.5', '61'), 'conservative_adaptive': ('2', '0.25', '64')}
+  libero/smolvla_libero_10.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '0'), 'task_aware': ('3', '0.5', '0'), 'conservative_adaptive': ('2', '0.25', '0')}
+  libero/smolvla_libero_goal.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '0'), 'task_aware': ('3', '0.5', '0'), 'conservative_adaptive': ('2', '0.25', '0')}
+  libero/smolvla_libero_object.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '0'), 'task_aware': ('3', '0.5', '0'), 'conservative_adaptive': ('2', '0.25', '0')}
+  libero/smolvla_libero_spatial.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '0'), 'task_aware': ('3', '0.5', '0'), 'conservative_adaptive': ('2', '0.25', '0')}
+  libero/univla_libero_10.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '312'), 'task_aware': ('3', '0.5', '143'), 'conservative_adaptive': ('2', '0.25', '0.0')}
+  libero/univla_libero_goal.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '312'), 'task_aware': ('3', '0.5', '168'), 'conservative_adaptive': ('2', '0.25', '0.0')}
+  libero/univla_libero_object.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '312'), 'task_aware': ('3', '0.5', '158'), 'conservative_adaptive': ('2', '0.25', '0.0')}
+  libero/univla_libero_spatial.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '300'), 'task_aware': ('3', '0.5', '141'), 'conservative_adaptive': ('2', '0.25', '0.0')}
+  simpler_widowx/cogact_base_simpler_widowx.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '108'), 'task_aware': ('3', '0.5', '108'), 'conservative_adaptive': ('2', '0.25', '64')}
+  simpler_widowx/cronusvla_simpler_widowx.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0'): 11}; fusion rows={'motion_entropy': ('1', '0.5', '110.542'), 'task_aware': ('1', '0.5', '110.542'), 'conservative_adaptive': ('1', '0.5', '110.542')}
+  simpler_widowx/minivla_simpler_widowx.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'conservative_adaptive': ('2', '0.25', '64.0'), 'motion_entropy': ('3', '0.5', '107.0'), 'task_aware': ('3', '0.5', '68.0')}
+  simpler_widowx/openvla_simplerenv_widowx.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '113.5'), 'task_aware': ('3', '0.5', '73'), 'conservative_adaptive': ('2', '0.25', '64')}
+  simpler_widowx/spatialvla_simpler_widowx.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '91.5'), 'task_aware': ('3', '0.5', '46.25'), 'conservative_adaptive': ('2', '0.25', '0.0')}
+  simpler_widowx/univla_simpler_widowx.csv: non-fusion rows (kf,frac,tokens)={('N/A', 'N/A', '0.0'): 11}; fusion rows={'motion_entropy': ('3', '0.5', '403.625'), 'task_aware': ('3', '0.5', '147.25'), 'conservative_adaptive': ('2', '0.25', '0.0')}
+
+## 3. SUMMARY vs PER-FILE
+
+### simpler_widowx/summary.csv: 36 rows
+  byte-equal raw lines: 36/36; field-equal (all cols except environment): 36/36; not found: 0
+
+  Selection per (model, env/suite, family): summary pick vs rule 'max success, then min avg_steps' vs alt rules
+  | model | env | family | picked | success | steps | rule(max succ,min steps) | rule(max succ,min policy_lat) | rule(max succ,min cycle_lat) | rule(max succ, first in file) | rule(max succ, min ep_time) | candidates (cfg:succ/steps/policy_lat/cycle_lat/t) |
+  |---|---|---|---|---|---|---|---|---|---|---|---|
+  | cogact_base_simplerenv_bridge | simpler_widowx | fixed_foveation | fixed_foveation_keep20 | 52.5 | 46.57 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | keep20:52.5/46.57/98.292/158.788/7.44; keep50:52.5/48.36/99.089/161.065/7.87 |
+  | cogact_base_simplerenv_bridge | simpler_widowx | action_repeat | action_repeat2 | 12 | 70.605 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:12/70.605/98.63/179.663/6.5; repeat4:4.5/74.27/98.519/257.876/5.02 |
+  | cogact_base_simplerenv_bridge | simpler_widowx | depth_pruning | depth_pruning2 | 59.5 | 47.135 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | pruning1:57/47.575/96.966/137.134/6.6; pruning2:59.5/47.135/95.836/135.47/6.48; pruning4:52.5/49.84/93.403/134.299/6.75 |
+  | cogact_base_simplerenv_bridge | simpler_widowx | guarded_reuse | guarded_reuse_aggressive | 53 | 49.77 | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | strict:51.5/50.33/99.412/139.885/7.11; moderate:50/51.835/99.227/139.306/7.28; aggressive:53/49.77/98.997/139.711/6.9 |
+  | cogact_base_simplerenv_bridge | simpler_widowx | temporal_fusion | temporal_fusion_motion_entropy | 58 | 47.41 | temporal_fusion_motion_entropy | temporal_fusion_task_aware | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:58/47.41/98.703/140.45/6.73; task_aware:58/47.41/98.3/140.578/6.74; conservative_adaptive:52/48.93/98.057/140.04/6.92 |
+  | cronusvla_simplerenv_bridge | simpler_widowx | fixed_foveation | fixed_foveation_keep20 | 36.5 | 48.92 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | keep20:36.5/48.92/145.943/145.943/7.138; keep50:34/50.44/147.162/147.162/7.412 |
+  | cronusvla_simplerenv_bridge | simpler_widowx | action_repeat | action_repeat2 | 3.5 | 73.395 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:3.5/73.395/162.782/81.45/6.217; repeat4:0/75/239.703/59.926/4.788 |
+  | cronusvla_simplerenv_bridge | simpler_widowx | depth_pruning | depth_pruning1 **DEV** | 35.5 | 50.025 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | pruning1:35.5/50.025/122.106/122.106/6.11; pruning2:36/50.52/119.129/119.129/6; pruning4:28.5/52.515/113.586/113.586/5.954 |
+  | cronusvla_simplerenv_bridge | simpler_widowx | guarded_reuse | guarded_reuse_strict | 36 | 49.735 | guarded_reuse_strict | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_strict | guarded_reuse_moderate | strict:36/49.735/125.718/125.718/6.24; moderate:36/49.735/123.876/123.876/6.164; aggressive:36/49.735/125.873/125.873/6.238 |
+  | cronusvla_simplerenv_bridge | simpler_widowx | temporal_fusion | temporal_fusion_motion_entropy | 33.5 | 51.205 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:33.5/51.205/126.666/126.666/6.499; task_aware:33.5/51.205/127.525/127.525/6.52; conservative_adaptive:33.5/51.205/127.319/127.319/6.539 |
+  | minivla_simplerenv | simpler_widowx | action_repeat | action_repeat2 | 30.0 | 66.94 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:30.0/66.94/97.14/103.64/6.64; repeat4:29.0/66.915/98.04/7.74/4.96 |
+  | minivla_simplerenv | simpler_widowx | depth_pruning | depth_pruning1 | 18.5 | 67.435 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:18.5/67.435/95.72/103.5/9.84; pruning2:0.0/75.0/91.64/99.37/10.34; pruning4:0.0/75.0/85.29/93.11/9.84 |
+  | minivla_simplerenv | simpler_widowx | fixed_foveation | fixed_foveation_keep50 | 35.0 | 62.91 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:28.0/63.365/99.38/113.69/10.15; keep50:35.0/62.91/98.07/112.7/9.84 |
+  | minivla_simplerenv | simpler_widowx | guarded_reuse | guarded_reuse_strict | 38.5 | 62.65 | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | aggressive:33.5/65.37/97.72/106.11/9.47; moderate:36.0/64.04/99.18/107.56/9.37; strict:38.5/62.65/97.2/105.57/9.12 |
+  | minivla_simplerenv | simpler_widowx | temporal_fusion | temporal_fusion_motion_entropy | 39.0 | 61.165 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | conservative_adaptive:38.5/63.09/97.66/105.8/9.38; motion_entropy:39.0/61.165/98.57/106.97/9.17; task_aware:35.5/63.64/110.27/118.64/10.31 |
+  | openvla_simplerenv | simpler_widowx | fixed_foveation | fixed_foveation_keep50 | 30 | 62.515 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:22.5/65.24/157.733/172.186/14.1; keep50:30/62.515/157.189/172.003/13.61 |
+  | openvla_simplerenv | simpler_widowx | action_repeat | action_repeat2 | 28 | 60.495 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:28/60.495/157.581/86.765/7.88; repeat4:14.5/68.41/158.215/47.479/6.18 |
+  | openvla_simplerenv | simpler_widowx | depth_pruning | depth_pruning2 | 47.5 | 51.25 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | pruning1:43.5/51.655/154.64/162.563/10.56; pruning2:47.5/51.25/148.958/156.928/10.22; pruning4:37.5/53.795/140.592/148.625/10.22 |
+  | openvla_simplerenv | simpler_widowx | guarded_reuse | guarded_reuse_strict | 45.5 | 49.685 | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | strict:45.5/49.685/158.007/165.589/10.07; moderate:41.5/52.115/158.109/165.388/10.5; aggressive:41/52.695/158.39/165.739/10.52 |
+  | openvla_simplerenv | simpler_widowx | temporal_fusion | temporal_fusion_task_aware | 50.5 | 50.53 | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | motion_entropy:41/54.84/158.025/166.374/11.46; task_aware:50.5/50.53/170.889/179.263/11.23; conservative_adaptive:48/48.52/157.779/165.995/10.1 |
+  | spatialvla_4b_simplerenv_bridge | simpler_widowx | fixed_foveation | fixed_foveation_keep20 | 50 | 45.565 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | keep20:50/45.565/384.376/445.418/20.32; keep50:44.5/46.06/382.662/446.609/20.53 |
+  | spatialvla_4b_simplerenv_bridge | simpler_widowx | action_repeat | action_repeat2 | 41 | 49.375 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:41/49.375/384.455/464.222/11.61; repeat4:29/62.4/381.676/539.256/8.6 |
+  | spatialvla_4b_simplerenv_bridge | simpler_widowx | depth_pruning | depth_pruning1 | 38.5 | 49.705 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:38.5/49.705/368.385/408.126/20.3; pruning2:28/55.32/356.766/396.562/21.98; pruning4:14/70.88/334.264/373.164/26.55 |
+  | spatialvla_4b_simplerenv_bridge | simpler_widowx | guarded_reuse | guarded_reuse_aggressive | 45.5 | 45.125 | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | strict:45/45.145/379.771/421.248/19.08; moderate:45/45.11/383.48/424.347/19.18; aggressive:45.5/45.125/382.787/421.935/19.07 |
+  | spatialvla_4b_simplerenv_bridge | simpler_widowx | temporal_fusion | temporal_fusion_motion_entropy | 46 | 45.335 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:46/45.335/384.712/426.413/19.41; task_aware:44/45.475/387.296/426.352/19.41; conservative_adaptive:45/45.69/384.208/425.43/19.48 |
+  | univla_simplerenv_bridge | simpler_widowx | fixed_foveation | fixed_foveation_keep20 | 79 | 34.565 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | keep20:79/34.565/713.619/926.378/6.63; keep50:73/37.365/714.982/921.386/7.08 |
+  | univla_simplerenv_bridge | simpler_widowx | action_repeat | action_repeat2 | 12.5 | 71.93 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:12.5/71.93/717.583/1116.491/8.16; repeat4:3/74.515/727.874/1497.394/5.85 |
+  | univla_simplerenv_bridge | simpler_widowx | depth_pruning | depth_pruning2 | 82 | 31.635 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning1 | depth_pruning2 | pruning1:82/32.45/695.277/884.392/6.01; pruning2:82/31.635/681.914/870.401/5.78; pruning4:81.5/32.315/646.765/831.856/5.59 |
+  | univla_simplerenv_bridge | simpler_widowx | guarded_reuse | guarded_reuse_moderate | 87.5 | 30.065 | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_strict | guarded_reuse_moderate | strict:87.5/30.21/717.211/908.734/5.77; moderate:87.5/30.065/711.321/895.889/5.7; aggressive:86.5/30.56/716.165/902.852/5.82 |
+  | univla_simplerenv_bridge | simpler_widowx | temporal_fusion | temporal_fusion_conservative_adaptive | 87.5 | 30.21 | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | motion_entropy:82/31.62/715.595/903.744/5.97; task_aware:48/22.53/861.266/1034.609/5.03; conservative_adaptive:87.5/30.21/719.725/909.29/5.79 |
+
+  Deviations from 'max success then min avg_steps': 1
+    (('cronusvla_simplerenv_bridge', 'simpler_widowx', 'depth_pruning'), 'depth_pruning1', 'depth_pruning2', 'depth_pruning2', 'depth_pruning2', 'depth_pruning2', 'depth_pruning2')
+  families with >1 row in summary: {}
+
+### google_robot_fractal/summary.csv: 24 rows
+  byte-equal raw lines: 24/24; field-equal (all cols except environment): 24/24; not found: 0
+
+  Selection per (model, env/suite, family): summary pick vs rule 'max success, then min avg_steps' vs alt rules
+  | model | env | family | picked | success | steps | rule(max succ,min steps) | rule(max succ,min policy_lat) | rule(max succ,min cycle_lat) | rule(max succ, first in file) | rule(max succ, min ep_time) | candidates (cfg:succ/steps/policy_lat/cycle_lat/t) |
+  |---|---|---|---|---|---|---|---|---|---|---|---|
+  | cogact_base_simplerenv_fractal | simpler_google_robot_fractal | fixed_foveation | fixed_foveation_keep50 | 67.2 | 44.34 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:64.8/45.32/99.127/183.585/8.6; keep50:67.2/44.34/99.233/186.99/8.63 |
+  | cogact_base_simplerenv_fractal | simpler_google_robot_fractal | action_repeat | action_repeat2 | 65.6 | 46.668 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:65.6/46.668/98.777/230.844/5.67; repeat4:48/58.108/99.563/398.814/5.67 |
+  | cogact_base_simplerenv_fractal | simpler_google_robot_fractal | depth_pruning | depth_pruning4 | 66.8 | 43.92 | depth_pruning4 | depth_pruning4 | depth_pruning4 | depth_pruning4 | depth_pruning4 | pruning1:65.2/44.18/98.103/162.05/7.52; pruning2:65.6/43.932/96.881/160.571/7.4; pruning4:66.8/43.92/94.062/158.47/7.2 |
+  | cogact_base_simplerenv_fractal | simpler_google_robot_fractal | guarded_reuse | guarded_reuse_moderate | 67.2 | 44.428 | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | strict:66.8/44.704/98.706/163.388/7.54; moderate:67.2/44.428/98.986/163.865/7.55; aggressive:66.8/43.632/100.089/170.356/7.69 |
+  | cogact_base_simplerenv_fractal | simpler_google_robot_fractal | temporal_fusion | temporal_fusion_conservative_adaptive | 65.6 | 44.544 | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | motion_entropy:64.8/44.672/101.053/169.227/7.88; task_aware:64.8/44.672/98.782/164.542/7.64; conservative_adaptive:65.6/44.544/98.395/164.804/7.63 |
+  | cronusvla_simplerenv_fractal | simpler_google_robot_fractal | fixed_foveation | fixed_foveation_keep50 | 56.8 | 50.096 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:54.4/51.368/176.102/176.102/9.159; keep50:56.8/50.096/178.646/178.646/9.017 |
+  | cronusvla_simplerenv_fractal | simpler_google_robot_fractal | action_repeat | action_repeat2 | 58.4 | 57.428 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:58.4/57.428/223.077/111.593/6.453; repeat4:46/74.132/356.375/89.509/6.663 |
+  | cronusvla_simplerenv_fractal | simpler_google_robot_fractal | depth_pruning | depth_pruning1 | 56.4 | 50.168 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:56.4/50.168/151.628/151.628/7.667; pruning2:51.6/53.392/147.2/147.2/7.987; pruning4:51.2/53.98/141.882/141.882/7.778 |
+  | cronusvla_simplerenv_fractal | simpler_google_robot_fractal | guarded_reuse | guarded_reuse_aggressive | 56.8 | 50.732 | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | strict:54.4/51.928/151.77/151.423/7.952; moderate:54.8/51.872/152.438/151.239/7.934; aggressive:56.8/50.732/152.182/148.631/7.628 |
+  | cronusvla_simplerenv_fractal | simpler_google_robot_fractal | temporal_fusion | temporal_fusion_motion_entropy | 57.2 | 50.536 | temporal_fusion_motion_entropy | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_motion_entropy | temporal_fusion_task_aware | motion_entropy:57.2/50.536/155.326/155.326/7.929; task_aware:57.2/50.536/154.384/154.384/7.902; conservative_adaptive:57.2/50.536/154.181/154.181/7.92 |
+  | openvla_simplerenv_fractal | simpler_google_robot_fractal | fixed_foveation | fixed_foveation_keep50 | 24.4 | 68.236 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:7.6/76.296/166.357/182.088/18.99; keep50:24.4/68.236/160.88/179.238/17.02 |
+  | openvla_simplerenv_fractal | simpler_google_robot_fractal | action_repeat | action_repeat2 | 40 | 62.912 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:40/62.912/159.141/87.531/10.01; repeat4:35.6/67.02/159.859/47.82/7.97 |
+  | openvla_simplerenv_fractal | simpler_google_robot_fractal | depth_pruning | depth_pruning2 | 40.8 | 61.856 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | pruning1:38.4/62.836/155.736/163.617/14.86; pruning2:40.8/61.856/150.871/158.569/14.27; pruning4:36.8/62.8/142.669/150.508/14.02 |
+  | openvla_simplerenv_fractal | simpler_google_robot_fractal | guarded_reuse | guarded_reuse_moderate | 36.4 | 64.196 | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | strict:36/64.292/159.516/167.568/15.16; moderate:36.4/64.196/160.004/168.301/15.19; aggressive:35.2/64.248/159.817/168/15.08 |
+  | openvla_simplerenv_fractal | simpler_google_robot_fractal | temporal_fusion | temporal_fusion_task_aware | 42.4 | 61.436 | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | motion_entropy:42/62.028/160.771/169.533/15.05; task_aware:42.4/61.436/172.809/182.035/15.6; conservative_adaptive:36.8/63.272/159.024/167.609/15.2 |
+  | spatialvla_4b_simplerenv_fractal | simpler_google_robot_fractal | fixed_foveation | fixed_foveation_keep50 | 57.2 | 49.148 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:55.2/48.748/379.038/471.328/23.15; keep50:57.2/49.148/378.49/475.58/23.51 |
+  | spatialvla_4b_simplerenv_fractal | simpler_google_robot_fractal | action_repeat | action_repeat2 | 59.2 | 50.404 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:59.2/50.404/377.128/520.24/13.25; repeat4:29.6/65.88/375.818/655.635/10.94 |
+  | spatialvla_4b_simplerenv_fractal | simpler_google_robot_fractal | depth_pruning | depth_pruning2 | 56.8 | 50.74 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | pruning1:54/50.636/364.499/434.384/22.03; pruning2:56.8/50.74/353.103/425.882/21.64; pruning4:43.2/55.348/328.668/397.833/22.09 |
+  | spatialvla_4b_simplerenv_fractal | simpler_google_robot_fractal | guarded_reuse | guarded_reuse_moderate | 60 | 49.436 | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_moderate | strict:59.2/49.612/377.338/445.119/22.16; moderate:60/49.436/377.244/444.921/22.09; aggressive:58.8/49.932/377.371/439.94/22.02 |
+  | spatialvla_4b_simplerenv_fractal | simpler_google_robot_fractal | temporal_fusion | temporal_fusion_task_aware | 60 | 47.708 | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | motion_entropy:58/49.416/381.28/449.126/22.31; task_aware:60/47.708/382.135/450.537/21.63; conservative_adaptive:59.2/49.66/379.749/450.224/22.47 |
+
+  Deviations from 'max success then min avg_steps': 0
+  families with >1 row in summary: {}
+
+### libero/summary.csv: 72 rows
+  byte-equal raw lines: 0/72; field-equal (all cols except environment): 72/72; not found: 0
+
+  Selection per (model, env/suite, family): summary pick vs rule 'max success, then min avg_steps' vs alt rules
+  | model | env | family | picked | success | steps | rule(max succ,min steps) | rule(max succ,min policy_lat) | rule(max succ,min cycle_lat) | rule(max succ, first in file) | rule(max succ, min ep_time) | candidates (cfg:succ/steps/policy_lat/cycle_lat/t) |
+  |---|---|---|---|---|---|---|---|---|---|---|---|
+  | openvla_libero | Libero Long | fixed_foveation | fixed_foveation_keep50 | 44 | 410.31 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:30/446.81/156.631/164.445/79.61; keep50:44/410.31/157.163/165.256/73.26 |
+  | openvla_libero | Libero Long | action_repeat | action_repeat2 | 46 | 407.47 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:46/407.47/156.735/157.213/37.96; repeat4:32/461.14/157.217/2.243/24.76 |
+  | openvla_libero | Libero Long | depth_pruning | depth_pruning1 | 53 | 398.62 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:53/398.62/153.09/155.407/67.12; pruning2:45/406.28/148.974/151.286/66.84; pruning4:26/466.78/138.745/141.061/72 |
+  | openvla_libero | Libero Long | guarded_reuse | guarded_reuse_strict **DEV** | 51 | 397.87 | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_moderate | strict:51/397.87/157.001/159.795/66.38; moderate:51/396.62/156.996/159.916/64.95; aggressive:50/399.28/156.269/159.105/62.4 |
+  | openvla_libero | Libero Long | temporal_fusion | temporal_fusion_motion_entropy | 49 | 410.34 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:49/410.34/157.322/160.359/70.95; task_aware:48/409.33/170.178/173.17/75.99 |
+  | openvla_libero | LIBERO-Goal | fixed_foveation | fixed_foveation_keep50 | 75 | 157.29 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:64/180.92/157.446/165.038/32.5; keep50:75/157.29/158.755/166.696/28.52 |
+  | openvla_libero | LIBERO-Goal | action_repeat | action_repeat2 | 68 | 175.16 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:68/175.16/159.713/159.759/16.86; repeat4:60/192.74/157.489/2.242/10.72 |
+  | openvla_libero | LIBERO-Goal | depth_pruning | depth_pruning1 | 72 | 165.43 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:72/165.43/153.377/155.687/28.21; pruning2:59/185.07/150.011/152.321/30.91; pruning4:41/218.39/141.65/143.965/34.61 |
+  | openvla_libero | LIBERO-Goal | guarded_reuse | guarded_reuse_aggressive | 72 | 163.88 | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | strict:71/164.75/158.171/160.953/27.68; moderate:69/165.24/158.248/161.129/27.68; aggressive:72/163.88/158.107/160.988/25.87 |
+  | openvla_libero | LIBERO-Goal | temporal_fusion | temporal_fusion_conservative_adaptive | 77 | 158.66 | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | motion_entropy:74/159.57/159.536/162.55/28.26; task_aware:73/161.96/171.069/173.965/30.5; conservative_adaptive:77/158.66/159.206/161.911/27.96 |
+  | openvla_libero | LIBERO-Object | fixed_foveation | fixed_foveation_keep50 | 86 | 166.18 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:74/180.12/158.271/166.032/32.41; keep50:86/166.18/157.836/165.999/29.93 |
+  | openvla_libero | LIBERO-Object | action_repeat | action_repeat2 | 84 | 173.96 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:84/173.96/156.752/157.482/16.31; repeat4:59/212.01/156.311/2.24/11.52 |
+  | openvla_libero | LIBERO-Object | depth_pruning | depth_pruning1 | 85 | 170.03 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:85/170.03/152.469/154.783/28.63; pruning2:79/180.21/148.244/150.558/29.59; pruning4:65/202.99/140.525/142.846/31.69 |
+  | openvla_libero | LIBERO-Object | guarded_reuse | guarded_reuse_aggressive **DEV** | 85 | 167.1 | guarded_reuse_strict | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_strict | guarded_reuse_aggressive | strict:85/165.41/158.617/161.312/28; moderate:80/171.23/156.667/159.636/28.09; aggressive:85/167.1/157.364/160.175/26.49 |
+  | openvla_libero | LIBERO-Object | temporal_fusion | temporal_fusion_task_aware | 86 | 165.91 | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | motion_entropy:83/167.01/156.282/159.26/28.78; task_aware:86/165.91/169.888/172.901/30.8; conservative_adaptive:82/171.76/157.861/160.548/29.94 |
+  | openvla_libero | LIBERO-Spatial | fixed_foveation | fixed_foveation_keep50 | 83 | 129.4 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:55/160.66/159.258/167.015/29.98; keep50:83/129.4/159.542/167.573/24.21 |
+  | openvla_libero | LIBERO-Spatial | action_repeat | action_repeat2 | 72 | 142.05 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:72/142.05/159.658/159.918/14.37; repeat4:47/176.24/160.192/2.249/10.81 |
+  | openvla_libero | LIBERO-Spatial | depth_pruning | depth_pruning1 | 62 | 149.98 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:62/149.98/153.2/155.52/26.25; pruning2:56/158.4/150.621/152.93/27.25; pruning4:48/172.03/139.928/142.234/27.66 |
+  | openvla_libero | LIBERO-Spatial | guarded_reuse | guarded_reuse_strict | 82 | 129.59 | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | guarded_reuse_strict | strict:82/129.59/158.822/161.615/23; moderate:76/135.84/158.903/161.663/23.77; aggressive:77/137.62/158.97/161.846/22.98 |
+  | openvla_libero | LIBERO-Spatial | temporal_fusion | temporal_fusion_motion_entropy | 85 | 125.72 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:85/125.72/158.862/161.754/22.73; task_aware:77/137.66/171/174.034/26.61; conservative_adaptive:79/133.39/159.533/162.228/24.16 |
+  | smolvla_libero | Libero Long | fixed_foveation | fixed_foveation_keep50 | 21 | 477.84 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:19/481.49/277.17/304.954/147.14; keep50:21/477.84/277.819/305.848/146.45 |
+  | smolvla_libero | Libero Long | action_repeat | action_repeat2 | 31 | 443.45 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:31/443.45/278.117/286.798/67.46; repeat4:20/470.22/272.208/12.523/37.88 |
+  | smolvla_libero | Libero Long | depth_pruning | depth_pruning1 | 9 | 500.07 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:9/500.07/277.256/290.971/145.81; pruning2:3/515.08/278.295/292.673/148.05; pruning4:0.0/520/238.464/251.844/134.65 |
+  | smolvla_libero | Libero Long | guarded_reuse | guarded_reuse_aggressive | 47 | 419.34 | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | strict:40/426.45/260.791/273.851/121.85; moderate:37/437.84/260.954/274.637/116.75; aggressive:47/419.34/262.607/276.365/120.31 |
+  | smolvla_libero | Libero Long | temporal_fusion | temporal_fusion_motion_entropy **DEV** | 44 | 415.45 | temporal_fusion_conservative_adaptive | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_conservative_adaptive | motion_entropy:44/415.45/261.144/274.693/115.65; task_aware:41/422.78/262.194/275.306/114.86; conservative_adaptive:44/414.93/262.615/275.218/113.09 |
+  | smolvla_libero | LIBERO-Goal | fixed_foveation | fixed_foveation_keep50 | 67 | 168.51 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:58/186.72/278.414/307.064/57.52; keep50:67/168.51/273.738/303.524/51.24 |
+  | smolvla_libero | LIBERO-Goal | action_repeat | action_repeat2 | 72 | 164.22 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:72/164.22/278.549/290.92/25.32; repeat4:59/197.32/276.63/13.777/16.49 |
+  | smolvla_libero | LIBERO-Goal | depth_pruning | depth_pruning1 | 62 | 187.03 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:62/187.03/278.101/293.013/54.9; pruning2:53/210.43/279.48/294.657/60.3; pruning4:28/260.99/229.635/243.656/68.6 |
+  | smolvla_libero | LIBERO-Goal | guarded_reuse | guarded_reuse_aggressive | 77 | 151.78 | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | strict:76/153.64/261.222/275.563/42.88; moderate:75/155.36/259.72/274.344/42.87; aggressive:77/151.78/259.711/274.355/38.77 |
+  | smolvla_libero | LIBERO-Goal | temporal_fusion | temporal_fusion_motion_entropy | 77 | 150.61 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:77/150.61/262.476/276.564/42.1; task_aware:74/158.82/263.071/277.093/43.25; conservative_adaptive:77/151.34/264.035/278.231/42.78 |
+  | smolvla_libero | LIBERO-Object | fixed_foveation | fixed_foveation_keep50 | 81 | 176.39 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:74/189.28/278.882/306.354/58.12; keep50:81/176.39/279.322/307.99/54.52 |
+  | smolvla_libero | LIBERO-Object | action_repeat | action_repeat2 | 90 | 169.02 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:90/169.02/272.586/282.899/25.38; repeat4:71/202.02/274.652/12.711/16.57 |
+  | smolvla_libero | LIBERO-Object | depth_pruning | depth_pruning1 | 73 | 193.35 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:73/193.35/279.717/294.074/57; pruning2:40/233.84/276.281/290.079/67.86; pruning4:13/266.05/228.676/241.57/64.45 |
+  | smolvla_libero | LIBERO-Object | guarded_reuse | guarded_reuse_aggressive | 91 | 162.41 | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_aggressive | strict:90/164.06/259.408/273.054/45.93; moderate:89/164.27/261.56/275.047/44.15; aggressive:91/162.41/261.327/274.726/44.1 |
+  | smolvla_libero | LIBERO-Object | temporal_fusion | temporal_fusion_task_aware | 90 | 162.51 | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_motion_entropy | temporal_fusion_task_aware | motion_entropy:90/163.32/265.086/278.444/51.26; task_aware:90/162.51/262.901/276.052/45.24; conservative_adaptive:86/168.94/266.925/279.905/50.53 |
+  | smolvla_libero | LIBERO-Spatial | fixed_foveation | fixed_foveation_keep50 | 76 | 135.92 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:63/149.31/273.446/307.143/45.97; keep50:76/135.92/278.603/312.878/42.66 |
+  | smolvla_libero | LIBERO-Spatial | action_repeat | action_repeat2 | 64 | 148.18 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:64/148.18/275.324/290.476/23.37; repeat4:35/189.73/272.469/18.867/16.57 |
+  | smolvla_libero | LIBERO-Spatial | depth_pruning | depth_pruning1 | 62 | 151.44 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:62/151.44/275.41/295.642/44.84; pruning2:38/177.76/277.985/298.549/53.11; pruning4:29/188.55/274.256/294.974/55.6 |
+  | smolvla_libero | LIBERO-Spatial | guarded_reuse | guarded_reuse_moderate **DEV** | 79 | 129.59 | guarded_reuse_strict | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_strict | guarded_reuse_moderate | strict:79/129.2/264.033/282.809/39.11; moderate:79/129.59/262.853/281.889/38.99; aggressive:78/130.64/262.362/281.513/38.85 |
+  | smolvla_libero | LIBERO-Spatial | temporal_fusion | temporal_fusion_conservative_adaptive | 82 | 125.71 | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | motion_entropy:80/129.17/264.025/282.191/37.45; task_aware:80/128.72/263.875/283.127/35.5; conservative_adaptive:82/125.71/262.866/281.402/38.02 |
+  | univla_libero | Libero Long | fixed_foveation | fixed_foveation_keep50 | 90 | 268.88 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:86/275.74/450.481/577.669/16.57; keep50:90/268.88/454.055/580.931/16.29 |
+  | univla_libero | Libero Long | action_repeat | action_repeat2 | 27 | 465.5 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:27/465.5/455.152/700.237/16.71; repeat4:1/517.42/472.219/950.686/12.46 |
+  | univla_libero | Libero Long | depth_pruning | depth_pruning2 | 89 | 282.61 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | depth_pruning2 | pruning1:88/286.12/436.411/558.283/16.6; pruning2:89/282.61/427.946/547.705/16.17; pruning4:86/304.49/398.288/521.934/16.56 |
+  | univla_libero | Libero Long | guarded_reuse | guarded_reuse_aggressive **DEV** | 86 | 281.23 | guarded_reuse_strict | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_strict | guarded_reuse_aggressive | strict:86/280.58/452.515/570.434/16.69; moderate:86/280.89/454.163/574.396/16.81; aggressive:86/281.23/450.556/558.819/16.37 |
+  | univla_libero | Libero Long | temporal_fusion | temporal_fusion_task_aware | 87 | 281.91 | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | temporal_fusion_task_aware | motion_entropy:83/292.09/449.53/559.582/17.1; task_aware:87/281.91/511.759/621.904/18.29; conservative_adaptive:86/280.45/450.866/559.203/16.41 |
+  | univla_libero | LIBERO-Goal | fixed_foveation | fixed_foveation_keep50 | 99 | 114.37 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:87/129.8/483.042/624.215/8.45; keep50:99/114.37/471.88/624.041/7.49 |
+  | univla_libero | LIBERO-Goal | action_repeat | action_repeat2 | 34 | 244.05 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:34/244.05/497.332/770.81/9.7; repeat4:0.0/300/500.971/1010.853/8.1 |
+  | univla_libero | LIBERO-Goal | depth_pruning | depth_pruning1 | 93 | 121.69 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:93/121.69/474.858/607.282/7.69; pruning2:89/129.01/462.344/597.142/8.06; pruning4:84/143.71/436.865/577.377/8.59 |
+  | univla_libero | LIBERO-Goal | guarded_reuse | guarded_reuse_moderate **DEV** | 93 | 121.54 | guarded_reuse_strict | guarded_reuse_moderate | guarded_reuse_moderate | guarded_reuse_strict | guarded_reuse_moderate | strict:93/121.34/485.658/619.65/7.85; moderate:93/121.54/482.56/612.278/7.79; aggressive:92/122.56/482.322/615.021/7.87 |
+  | univla_libero | LIBERO-Goal | temporal_fusion | temporal_fusion_motion_entropy | 95 | 122.07 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:95/122.07/480.907/615.005/7.93; task_aware:93/123.26/546.543/684.131/8.86; conservative_adaptive:92/122.67/481.928/617.562/7.91 |
+  | univla_libero | LIBERO-Object | fixed_foveation | fixed_foveation_keep20 | 100 | 136.04 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | fixed_foveation_keep20 | keep20:100/136.04/457.248/593.511/8.57; keep50:97/139.97/466.902/593.1/8.79 |
+  | univla_libero | LIBERO-Object | action_repeat | action_repeat2 | 21 | 266.12 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:21/266.12/483.359/721.154/10.01; repeat4:1/279.9/485.553/969.437/6.96 |
+  | univla_libero | LIBERO-Object | depth_pruning | depth_pruning1 | 99 | 143.23 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:99/143.23/455.215/577.846/8.83; pruning2:94/145.95/444.955/565.866/8.8; pruning4:92/153.47/420.229/542.815/8.89 |
+  | univla_libero | LIBERO-Object | guarded_reuse | guarded_reuse_aggressive **DEV** | 96 | 145.82 | guarded_reuse_strict | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_strict | guarded_reuse_aggressive | strict:96/145.82/469.564/591.479/9.14; moderate:96/145.82/468.764/591.969/9.16; aggressive:96/145.82/464.96/587.873/9.08 |
+  | univla_libero | LIBERO-Object | temporal_fusion | temporal_fusion_motion_entropy | 98 | 142.56 | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | temporal_fusion_motion_entropy | motion_entropy:98/142.56/455.903/576.915/8.75; task_aware:97/143.03/516.306/638.54/9.67; conservative_adaptive:96/145.82/455.123/577.583/8.95 |
+  | univla_libero | LIBERO-Spatial | fixed_foveation | fixed_foveation_keep50 | 96 | 108.93 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | fixed_foveation_keep50 | keep20:91/114.42/513.982/709.48/8.53; keep50:96/108.93/508.64/698.213/8.05 |
+  | univla_libero | LIBERO-Spatial | action_repeat | action_repeat2 | 27 | 208.63 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | action_repeat2 | repeat2:27/208.63/525.242/903.456/9.68; repeat4:0.0/220/518.206/1230.528/7.28 |
+  | univla_libero | LIBERO-Spatial | depth_pruning | depth_pruning1 | 96 | 107.83 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | depth_pruning1 | pruning1:96/107.83/494.037/678.102/7.72; pruning2:94/111.46/482.367/666.502/7.82; pruning4:94/109.17/455.473/639.537/7.35 |
+  | univla_libero | LIBERO-Spatial | guarded_reuse | guarded_reuse_aggressive **DEV** | 95 | 108.31 | guarded_reuse_strict | guarded_reuse_aggressive | guarded_reuse_aggressive | guarded_reuse_strict | guarded_reuse_aggressive | strict:95/108.31/509.953/692.363/7.94; moderate:95/108.31/505.247/691.678/7.91; aggressive:95/108.31/503.558/686.978/7.86 |
+  | univla_libero | LIBERO-Spatial | temporal_fusion | temporal_fusion_conservative_adaptive | 95 | 108.31 | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | temporal_fusion_conservative_adaptive | motion_entropy:91/113.66/510.609/695.25/8.31; task_aware:92/112.8/580.819/765.06/9.13; conservative_adaptive:95/108.31/498.786/682.986/7.82 |
+
+  Deviations from 'max success then min avg_steps': 8
+    (('openvla_libero', 'Libero Long', 'guarded_reuse'), 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_moderate', 'guarded_reuse_strict', 'guarded_reuse_strict', 'guarded_reuse_moderate')
+    (('openvla_libero', 'LIBERO-Object', 'guarded_reuse'), 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive', 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive')
+    (('smolvla_libero', 'Libero Long', 'temporal_fusion'), 'temporal_fusion_motion_entropy', 'temporal_fusion_conservative_adaptive', 'temporal_fusion_motion_entropy', 'temporal_fusion_motion_entropy', 'temporal_fusion_motion_entropy', 'temporal_fusion_conservative_adaptive')
+    (('smolvla_libero', 'LIBERO-Spatial', 'guarded_reuse'), 'guarded_reuse_moderate', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_moderate', 'guarded_reuse_strict', 'guarded_reuse_moderate')
+    (('univla_libero', 'Libero Long', 'guarded_reuse'), 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive', 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive')
+    (('univla_libero', 'LIBERO-Goal', 'guarded_reuse'), 'guarded_reuse_moderate', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_moderate', 'guarded_reuse_strict', 'guarded_reuse_moderate')
+    (('univla_libero', 'LIBERO-Object', 'guarded_reuse'), 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive', 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive')
+    (('univla_libero', 'LIBERO-Spatial', 'guarded_reuse'), 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive', 'guarded_reuse_aggressive', 'guarded_reuse_strict', 'guarded_reuse_aggressive')
+  families with >1 row in summary: {}
+
+## 4. NAMING
+
+### distinct model_name (13)
+  'cogact_base_simplerenv_fractal': ['google_robot_fractal/cogact_base_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'cronusvla_simplerenv_fractal': ['google_robot_fractal/cronusvla_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'openvla_simplerenv_fractal': ['google_robot_fractal/openvla_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'spatialvla_4b_simplerenv_fractal': ['google_robot_fractal/spatialvla_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'openvla_libero': 5 files: libero/openvla_libero_10.csv, libero/openvla_libero_goal.csv ...
+  'smolvla_libero': 5 files: libero/smolvla_libero_10.csv, libero/smolvla_libero_goal.csv ...
+  'univla_libero': 5 files: libero/summary.csv, libero/univla_libero_10.csv ...
+  'cogact_base_simplerenv_bridge': ['simpler_widowx/cogact_base_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'cronusvla_simplerenv_bridge': ['simpler_widowx/cronusvla_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'minivla_simplerenv': ['simpler_widowx/minivla_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'openvla_simplerenv': ['simpler_widowx/openvla_simplerenv_widowx.csv', 'simpler_widowx/summary.csv']
+  'spatialvla_4b_simplerenv_bridge': ['simpler_widowx/spatialvla_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'univla_simplerenv_bridge': ['simpler_widowx/summary.csv', 'simpler_widowx/univla_simpler_widowx.csv']
+
+### distinct environment (7)
+  'simpler_google_robot_fractal': 5 files: google_robot_fractal/cogact_base_simplerenv_fractal.csv, google_robot_fractal/cronusvla_simplerenv_fractal.csv ...
+  'libero': 12 files: libero/openvla_libero_10.csv, libero/openvla_libero_goal.csv ...
+  'Libero Long': ['libero/summary.csv']
+  'LIBERO-Goal': ['libero/summary.csv']
+  'LIBERO-Object': ['libero/summary.csv']
+  'LIBERO-Spatial': ['libero/summary.csv']
+  'simpler_widowx': 7 files: simpler_widowx/cogact_base_simpler_widowx.csv, simpler_widowx/cronusvla_simpler_widowx.csv ...
+
+### distinct checkpoint_model_id (12)
+  'CogACT-Base-Fractal': ['google_robot_fractal/cogact_base_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'CronusVLA-0.5B-Bridge-RT-1-Fractal': ['google_robot_fractal/cronusvla_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'openvla-7b-Fractal': ['google_robot_fractal/openvla_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'spatialvla-4b-224-sft-fractal': ['google_robot_fractal/spatialvla_simplerenv_fractal.csv', 'google_robot_fractal/summary.csv']
+  'openvla-7b': 7 files: libero/openvla_libero_10.csv, libero/openvla_libero_goal.csv ...
+  'SmolVLA-LIBERO': 5 files: libero/smolvla_libero_10.csv, libero/smolvla_libero_goal.csv ...
+  '/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K': 5 files: libero/summary.csv, libero/univla_libero_10.csv ...
+  'CogACT-Base-Bridge': ['simpler_widowx/cogact_base_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'CronusVLA-0.5B-Bridge-RT-1': ['simpler_widowx/cronusvla_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'prism-qwen25-extra-dinosiglip-224px+0_5b': ['simpler_widowx/minivla_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'spatialvla-4b-bridge': ['simpler_widowx/spatialvla_simpler_widowx.csv', 'simpler_widowx/summary.csv']
+  'Yuqi1997/UniVLA/UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K': ['simpler_widowx/summary.csv', 'simpler_widowx/univla_simpler_widowx.csv']
+
+### distinct suite (4)
+  'libero_10': ['libero/openvla_libero_10.csv', 'libero/smolvla_libero_10.csv', 'libero/univla_libero_10.csv']
+  'libero_goal': ['libero/openvla_libero_goal.csv', 'libero/smolvla_libero_goal.csv', 'libero/univla_libero_goal.csv']
+  'libero_object': ['libero/openvla_libero_object.csv', 'libero/smolvla_libero_object.csv', 'libero/univla_libero_object.csv']
+  'libero_spatial': ['libero/openvla_libero_spatial.csv', 'libero/smolvla_libero_spatial.csv', 'libero/univla_libero_spatial.csv']
+
+### summary row order (model_name order of first appearance) per summary file
+  simpler_widowx/summary.csv: [('univla_simplerenv_bridge', 'simpler_widowx'), ('cogact_base_simplerenv_bridge', 'simpler_widowx'), ('openvla_simplerenv', 'simpler_widowx'), ('spatialvla_4b_simplerenv_bridge', 'simpler_widowx'), ('cronusvla_simplerenv_bridge', 'simpler_widowx'), ('minivla_simplerenv', 'simpler_widowx')]
+  google_robot_fractal/summary.csv: [('cogact_base_simplerenv_fractal', 'simpler_google_robot_fractal'), ('openvla_simplerenv_fractal', 'simpler_google_robot_fractal'), ('spatialvla_4b_simplerenv_fractal', 'simpler_google_robot_fractal'), ('cronusvla_simplerenv_fractal', 'simpler_google_robot_fractal')]
+  libero/summary.csv: [('univla_libero', 'Libero Long'), ('univla_libero', 'LIBERO-Goal'), ('univla_libero', 'LIBERO-Object'), ('univla_libero', 'LIBERO-Spatial'), ('openvla_libero', 'Libero Long'), ('openvla_libero', 'LIBERO-Goal'), ('openvla_libero', 'LIBERO-Object'), ('openvla_libero', 'LIBERO-Spatial'), ('smolvla_libero', 'Libero Long'), ('smolvla_libero', 'LIBERO-Goal'), ('smolvla_libero', 'LIBERO-Object'), ('smolvla_libero', 'LIBERO-Spatial')]
+### per-file configuration order
+  google_robot_fractal/cogact_base_simplerenv_fractal.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  google_robot_fractal/openvla_simplerenv_fractal.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  google_robot_fractal/spatialvla_simplerenv_fractal.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/openvla_libero_10.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware']
+  libero/openvla_libero_goal.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/openvla_libero_object.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/openvla_libero_spatial.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/smolvla_libero_10.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/smolvla_libero_goal.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/smolvla_libero_object.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/smolvla_libero_spatial.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/univla_libero_10.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/univla_libero_goal.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/univla_libero_object.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  libero/univla_libero_spatial.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  simpler_widowx/cogact_base_simpler_widowx.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  simpler_widowx/cronusvla_simpler_widowx.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  simpler_widowx/minivla_simpler_widowx.csv: ['original', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'guarded_reuse_aggressive', 'guarded_reuse_moderate', 'guarded_reuse_strict', 'temporal_fusion_conservative_adaptive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware']
+  simpler_widowx/openvla_simplerenv_widowx.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  simpler_widowx/spatialvla_simpler_widowx.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+  simpler_widowx/univla_simpler_widowx.csv: ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+
+## 5. LATENCY PER STEP = 1000*avg_episode_time_s/avg_steps
+| file | suite | cfg | success | steps | calls | calls/steps | t (s) | lat/step ms | cycle_med | policy_med | t/calls ms |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | original | 66.8 | 44.776 | 44.776 | 1.000 | 7.57 | 169.06 | 162.727 | 98.96 | 169.06 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | fixed_foveation_keep20 | 64.8 | 45.32 | 45.32 | 1.000 | 8.6 | 189.76 | 183.585 | 99.127 | 189.76 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | fixed_foveation_keep50 | 67.2 | 44.34 | 44.34 | 1.000 | 8.63 | 194.63 | 186.99 | 99.233 | 194.63 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | action_repeat2 | 65.6 | 46.668 | 23.5 | 0.504 | 5.67 | 121.50 | 230.844 | 98.777 | 241.28 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | action_repeat4 | 48 | 58.108 | 14.72 | 0.253 | 5.67 | 97.58 | 398.814 | 99.563 | 385.19 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | depth_pruning1 | 65.2 | 44.18 | 44.18 | 1.000 | 7.52 | 170.21 | 162.05 | 98.103 | 170.21 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | depth_pruning2 | 65.6 | 43.932 | 43.932 | 1.000 | 7.4 | 168.44 | 160.571 | 96.881 | 168.44 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | depth_pruning4 | 66.8 | 43.92 | 43.92 | 1.000 | 7.2 | 163.93 | 158.47 | 94.062 | 163.93 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | guarded_reuse_strict | 66.8 | 44.704 | 44.7 | 1.000 | 7.54 | 168.66 | 163.388 | 98.706 | 168.68 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | guarded_reuse_moderate | 67.2 | 44.428 | 44.38 | 0.999 | 7.55 | 169.94 | 163.865 | 98.986 | 170.12 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 66.8 | 43.632 | 43.384 | 0.994 | 7.69 | 176.25 | 170.356 | 100.089 | 177.25 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | temporal_fusion_motion_entropy | 64.8 | 44.672 | 44.672 | 1.000 | 7.88 | 176.40 | 169.227 | 101.053 | 176.40 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | temporal_fusion_task_aware | 64.8 | 44.672 | 44.672 | 1.000 | 7.64 | 171.02 | 164.542 | 98.782 | 171.02 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | temporal_fusion_conservative_adaptive | 65.6 | 44.544 | 44.544 | 1.000 | 7.63 | 171.29 | 164.804 | 98.395 | 171.29 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | original | 55.6 | 51.336 | 51.336 | 1.000 | 7.963 | 155.12 | 152.561 | 152.561 | 155.12 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | fixed_foveation_keep20 | 54.4 | 51.368 | 51.368 | 1.000 | 9.159 | 178.30 | 176.102 | 176.102 | 178.30 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | fixed_foveation_keep50 | 56.8 | 50.096 | 50.096 | 1.000 | 9.017 | 179.99 | 178.646 | 178.646 | 179.99 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | action_repeat2 | 58.4 | 57.428 | 28.84 | 0.502 | 6.453 | 112.37 | 111.593 | 223.077 | 223.75 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | action_repeat4 | 46 | 74.132 | 18.596 | 0.251 | 6.663 | 89.88 | 89.509 | 356.375 | 358.30 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | depth_pruning1 | 56.4 | 50.168 | 50.168 | 1.000 | 7.667 | 152.83 | 151.628 | 151.628 | 152.83 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | depth_pruning2 | 51.6 | 53.392 | 53.392 | 1.000 | 7.987 | 149.59 | 147.2 | 147.2 | 149.59 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | depth_pruning4 | 51.2 | 53.98 | 53.98 | 1.000 | 7.778 | 144.09 | 141.882 | 141.882 | 144.09 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | guarded_reuse_strict | 54.4 | 51.928 | 51.572 | 0.993 | 7.952 | 153.14 | 151.423 | 151.77 | 154.19 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | guarded_reuse_moderate | 54.8 | 51.872 | 50.988 | 0.983 | 7.934 | 152.95 | 151.239 | 152.438 | 155.61 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 56.8 | 50.732 | 48.592 | 0.958 | 7.628 | 150.36 | 148.631 | 152.182 | 156.98 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | temporal_fusion_motion_entropy | 57.2 | 50.536 | 50.536 | 1.000 | 7.929 | 156.90 | 155.326 | 155.326 | 156.90 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | temporal_fusion_task_aware | 57.2 | 50.536 | 50.536 | 1.000 | 7.902 | 156.36 | 154.384 | 154.384 | 156.36 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | temporal_fusion_conservative_adaptive | 57.2 | 50.536 | 50.536 | 1.000 | 7.92 | 156.72 | 154.181 | 154.181 | 156.72 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | original | 35.6 | 64.312 | 64.312 | 1.000 | 15.42 | 239.77 | 168.012 | 160.072 | 239.77 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | fixed_foveation_keep20 | 7.6 | 76.296 | 76.296 | 1.000 | 18.99 | 248.90 | 182.088 | 166.357 | 248.90 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | fixed_foveation_keep50 | 24.4 | 68.236 | 68.236 | 1.000 | 17.02 | 249.43 | 179.238 | 160.88 | 249.43 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | action_repeat2 | 40 | 62.912 | 31.556 | 0.502 | 10.01 | 159.11 | 87.531 | 159.141 | 317.21 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | action_repeat4 | 35.6 | 67.02 | 16.896 | 0.252 | 7.97 | 118.92 | 47.82 | 159.859 | 471.71 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | depth_pruning1 | 38.4 | 62.836 | 62.836 | 1.000 | 14.86 | 236.49 | 163.617 | 155.736 | 236.49 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | depth_pruning2 | 40.8 | 61.856 | 61.856 | 1.000 | 14.27 | 230.70 | 158.569 | 150.871 | 230.70 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | depth_pruning4 | 36.8 | 62.8 | 62.8 | 1.000 | 14.02 | 223.25 | 150.508 | 142.669 | 223.25 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | guarded_reuse_strict | 36 | 64.292 | 62.828 | 0.977 | 15.16 | 235.80 | 167.568 | 159.516 | 241.29 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | guarded_reuse_moderate | 36.4 | 64.196 | 62.592 | 0.975 | 15.19 | 236.62 | 168.301 | 160.004 | 242.68 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 35.2 | 64.248 | 61.756 | 0.961 | 15.08 | 234.72 | 168 | 159.817 | 244.19 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | temporal_fusion_motion_entropy | 42 | 62.028 | 62.028 | 1.000 | 15.05 | 242.63 | 169.533 | 160.771 | 242.63 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | temporal_fusion_task_aware | 42.4 | 61.436 | 61.436 | 1.000 | 15.6 | 253.92 | 182.035 | 172.809 | 253.92 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | temporal_fusion_conservative_adaptive | 36.8 | 63.272 | 63.272 | 1.000 | 15.2 | 240.23 | 167.609 | 159.024 | 240.23 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | original | 59.2 | 49.576 | 49.576 | 1.000 | 22.31 | 450.02 | 446.855 | 379.021 | 450.02 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | fixed_foveation_keep20 | 55.2 | 48.748 | 48.748 | 1.000 | 23.15 | 474.89 | 471.328 | 379.038 | 474.89 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | fixed_foveation_keep50 | 57.2 | 49.148 | 49.148 | 1.000 | 23.51 | 478.35 | 475.58 | 378.49 | 478.35 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | action_repeat2 | 59.2 | 50.404 | 25.34 | 0.503 | 13.25 | 262.88 | 520.24 | 377.128 | 522.89 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | action_repeat4 | 29.6 | 65.88 | 16.6 | 0.252 | 10.94 | 166.06 | 655.635 | 375.818 | 659.04 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | depth_pruning1 | 54 | 50.636 | 50.636 | 1.000 | 22.03 | 435.07 | 434.384 | 364.499 | 435.07 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | depth_pruning2 | 56.8 | 50.74 | 50.74 | 1.000 | 21.64 | 426.49 | 425.882 | 353.103 | 426.49 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | depth_pruning4 | 43.2 | 55.348 | 55.348 | 1.000 | 22.09 | 399.11 | 397.833 | 328.668 | 399.11 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | guarded_reuse_strict | 59.2 | 49.612 | 49.356 | 0.995 | 22.16 | 446.67 | 445.119 | 377.338 | 448.98 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | guarded_reuse_moderate | 60 | 49.436 | 49.024 | 0.992 | 22.09 | 446.84 | 444.921 | 377.244 | 450.60 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 58.8 | 49.932 | 48.732 | 0.976 | 22.02 | 441.00 | 439.94 | 377.371 | 451.86 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | temporal_fusion_motion_entropy | 58 | 49.416 | 49.416 | 1.000 | 22.31 | 451.47 | 449.126 | 381.28 | 451.47 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | temporal_fusion_task_aware | 60 | 47.708 | 47.708 | 1.000 | 21.63 | 453.38 | 450.537 | 382.135 | 453.38 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | temporal_fusion_conservative_adaptive | 59.2 | 49.66 | 49.66 | 1.000 | 22.47 | 452.48 | 450.224 | 379.749 | 452.48 |
+| libero/openvla_libero_10.csv | libero_10 | original | 56 | 396.79 | 396.79 | 1.000 | 68.07 | 171.55 | 158.417 | 156.101 | 171.55 |
+| libero/openvla_libero_10.csv | libero_10 | fixed_foveation_keep20 | 30 | 446.81 | 446.81 | 1.000 | 79.61 | 178.17 | 164.445 | 156.631 | 178.17 |
+| libero/openvla_libero_10.csv | libero_10 | fixed_foveation_keep50 | 44 | 410.31 | 410.31 | 1.000 | 73.26 | 178.55 | 165.256 | 157.163 | 178.55 |
+| libero/openvla_libero_10.csv | libero_10 | action_repeat2 | 46 | 407.47 | 203.85 | 0.500 | 37.96 | 93.16 | 157.213 | 156.735 | 186.22 |
+| libero/openvla_libero_10.csv | libero_10 | action_repeat4 | 32 | 461.14 | 115.36 | 0.250 | 24.76 | 53.69 | 2.243 | 157.217 | 214.63 |
+| libero/openvla_libero_10.csv | libero_10 | depth_pruning1 | 53 | 398.62 | 398.62 | 1.000 | 67.12 | 168.38 | 155.407 | 153.09 | 168.38 |
+| libero/openvla_libero_10.csv | libero_10 | depth_pruning2 | 45 | 406.28 | 406.28 | 1.000 | 66.84 | 164.52 | 151.286 | 148.974 | 164.52 |
+| libero/openvla_libero_10.csv | libero_10 | depth_pruning4 | 26 | 466.78 | 466.78 | 1.000 | 72.0 | 154.25 | 141.061 | 138.745 | 154.25 |
+| libero/openvla_libero_10.csv | libero_10 | guarded_reuse_strict | 51 | 397.87 | 383.5 | 0.964 | 66.38 | 166.84 | 159.795 | 157.001 | 173.09 |
+| libero/openvla_libero_10.csv | libero_10 | guarded_reuse_moderate | 51 | 396.62 | 374.49 | 0.944 | 64.95 | 163.76 | 159.916 | 156.996 | 173.44 |
+| libero/openvla_libero_10.csv | libero_10 | guarded_reuse_aggressive | 50 | 399.28 | 358.81 | 0.899 | 62.4 | 156.28 | 159.105 | 156.269 | 173.91 |
+| libero/openvla_libero_10.csv | libero_10 | temporal_fusion_motion_entropy | 49 | 410.34 | 410.34 | 1.000 | 70.95 | 172.91 | 160.359 | 157.322 | 172.91 |
+| libero/openvla_libero_10.csv | libero_10 | temporal_fusion_task_aware | 48 | 409.33 | 409.33 | 1.000 | 75.99 | 185.64 | 173.17 | 170.178 | 185.64 |
+| libero/openvla_libero_goal.csv | libero_goal | original | 75 | 157.59 | 157.59 | 1.000 | 27.75 | 176.09 | 161.915 | 159.603 | 176.09 |
+| libero/openvla_libero_goal.csv | libero_goal | fixed_foveation_keep20 | 64 | 180.92 | 180.92 | 1.000 | 32.5 | 179.64 | 165.038 | 157.446 | 179.64 |
+| libero/openvla_libero_goal.csv | libero_goal | fixed_foveation_keep50 | 75 | 157.29 | 157.29 | 1.000 | 28.52 | 181.32 | 166.696 | 158.755 | 181.32 |
+| libero/openvla_libero_goal.csv | libero_goal | action_repeat2 | 68 | 175.16 | 87.74 | 0.501 | 16.86 | 96.25 | 159.759 | 159.713 | 192.16 |
+| libero/openvla_libero_goal.csv | libero_goal | action_repeat4 | 60 | 192.74 | 48.41 | 0.251 | 10.72 | 55.62 | 2.242 | 157.489 | 221.44 |
+| libero/openvla_libero_goal.csv | libero_goal | depth_pruning1 | 72 | 165.43 | 165.43 | 1.000 | 28.21 | 170.53 | 155.687 | 153.377 | 170.53 |
+| libero/openvla_libero_goal.csv | libero_goal | depth_pruning2 | 59 | 185.07 | 185.07 | 1.000 | 30.91 | 167.02 | 152.321 | 150.011 | 167.02 |
+| libero/openvla_libero_goal.csv | libero_goal | depth_pruning4 | 41 | 218.39 | 218.39 | 1.000 | 34.61 | 158.48 | 143.965 | 141.65 | 158.48 |
+| libero/openvla_libero_goal.csv | libero_goal | guarded_reuse_strict | 71 | 164.75 | 156.84 | 0.952 | 27.68 | 168.01 | 160.953 | 158.171 | 176.49 |
+| libero/openvla_libero_goal.csv | libero_goal | guarded_reuse_moderate | 69 | 165.24 | 156.76 | 0.949 | 27.68 | 167.51 | 161.129 | 158.248 | 176.58 |
+| libero/openvla_libero_goal.csv | libero_goal | guarded_reuse_aggressive | 72 | 163.88 | 145.59 | 0.888 | 25.87 | 157.86 | 160.988 | 158.107 | 177.69 |
+| libero/openvla_libero_goal.csv | libero_goal | temporal_fusion_motion_entropy | 74 | 159.57 | 159.57 | 1.000 | 28.26 | 177.10 | 162.55 | 159.536 | 177.10 |
+| libero/openvla_libero_goal.csv | libero_goal | temporal_fusion_task_aware | 73 | 161.96 | 161.96 | 1.000 | 30.5 | 188.32 | 173.965 | 171.069 | 188.32 |
+| libero/openvla_libero_goal.csv | libero_goal | temporal_fusion_conservative_adaptive | 77 | 158.66 | 158.66 | 1.000 | 27.96 | 176.23 | 161.911 | 159.206 | 176.23 |
+| libero/openvla_libero_object.csv | libero_object | original | 87 | 165.89 | 165.89 | 1.000 | 28.84 | 173.85 | 159.54 | 157.224 | 173.85 |
+| libero/openvla_libero_object.csv | libero_object | fixed_foveation_keep20 | 74 | 180.12 | 180.12 | 1.000 | 32.41 | 179.94 | 166.032 | 158.271 | 179.94 |
+| libero/openvla_libero_object.csv | libero_object | fixed_foveation_keep50 | 86 | 166.18 | 166.18 | 1.000 | 29.93 | 180.11 | 165.999 | 157.836 | 180.11 |
+| libero/openvla_libero_object.csv | libero_object | action_repeat2 | 84 | 173.96 | 87.22 | 0.501 | 16.31 | 93.76 | 157.482 | 156.752 | 187.00 |
+| libero/openvla_libero_object.csv | libero_object | action_repeat4 | 59 | 212.01 | 53.24 | 0.251 | 11.52 | 54.34 | 2.24 | 156.311 | 216.38 |
+| libero/openvla_libero_object.csv | libero_object | depth_pruning1 | 85 | 170.03 | 170.03 | 1.000 | 28.63 | 168.38 | 154.783 | 152.469 | 168.38 |
+| libero/openvla_libero_object.csv | libero_object | depth_pruning2 | 79 | 180.21 | 180.21 | 1.000 | 29.59 | 164.20 | 150.558 | 148.244 | 164.20 |
+| libero/openvla_libero_object.csv | libero_object | depth_pruning4 | 65 | 202.99 | 202.99 | 1.000 | 31.69 | 156.12 | 142.846 | 140.525 | 156.12 |
+| libero/openvla_libero_object.csv | libero_object | guarded_reuse_strict | 85 | 165.41 | 159.32 | 0.963 | 28.0 | 169.28 | 161.312 | 158.617 | 175.75 |
+| libero/openvla_libero_object.csv | libero_object | guarded_reuse_moderate | 80 | 171.23 | 161.72 | 0.944 | 28.09 | 164.05 | 159.636 | 156.667 | 173.70 |
+| libero/openvla_libero_object.csv | libero_object | guarded_reuse_aggressive | 85 | 167.1 | 151.02 | 0.904 | 26.49 | 158.53 | 160.175 | 157.364 | 175.41 |
+| libero/openvla_libero_object.csv | libero_object | temporal_fusion_motion_entropy | 83 | 167.01 | 167.01 | 1.000 | 28.78 | 172.33 | 159.26 | 156.282 | 172.33 |
+| libero/openvla_libero_object.csv | libero_object | temporal_fusion_task_aware | 86 | 165.91 | 165.91 | 1.000 | 30.8 | 185.64 | 172.901 | 169.888 | 185.64 |
+| libero/openvla_libero_object.csv | libero_object | temporal_fusion_conservative_adaptive | 82 | 171.76 | 171.76 | 1.000 | 29.94 | 174.31 | 160.548 | 157.861 | 174.31 |
+| libero/openvla_libero_spatial.csv | libero_spatial | original | 78 | 133.91 | 133.91 | 1.000 | 24.24 | 181.02 | 162.448 | 160.146 | 181.02 |
+| libero/openvla_libero_spatial.csv | libero_spatial | fixed_foveation_keep20 | 55 | 160.66 | 160.66 | 1.000 | 29.98 | 186.61 | 167.015 | 159.258 | 186.61 |
+| libero/openvla_libero_spatial.csv | libero_spatial | fixed_foveation_keep50 | 83 | 129.4 | 129.4 | 1.000 | 24.21 | 187.09 | 167.573 | 159.542 | 187.09 |
+| libero/openvla_libero_spatial.csv | libero_spatial | action_repeat2 | 72 | 142.05 | 71.19 | 0.501 | 14.37 | 101.16 | 159.918 | 159.658 | 201.85 |
+| libero/openvla_libero_spatial.csv | libero_spatial | action_repeat4 | 47 | 176.24 | 44.22 | 0.251 | 10.81 | 61.34 | 2.249 | 160.192 | 244.46 |
+| libero/openvla_libero_spatial.csv | libero_spatial | depth_pruning1 | 62 | 149.98 | 149.98 | 1.000 | 26.25 | 175.02 | 155.52 | 153.2 | 175.02 |
+| libero/openvla_libero_spatial.csv | libero_spatial | depth_pruning2 | 56 | 158.4 | 158.4 | 1.000 | 27.25 | 172.03 | 152.93 | 150.621 | 172.03 |
+| libero/openvla_libero_spatial.csv | libero_spatial | depth_pruning4 | 48 | 172.03 | 172.03 | 1.000 | 27.66 | 160.79 | 142.234 | 139.928 | 160.79 |
+| libero/openvla_libero_spatial.csv | libero_spatial | guarded_reuse_strict | 82 | 129.59 | 126.97 | 0.980 | 23.0 | 177.48 | 161.615 | 158.822 | 181.15 |
+| libero/openvla_libero_spatial.csv | libero_spatial | guarded_reuse_moderate | 76 | 135.84 | 131.05 | 0.965 | 23.77 | 174.99 | 161.663 | 158.903 | 181.38 |
+| libero/openvla_libero_spatial.csv | libero_spatial | guarded_reuse_aggressive | 77 | 137.62 | 125.22 | 0.910 | 22.98 | 166.98 | 161.846 | 158.97 | 183.52 |
+| libero/openvla_libero_spatial.csv | libero_spatial | temporal_fusion_motion_entropy | 85 | 125.72 | 125.72 | 1.000 | 22.73 | 180.80 | 161.754 | 158.862 | 180.80 |
+| libero/openvla_libero_spatial.csv | libero_spatial | temporal_fusion_task_aware | 77 | 137.66 | 137.66 | 1.000 | 26.61 | 193.30 | 174.034 | 171 | 193.30 |
+| libero/openvla_libero_spatial.csv | libero_spatial | temporal_fusion_conservative_adaptive | 79 | 133.39 | 133.39 | 1.000 | 24.16 | 181.12 | 162.228 | 159.533 | 181.12 |
+| libero/smolvla_libero_10.csv | libero_10 | original | 42 | 428.35 | 428.35 | 1.000 | 124.0 | 289.48 | 288.922 | 274.699 | 289.48 |
+| libero/smolvla_libero_10.csv | libero_10 | fixed_foveation_keep20 | 19 | 481.49 | 481.49 | 1.000 | 147.14 | 305.59 | 304.954 | 277.17 | 305.59 |
+| libero/smolvla_libero_10.csv | libero_10 | fixed_foveation_keep50 | 21 | 477.84 | 477.84 | 1.000 | 146.45 | 306.48 | 305.848 | 277.819 | 306.48 |
+| libero/smolvla_libero_10.csv | libero_10 | action_repeat2 | 31 | 443.45 | 221.8 | 0.500 | 67.46 | 152.13 | 286.798 | 278.117 | 304.15 |
+| libero/smolvla_libero_10.csv | libero_10 | action_repeat4 | 20 | 470.22 | 117.64 | 0.250 | 37.88 | 80.56 | 12.523 | 272.208 | 322.00 |
+| libero/smolvla_libero_10.csv | libero_10 | depth_pruning1 | 9 | 500.07 | 500.07 | 1.000 | 145.81 | 291.58 | 290.971 | 277.256 | 291.58 |
+| libero/smolvla_libero_10.csv | libero_10 | depth_pruning2 | 3 | 515.08 | 515.08 | 1.000 | 148.05 | 287.43 | 292.673 | 278.295 | 287.43 |
+| libero/smolvla_libero_10.csv | libero_10 | depth_pruning4 | 0.0 | 520.0 | 520.0 | 1.000 | 134.65 | 258.94 | 251.844 | 238.464 | 258.94 |
+| libero/smolvla_libero_10.csv | libero_10 | guarded_reuse_strict | 40 | 426.45 | 425.75 | 0.998 | 121.85 | 285.73 | 273.851 | 260.791 | 286.20 |
+| libero/smolvla_libero_10.csv | libero_10 | guarded_reuse_moderate | 37 | 437.84 | 435.61 | 0.995 | 116.75 | 266.65 | 274.637 | 260.954 | 268.01 |
+| libero/smolvla_libero_10.csv | libero_10 | guarded_reuse_aggressive | 47 | 419.34 | 407.87 | 0.973 | 120.31 | 286.90 | 276.365 | 262.607 | 294.97 |
+| libero/smolvla_libero_10.csv | libero_10 | temporal_fusion_motion_entropy | 44 | 415.45 | 415.45 | 1.000 | 115.65 | 278.37 | 274.693 | 261.144 | 278.37 |
+| libero/smolvla_libero_10.csv | libero_10 | temporal_fusion_task_aware | 41 | 422.78 | 422.78 | 1.000 | 114.86 | 271.68 | 275.306 | 262.194 | 271.68 |
+| libero/smolvla_libero_10.csv | libero_10 | temporal_fusion_conservative_adaptive | 44 | 414.93 | 414.93 | 1.000 | 113.09 | 272.55 | 275.218 | 262.615 | 272.55 |
+| libero/smolvla_libero_goal.csv | libero_goal | original | 80 | 147.66 | 147.66 | 1.000 | 43.66 | 295.68 | 294.455 | 278.882 | 295.68 |
+| libero/smolvla_libero_goal.csv | libero_goal | fixed_foveation_keep20 | 58 | 186.72 | 186.72 | 1.000 | 57.52 | 308.05 | 307.064 | 278.414 | 308.05 |
+| libero/smolvla_libero_goal.csv | libero_goal | fixed_foveation_keep50 | 67 | 168.51 | 168.51 | 1.000 | 51.24 | 304.08 | 303.524 | 273.738 | 304.08 |
+| libero/smolvla_libero_goal.csv | libero_goal | action_repeat2 | 72 | 164.22 | 82.31 | 0.501 | 25.32 | 154.18 | 290.92 | 278.549 | 307.62 |
+| libero/smolvla_libero_goal.csv | libero_goal | action_repeat4 | 59 | 197.32 | 49.51 | 0.251 | 16.49 | 83.57 | 13.777 | 276.63 | 333.06 |
+| libero/smolvla_libero_goal.csv | libero_goal | depth_pruning1 | 62 | 187.03 | 187.03 | 1.000 | 54.9 | 293.54 | 293.013 | 278.101 | 293.54 |
+| libero/smolvla_libero_goal.csv | libero_goal | depth_pruning2 | 53 | 210.43 | 210.43 | 1.000 | 60.3 | 286.56 | 294.657 | 279.48 | 286.56 |
+| libero/smolvla_libero_goal.csv | libero_goal | depth_pruning4 | 28 | 260.99 | 260.99 | 1.000 | 68.6 | 262.85 | 243.656 | 229.635 | 262.85 |
+| libero/smolvla_libero_goal.csv | libero_goal | guarded_reuse_strict | 76 | 153.64 | 153.41 | 0.999 | 42.88 | 279.09 | 275.563 | 261.222 | 279.51 |
+| libero/smolvla_libero_goal.csv | libero_goal | guarded_reuse_moderate | 75 | 155.36 | 154.6 | 0.995 | 42.87 | 275.94 | 274.344 | 259.72 | 277.30 |
+| libero/smolvla_libero_goal.csv | libero_goal | guarded_reuse_aggressive | 77 | 151.78 | 147.48 | 0.972 | 38.77 | 255.44 | 274.355 | 259.711 | 262.88 |
+| libero/smolvla_libero_goal.csv | libero_goal | temporal_fusion_motion_entropy | 77 | 150.61 | 150.61 | 1.000 | 42.1 | 279.53 | 276.564 | 262.476 | 279.53 |
+| libero/smolvla_libero_goal.csv | libero_goal | temporal_fusion_task_aware | 74 | 158.82 | 158.82 | 1.000 | 43.25 | 272.32 | 277.093 | 263.071 | 272.32 |
+| libero/smolvla_libero_goal.csv | libero_goal | temporal_fusion_conservative_adaptive | 77 | 151.34 | 151.34 | 1.000 | 42.78 | 282.67 | 278.231 | 264.035 | 282.67 |
+| libero/smolvla_libero_object.csv | libero_object | original | 94 | 162.25 | 162.25 | 1.000 | 47.19 | 290.85 | 292.596 | 278.057 | 290.85 |
+| libero/smolvla_libero_object.csv | libero_object | fixed_foveation_keep20 | 74 | 189.28 | 189.28 | 1.000 | 58.12 | 307.06 | 306.354 | 278.882 | 307.06 |
+| libero/smolvla_libero_object.csv | libero_object | fixed_foveation_keep50 | 81 | 176.39 | 176.39 | 1.000 | 54.52 | 309.09 | 307.99 | 279.322 | 309.09 |
+| libero/smolvla_libero_object.csv | libero_object | action_repeat2 | 90 | 169.02 | 84.75 | 0.501 | 25.38 | 150.16 | 282.899 | 272.586 | 299.47 |
+| libero/smolvla_libero_object.csv | libero_object | action_repeat4 | 71 | 202.02 | 50.74 | 0.251 | 16.57 | 82.02 | 12.711 | 274.652 | 326.57 |
+| libero/smolvla_libero_object.csv | libero_object | depth_pruning1 | 73 | 193.35 | 193.35 | 1.000 | 57.0 | 294.80 | 294.074 | 279.717 | 294.80 |
+| libero/smolvla_libero_object.csv | libero_object | depth_pruning2 | 40 | 233.84 | 233.84 | 1.000 | 67.86 | 290.20 | 290.079 | 276.281 | 290.20 |
+| libero/smolvla_libero_object.csv | libero_object | depth_pruning4 | 13 | 266.05 | 266.05 | 1.000 | 64.45 | 242.25 | 241.57 | 228.676 | 242.25 |
+| libero/smolvla_libero_object.csv | libero_object | guarded_reuse_strict | 90 | 164.06 | 163.93 | 0.999 | 45.93 | 279.96 | 273.054 | 259.408 | 280.18 |
+| libero/smolvla_libero_object.csv | libero_object | guarded_reuse_moderate | 89 | 164.27 | 163.94 | 0.998 | 44.15 | 268.76 | 275.047 | 261.56 | 269.31 |
+| libero/smolvla_libero_object.csv | libero_object | guarded_reuse_aggressive | 91 | 162.41 | 160.11 | 0.986 | 44.1 | 271.54 | 274.726 | 261.327 | 275.44 |
+| libero/smolvla_libero_object.csv | libero_object | temporal_fusion_motion_entropy | 90 | 163.32 | 163.32 | 1.000 | 51.26 | 313.86 | 278.444 | 265.086 | 313.86 |
+| libero/smolvla_libero_object.csv | libero_object | temporal_fusion_task_aware | 90 | 162.51 | 162.51 | 1.000 | 45.24 | 278.38 | 276.052 | 262.901 | 278.38 |
+| libero/smolvla_libero_object.csv | libero_object | temporal_fusion_conservative_adaptive | 86 | 168.94 | 168.94 | 1.000 | 50.53 | 299.10 | 279.905 | 266.925 | 299.10 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | original | 76 | 132.92 | 132.92 | 1.000 | 38.85 | 292.28 | 291.895 | 271.436 | 292.28 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | fixed_foveation_keep20 | 63 | 149.31 | 149.31 | 1.000 | 45.97 | 307.88 | 307.143 | 273.446 | 307.88 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | fixed_foveation_keep50 | 76 | 135.92 | 135.92 | 1.000 | 42.66 | 313.86 | 312.878 | 278.603 | 313.86 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | action_repeat2 | 64 | 148.18 | 74.23 | 0.501 | 23.37 | 157.71 | 290.476 | 275.324 | 314.83 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | action_repeat4 | 35 | 189.73 | 47.59 | 0.251 | 16.57 | 87.33 | 18.867 | 272.469 | 348.18 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | depth_pruning1 | 62 | 151.44 | 151.44 | 1.000 | 44.84 | 296.09 | 295.642 | 275.41 | 296.09 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | depth_pruning2 | 38 | 177.76 | 177.76 | 1.000 | 53.11 | 298.77 | 298.549 | 277.985 | 298.77 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | depth_pruning4 | 29 | 188.55 | 188.55 | 1.000 | 55.6 | 294.88 | 294.974 | 274.256 | 294.88 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | guarded_reuse_strict | 79 | 129.2 | 129.17 | 1.000 | 39.11 | 302.71 | 282.809 | 264.033 | 302.78 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | guarded_reuse_moderate | 79 | 129.59 | 129.27 | 0.998 | 38.99 | 300.87 | 281.889 | 262.853 | 301.62 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | guarded_reuse_aggressive | 78 | 130.64 | 128.82 | 0.986 | 38.85 | 297.38 | 281.513 | 262.362 | 301.58 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | temporal_fusion_motion_entropy | 80 | 129.17 | 129.17 | 1.000 | 37.45 | 289.93 | 282.191 | 264.025 | 289.93 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | temporal_fusion_task_aware | 80 | 128.72 | 128.72 | 1.000 | 35.5 | 275.79 | 283.127 | 263.875 | 275.79 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | temporal_fusion_conservative_adaptive | 82 | 125.71 | 125.71 | 1.000 | 38.02 | 302.44 | 281.402 | 262.866 | 302.44 |
+| libero/univla_libero_10.csv | libero_10 | original | 86 | 280.36 | 28.44 | 0.101 | 16.78 | 59.85 | 573.526 | 454.496 | 590.01 |
+| libero/univla_libero_10.csv | libero_10 | fixed_foveation_keep20 | 86 | 275.74 | 27.98 | 0.101 | 16.57 | 60.09 | 577.669 | 450.481 | 592.21 |
+| libero/univla_libero_10.csv | libero_10 | fixed_foveation_keep50 | 90 | 268.88 | 27.32 | 0.102 | 16.29 | 60.58 | 580.931 | 454.055 | 596.27 |
+| libero/univla_libero_10.csv | libero_10 | action_repeat2 | 27 | 465.5 | 23.42 | 0.050 | 16.71 | 35.90 | 700.237 | 455.152 | 713.49 |
+| libero/univla_libero_10.csv | libero_10 | action_repeat4 | 1 | 517.42 | 12.94 | 0.025 | 12.46 | 24.08 | 950.686 | 472.219 | 962.91 |
+| libero/univla_libero_10.csv | libero_10 | depth_pruning1 | 88 | 286.12 | 29.02 | 0.101 | 16.6 | 58.02 | 558.283 | 436.411 | 572.02 |
+| libero/univla_libero_10.csv | libero_10 | depth_pruning2 | 89 | 282.61 | 28.66 | 0.101 | 16.17 | 57.22 | 547.705 | 427.946 | 564.20 |
+| libero/univla_libero_10.csv | libero_10 | depth_pruning4 | 86 | 304.49 | 30.82 | 0.101 | 16.56 | 54.39 | 521.934 | 398.288 | 537.31 |
+| libero/univla_libero_10.csv | libero_10 | guarded_reuse_strict | 86 | 280.58 | 28.4 | 0.101 | 16.69 | 59.48 | 570.434 | 452.515 | 587.68 |
+| libero/univla_libero_10.csv | libero_10 | guarded_reuse_moderate | 86 | 280.89 | 28.42 | 0.101 | 16.81 | 59.85 | 574.396 | 454.163 | 591.48 |
+| libero/univla_libero_10.csv | libero_10 | guarded_reuse_aggressive | 86 | 281.23 | 28.34 | 0.101 | 16.37 | 58.21 | 558.819 | 450.556 | 577.63 |
+| libero/univla_libero_10.csv | libero_10 | temporal_fusion_motion_entropy | 83 | 292.09 | 29.61 | 0.101 | 17.1 | 58.54 | 559.582 | 449.53 | 577.51 |
+| libero/univla_libero_10.csv | libero_10 | temporal_fusion_task_aware | 87 | 281.91 | 28.56 | 0.101 | 18.29 | 64.88 | 621.904 | 511.759 | 640.41 |
+| libero/univla_libero_10.csv | libero_10 | temporal_fusion_conservative_adaptive | 86 | 280.45 | 28.44 | 0.101 | 16.41 | 58.51 | 559.203 | 450.866 | 577.00 |
+| libero/univla_libero_goal.csv | libero_goal | original | 92 | 122.58 | 12.66 | 0.103 | 7.98 | 65.10 | 625.057 | 487.914 | 630.33 |
+| libero/univla_libero_goal.csv | libero_goal | fixed_foveation_keep20 | 87 | 129.8 | 13.34 | 0.103 | 8.45 | 65.10 | 624.215 | 483.042 | 633.43 |
+| libero/univla_libero_goal.csv | libero_goal | fixed_foveation_keep50 | 99 | 114.37 | 11.86 | 0.104 | 7.49 | 65.49 | 624.041 | 471.88 | 631.53 |
+| libero/univla_libero_goal.csv | libero_goal | action_repeat2 | 34 | 244.05 | 12.34 | 0.051 | 9.7 | 39.75 | 770.81 | 497.332 | 786.06 |
+| libero/univla_libero_goal.csv | libero_goal | action_repeat4 | 0.0 | 300.0 | 8.0 | 0.027 | 8.1 | 27.00 | 1010.853 | 500.971 | 1012.50 |
+| libero/univla_libero_goal.csv | libero_goal | depth_pruning1 | 93 | 121.69 | 12.53 | 0.103 | 7.69 | 63.19 | 607.282 | 474.858 | 613.73 |
+| libero/univla_libero_goal.csv | libero_goal | depth_pruning2 | 89 | 129.01 | 13.34 | 0.103 | 8.06 | 62.48 | 597.142 | 462.344 | 604.20 |
+| libero/univla_libero_goal.csv | libero_goal | depth_pruning4 | 84 | 143.71 | 14.74 | 0.103 | 8.59 | 59.77 | 577.377 | 436.865 | 582.77 |
+| libero/univla_libero_goal.csv | libero_goal | guarded_reuse_strict | 93 | 121.34 | 12.53 | 0.103 | 7.85 | 64.69 | 619.65 | 485.658 | 626.50 |
+| libero/univla_libero_goal.csv | libero_goal | guarded_reuse_moderate | 93 | 121.54 | 12.56 | 0.103 | 7.79 | 64.09 | 612.278 | 482.56 | 620.22 |
+| libero/univla_libero_goal.csv | libero_goal | guarded_reuse_aggressive | 92 | 122.56 | 12.65 | 0.103 | 7.87 | 64.21 | 615.021 | 482.322 | 622.13 |
+| libero/univla_libero_goal.csv | libero_goal | temporal_fusion_motion_entropy | 95 | 122.07 | 12.63 | 0.103 | 7.93 | 64.96 | 615.005 | 480.907 | 627.87 |
+| libero/univla_libero_goal.csv | libero_goal | temporal_fusion_task_aware | 93 | 123.26 | 12.77 | 0.104 | 8.86 | 71.88 | 684.131 | 546.543 | 693.81 |
+| libero/univla_libero_goal.csv | libero_goal | temporal_fusion_conservative_adaptive | 92 | 122.67 | 12.66 | 0.103 | 7.91 | 64.48 | 617.562 | 481.928 | 624.80 |
+| libero/univla_libero_object.csv | libero_object | original | 96 | 145.82 | 14.98 | 0.103 | 9.1 | 62.41 | 589.388 | 471.347 | 607.48 |
+| libero/univla_libero_object.csv | libero_object | fixed_foveation_keep20 | 100 | 136.04 | 13.98 | 0.103 | 8.57 | 63.00 | 593.511 | 457.248 | 613.02 |
+| libero/univla_libero_object.csv | libero_object | fixed_foveation_keep50 | 97 | 139.97 | 14.41 | 0.103 | 8.79 | 62.80 | 593.1 | 466.902 | 609.99 |
+| libero/univla_libero_object.csv | libero_object | action_repeat2 | 21 | 266.12 | 13.41 | 0.050 | 10.01 | 37.61 | 721.154 | 483.359 | 746.46 |
+| libero/univla_libero_object.csv | libero_object | action_repeat4 | 1 | 279.9 | 7.0 | 0.025 | 6.96 | 24.87 | 969.437 | 485.553 | 994.29 |
+| libero/univla_libero_object.csv | libero_object | depth_pruning1 | 99 | 143.23 | 14.78 | 0.103 | 8.83 | 61.65 | 577.846 | 455.215 | 597.43 |
+| libero/univla_libero_object.csv | libero_object | depth_pruning2 | 94 | 145.95 | 15.03 | 0.103 | 8.8 | 60.29 | 565.866 | 444.955 | 585.50 |
+| libero/univla_libero_object.csv | libero_object | depth_pruning4 | 92 | 153.47 | 15.73 | 0.102 | 8.89 | 57.93 | 542.815 | 420.229 | 565.16 |
+| libero/univla_libero_object.csv | libero_object | guarded_reuse_strict | 96 | 145.82 | 14.98 | 0.103 | 9.14 | 62.68 | 591.479 | 469.564 | 610.15 |
+| libero/univla_libero_object.csv | libero_object | guarded_reuse_moderate | 96 | 145.82 | 14.98 | 0.103 | 9.16 | 62.82 | 591.969 | 468.764 | 611.48 |
+| libero/univla_libero_object.csv | libero_object | guarded_reuse_aggressive | 96 | 145.82 | 14.98 | 0.103 | 9.08 | 62.27 | 587.873 | 464.96 | 606.14 |
+| libero/univla_libero_object.csv | libero_object | temporal_fusion_motion_entropy | 98 | 142.56 | 14.64 | 0.103 | 8.75 | 61.38 | 576.915 | 455.903 | 597.68 |
+| libero/univla_libero_object.csv | libero_object | temporal_fusion_task_aware | 97 | 143.03 | 14.64 | 0.102 | 9.67 | 67.61 | 638.54 | 516.306 | 660.52 |
+| libero/univla_libero_object.csv | libero_object | temporal_fusion_conservative_adaptive | 96 | 145.82 | 14.98 | 0.103 | 8.95 | 61.38 | 577.583 | 455.123 | 597.46 |
+| libero/univla_libero_spatial.csv | libero_spatial | original | 95 | 108.31 | 11.27 | 0.104 | 7.83 | 72.29 | 695.601 | 502.401 | 694.76 |
+| libero/univla_libero_spatial.csv | libero_spatial | fixed_foveation_keep20 | 91 | 114.42 | 11.81 | 0.103 | 8.53 | 74.55 | 709.48 | 513.982 | 722.27 |
+| libero/univla_libero_spatial.csv | libero_spatial | fixed_foveation_keep50 | 96 | 108.93 | 11.29 | 0.104 | 8.05 | 73.90 | 698.213 | 508.64 | 713.02 |
+| libero/univla_libero_spatial.csv | libero_spatial | action_repeat2 | 27 | 208.63 | 10.55 | 0.051 | 9.68 | 46.40 | 903.456 | 525.242 | 917.54 |
+| libero/univla_libero_spatial.csv | libero_spatial | action_repeat4 | 0.0 | 220.0 | 6.0 | 0.027 | 7.28 | 33.09 | 1230.528 | 518.206 | 1213.33 |
+| libero/univla_libero_spatial.csv | libero_spatial | depth_pruning1 | 96 | 107.83 | 11.18 | 0.104 | 7.72 | 71.59 | 678.102 | 494.037 | 690.52 |
+| libero/univla_libero_spatial.csv | libero_spatial | depth_pruning2 | 94 | 111.46 | 11.57 | 0.104 | 7.82 | 70.16 | 666.502 | 482.367 | 675.89 |
+| libero/univla_libero_spatial.csv | libero_spatial | depth_pruning4 | 94 | 109.17 | 11.34 | 0.104 | 7.35 | 67.33 | 639.537 | 455.473 | 648.15 |
+| libero/univla_libero_spatial.csv | libero_spatial | guarded_reuse_strict | 95 | 108.31 | 11.27 | 0.104 | 7.94 | 73.31 | 692.363 | 509.953 | 704.53 |
+| libero/univla_libero_spatial.csv | libero_spatial | guarded_reuse_moderate | 95 | 108.31 | 11.27 | 0.104 | 7.91 | 73.03 | 691.678 | 505.247 | 701.86 |
+| libero/univla_libero_spatial.csv | libero_spatial | guarded_reuse_aggressive | 95 | 108.31 | 11.27 | 0.104 | 7.86 | 72.57 | 686.978 | 503.558 | 697.43 |
+| libero/univla_libero_spatial.csv | libero_spatial | temporal_fusion_motion_entropy | 91 | 113.66 | 11.72 | 0.103 | 8.31 | 73.11 | 695.25 | 510.609 | 709.04 |
+| libero/univla_libero_spatial.csv | libero_spatial | temporal_fusion_task_aware | 92 | 112.8 | 11.7 | 0.104 | 9.13 | 80.94 | 765.06 | 580.819 | 780.34 |
+| libero/univla_libero_spatial.csv | libero_spatial | temporal_fusion_conservative_adaptive | 95 | 108.31 | 11.27 | 0.104 | 7.82 | 72.20 | 682.986 | 498.786 | 693.88 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | original | 50 | 50.845 | 50.845 | 1.000 | 7.19 | 141.41 | 139.604 | 98.711 | 141.41 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | fixed_foveation_keep20 | 52.5 | 46.57 | 46.57 | 1.000 | 7.44 | 159.76 | 158.788 | 98.292 | 159.76 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | fixed_foveation_keep50 | 52.5 | 48.36 | 48.36 | 1.000 | 7.87 | 162.74 | 161.065 | 99.089 | 162.74 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | action_repeat2 | 12 | 70.605 | 35.33 | 0.500 | 6.5 | 92.06 | 179.663 | 98.63 | 183.98 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | action_repeat4 | 4.5 | 74.27 | 18.575 | 0.250 | 5.02 | 67.59 | 257.876 | 98.519 | 270.26 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | depth_pruning1 | 57 | 47.575 | 47.575 | 1.000 | 6.6 | 138.73 | 137.134 | 96.966 | 138.73 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | depth_pruning2 | 59.5 | 47.135 | 47.135 | 1.000 | 6.48 | 137.48 | 135.47 | 95.836 | 137.48 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | depth_pruning4 | 52.5 | 49.84 | 49.84 | 1.000 | 6.75 | 135.43 | 134.299 | 93.403 | 135.43 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | guarded_reuse_strict | 51.5 | 50.33 | 50.17 | 0.997 | 7.11 | 141.27 | 139.885 | 99.412 | 141.72 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | guarded_reuse_moderate | 50 | 51.835 | 51.35 | 0.991 | 7.28 | 140.45 | 139.306 | 99.227 | 141.77 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | guarded_reuse_aggressive | 53 | 49.77 | 48.415 | 0.973 | 6.9 | 138.64 | 139.711 | 98.997 | 142.52 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | temporal_fusion_motion_entropy | 58 | 47.41 | 47.41 | 1.000 | 6.73 | 141.95 | 140.45 | 98.703 | 141.95 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | temporal_fusion_task_aware | 58 | 47.41 | 47.41 | 1.000 | 6.74 | 142.16 | 140.578 | 98.3 | 142.16 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | temporal_fusion_conservative_adaptive | 52 | 48.93 | 48.93 | 1.000 | 6.92 | 141.43 | 140.04 | 98.057 | 141.43 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | original | 34 | 50.555 | 50.555 | 1.000 | 6.362 | 125.84 | 126.3 | 126.3 | 125.84 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | fixed_foveation_keep20 | 36.5 | 48.92 | 48.92 | 1.000 | 7.138 | 145.91 | 145.943 | 145.943 | 145.91 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | fixed_foveation_keep50 | 34 | 50.44 | 50.44 | 1.000 | 7.412 | 146.95 | 147.162 | 147.162 | 146.95 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | action_repeat2 | 3.5 | 73.395 | 36.71 | 0.500 | 6.217 | 84.71 | 81.45 | 162.782 | 169.35 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | action_repeat4 | 0 | 75.0 | 18.75 | 0.250 | 4.788 | 63.84 | 59.926 | 239.703 | 255.36 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | depth_pruning1 | 35.5 | 50.025 | 50.025 | 1.000 | 6.11 | 122.14 | 122.106 | 122.106 | 122.14 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | depth_pruning2 | 36 | 50.52 | 50.52 | 1.000 | 6.0 | 118.76 | 119.129 | 119.129 | 118.76 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | depth_pruning4 | 28.5 | 52.515 | 52.515 | 1.000 | 5.954 | 113.38 | 113.586 | 113.586 | 113.38 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | guarded_reuse_strict | 36 | 49.735 | 49.71 | 0.999 | 6.24 | 125.46 | 125.718 | 125.718 | 125.53 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | guarded_reuse_moderate | 36 | 49.735 | 49.71 | 0.999 | 6.164 | 123.94 | 123.876 | 123.876 | 124.00 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | guarded_reuse_aggressive | 36 | 49.735 | 49.71 | 0.999 | 6.238 | 125.42 | 125.873 | 125.873 | 125.49 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | temporal_fusion_motion_entropy | 33.5 | 51.205 | 51.205 | 1.000 | 6.499 | 126.92 | 126.666 | 126.666 | 126.92 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | temporal_fusion_task_aware | 33.5 | 51.205 | 51.205 | 1.000 | 6.52 | 127.33 | 127.525 | 127.525 | 127.33 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | temporal_fusion_conservative_adaptive | 33.5 | 51.205 | 51.205 | 1.000 | 6.539 | 127.70 | 127.319 | 127.319 | 127.70 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | original | 36.0 | 63.84 | 63.84 | 1.000 | 9.54 | 149.44 | 104.86 | 97.08 | 149.44 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | action_repeat2 | 30.0 | 66.94 | 33.545 | 0.501 | 6.64 | 99.19 | 103.64 | 97.14 | 197.94 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | action_repeat4 | 29.0 | 66.915 | 16.83 | 0.252 | 4.96 | 74.12 | 7.74 | 98.04 | 294.71 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | depth_pruning1 | 18.5 | 67.435 | 67.435 | 1.000 | 9.84 | 145.92 | 103.5 | 95.72 | 145.92 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | depth_pruning2 | 0.0 | 75.0 | 75.0 | 1.000 | 10.34 | 137.87 | 99.37 | 91.64 | 137.87 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | depth_pruning4 | 0.0 | 75.0 | 75.0 | 1.000 | 9.84 | 131.20 | 93.11 | 85.29 | 131.20 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | fixed_foveation_keep20 | 28.0 | 63.365 | 63.365 | 1.000 | 10.15 | 160.18 | 113.69 | 99.38 | 160.18 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | fixed_foveation_keep50 | 35.0 | 62.91 | 62.91 | 1.000 | 9.84 | 156.41 | 112.7 | 98.07 | 156.41 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | guarded_reuse_aggressive | 33.5 | 65.37 | 62.73 | 0.960 | 9.47 | 144.87 | 106.11 | 97.72 | 150.96 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | guarded_reuse_moderate | 36.0 | 64.04 | 61.325 | 0.958 | 9.37 | 146.31 | 107.56 | 99.18 | 152.79 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | guarded_reuse_strict | 38.5 | 62.65 | 60.69 | 0.969 | 9.12 | 145.57 | 105.57 | 97.2 | 150.27 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | temporal_fusion_conservative_adaptive | 38.5 | 63.09 | 63.09 | 1.000 | 9.38 | 148.68 | 105.8 | 97.66 | 148.68 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | temporal_fusion_motion_entropy | 39.0 | 61.165 | 61.165 | 1.000 | 9.17 | 149.92 | 106.97 | 98.57 | 149.92 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | temporal_fusion_task_aware | 35.5 | 63.64 | 63.64 | 1.000 | 10.31 | 162.01 | 118.64 | 110.27 | 162.01 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | original | 43.5 | 50.91 | 50.91 | 1.000 | 10.7 | 210.17 | 167.068 | 158.997 | 210.17 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | fixed_foveation_keep20 | 22.5 | 65.24 | 65.24 | 1.000 | 14.1 | 216.13 | 172.186 | 157.733 | 216.13 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | fixed_foveation_keep50 | 30 | 62.515 | 62.515 | 1.000 | 13.61 | 217.71 | 172.003 | 157.189 | 217.71 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | action_repeat2 | 28 | 60.495 | 30.33 | 0.501 | 7.88 | 130.26 | 86.765 | 157.581 | 259.81 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | action_repeat4 | 14.5 | 68.41 | 17.165 | 0.251 | 6.18 | 90.34 | 47.479 | 158.215 | 360.03 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | depth_pruning1 | 43.5 | 51.655 | 51.655 | 1.000 | 10.56 | 204.43 | 162.563 | 154.64 | 204.43 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | depth_pruning2 | 47.5 | 51.25 | 51.25 | 1.000 | 10.22 | 199.41 | 156.928 | 148.958 | 199.41 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | depth_pruning4 | 37.5 | 53.795 | 53.795 | 1.000 | 10.22 | 189.98 | 148.625 | 140.592 | 189.98 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | guarded_reuse_strict | 45.5 | 49.685 | 47.845 | 0.963 | 10.07 | 202.68 | 165.589 | 158.007 | 210.47 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | guarded_reuse_moderate | 41.5 | 52.115 | 49.605 | 0.952 | 10.5 | 201.48 | 165.388 | 158.109 | 211.67 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | guarded_reuse_aggressive | 41 | 52.695 | 49.39 | 0.937 | 10.52 | 199.64 | 165.739 | 158.39 | 213.00 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | temporal_fusion_motion_entropy | 41 | 54.84 | 54.84 | 1.000 | 11.46 | 208.97 | 166.374 | 158.025 | 208.97 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | temporal_fusion_task_aware | 50.5 | 50.53 | 50.53 | 1.000 | 11.23 | 222.24 | 179.263 | 170.889 | 222.24 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | temporal_fusion_conservative_adaptive | 48 | 48.52 | 48.52 | 1.000 | 10.1 | 208.16 | 165.995 | 157.779 | 208.16 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | original | 45 | 45.145 | 45.145 | 1.000 | 19.12 | 423.52 | 421.339 | 382.35 | 423.52 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | fixed_foveation_keep20 | 50 | 45.565 | 45.565 | 1.000 | 20.32 | 445.96 | 445.418 | 384.376 | 445.96 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | fixed_foveation_keep50 | 44.5 | 46.06 | 46.06 | 1.000 | 20.53 | 445.72 | 446.609 | 382.662 | 445.72 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | action_repeat2 | 41 | 49.375 | 24.85 | 0.503 | 11.61 | 235.14 | 464.222 | 384.455 | 467.20 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | action_repeat4 | 29 | 62.4 | 15.78 | 0.253 | 8.6 | 137.82 | 539.256 | 381.676 | 544.99 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | depth_pruning1 | 38.5 | 49.705 | 49.705 | 1.000 | 20.3 | 408.41 | 408.126 | 368.385 | 408.41 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | depth_pruning2 | 28 | 55.32 | 55.32 | 1.000 | 21.98 | 397.32 | 396.562 | 356.766 | 397.32 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | depth_pruning4 | 14 | 70.88 | 70.88 | 1.000 | 26.55 | 374.58 | 373.164 | 334.264 | 374.58 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | guarded_reuse_strict | 45 | 45.145 | 45.135 | 1.000 | 19.08 | 422.64 | 421.248 | 379.771 | 422.73 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | guarded_reuse_moderate | 45 | 45.11 | 45.08 | 0.999 | 19.18 | 425.18 | 424.347 | 383.48 | 425.47 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | guarded_reuse_aggressive | 45.5 | 45.125 | 44.935 | 0.996 | 19.07 | 422.60 | 421.935 | 382.787 | 424.39 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | temporal_fusion_motion_entropy | 46 | 45.335 | 45.335 | 1.000 | 19.41 | 428.15 | 426.413 | 384.712 | 428.15 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | temporal_fusion_task_aware | 44 | 45.475 | 45.475 | 1.000 | 19.41 | 426.83 | 426.352 | 387.296 | 426.83 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | temporal_fusion_conservative_adaptive | 45 | 45.69 | 45.69 | 1.000 | 19.48 | 426.35 | 425.43 | 384.208 | 426.35 |
+| simpler_widowx/univla_simpler_widowx.csv |  | original | 87.5 | 30.21 | 6.375 | 0.211 | 5.77 | 191.00 | 902.345 | 714.451 | 905.10 |
+| simpler_widowx/univla_simpler_widowx.csv |  | fixed_foveation_keep20 | 79 | 34.565 | 7.185 | 0.208 | 6.63 | 191.81 | 926.378 | 713.619 | 922.76 |
+| simpler_widowx/univla_simpler_widowx.csv |  | fixed_foveation_keep50 | 73 | 37.365 | 7.75 | 0.207 | 7.08 | 189.48 | 921.386 | 714.982 | 913.55 |
+| simpler_widowx/univla_simpler_widowx.csv |  | action_repeat2 | 12.5 | 71.93 | 7.25 | 0.101 | 8.16 | 113.44 | 1116.491 | 717.583 | 1125.52 |
+| simpler_widowx/univla_simpler_widowx.csv |  | action_repeat4 | 3 | 74.515 | 3.74 | 0.050 | 5.85 | 78.51 | 1497.394 | 727.874 | 1564.17 |
+| simpler_widowx/univla_simpler_widowx.csv |  | depth_pruning1 | 82 | 32.45 | 6.81 | 0.210 | 6.01 | 185.21 | 884.392 | 695.277 | 882.53 |
+| simpler_widowx/univla_simpler_widowx.csv |  | depth_pruning2 | 82 | 31.635 | 6.635 | 0.210 | 5.78 | 182.71 | 870.401 | 681.914 | 871.14 |
+| simpler_widowx/univla_simpler_widowx.csv |  | depth_pruning4 | 81.5 | 32.315 | 6.765 | 0.209 | 5.59 | 172.98 | 831.856 | 646.765 | 826.31 |
+| simpler_widowx/univla_simpler_widowx.csv |  | guarded_reuse_strict | 87.5 | 30.21 | 6.375 | 0.211 | 5.77 | 191.00 | 908.734 | 717.211 | 905.10 |
+| simpler_widowx/univla_simpler_widowx.csv |  | guarded_reuse_moderate | 87.5 | 30.065 | 6.345 | 0.211 | 5.7 | 189.59 | 895.889 | 711.321 | 898.35 |
+| simpler_widowx/univla_simpler_widowx.csv |  | guarded_reuse_aggressive | 86.5 | 30.56 | 6.435 | 0.211 | 5.82 | 190.45 | 902.852 | 716.165 | 904.43 |
+| simpler_widowx/univla_simpler_widowx.csv |  | temporal_fusion_motion_entropy | 82 | 31.62 | 6.625 | 0.210 | 5.97 | 188.80 | 903.744 | 715.595 | 901.13 |
+| simpler_widowx/univla_simpler_widowx.csv |  | temporal_fusion_task_aware | 48 | 22.53 | 4.71 | 0.209 | 5.03 | 223.26 | 1034.609 | 861.266 | 1067.94 |
+| simpler_widowx/univla_simpler_widowx.csv |  | temporal_fusion_conservative_adaptive | 87.5 | 30.21 | 6.375 | 0.211 | 5.79 | 191.66 | 909.29 | 719.725 | 908.24 |
+
+### per backbone/env: latency_per_step change vs original, per family (min..max over variants; suites listed separately for LIBERO)
+| file | suite | orig lat/step ms | family | variants | lat/step min..max ms | delta min..max ms | pct min..max |
+|---|---|---|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | 169.06 | fixed_foveation | 2 | 189.76..194.63 | +20.70..+25.57 | +12.2%..+15.1% |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | 169.06 | action_repeat | 2 | 97.58..121.50 | -71.49..-47.57 | -42.3%..-28.1% |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | 169.06 | depth_pruning | 3 | 163.93..170.21 | -5.13..+1.15 | -3.0%..+0.7% |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | 169.06 | guarded_reuse | 3 | 168.66..176.25 | -0.40..+7.18 | -0.2%..+4.2% |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | 169.06 | temporal_fusion | 3 | 171.02..176.40 | +1.96..+7.33 | +1.2%..+4.3% |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | 155.12 | fixed_foveation | 2 | 178.30..179.99 | +23.19..+24.88 | +14.9%..+16.0% |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | 155.12 | action_repeat | 2 | 89.88..112.37 | -65.24..-42.75 | -42.1%..-27.6% |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | 155.12 | depth_pruning | 3 | 144.09..152.83 | -11.02..-2.29 | -7.1%..-1.5% |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | 155.12 | guarded_reuse | 3 | 150.36..153.14 | -4.76..-1.98 | -3.1%..-1.3% |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | 155.12 | temporal_fusion | 3 | 156.36..156.90 | +1.25..+1.78 | +0.8%..+1.1% |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | 239.77 | fixed_foveation | 2 | 248.90..249.43 | +9.13..+9.66 | +3.8%..+4.0% |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | 239.77 | action_repeat | 2 | 118.92..159.11 | -120.85..-80.66 | -50.4%..-33.6% |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | 239.77 | depth_pruning | 3 | 223.25..236.49 | -16.52..-3.28 | -6.9%..-1.4% |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | 239.77 | guarded_reuse | 3 | 234.72..236.62 | -5.05..-3.15 | -2.1%..-1.3% |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | 239.77 | temporal_fusion | 3 | 240.23..253.92 | +0.46..+14.15 | +0.2%..+5.9% |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | 450.02 | fixed_foveation | 2 | 474.89..478.35 | +24.88..+28.33 | +5.5%..+6.3% |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | 450.02 | action_repeat | 2 | 166.06..262.88 | -283.96..-187.14 | -63.1%..-41.6% |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | 450.02 | depth_pruning | 3 | 399.11..435.07 | -50.91..-14.95 | -11.3%..-3.3% |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | 450.02 | guarded_reuse | 3 | 441.00..446.84 | -9.02..-3.18 | -2.0%..-0.7% |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | 450.02 | temporal_fusion | 3 | 451.47..453.38 | +1.46..+3.37 | +0.3%..+0.7% |
+| libero/openvla_libero_10.csv | libero_10 | 171.55 | fixed_foveation | 2 | 178.17..178.55 | +6.62..+7.00 | +3.9%..+4.1% |
+| libero/openvla_libero_10.csv | libero_10 | 171.55 | action_repeat | 2 | 53.69..93.16 | -117.86..-78.39 | -68.7%..-45.7% |
+| libero/openvla_libero_10.csv | libero_10 | 171.55 | depth_pruning | 3 | 154.25..168.38 | -17.30..-3.17 | -10.1%..-1.8% |
+| libero/openvla_libero_10.csv | libero_10 | 171.55 | guarded_reuse | 3 | 156.28..166.84 | -15.27..-4.71 | -8.9%..-2.7% |
+| libero/openvla_libero_10.csv | libero_10 | 171.55 | temporal_fusion | 2 | 172.91..185.64 | +1.35..+14.09 | +0.8%..+8.2% |
+| libero/openvla_libero_goal.csv | libero_goal | 176.09 | fixed_foveation | 2 | 179.64..181.32 | +3.55..+5.23 | +2.0%..+3.0% |
+| libero/openvla_libero_goal.csv | libero_goal | 176.09 | action_repeat | 2 | 55.62..96.25 | -120.47..-79.84 | -68.4%..-45.3% |
+| libero/openvla_libero_goal.csv | libero_goal | 176.09 | depth_pruning | 3 | 158.48..170.53 | -17.61..-5.56 | -10.0%..-3.2% |
+| libero/openvla_libero_goal.csv | libero_goal | 176.09 | guarded_reuse | 3 | 157.86..168.01 | -18.23..-8.08 | -10.4%..-4.6% |
+| libero/openvla_libero_goal.csv | libero_goal | 176.09 | temporal_fusion | 3 | 176.23..188.32 | +0.14..+12.23 | +0.1%..+6.9% |
+| libero/openvla_libero_object.csv | libero_object | 173.85 | fixed_foveation | 2 | 179.94..180.11 | +6.09..+6.26 | +3.5%..+3.6% |
+| libero/openvla_libero_object.csv | libero_object | 173.85 | action_repeat | 2 | 54.34..93.76 | -119.51..-80.09 | -68.7%..-46.1% |
+| libero/openvla_libero_object.csv | libero_object | 173.85 | depth_pruning | 3 | 156.12..168.38 | -17.73..-5.47 | -10.2%..-3.1% |
+| libero/openvla_libero_object.csv | libero_object | 173.85 | guarded_reuse | 3 | 158.53..169.28 | -15.32..-4.57 | -8.8%..-2.6% |
+| libero/openvla_libero_object.csv | libero_object | 173.85 | temporal_fusion | 3 | 172.33..185.64 | -1.53..+11.79 | -0.9%..+6.8% |
+| libero/openvla_libero_spatial.csv | libero_spatial | 181.02 | fixed_foveation | 2 | 186.61..187.09 | +5.59..+6.08 | +3.1%..+3.4% |
+| libero/openvla_libero_spatial.csv | libero_spatial | 181.02 | action_repeat | 2 | 61.34..101.16 | -119.68..-79.86 | -66.1%..-44.1% |
+| libero/openvla_libero_spatial.csv | libero_spatial | 181.02 | depth_pruning | 3 | 160.79..175.02 | -20.23..-5.99 | -11.2%..-3.3% |
+| libero/openvla_libero_spatial.csv | libero_spatial | 181.02 | guarded_reuse | 3 | 166.98..177.48 | -14.04..-3.53 | -7.8%..-2.0% |
+| libero/openvla_libero_spatial.csv | libero_spatial | 181.02 | temporal_fusion | 3 | 180.80..193.30 | -0.22..+12.29 | -0.1%..+6.8% |
+| libero/smolvla_libero_10.csv | libero_10 | 289.48 | fixed_foveation | 2 | 305.59..306.48 | +16.11..+17.00 | +5.6%..+5.9% |
+| libero/smolvla_libero_10.csv | libero_10 | 289.48 | action_repeat | 2 | 80.56..152.13 | -208.92..-137.36 | -72.2%..-47.4% |
+| libero/smolvla_libero_10.csv | libero_10 | 289.48 | depth_pruning | 3 | 258.94..291.58 | -30.54..+2.10 | -10.6%..+0.7% |
+| libero/smolvla_libero_10.csv | libero_10 | 289.48 | guarded_reuse | 3 | 266.65..286.90 | -22.83..-2.58 | -7.9%..-0.9% |
+| libero/smolvla_libero_10.csv | libero_10 | 289.48 | temporal_fusion | 3 | 271.68..278.37 | -17.80..-11.11 | -6.2%..-3.8% |
+| libero/smolvla_libero_goal.csv | libero_goal | 295.68 | fixed_foveation | 2 | 304.08..308.05 | +8.40..+12.38 | +2.8%..+4.2% |
+| libero/smolvla_libero_goal.csv | libero_goal | 295.68 | action_repeat | 2 | 83.57..154.18 | -212.11..-141.50 | -71.7%..-47.9% |
+| libero/smolvla_libero_goal.csv | libero_goal | 295.68 | depth_pruning | 3 | 262.85..293.54 | -32.83..-2.14 | -11.1%..-0.7% |
+| libero/smolvla_libero_goal.csv | libero_goal | 295.68 | guarded_reuse | 3 | 255.44..279.09 | -40.24..-16.59 | -13.6%..-5.6% |
+| libero/smolvla_libero_goal.csv | libero_goal | 295.68 | temporal_fusion | 3 | 272.32..282.67 | -23.36..-13.00 | -7.9%..-4.4% |
+| libero/smolvla_libero_object.csv | libero_object | 290.85 | fixed_foveation | 2 | 307.06..309.09 | +16.21..+18.24 | +5.6%..+6.3% |
+| libero/smolvla_libero_object.csv | libero_object | 290.85 | action_repeat | 2 | 82.02..150.16 | -208.83..-140.69 | -71.8%..-48.4% |
+| libero/smolvla_libero_object.csv | libero_object | 290.85 | depth_pruning | 3 | 242.25..294.80 | -48.60..+3.95 | -16.7%..+1.4% |
+| libero/smolvla_libero_object.csv | libero_object | 290.85 | guarded_reuse | 3 | 268.76..279.96 | -22.08..-10.89 | -7.6%..-3.7% |
+| libero/smolvla_libero_object.csv | libero_object | 290.85 | temporal_fusion | 3 | 278.38..313.86 | -12.46..+23.01 | -4.3%..+7.9% |
+| libero/smolvla_libero_spatial.csv | libero_spatial | 292.28 | fixed_foveation | 2 | 307.88..313.86 | +15.60..+21.58 | +5.3%..+7.4% |
+| libero/smolvla_libero_spatial.csv | libero_spatial | 292.28 | action_repeat | 2 | 87.33..157.71 | -204.95..-134.57 | -70.1%..-46.0% |
+| libero/smolvla_libero_spatial.csv | libero_spatial | 292.28 | depth_pruning | 3 | 294.88..298.77 | +2.60..+6.49 | +0.9%..+2.2% |
+| libero/smolvla_libero_spatial.csv | libero_spatial | 292.28 | guarded_reuse | 3 | 297.38..302.71 | +5.10..+10.43 | +1.7%..+3.6% |
+| libero/smolvla_libero_spatial.csv | libero_spatial | 292.28 | temporal_fusion | 3 | 275.79..302.44 | -16.49..+10.16 | -5.6%..+3.5% |
+| libero/univla_libero_10.csv | libero_10 | 59.85 | fixed_foveation | 2 | 60.09..60.58 | +0.24..+0.73 | +0.4%..+1.2% |
+| libero/univla_libero_10.csv | libero_10 | 59.85 | action_repeat | 2 | 24.08..35.90 | -35.77..-23.95 | -59.8%..-40.0% |
+| libero/univla_libero_10.csv | libero_10 | 59.85 | depth_pruning | 3 | 54.39..58.02 | -5.47..-1.83 | -9.1%..-3.1% |
+| libero/univla_libero_10.csv | libero_10 | 59.85 | guarded_reuse | 3 | 58.21..59.85 | -1.64..-0.01 | -2.7%..-0.0% |
+| libero/univla_libero_10.csv | libero_10 | 59.85 | temporal_fusion | 3 | 58.51..64.88 | -1.34..+5.03 | -2.2%..+8.4% |
+| libero/univla_libero_goal.csv | libero_goal | 65.10 | fixed_foveation | 2 | 65.10..65.49 | -0.00..+0.39 | -0.0%..+0.6% |
+| libero/univla_libero_goal.csv | libero_goal | 65.10 | action_repeat | 2 | 27.00..39.75 | -38.10..-25.35 | -58.5%..-38.9% |
+| libero/univla_libero_goal.csv | libero_goal | 65.10 | depth_pruning | 3 | 59.77..63.19 | -5.33..-1.91 | -8.2%..-2.9% |
+| libero/univla_libero_goal.csv | libero_goal | 65.10 | guarded_reuse | 3 | 64.09..64.69 | -1.01..-0.41 | -1.5%..-0.6% |
+| libero/univla_libero_goal.csv | libero_goal | 65.10 | temporal_fusion | 3 | 64.48..71.88 | -0.62..+6.78 | -0.9%..+10.4% |
+| libero/univla_libero_object.csv | libero_object | 62.41 | fixed_foveation | 2 | 62.80..63.00 | +0.39..+0.59 | +0.6%..+0.9% |
+| libero/univla_libero_object.csv | libero_object | 62.41 | action_repeat | 2 | 24.87..37.61 | -37.54..-24.79 | -60.2%..-39.7% |
+| libero/univla_libero_object.csv | libero_object | 62.41 | depth_pruning | 3 | 57.93..61.65 | -4.48..-0.76 | -7.2%..-1.2% |
+| libero/univla_libero_object.csv | libero_object | 62.41 | guarded_reuse | 3 | 62.27..62.82 | -0.14..+0.41 | -0.2%..+0.7% |
+| libero/univla_libero_object.csv | libero_object | 62.41 | temporal_fusion | 3 | 61.38..67.61 | -1.03..+5.20 | -1.6%..+8.3% |
+| libero/univla_libero_spatial.csv | libero_spatial | 72.29 | fixed_foveation | 2 | 73.90..74.55 | +1.61..+2.26 | +2.2%..+3.1% |
+| libero/univla_libero_spatial.csv | libero_spatial | 72.29 | action_repeat | 2 | 33.09..46.40 | -39.20..-25.89 | -54.2%..-35.8% |
+| libero/univla_libero_spatial.csv | libero_spatial | 72.29 | depth_pruning | 3 | 67.33..71.59 | -4.97..-0.70 | -6.9%..-1.0% |
+| libero/univla_libero_spatial.csv | libero_spatial | 72.29 | guarded_reuse | 3 | 72.57..73.31 | +0.28..+1.02 | +0.4%..+1.4% |
+| libero/univla_libero_spatial.csv | libero_spatial | 72.29 | temporal_fusion | 3 | 72.20..80.94 | -0.09..+8.65 | -0.1%..+12.0% |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | 141.41 | fixed_foveation | 2 | 159.76..162.74 | +18.35..+21.33 | +13.0%..+15.1% |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | 141.41 | action_repeat | 2 | 67.59..92.06 | -73.82..-49.35 | -52.2%..-34.9% |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | 141.41 | depth_pruning | 3 | 135.43..138.73 | -5.98..-2.68 | -4.2%..-1.9% |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | 141.41 | guarded_reuse | 3 | 138.64..141.27 | -2.77..-0.14 | -2.0%..-0.1% |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | 141.41 | temporal_fusion | 3 | 141.43..142.16 | +0.02..+0.75 | +0.0%..+0.5% |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | 125.84 | fixed_foveation | 2 | 145.91..146.95 | +20.07..+21.10 | +15.9%..+16.8% |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | 125.84 | action_repeat | 2 | 63.84..84.71 | -62.00..-41.14 | -49.3%..-32.7% |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | 125.84 | depth_pruning | 3 | 113.38..122.14 | -12.47..-3.70 | -9.9%..-2.9% |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | 125.84 | guarded_reuse | 3 | 123.94..125.46 | -1.91..-0.38 | -1.5%..-0.3% |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | 125.84 | temporal_fusion | 3 | 126.92..127.70 | +1.08..+1.86 | +0.9%..+1.5% |
+| simpler_widowx/minivla_simpler_widowx.csv |  | 149.44 | action_repeat | 2 | 74.12..99.19 | -75.31..-50.24 | -50.4%..-33.6% |
+| simpler_widowx/minivla_simpler_widowx.csv |  | 149.44 | depth_pruning | 3 | 131.20..145.92 | -18.24..-3.52 | -12.2%..-2.4% |
+| simpler_widowx/minivla_simpler_widowx.csv |  | 149.44 | fixed_foveation | 2 | 156.41..160.18 | +6.98..+10.75 | +4.7%..+7.2% |
+| simpler_widowx/minivla_simpler_widowx.csv |  | 149.44 | guarded_reuse | 3 | 144.87..146.31 | -4.57..-3.12 | -3.1%..-2.1% |
+| simpler_widowx/minivla_simpler_widowx.csv |  | 149.44 | temporal_fusion | 3 | 148.68..162.01 | -0.76..+12.57 | -0.5%..+8.4% |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | 210.17 | fixed_foveation | 2 | 216.13..217.71 | +5.95..+7.53 | +2.8%..+3.6% |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | 210.17 | action_repeat | 2 | 90.34..130.26 | -119.84..-79.92 | -57.0%..-38.0% |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | 210.17 | depth_pruning | 3 | 189.98..204.43 | -20.19..-5.74 | -9.6%..-2.7% |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | 210.17 | guarded_reuse | 3 | 199.64..202.68 | -10.54..-7.50 | -5.0%..-3.6% |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | 210.17 | temporal_fusion | 3 | 208.16..222.24 | -2.01..+12.07 | -1.0%..+5.7% |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | 423.52 | fixed_foveation | 2 | 445.72..445.96 | +22.20..+22.43 | +5.2%..+5.3% |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | 423.52 | action_repeat | 2 | 137.82..235.14 | -285.70..-188.38 | -67.5%..-44.5% |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | 423.52 | depth_pruning | 3 | 374.58..408.41 | -48.95..-15.11 | -11.6%..-3.6% |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | 423.52 | guarded_reuse | 3 | 422.60..425.18 | -0.92..+1.66 | -0.2%..+0.4% |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | 423.52 | temporal_fusion | 3 | 426.35..428.15 | +2.83..+4.62 | +0.7%..+1.1% |
+| simpler_widowx/univla_simpler_widowx.csv |  | 191.00 | fixed_foveation | 2 | 189.48..191.81 | -1.51..+0.82 | -0.8%..+0.4% |
+| simpler_widowx/univla_simpler_widowx.csv |  | 191.00 | action_repeat | 2 | 78.51..113.44 | -112.49..-77.55 | -58.9%..-40.6% |
+| simpler_widowx/univla_simpler_widowx.csv |  | 191.00 | depth_pruning | 3 | 172.98..185.21 | -18.01..-5.79 | -9.4%..-3.0% |
+| simpler_widowx/univla_simpler_widowx.csv |  | 191.00 | guarded_reuse | 3 | 189.59..191.00 | -1.41..+0.00 | -0.7%..+0.0% |
+| simpler_widowx/univla_simpler_widowx.csv |  | 191.00 | temporal_fusion | 3 | 188.80..223.26 | -2.19..+32.26 | -1.1%..+16.9% |
+
+### Rows where avg_policy_calls != avg_steps (ratio calls/steps)
+| file | suite | cfg | steps | calls | calls/steps | steps/calls | reuses |
+|---|---|---|---|---|---|---|---|
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | action_repeat2 | 46.668 | 23.5 | 0.5036 | 1.986 | 0 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | action_repeat4 | 58.108 | 14.72 | 0.2533 | 3.948 | 0 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | guarded_reuse_strict | 44.704 | 44.7 | 0.9999 | 1.000 | 0.004 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | guarded_reuse_moderate | 44.428 | 44.38 | 0.9989 | 1.001 | 0.048 |
+| google_robot_fractal/cogact_base_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 43.632 | 43.384 | 0.9943 | 1.006 | 0.248 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | action_repeat2 | 57.428 | 28.84 | 0.5022 | 1.991 | 28.588 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | action_repeat4 | 74.132 | 18.596 | 0.2508 | 3.986 | 55.536 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | guarded_reuse_strict | 51.928 | 51.572 | 0.9931 | 1.007 | 0.356 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | guarded_reuse_moderate | 51.872 | 50.988 | 0.9830 | 1.017 | 0.884 |
+| google_robot_fractal/cronusvla_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 50.732 | 48.592 | 0.9578 | 1.044 | 2.14 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | action_repeat2 | 62.912 | 31.556 | 0.5016 | 1.994 | 31.356 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | action_repeat4 | 67.02 | 16.896 | 0.2521 | 3.967 | 50.124 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | guarded_reuse_strict | 64.292 | 62.828 | 0.9772 | 1.023 | 1.464 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | guarded_reuse_moderate | 64.196 | 62.592 | 0.9750 | 1.026 | 1.604 |
+| google_robot_fractal/openvla_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 64.248 | 61.756 | 0.9612 | 1.040 | 2.492 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | action_repeat2 | 50.404 | 25.34 | 0.5027 | 1.989 | 0 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | action_repeat4 | 65.88 | 16.6 | 0.2520 | 3.969 | 0 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | guarded_reuse_strict | 49.612 | 49.356 | 0.9948 | 1.005 | 0.256 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | guarded_reuse_moderate | 49.436 | 49.024 | 0.9917 | 1.008 | 0.412 |
+| google_robot_fractal/spatialvla_simplerenv_fractal.csv |  | guarded_reuse_aggressive | 49.932 | 48.732 | 0.9760 | 1.025 | 1.2 |
+| libero/openvla_libero_10.csv | libero_10 | action_repeat2 | 407.47 | 203.85 | 0.5003 | 1.999 | 203.62 |
+| libero/openvla_libero_10.csv | libero_10 | action_repeat4 | 461.14 | 115.36 | 0.2502 | 3.997 | 345.78 |
+| libero/openvla_libero_10.csv | libero_10 | guarded_reuse_strict | 397.87 | 383.5 | 0.9639 | 1.037 | 14.37 |
+| libero/openvla_libero_10.csv | libero_10 | guarded_reuse_moderate | 396.62 | 374.49 | 0.9442 | 1.059 | 22.13 |
+| libero/openvla_libero_10.csv | libero_10 | guarded_reuse_aggressive | 399.28 | 358.81 | 0.8986 | 1.113 | 40.47 |
+| libero/openvla_libero_goal.csv | libero_goal | action_repeat2 | 175.16 | 87.74 | 0.5009 | 1.996 | 87.42 |
+| libero/openvla_libero_goal.csv | libero_goal | action_repeat4 | 192.74 | 48.41 | 0.2512 | 3.981 | 144.33 |
+| libero/openvla_libero_goal.csv | libero_goal | guarded_reuse_strict | 164.75 | 156.84 | 0.9520 | 1.050 | 7.91 |
+| libero/openvla_libero_goal.csv | libero_goal | guarded_reuse_moderate | 165.24 | 156.76 | 0.9487 | 1.054 | 8.48 |
+| libero/openvla_libero_goal.csv | libero_goal | guarded_reuse_aggressive | 163.88 | 145.59 | 0.8884 | 1.126 | 18.29 |
+| libero/openvla_libero_object.csv | libero_object | action_repeat2 | 173.96 | 87.22 | 0.5014 | 1.994 | 86.74 |
+| libero/openvla_libero_object.csv | libero_object | action_repeat4 | 212.01 | 53.24 | 0.2511 | 3.982 | 158.77 |
+| libero/openvla_libero_object.csv | libero_object | guarded_reuse_strict | 165.41 | 159.32 | 0.9632 | 1.038 | 6.09 |
+| libero/openvla_libero_object.csv | libero_object | guarded_reuse_moderate | 171.23 | 161.72 | 0.9445 | 1.059 | 9.51 |
+| libero/openvla_libero_object.csv | libero_object | guarded_reuse_aggressive | 167.1 | 151.02 | 0.9038 | 1.106 | 16.08 |
+| libero/openvla_libero_spatial.csv | libero_spatial | action_repeat2 | 142.05 | 71.19 | 0.5012 | 1.995 | 70.86 |
+| libero/openvla_libero_spatial.csv | libero_spatial | action_repeat4 | 176.24 | 44.22 | 0.2509 | 3.986 | 132.02 |
+| libero/openvla_libero_spatial.csv | libero_spatial | guarded_reuse_strict | 129.59 | 126.97 | 0.9798 | 1.021 | 2.62 |
+| libero/openvla_libero_spatial.csv | libero_spatial | guarded_reuse_moderate | 135.84 | 131.05 | 0.9647 | 1.037 | 4.79 |
+| libero/openvla_libero_spatial.csv | libero_spatial | guarded_reuse_aggressive | 137.62 | 125.22 | 0.9099 | 1.099 | 12.4 |
+| libero/smolvla_libero_10.csv | libero_10 | action_repeat2 | 443.45 | 221.8 | 0.5002 | 1.999 | 221.65 |
+| libero/smolvla_libero_10.csv | libero_10 | action_repeat4 | 470.22 | 117.64 | 0.2502 | 3.997 | 352.58 |
+| libero/smolvla_libero_10.csv | libero_10 | guarded_reuse_strict | 426.45 | 425.75 | 0.9984 | 1.002 | 0.7 |
+| libero/smolvla_libero_10.csv | libero_10 | guarded_reuse_moderate | 437.84 | 435.61 | 0.9949 | 1.005 | 2.23 |
+| libero/smolvla_libero_10.csv | libero_10 | guarded_reuse_aggressive | 419.34 | 407.87 | 0.9726 | 1.028 | 11.47 |
+| libero/smolvla_libero_goal.csv | libero_goal | action_repeat2 | 164.22 | 82.31 | 0.5012 | 1.995 | 81.91 |
+| libero/smolvla_libero_goal.csv | libero_goal | action_repeat4 | 197.32 | 49.51 | 0.2509 | 3.985 | 147.81 |
+| libero/smolvla_libero_goal.csv | libero_goal | guarded_reuse_strict | 153.64 | 153.41 | 0.9985 | 1.001 | 0.23 |
+| libero/smolvla_libero_goal.csv | libero_goal | guarded_reuse_moderate | 155.36 | 154.6 | 0.9951 | 1.005 | 0.76 |
+| libero/smolvla_libero_goal.csv | libero_goal | guarded_reuse_aggressive | 151.78 | 147.48 | 0.9717 | 1.029 | 4.3 |
+| libero/smolvla_libero_object.csv | libero_object | action_repeat2 | 169.02 | 84.75 | 0.5014 | 1.994 | 84.27 |
+| libero/smolvla_libero_object.csv | libero_object | action_repeat4 | 202.02 | 50.74 | 0.2512 | 3.981 | 151.28 |
+| libero/smolvla_libero_object.csv | libero_object | guarded_reuse_strict | 164.06 | 163.93 | 0.9992 | 1.001 | 0.13 |
+| libero/smolvla_libero_object.csv | libero_object | guarded_reuse_moderate | 164.27 | 163.94 | 0.9980 | 1.002 | 0.33 |
+| libero/smolvla_libero_object.csv | libero_object | guarded_reuse_aggressive | 162.41 | 160.11 | 0.9858 | 1.014 | 2.3 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | action_repeat2 | 148.18 | 74.23 | 0.5009 | 1.996 | 73.95 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | action_repeat4 | 189.73 | 47.59 | 0.2508 | 3.987 | 142.14 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | guarded_reuse_strict | 129.2 | 129.17 | 0.9998 | 1.000 | 0.03 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | guarded_reuse_moderate | 129.59 | 129.27 | 0.9975 | 1.002 | 0.32 |
+| libero/smolvla_libero_spatial.csv | libero_spatial | guarded_reuse_aggressive | 130.64 | 128.82 | 0.9861 | 1.014 | 1.82 |
+| libero/univla_libero_10.csv | libero_10 | original | 280.36 | 28.44 | 0.1014 | 9.858 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | fixed_foveation_keep20 | 275.74 | 27.98 | 0.1015 | 9.855 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | fixed_foveation_keep50 | 268.88 | 27.32 | 0.1016 | 9.842 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | action_repeat2 | 465.5 | 23.42 | 0.0503 | 19.876 | 234.2 |
+| libero/univla_libero_10.csv | libero_10 | action_repeat4 | 517.42 | 12.94 | 0.0250 | 39.986 | 388.2 |
+| libero/univla_libero_10.csv | libero_10 | depth_pruning1 | 286.12 | 29.02 | 0.1014 | 9.859 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | depth_pruning2 | 282.61 | 28.66 | 0.1014 | 9.861 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | depth_pruning4 | 304.49 | 30.82 | 0.1012 | 9.880 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | guarded_reuse_strict | 280.58 | 28.4 | 0.1012 | 9.880 | 0.05 |
+| libero/univla_libero_10.csv | libero_10 | guarded_reuse_moderate | 280.89 | 28.42 | 0.1012 | 9.884 | 0.06 |
+| libero/univla_libero_10.csv | libero_10 | guarded_reuse_aggressive | 281.23 | 28.34 | 0.1008 | 9.923 | 0.17 |
+| libero/univla_libero_10.csv | libero_10 | temporal_fusion_motion_entropy | 292.09 | 29.61 | 0.1014 | 9.865 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | temporal_fusion_task_aware | 281.91 | 28.56 | 0.1013 | 9.871 | 0.0 |
+| libero/univla_libero_10.csv | libero_10 | temporal_fusion_conservative_adaptive | 280.45 | 28.44 | 0.1014 | 9.861 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | original | 122.58 | 12.66 | 0.1033 | 9.682 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | fixed_foveation_keep20 | 129.8 | 13.34 | 0.1028 | 9.730 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | fixed_foveation_keep50 | 114.37 | 11.86 | 0.1037 | 9.643 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | action_repeat2 | 244.05 | 12.34 | 0.0506 | 19.777 | 123.4 |
+| libero/univla_libero_goal.csv | libero_goal | action_repeat4 | 300.0 | 8.0 | 0.0267 | 37.500 | 240 |
+| libero/univla_libero_goal.csv | libero_goal | depth_pruning1 | 121.69 | 12.53 | 0.1030 | 9.712 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | depth_pruning2 | 129.01 | 13.34 | 0.1034 | 9.671 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | depth_pruning4 | 143.71 | 14.74 | 0.1026 | 9.750 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | guarded_reuse_strict | 121.34 | 12.53 | 0.1033 | 9.684 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | guarded_reuse_moderate | 121.54 | 12.56 | 0.1033 | 9.677 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | guarded_reuse_aggressive | 122.56 | 12.65 | 0.1032 | 9.689 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | temporal_fusion_motion_entropy | 122.07 | 12.63 | 0.1035 | 9.665 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | temporal_fusion_task_aware | 123.26 | 12.77 | 0.1036 | 9.652 | 0.0 |
+| libero/univla_libero_goal.csv | libero_goal | temporal_fusion_conservative_adaptive | 122.67 | 12.66 | 0.1032 | 9.690 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | original | 145.82 | 14.98 | 0.1027 | 9.734 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | fixed_foveation_keep20 | 136.04 | 13.98 | 0.1028 | 9.731 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | fixed_foveation_keep50 | 139.97 | 14.41 | 0.1030 | 9.713 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | action_repeat2 | 266.12 | 13.41 | 0.0504 | 19.845 | 134.1 |
+| libero/univla_libero_object.csv | libero_object | action_repeat4 | 279.9 | 7.0 | 0.0250 | 39.986 | 210 |
+| libero/univla_libero_object.csv | libero_object | depth_pruning1 | 143.23 | 14.78 | 0.1032 | 9.691 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | depth_pruning2 | 145.95 | 15.03 | 0.1030 | 9.711 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | depth_pruning4 | 153.47 | 15.73 | 0.1025 | 9.757 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | guarded_reuse_strict | 145.82 | 14.98 | 0.1027 | 9.734 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | guarded_reuse_moderate | 145.82 | 14.98 | 0.1027 | 9.734 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | guarded_reuse_aggressive | 145.82 | 14.98 | 0.1027 | 9.734 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | temporal_fusion_motion_entropy | 142.56 | 14.64 | 0.1027 | 9.738 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | temporal_fusion_task_aware | 143.03 | 14.64 | 0.1024 | 9.770 | 0.0 |
+| libero/univla_libero_object.csv | libero_object | temporal_fusion_conservative_adaptive | 145.82 | 14.98 | 0.1027 | 9.734 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | original | 108.31 | 11.27 | 0.1041 | 9.610 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | fixed_foveation_keep20 | 114.42 | 11.81 | 0.1032 | 9.688 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | fixed_foveation_keep50 | 108.93 | 11.29 | 0.1036 | 9.648 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | action_repeat2 | 208.63 | 10.55 | 0.0506 | 19.775 | 105.5 |
+| libero/univla_libero_spatial.csv | libero_spatial | action_repeat4 | 220.0 | 6.0 | 0.0273 | 36.667 | 180 |
+| libero/univla_libero_spatial.csv | libero_spatial | depth_pruning1 | 107.83 | 11.18 | 0.1037 | 9.645 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | depth_pruning2 | 111.46 | 11.57 | 0.1038 | 9.634 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | depth_pruning4 | 109.17 | 11.34 | 0.1039 | 9.627 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | guarded_reuse_strict | 108.31 | 11.27 | 0.1041 | 9.610 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | guarded_reuse_moderate | 108.31 | 11.27 | 0.1041 | 9.610 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | guarded_reuse_aggressive | 108.31 | 11.27 | 0.1041 | 9.610 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | temporal_fusion_motion_entropy | 113.66 | 11.72 | 0.1031 | 9.698 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | temporal_fusion_task_aware | 112.8 | 11.7 | 0.1037 | 9.641 | 0.0 |
+| libero/univla_libero_spatial.csv | libero_spatial | temporal_fusion_conservative_adaptive | 108.31 | 11.27 | 0.1041 | 9.610 | 0.0 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | action_repeat2 | 70.605 | 35.33 | 0.5004 | 1.998 | 0.0 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | action_repeat4 | 74.27 | 18.575 | 0.2501 | 3.998 | 0.0 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | guarded_reuse_strict | 50.33 | 50.17 | 0.9968 | 1.003 | 0.16 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | guarded_reuse_moderate | 51.835 | 51.35 | 0.9906 | 1.009 | 0.485 |
+| simpler_widowx/cogact_base_simpler_widowx.csv |  | guarded_reuse_aggressive | 49.77 | 48.415 | 0.9728 | 1.028 | 1.355 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | action_repeat2 | 73.395 | 36.71 | 0.5002 | 1.999 | 36.685 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | action_repeat4 | 75.0 | 18.75 | 0.2500 | 4.000 | 56.25 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | guarded_reuse_strict | 49.735 | 49.71 | 0.9995 | 1.001 | 0.025 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | guarded_reuse_moderate | 49.735 | 49.71 | 0.9995 | 1.001 | 0.025 |
+| simpler_widowx/cronusvla_simpler_widowx.csv |  | guarded_reuse_aggressive | 49.735 | 49.71 | 0.9995 | 1.001 | 0.025 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | action_repeat2 | 66.94 | 33.545 | 0.5011 | 1.996 | 33.395 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | action_repeat4 | 66.915 | 16.83 | 0.2515 | 3.976 | 50.085 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | guarded_reuse_aggressive | 65.37 | 62.73 | 0.9596 | 1.042 | 2.64 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | guarded_reuse_moderate | 64.04 | 61.325 | 0.9576 | 1.044 | 2.715 |
+| simpler_widowx/minivla_simpler_widowx.csv |  | guarded_reuse_strict | 62.65 | 60.69 | 0.9687 | 1.032 | 1.96 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | action_repeat2 | 60.495 | 30.33 | 0.5014 | 1.995 | 30.165 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | action_repeat4 | 68.41 | 17.165 | 0.2509 | 3.985 | 51.245 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | guarded_reuse_strict | 49.685 | 47.845 | 0.9630 | 1.038 | 1.84 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | guarded_reuse_moderate | 52.115 | 49.605 | 0.9518 | 1.051 | 2.51 |
+| simpler_widowx/openvla_simplerenv_widowx.csv |  | guarded_reuse_aggressive | 52.695 | 49.39 | 0.9373 | 1.067 | 3.305 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | action_repeat2 | 49.375 | 24.85 | 0.5033 | 1.987 | 0 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | action_repeat4 | 62.4 | 15.78 | 0.2529 | 3.954 | 0 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | guarded_reuse_strict | 45.145 | 45.135 | 0.9998 | 1.000 | 0.01 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | guarded_reuse_moderate | 45.11 | 45.08 | 0.9993 | 1.001 | 0.03 |
+| simpler_widowx/spatialvla_simpler_widowx.csv |  | guarded_reuse_aggressive | 45.125 | 44.935 | 0.9958 | 1.004 | 0.19 |
+| simpler_widowx/univla_simpler_widowx.csv |  | original | 30.21 | 6.375 | 0.2110 | 4.739 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | fixed_foveation_keep20 | 34.565 | 7.185 | 0.2079 | 4.811 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | fixed_foveation_keep50 | 37.365 | 7.75 | 0.2074 | 4.821 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | action_repeat2 | 71.93 | 7.25 | 0.1008 | 9.921 | 36.25 |
+| simpler_widowx/univla_simpler_widowx.csv |  | action_repeat4 | 74.515 | 3.74 | 0.0502 | 19.924 | 56.1 |
+| simpler_widowx/univla_simpler_widowx.csv |  | depth_pruning1 | 32.45 | 6.81 | 0.2099 | 4.765 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | depth_pruning2 | 31.635 | 6.635 | 0.2097 | 4.768 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | depth_pruning4 | 32.315 | 6.765 | 0.2093 | 4.777 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | guarded_reuse_strict | 30.21 | 6.375 | 0.2110 | 4.739 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | guarded_reuse_moderate | 30.065 | 6.345 | 0.2110 | 4.738 | 0.005 |
+| simpler_widowx/univla_simpler_widowx.csv |  | guarded_reuse_aggressive | 30.56 | 6.435 | 0.2106 | 4.749 | 0.01 |
+| simpler_widowx/univla_simpler_widowx.csv |  | temporal_fusion_motion_entropy | 31.62 | 6.625 | 0.2095 | 4.773 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | temporal_fusion_task_aware | 22.53 | 4.71 | 0.2091 | 4.783 | 0 |
+| simpler_widowx/univla_simpler_widowx.csv |  | temporal_fusion_conservative_adaptive | 30.21 | 6.375 | 0.2110 | 4.739 | 0 |
+
+## 6. SANITY
+### success_rate_pct vs successes/episodes*100
+  mismatches: 0
+### tasks/episodes per environment/file
+  google_robot_fractal/cogact_base_simplerenv_fractal.csv: tasks={'5'} episodes={'250'} episodes/task={'50.0'}
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv: tasks={'5'} episodes={'250'} episodes/task={'50.0'}
+  google_robot_fractal/openvla_simplerenv_fractal.csv: tasks={'5'} episodes={'250'} episodes/task={'50.0'}
+  google_robot_fractal/spatialvla_simplerenv_fractal.csv: tasks={'5'} episodes={'250'} episodes/task={'50.0'}
+  google_robot_fractal/summary.csv: tasks={'5'} episodes={'250'} episodes/task={'50.0'}
+  libero/openvla_libero_10.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/openvla_libero_goal.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/openvla_libero_object.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/openvla_libero_spatial.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/smolvla_libero_10.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/smolvla_libero_goal.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/smolvla_libero_object.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/smolvla_libero_spatial.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/summary.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/univla_libero_10.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/univla_libero_goal.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/univla_libero_object.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  libero/univla_libero_spatial.csv: tasks={'10'} episodes={'100'} episodes/task={'10.0'}
+  simpler_widowx/cogact_base_simpler_widowx.csv: tasks={'4'} episodes={'200'} episodes/task={'50.0'}
+  simpler_widowx/cronusvla_simpler_widowx.csv: tasks={'4'} episodes={'200'} episodes/task={'50.0'}
+  simpler_widowx/minivla_simpler_widowx.csv: tasks={'4'} episodes={'200'} episodes/task={'50.0'}
+  simpler_widowx/openvla_simplerenv_widowx.csv: tasks={'4'} episodes={'200'} episodes/task={'50.0'}
+  simpler_widowx/spatialvla_simpler_widowx.csv: tasks={'4'} episodes={'200'} episodes/task={'50.0'}
+  simpler_widowx/summary.csv: tasks={'4'} episodes={'200'} episodes/task={'50.0'}
+  simpler_widowx/univla_simpler_widowx.csv: tasks={'4'} episodes={'200'} episodes/task={'50.0'}
+### rows with avg_policy_calls > avg_steps
+  (end)
+### rows with avg_reuses > avg_steps - avg_policy_calls (+0.011)
+  (end)
+### duplicated configuration within a file (key = model_name, environment/suite, configuration)
+  (end)
+### configuration set per file vs canonical 14
+  libero/openvla_libero_10.csv: n=13 missing=['temporal_fusion_conservative_adaptive'] extra=[]
+  (end)
+### p95 < median anywhere?
+  (end)
+### cycle_median < policy_median anywhere?
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv  action_repeat2: cycle 111.593 < policy 223.077 (ratio 0.500)
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv  action_repeat4: cycle 89.509 < policy 356.375 (ratio 0.251)
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv  guarded_reuse_strict: cycle 151.423 < policy 151.77 (ratio 0.998)
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv  guarded_reuse_moderate: cycle 151.239 < policy 152.438 (ratio 0.992)
+  google_robot_fractal/cronusvla_simplerenv_fractal.csv  guarded_reuse_aggressive: cycle 148.631 < policy 152.182 (ratio 0.977)
+  google_robot_fractal/openvla_simplerenv_fractal.csv  action_repeat2: cycle 87.531 < policy 159.141 (ratio 0.550)
+  google_robot_fractal/openvla_simplerenv_fractal.csv  action_repeat4: cycle 47.82 < policy 159.859 (ratio 0.299)
+  google_robot_fractal/summary.csv  action_repeat2: cycle 87.531 < policy 159.141 (ratio 0.550)
+  google_robot_fractal/summary.csv  action_repeat2: cycle 111.593 < policy 223.077 (ratio 0.500)
+  google_robot_fractal/summary.csv  guarded_reuse_aggressive: cycle 148.631 < policy 152.182 (ratio 0.977)
+  libero/openvla_libero_10.csv libero_10 action_repeat4: cycle 2.243 < policy 157.217 (ratio 0.014)
+  libero/openvla_libero_goal.csv libero_goal action_repeat4: cycle 2.242 < policy 157.489 (ratio 0.014)
+  libero/openvla_libero_object.csv libero_object action_repeat4: cycle 2.24 < policy 156.311 (ratio 0.014)
+  libero/openvla_libero_spatial.csv libero_spatial action_repeat4: cycle 2.249 < policy 160.192 (ratio 0.014)
+  libero/smolvla_libero_10.csv libero_10 action_repeat4: cycle 12.523 < policy 272.208 (ratio 0.046)
+  libero/smolvla_libero_goal.csv libero_goal action_repeat4: cycle 13.777 < policy 276.63 (ratio 0.050)
+  libero/smolvla_libero_object.csv libero_object action_repeat4: cycle 12.711 < policy 274.652 (ratio 0.046)
+  libero/smolvla_libero_spatial.csv libero_spatial action_repeat4: cycle 18.867 < policy 272.469 (ratio 0.069)
+  simpler_widowx/cronusvla_simpler_widowx.csv  action_repeat2: cycle 81.45 < policy 162.782 (ratio 0.500)
+  simpler_widowx/cronusvla_simpler_widowx.csv  action_repeat4: cycle 59.926 < policy 239.703 (ratio 0.250)
+  simpler_widowx/minivla_simpler_widowx.csv  action_repeat4: cycle 7.74 < policy 98.04 (ratio 0.079)
+  simpler_widowx/openvla_simplerenv_widowx.csv  action_repeat2: cycle 86.765 < policy 157.581 (ratio 0.551)
+  simpler_widowx/openvla_simplerenv_widowx.csv  action_repeat4: cycle 47.479 < policy 158.215 (ratio 0.300)
+  simpler_widowx/summary.csv  action_repeat2: cycle 86.765 < policy 157.581 (ratio 0.551)
+  simpler_widowx/summary.csv  action_repeat2: cycle 81.45 < policy 162.782 (ratio 0.500)
+  (end)
+### avg_steps == max horizon (all episodes timed out)?
+  libero/smolvla_libero_10.csv libero_10 depth_pruning4: steps=520 successes=0 calls=520
+  libero/univla_libero_goal.csv libero_goal action_repeat4: steps=300 successes=0 calls=8
+  libero/univla_libero_spatial.csv libero_spatial action_repeat4: steps=220 successes=0 calls=6
+  simpler_widowx/cronusvla_simpler_widowx.csv  action_repeat4: steps=75 successes=0 calls=18.75
+  simpler_widowx/minivla_simpler_widowx.csv  depth_pruning2: steps=75.0 successes=0 calls=75.0
+  simpler_widowx/minivla_simpler_widowx.csv  depth_pruning4: steps=75.0 successes=0 calls=75.0
+  (end)

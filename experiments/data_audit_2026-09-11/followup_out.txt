@@ -1,0 +1,392 @@
+
+==========================================================================================
+## A. per (backbone, task_group) max steps (cap), and per-config max for that task
+
+  cogact_base_simplerenv_bridge    widowx_carrot_on_plate                           cap=  60  configs below cap: none
+  cogact_base_simplerenv_bridge    widowx_put_eggplant_in_basket                    cap= 120  configs below cap: none
+  cogact_base_simplerenv_bridge    widowx_spoon_on_towel                            cap=  60  configs below cap: none
+  cogact_base_simplerenv_bridge    widowx_stack_cube                                cap=  60  configs below cap: none
+  cogact_base_simplerenv_fractal   google_robot_close_drawer                        cap=  80  configs below cap: none
+  cogact_base_simplerenv_fractal   google_robot_move_near                           cap=  80  configs below cap: none
+  cogact_base_simplerenv_fractal   google_robot_open_drawer                         cap=  80  configs below cap: none
+  cogact_base_simplerenv_fractal   google_robot_pick_coke_can                       cap=  80  configs below cap: {'depth_pruning1': 63, 'fixed_foveation_keep20': 54}
+  cogact_base_simplerenv_fractal   google_robot_place_apple_in_closed_top_drawer    cap=  80  configs below cap: none
+  cronusvla_simplerenv_bridge      widowx_carrot_on_plate                           cap=  60  configs below cap: none
+  cronusvla_simplerenv_bridge      widowx_put_eggplant_in_basket                    cap= 120  configs below cap: {'fixed_foveation_keep20': 32}
+  cronusvla_simplerenv_bridge      widowx_spoon_on_towel                            cap=  60  configs below cap: none
+  cronusvla_simplerenv_bridge      widowx_stack_cube                                cap=  60  configs below cap: none
+  cronusvla_simplerenv_fractal     google_robot_close_drawer                        cap=  80  configs below cap: none
+  cronusvla_simplerenv_fractal     google_robot_move_near                           cap=  80  configs below cap: none
+  cronusvla_simplerenv_fractal     google_robot_open_drawer                         cap=  80  configs below cap: none
+  cronusvla_simplerenv_fractal     google_robot_pick_coke_can                       cap=  80  configs below cap: {'depth_pruning4': 50, 'fixed_foveation_keep20': 60, 'fixed_foveation_keep50': 28, 'guarded_reuse_aggressive': 55}
+  cronusvla_simplerenv_fractal     google_robot_place_apple_in_closed_top_drawer    cap=  80  configs below cap: none
+  minivla_simplerenv               widowx_carrot_on_plate                           cap=  60  configs below cap: none
+  minivla_simplerenv               widowx_put_eggplant_in_basket                    cap= 120  configs below cap: none
+  minivla_simplerenv               widowx_spoon_on_towel                            cap=  60  configs below cap: none
+  minivla_simplerenv               widowx_stack_cube                                cap=  60  configs below cap: none
+  openvla_libero                   libero_10                                        cap= 520  configs below cap: none
+  openvla_libero                   libero_goal                                      cap= 300  configs below cap: none
+  openvla_libero                   libero_object                                    cap= 280  configs below cap: none
+  openvla_libero                   libero_spatial                                   cap= 220  configs below cap: none
+  openvla_simplerenv               widowx_carrot_on_plate                           cap=  60  configs below cap: none
+  openvla_simplerenv               widowx_put_eggplant_in_basket                    cap= 120  configs below cap: none
+  openvla_simplerenv               widowx_spoon_on_towel                            cap=  60  configs below cap: none
+  openvla_simplerenv               widowx_stack_cube                                cap=  60  configs below cap: none
+  openvla_simplerenv_fractal       google_robot_close_drawer                        cap=  80  configs below cap: none
+  openvla_simplerenv_fractal       google_robot_move_near                           cap=  80  configs below cap: none
+  openvla_simplerenv_fractal       google_robot_open_drawer                         cap=  80  configs below cap: none
+  openvla_simplerenv_fractal       google_robot_pick_coke_can                       cap=  80  configs below cap: none
+  openvla_simplerenv_fractal       google_robot_place_apple_in_closed_top_drawer    cap=  80  configs below cap: none
+  smolvla_libero                   libero_10                                        cap= 520  configs below cap: none
+  smolvla_libero                   libero_goal                                      cap= 300  configs below cap: none
+  smolvla_libero                   libero_object                                    cap= 280  configs below cap: none
+  smolvla_libero                   libero_spatial                                   cap= 220  configs below cap: none
+  spatialvla_simplerenv_bridge     widowx_carrot_on_plate                           cap=  60  configs below cap: none
+  spatialvla_simplerenv_bridge     widowx_put_eggplant_in_basket                    cap= 120  configs below cap: {'fixed_foveation_keep20': 47, 'fixed_foveation_keep50': 63, 'guarded_reuse_aggressive': 45, 'guarded_reuse_moderate': 45, 'guarded_reuse_strict': 45, 'original': 45, 'temporal_fusion_motion_entropy': 52, 'temporal_fusion_task_aware': 43}
+  spatialvla_simplerenv_bridge     widowx_spoon_on_towel                            cap=  60  configs below cap: none
+  spatialvla_simplerenv_bridge     widowx_stack_cube                                cap=  60  configs below cap: none
+  spatialvla_simplerenv_fractal    google_robot_close_drawer                        cap=  80  configs below cap: none
+  spatialvla_simplerenv_fractal    google_robot_move_near                           cap=  80  configs below cap: none
+  spatialvla_simplerenv_fractal    google_robot_open_drawer                         cap=  80  configs below cap: none
+  spatialvla_simplerenv_fractal    google_robot_pick_coke_can                       cap=  80  configs below cap: none
+  spatialvla_simplerenv_fractal    google_robot_place_apple_in_closed_top_drawer    cap=  80  configs below cap: none
+  univla_libero                    libero_10                                        cap= 520  configs below cap: none
+  univla_libero                    libero_goal                                      cap= 300  configs below cap: none
+  univla_libero                    libero_object                                    cap= 280  configs below cap: {'fixed_foveation_keep20': 218}
+  univla_libero                    libero_spatial                                   cap= 220  configs below cap: none
+  univla_simplerenv_bridge         widowx_carrot_on_plate                           cap=  60  configs below cap: none
+  univla_simplerenv_bridge         widowx_put_eggplant_in_basket                    cap= 120  configs below cap: {'temporal_fusion_task_aware': 30}
+  univla_simplerenv_bridge         widowx_spoon_on_towel                            cap=  60  configs below cap: none
+  univla_simplerenv_bridge         widowx_stack_cube                                cap=  60  configs below cap: none
+
+==========================================================================================
+## B. truncated flag vs steps==per-task-cap vs success (records with flag)
+
+| backbone | truncated | steps==cap | success | n |
+|---|---|---|---|---|
+| cogact_base_simplerenv_bridge | False | False | True | 1321 |
+| cogact_base_simplerenv_bridge | True | True | False | 1474 |
+| cogact_base_simplerenv_bridge | True | True | True | 5 |
+| cogact_base_simplerenv_fractal | False | False | True | 2260 |
+| cogact_base_simplerenv_fractal | False | True | False | 1122 |
+| cogact_base_simplerenv_fractal | False | True | True | 5 |
+| cogact_base_simplerenv_fractal | True | True | False | 113 |
+| minivla_simplerenv | False | False | True | 792 |
+| minivla_simplerenv | True | True | False | 2005 |
+| minivla_simplerenv | True | True | True | 3 |
+| openvla_libero | False | False | True | 3624 |
+| openvla_libero | False | True | False | 1872 |
+| openvla_libero | False | True | True | 4 |
+| openvla_simplerenv | False | False | True | 1064 |
+| openvla_simplerenv | True | True | False | 1731 |
+| openvla_simplerenv | True | True | True | 5 |
+| openvla_simplerenv_fractal | False | False | True | 1216 |
+| openvla_simplerenv_fractal | False | True | False | 1662 |
+| openvla_simplerenv_fractal | False | True | True | 2 |
+| openvla_simplerenv_fractal | True | True | False | 618 |
+| openvla_simplerenv_fractal | True | True | True | 2 |
+| spatialvla_simplerenv_bridge | False | False | True | 1119 |
+| spatialvla_simplerenv_bridge | True | True | False | 1679 |
+| spatialvla_simplerenv_bridge | True | True | True | 2 |
+| spatialvla_simplerenv_fractal | False | False | True | 1922 |
+| spatialvla_simplerenv_fractal | False | True | False | 1361 |
+| spatialvla_simplerenv_fractal | False | True | True | 2 |
+| spatialvla_simplerenv_fractal | True | True | False | 215 |
+| univla_libero | False | False | True | 4538 |
+| univla_libero | False | True | False | 1062 |
+| univla_simplerenv_bridge | False | False | False | 81 |
+| univla_simplerenv_bridge | False | False | True | 1958 |
+| univla_simplerenv_bridge | True | True | False | 760 |
+| univla_simplerenv_bridge | True | True | True | 1 |
+
+==========================================================================================
+## B2. fractal dirs: truncated=True vs False at steps==cap, by task and config
+
+   cogact_base_simplerenv_fractal {('google_robot_close_drawer', False): 246, ('google_robot_move_near', True): 73, ('google_robot_open_drawer', False): 176, ('google_robot_pick_coke_can', True): 40, ('google_robot_place_apple_in_closed_top_drawer', False): 700}
+     truncated=True by config: {'action_repeat2': 15, 'action_repeat4': 45, 'depth_pruning1': 2, 'depth_pruning2': 5, 'depth_pruning4': 5, 'fixed_foveation_keep20': 3, 'fixed_foveation_keep50': 6, 'guarded_reuse_aggressive': 4, 'guarded_reuse_moderate': 4, 'guarded_reuse_strict': 4, 'original': 4, 'temporal_fusion_conservative_adaptive': 4, 'temporal_fusion_motion_entropy': 6, 'temporal_fusion_task_aware': 6}
+   openvla_simplerenv_fractal {('google_robot_close_drawer', False): 411, ('google_robot_move_near', True): 298, ('google_robot_open_drawer', False): 551, ('google_robot_pick_coke_can', True): 320, ('google_robot_place_apple_in_closed_top_drawer', False): 700}
+     truncated=True by config: {'action_repeat2': 40, 'action_repeat4': 52, 'depth_pruning1': 36, 'depth_pruning2': 36, 'depth_pruning4': 37, 'fixed_foveation_keep20': 96, 'fixed_foveation_keep50': 61, 'guarded_reuse_aggressive': 39, 'guarded_reuse_moderate': 39, 'guarded_reuse_strict': 40, 'original': 40, 'temporal_fusion_conservative_adaptive': 38, 'temporal_fusion_motion_entropy': 28, 'temporal_fusion_task_aware': 36}
+   spatialvla_simplerenv_fractal {('google_robot_close_drawer', False): 266, ('google_robot_move_near', True): 97, ('google_robot_open_drawer', False): 395, ('google_robot_pick_coke_can', True): 118, ('google_robot_place_apple_in_closed_top_drawer', False): 700}
+     truncated=True by config: {'action_repeat2': 14, 'action_repeat4': 60, 'depth_pruning1': 13, 'depth_pruning2': 11, 'depth_pruning4': 16, 'fixed_foveation_keep20': 18, 'fixed_foveation_keep50': 14, 'guarded_reuse_aggressive': 9, 'guarded_reuse_moderate': 10, 'guarded_reuse_strict': 11, 'original': 11, 'temporal_fusion_conservative_adaptive': 11, 'temporal_fusion_motion_entropy': 10, 'temporal_fusion_task_aware': 7}
+
+==========================================================================================
+## B3. successes with truncated=True (18) and successes at cap
+
+    cogact_base_simplerenv_bridge action_repeat2 widowx_spoon_on_towel ep 36 steps 60 cap 60
+    cogact_base_simplerenv_bridge depth_pruning1 widowx_stack_cube ep 20 steps 60 cap 60
+    cogact_base_simplerenv_bridge guarded_reuse_moderate widowx_carrot_on_plate ep 0 steps 60 cap 60
+    cogact_base_simplerenv_bridge temporal_fusion_motion_entropy widowx_spoon_on_towel ep 11 steps 60 cap 60
+    cogact_base_simplerenv_bridge temporal_fusion_task_aware widowx_spoon_on_towel ep 11 steps 60 cap 60
+    minivla_simplerenv fixed_foveation_keep50 widowx_stack_cube ep 30 steps 60 cap 60
+    minivla_simplerenv fixed_foveation_keep50 widowx_stack_cube ep 47 steps 60 cap 60
+    minivla_simplerenv temporal_fusion_motion_entropy widowx_spoon_on_towel ep 8 steps 60 cap 60
+    openvla_simplerenv action_repeat2 widowx_carrot_on_plate ep 20 steps 60 cap 60
+    openvla_simplerenv action_repeat2 widowx_carrot_on_plate ep 26 steps 60 cap 60
+    openvla_simplerenv temporal_fusion_motion_entropy widowx_spoon_on_towel ep 20 steps 60 cap 60
+    openvla_simplerenv temporal_fusion_task_aware widowx_carrot_on_plate ep 42 steps 60 cap 60
+    openvla_simplerenv temporal_fusion_task_aware widowx_carrot_on_plate ep 43 steps 60 cap 60
+    openvla_simplerenv_fractal depth_pruning1 google_robot_pick_coke_can ep 8 steps 80 cap 80
+    openvla_simplerenv_fractal temporal_fusion_motion_entropy google_robot_pick_coke_can ep 46 steps 80 cap 80
+    spatialvla_simplerenv_bridge fixed_foveation_keep20 widowx_carrot_on_plate ep 4 steps 60 cap 60
+    spatialvla_simplerenv_bridge fixed_foveation_keep20 widowx_carrot_on_plate ep 28 steps 60 cap 60
+    univla_simplerenv_bridge fixed_foveation_keep50 widowx_spoon_on_towel ep 20 steps 60 cap 60
+successes at per-task cap by (backbone, task):
+    1 ('cogact_base_simplerenv_bridge', 'widowx_carrot_on_plate')
+    3 ('cogact_base_simplerenv_bridge', 'widowx_spoon_on_towel')
+    1 ('cogact_base_simplerenv_bridge', 'widowx_stack_cube')
+    5 ('cogact_base_simplerenv_fractal', 'google_robot_open_drawer')
+    1 ('cronusvla_simplerenv_bridge', 'widowx_carrot_on_plate')
+    1 ('cronusvla_simplerenv_bridge', 'widowx_spoon_on_towel')
+    1 ('cronusvla_simplerenv_fractal', 'google_robot_close_drawer')
+    72 ('cronusvla_simplerenv_fractal', 'google_robot_move_near')
+    1 ('cronusvla_simplerenv_fractal', 'google_robot_open_drawer')
+    47 ('cronusvla_simplerenv_fractal', 'google_robot_pick_coke_can')
+    1 ('minivla_simplerenv', 'widowx_spoon_on_towel')
+    2 ('minivla_simplerenv', 'widowx_stack_cube')
+    3 ('openvla_libero', 'libero_object')
+    1 ('openvla_libero', 'libero_spatial')
+    4 ('openvla_simplerenv', 'widowx_carrot_on_plate')
+    1 ('openvla_simplerenv', 'widowx_spoon_on_towel')
+    2 ('openvla_simplerenv_fractal', 'google_robot_open_drawer')
+    2 ('openvla_simplerenv_fractal', 'google_robot_pick_coke_can')
+    2 ('spatialvla_simplerenv_bridge', 'widowx_carrot_on_plate')
+    1 ('spatialvla_simplerenv_fractal', 'google_robot_close_drawer')
+    1 ('spatialvla_simplerenv_fractal', 'google_robot_open_drawer')
+    1 ('univla_simplerenv_bridge', 'widowx_spoon_on_towel')
+
+==========================================================================================
+## C. truncation recomputed as steps==per-task cap (failures only): per backbone x config share of failures at cap; and share of all episodes at cap
+
+share of FAILURES with steps==cap
+| backbone | ar2 | ar4 | dp1 | dp2 | dp4 | fov_keep20 | fov_keep50 | gr_aggressive | gr_moderate | gr_strict | original | tf_conservative_adaptive | tf_motion_entropy | tf_task_aware |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| cogact_base_simplerenv_bridge | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| cogact_base_simplerenv_fractal | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| cronusvla_simplerenv_bridge | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| cronusvla_simplerenv_fractal | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| minivla_simplerenv | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| openvla_libero | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| openvla_simplerenv | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| openvla_simplerenv_fractal | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| smolvla_libero | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| spatialvla_simplerenv_bridge | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| spatialvla_simplerenv_fractal | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| univla_libero | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| univla_simplerenv_bridge | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.22 |
+
+share of ALL EPISODES with steps==cap (step-cap hit rate)
+| backbone | ar2 | ar4 | dp1 | dp2 | dp4 | fov_keep20 | fov_keep50 | gr_aggressive | gr_moderate | gr_strict | original | tf_conservative_adaptive | tf_motion_entropy | tf_task_aware |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| cogact_base_simplerenv_bridge | 0.89 | 0.95 | 0.43 | 0.41 | 0.47 | 0.47 | 0.47 | 0.47 | 0.51 | 0.48 | 0.50 | 0.48 | 0.42 | 0.42 |
+| cogact_base_simplerenv_fractal | 0.34 | 0.52 | 0.35 | 0.34 | 0.33 | 0.35 | 0.33 | 0.33 | 0.33 | 0.34 | 0.34 | 0.35 | 0.35 | 0.35 |
+| cronusvla_simplerenv_bridge | 0.96 | 1.00 | 0.65 | 0.65 | 0.71 | 0.64 | 0.66 | 0.64 | 0.64 | 0.64 | 0.67 | 0.67 | 0.67 | 0.67 |
+| cronusvla_simplerenv_fractal | 0.47 | 0.84 | 0.44 | 0.48 | 0.49 | 0.47 | 0.44 | 0.44 | 0.47 | 0.47 | 0.47 | 0.44 | 0.44 | 0.44 |
+| minivla_simplerenv | 0.70 | 0.71 | 0.81 | 1.00 | 1.00 | 0.72 | 0.66 | 0.67 | 0.64 | 0.61 | 0.64 | 0.61 | 0.61 | 0.65 |
+| openvla_libero | 0.33 | 0.51 | 0.32 | 0.40 | 0.55 | 0.44 | 0.28 | 0.29 | 0.31 | 0.28 | 0.26 | 0.21 | 0.28 | 0.29 |
+| openvla_simplerenv | 0.73 | 0.85 | 0.56 | 0.53 | 0.62 | 0.78 | 0.70 | 0.59 | 0.58 | 0.55 | 0.56 | 0.52 | 0.59 | 0.51 |
+| openvla_simplerenv_fractal | 0.60 | 0.64 | 0.62 | 0.59 | 0.63 | 0.92 | 0.76 | 0.65 | 0.64 | 0.64 | 0.64 | 0.64 | 0.58 | 0.58 |
+| smolvla_libero | 0.36 | 0.54 | 0.48 | 0.67 | 0.82 | 0.47 | 0.39 | 0.27 | 0.30 | 0.29 | 0.27 | 0.28 | 0.27 | 0.29 |
+| spatialvla_simplerenv_bridge | 0.59 | 0.71 | 0.61 | 0.72 | 0.86 | 0.51 | 0.56 | 0.55 | 0.55 | 0.55 | 0.55 | 0.55 | 0.54 | 0.56 |
+| spatialvla_simplerenv_fractal | 0.41 | 0.70 | 0.46 | 0.44 | 0.57 | 0.45 | 0.43 | 0.41 | 0.40 | 0.41 | 0.41 | 0.41 | 0.42 | 0.40 |
+| univla_libero | 0.73 | 0.99 | 0.06 | 0.09 | 0.11 | 0.09 | 0.04 | 0.08 | 0.07 | 0.07 | 0.08 | 0.08 | 0.08 | 0.08 |
+| univla_simplerenv_bridge | 0.88 | 0.97 | 0.18 | 0.18 | 0.18 | 0.21 | 0.28 | 0.14 | 0.12 | 0.12 | 0.12 | 0.12 | 0.18 | 0.12 |
+
+runs where every failure has steps==cap: 181 of 182
+per backbone count of such runs: Counter({'cogact_base_simplerenv_bridge': 14, 'cogact_base_simplerenv_fractal': 14, 'cronusvla_simplerenv_bridge': 14, 'cronusvla_simplerenv_fractal': 14, 'minivla_simplerenv': 14, 'openvla_libero': 14, 'openvla_simplerenv': 14, 'openvla_simplerenv_fractal': 14, 'smolvla_libero': 14, 'spatialvla_simplerenv_bridge': 14, 'spatialvla_simplerenv_fractal': 14, 'univla_libero': 14, 'univla_simplerenv_bridge': 13})
+runs where NO failure is at cap: []
+
+failure steps when NOT at cap (per backbone): n, min, median, max
+    cogact_base_simplerenv_bridge 0
+    cogact_base_simplerenv_fractal 0
+    cronusvla_simplerenv_bridge 0
+    cronusvla_simplerenv_fractal 0
+    minivla_simplerenv 0
+    openvla_libero 0
+    openvla_simplerenv 0
+    openvla_simplerenv_fractal 0
+    smolvla_libero 0
+    spatialvla_simplerenv_bridge 0
+    spatialvla_simplerenv_fractal 0
+    univla_libero 0
+    univla_simplerenv_bridge 81 5 5 55
+
+==========================================================================================
+## D. OOM errors anatomy (univla_simplerenv_bridge temporal_fusion_task_aware)
+
+by task: Counter({'widowx_put_eggplant_in_basket': 42, 'widowx_stack_cube': 39})
+episode_index of errors by task: {'widowx_put_eggplant_in_basket': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 43, 44, 46, 47], 'widowx_stack_cube': [1, 2, 4, 6, 7, 8, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25, 26, 28, 30, 31, 32, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49]}
+steps_executed: Counter({5: 63, 25: 8, 20: 6, 15: 2, 55: 2})
+policy_calls: Counter({1: 63, 5: 8, 4: 6, 3: 2, 11: 2})
+success: Counter({False: 81}) truncated: Counter({False: 81})
+elapsed_ms median: 1285.468027985189
+ql_median present: 81 sample: [834.9, 723.6, 741.5, 723.4, 743.6]
+task_aware success excluding errored episodes: 96/119 = 80.7%
+   widowx_carrot_on_plate           non-error eps 50: task_aware 36 succ (72%) vs original same eps 42 succ (84%)
+   widowx_put_eggplant_in_basket    non-error eps 8: task_aware 8 succ (100%) vs original same eps 7 succ (88%)
+   widowx_spoon_on_towel            non-error eps 50: task_aware 44 succ (88%) vs original same eps 44 succ (88%)
+   widowx_stack_cube                non-error eps 11: task_aware 8 succ (73%) vs original same eps 9 succ (82%)
+traceback tail sample: ch, and 4.82 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables) | 
+
+==========================================================================================
+## E. univla chunking: steps/policy_calls in original and other configs
+
+      chunk=10 fits 1.00
+   univla_libero original steps/pc median 9.74 min 8.88 max 10.00; top (steps,pc,reuses): [((520, 52, 0), 14), ((90, 9, 0), 10), ((117, 12, 0), 9), ((300, 30, 0), 8)]
+      chunk=10 fits 0.98
+   univla_libero guarded_reuse_aggressive steps/pc median 9.75 min 8.88 max 10.83; top (steps,pc,reuses): [((520, 52, 0), 10), ((90, 9, 0), 10), ((117, 12, 0), 9), ((300, 30, 0), 8)]
+      chunk=20 fits 1.00
+   univla_libero action_repeat2 steps/pc median 20.00 min 17.00 max 20.00; top (steps,pc,reuses): [((280, 14, 140), 79), ((520, 26, 260), 73), ((220, 11, 110), 73), ((300, 15, 150), 66)]
+      chunk=40 fits 1.00
+   univla_libero action_repeat4 steps/pc median 37.50 min 36.67 max 40.00; top (steps,pc,reuses): [((300, 8, 240), 100), ((220, 6, 180), 100), ((520, 13, 390), 99), ((280, 7, 210), 99)]
+      chunk=10 fits 1.00
+   univla_libero depth_pruning4 steps/pc median 9.78 min 8.88 max 10.00; top (steps,pc,reuses): [((300, 30, 0), 16), ((520, 52, 0), 14), ((280, 28, 0), 9), ((80, 8, 0), 7)]
+      chunk=5 fits 1.00
+   univla_simplerenv_bridge original steps/pc median 4.75 min 4.20 max 5.00; top (steps,pc,reuses): [((60, 12, 0), 24), ((27, 6, 0), 18), ((22, 5, 0), 16), ((20, 4, 0), 16)]
+      chunk=5 fits 0.99
+   univla_simplerenv_bridge guarded_reuse_aggressive steps/pc median 4.75 min 4.20 max 6.00; top (steps,pc,reuses): [((60, 12, 0), 25), ((27, 6, 0), 18), ((20, 4, 0), 16), ((26, 6, 0), 15)]
+      chunk=10 fits 1.00
+   univla_simplerenv_bridge action_repeat2 steps/pc median 10.00 min 8.20 max 10.00; top (steps,pc,reuses): [((60, 6, 30), 128), ((120, 12, 60), 47), ((44, 5, 25), 4), ((33, 4, 20), 3)]
+      chunk=20 fits 1.00
+   univla_simplerenv_bridge action_repeat4 steps/pc median 20.00 min 16.00 max 20.00; top (steps,pc,reuses): [((60, 3, 45), 145), ((120, 6, 90), 49), ((51, 3, 45), 2), ((64, 4, 60), 1)]
+      chunk=5 fits 1.00
+   univla_simplerenv_bridge depth_pruning4 steps/pc median 4.80 min 4.20 max 5.00; top (steps,pc,reuses): [((60, 12, 0), 36), ((27, 6, 0), 18), ((25, 5, 0), 16), ((20, 4, 0), 14)]
+
+==========================================================================================
+## F. smolvla latency by schema/GPU per config
+
+| config | gpu | n | median ql_median |
+|---|---|---|---|
+| action_repeat2 | S3-no-gpu-field | 400 | 276.8 |
+| action_repeat4 | S3-no-gpu-field | 400 | 273.6 |
+| depth_pruning1 | S3-no-gpu-field | 400 | 277.6 |
+| depth_pruning2 | NVIDIA GeForce RTX 5090 | 33 | 244.8 |
+| depth_pruning2 | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | 10 | 243.0 |
+| depth_pruning2 | S3-no-gpu-field | 357 | 277.9 |
+| depth_pruning4 | NVIDIA GeForce RTX 5090 | 186 | 229.0 |
+| depth_pruning4 | NVIDIA L40S | 18 | 164.9 |
+| depth_pruning4 | NVIDIA RTX 6000 Ada Generation | 46 | 250.0 |
+| depth_pruning4 | NVIDIA RTX A6000 | 12 | 405.7 |
+| depth_pruning4 | S3-no-gpu-field | 138 | 273.3 |
+| fixed_foveation_keep20 | S3-no-gpu-field | 400 | 277.6 |
+| fixed_foveation_keep50 | S3-no-gpu-field | 400 | 278.2 |
+| guarded_reuse_aggressive | NVIDIA GeForce RTX 5090 | 280 | 261.6 |
+| guarded_reuse_aggressive | NVIDIA L40S | 30 | 188.0 |
+| guarded_reuse_aggressive | NVIDIA RTX 6000 Ada Generation | 50 | 283.0 |
+| guarded_reuse_aggressive | NVIDIA RTX A6000 | 20 | 462.9 |
+| guarded_reuse_aggressive | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | 20 | 259.2 |
+| guarded_reuse_moderate | NVIDIA GeForce RTX 5090 | 320 | 261.5 |
+| guarded_reuse_moderate | NVIDIA L40S | 20 | 184.0 |
+| guarded_reuse_moderate | NVIDIA RTX 6000 Ada Generation | 30 | 281.0 |
+| guarded_reuse_moderate | NVIDIA RTX A6000 | 10 | 484.4 |
+| guarded_reuse_moderate | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | 20 | 256.9 |
+| guarded_reuse_strict | NVIDIA GeForce RTX 5090 | 222 | 261.1 |
+| guarded_reuse_strict | NVIDIA L40S | 19 | 188.1 |
+| guarded_reuse_strict | NVIDIA RTX 6000 Ada Generation | 65 | 283.1 |
+| guarded_reuse_strict | NVIDIA RTX A6000 | 24 | 466.4 |
+| guarded_reuse_strict | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | 70 | 258.6 |
+| original | S3-no-gpu-field | 400 | 275.1 |
+| temporal_fusion_conservative_adaptive | NVIDIA GeForce RTX 5090 | 297 | 263.0 |
+| temporal_fusion_conservative_adaptive | NVIDIA L40S | 20 | 186.9 |
+| temporal_fusion_conservative_adaptive | NVIDIA RTX 6000 Ada Generation | 53 | 285.2 |
+| temporal_fusion_conservative_adaptive | NVIDIA RTX A6000 | 20 | 477.3 |
+| temporal_fusion_conservative_adaptive | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | 10 | 262.4 |
+| temporal_fusion_motion_entropy | NVIDIA GeForce RTX 5090 | 299 | 262.5 |
+| temporal_fusion_motion_entropy | NVIDIA RTX 6000 Ada Generation | 61 | 285.9 |
+| temporal_fusion_motion_entropy | NVIDIA RTX A6000 | 20 | 472.8 |
+| temporal_fusion_motion_entropy | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | 20 | 261.0 |
+| temporal_fusion_task_aware | NVIDIA GeForce RTX 5090 | 301 | 263.2 |
+| temporal_fusion_task_aware | NVIDIA L40S | 29 | 189.5 |
+| temporal_fusion_task_aware | NVIDIA RTX 6000 Ada Generation | 40 | 284.1 |
+| temporal_fusion_task_aware | NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition | 30 | 260.2 |
+smolvla success by (config, gpu):
+   action_repeat2 S3-no-gpu-field n=400 succ=0.64
+   action_repeat4 S3-no-gpu-field n=400 succ=0.46
+   depth_pruning1 S3-no-gpu-field n=400 succ=0.52
+   depth_pruning2 NVIDIA GeForce RTX 5090 n=33 succ=0.36
+   depth_pruning2 NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition n=10 succ=0.00
+   depth_pruning2 S3-no-gpu-field n=357 succ=0.34
+   depth_pruning4 NVIDIA GeForce RTX 5090 n=186 succ=0.11
+   depth_pruning4 NVIDIA L40S n=18 succ=0.00
+   depth_pruning4 NVIDIA RTX 6000 Ada Generation n=46 succ=0.35
+   depth_pruning4 NVIDIA RTX A6000 n=12 succ=0.42
+   depth_pruning4 S3-no-gpu-field n=138 succ=0.21
+   fixed_foveation_keep20 S3-no-gpu-field n=400 succ=0.54
+   fixed_foveation_keep50 S3-no-gpu-field n=400 succ=0.61
+   guarded_reuse_aggressive NVIDIA GeForce RTX 5090 n=280 succ=0.74
+   guarded_reuse_aggressive NVIDIA L40S n=30 succ=0.73
+   guarded_reuse_aggressive NVIDIA RTX 6000 Ada Generation n=50 succ=0.70
+   guarded_reuse_aggressive NVIDIA RTX A6000 n=20 succ=0.80
+   guarded_reuse_aggressive NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition n=20 succ=0.65
+   guarded_reuse_moderate NVIDIA GeForce RTX 5090 n=320 succ=0.69
+   guarded_reuse_moderate NVIDIA L40S n=20 succ=0.60
+   guarded_reuse_moderate NVIDIA RTX 6000 Ada Generation n=30 succ=0.63
+   guarded_reuse_moderate NVIDIA RTX A6000 n=10 succ=1.00
+   guarded_reuse_moderate NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition n=20 succ=0.85
+   guarded_reuse_strict NVIDIA GeForce RTX 5090 n=222 succ=0.66
+   guarded_reuse_strict NVIDIA L40S n=19 succ=0.84
+   guarded_reuse_strict NVIDIA RTX 6000 Ada Generation n=65 succ=0.78
+   guarded_reuse_strict NVIDIA RTX A6000 n=24 succ=0.88
+   guarded_reuse_strict NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition n=70 succ=0.73
+   original S3-no-gpu-field n=400 succ=0.73
+   temporal_fusion_conservative_adaptive NVIDIA GeForce RTX 5090 n=297 succ=0.73
+   temporal_fusion_conservative_adaptive NVIDIA L40S n=20 succ=0.65
+   temporal_fusion_conservative_adaptive NVIDIA RTX 6000 Ada Generation n=53 succ=0.58
+   temporal_fusion_conservative_adaptive NVIDIA RTX A6000 n=20 succ=0.95
+   temporal_fusion_conservative_adaptive NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition n=10 succ=0.90
+   temporal_fusion_motion_entropy NVIDIA GeForce RTX 5090 n=299 succ=0.71
+   temporal_fusion_motion_entropy NVIDIA RTX 6000 Ada Generation n=61 succ=0.74
+   temporal_fusion_motion_entropy NVIDIA RTX A6000 n=20 succ=1.00
+   temporal_fusion_motion_entropy NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition n=20 succ=0.65
+   temporal_fusion_task_aware NVIDIA GeForce RTX 5090 n=301 succ=0.70
+   temporal_fusion_task_aware NVIDIA L40S n=29 succ=0.76
+   temporal_fusion_task_aware NVIDIA RTX 6000 Ada Generation n=40 succ=0.80
+   temporal_fusion_task_aware NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition n=30 succ=0.70
+selected_depth_layers by config: Counter({('guarded_reuse_aggressive', '[]'): 400, ('guarded_reuse_moderate', '[]'): 400, ('guarded_reuse_strict', '[]'): 400, ('temporal_fusion_conservative_adaptive', '[]'): 400, ('temporal_fusion_motion_entropy', '[]'): 400, ('temporal_fusion_task_aware', '[]'): 400, ('depth_pruning4', '[24, 26, 28, 30]'): 262, ('depth_pruning2', '[28, 30]'): 43})
+
+==========================================================================================
+## G. benchmark_episode_id vs episode_index
+
+bench_id == episode_index: 14700 of 14700
+bench_id range per backbone: {'spatialvla_simplerenv_fractal': (0, 49), 'spatialvla_simplerenv_bridge': (0, 49), 'univla_simplerenv_bridge': (0, 49), 'univla_libero': (0, 9)}
+examples where differ: []
+
+==========================================================================================
+## H. openvla_libero temporal_fusion_conservative_adaptive missing suite; like-for-like comparison on 3 suites
+
+   original on goal/object/spatial: 240/300 = 80.0%
+   temporal_fusion_conservative_adaptive on goal/object/spatial: 238/300 = 79.3%
+   temporal_fusion_motion_entropy on goal/object/spatial: 242/300 = 80.7%
+   temporal_fusion_task_aware on goal/object/spatial: 236/300 = 78.7%
+
+==========================================================================================
+## I. per-episode elapsed vs cap check; action_repeat wallclock speedup per step (elapsed/step ratio config/original)
+
+   cogact_base_simplerenv_bridge    per-step time ratio ar2/orig=0.64 (ideal 0.50) ar4/orig=0.46 (ideal 0.25)
+   cogact_base_simplerenv_fractal   per-step time ratio ar2/orig=0.72 (ideal 0.50) ar4/orig=0.59 (ideal 0.25)
+   cronusvla_simplerenv_bridge      per-step time ratio ar2/orig=0.64 (ideal 0.50) ar4/orig=0.47 (ideal 0.25)
+   cronusvla_simplerenv_fractal     per-step time ratio ar2/orig=0.73 (ideal 0.50) ar4/orig=0.59 (ideal 0.25)
+   minivla_simplerenv               per-step time ratio ar2/orig=0.67 (ideal 0.50) ar4/orig=0.50 (ideal 0.25)
+   openvla_libero                   per-step time ratio ar2/orig=0.54 (ideal 0.50) ar4/orig=0.31 (ideal 0.25)
+   openvla_simplerenv               per-step time ratio ar2/orig=0.62 (ideal 0.50) ar4/orig=0.42 (ideal 0.25)
+   openvla_simplerenv_fractal       per-step time ratio ar2/orig=0.67 (ideal 0.50) ar4/orig=0.50 (ideal 0.25)
+   smolvla_libero                   per-step time ratio ar2/orig=0.53 (ideal 0.50) ar4/orig=0.28 (ideal 0.25)
+   spatialvla_simplerenv_bridge     per-step time ratio ar2/orig=0.55 (ideal 0.50) ar4/orig=0.32 (ideal 0.25)
+   spatialvla_simplerenv_fractal    per-step time ratio ar2/orig=0.58 (ideal 0.50) ar4/orig=0.37 (ideal 0.25)
+   univla_libero                    per-step time ratio ar2/orig=0.61 (ideal 0.50) ar4/orig=0.41 (ideal 0.25)
+   univla_simplerenv_bridge         per-step time ratio ar2/orig=0.59 (ideal 0.50) ar4/orig=0.39 (ideal 0.25)
+
+==========================================================================================
+## J. per-task success for ALL collapse configs at fine-task level: count of fine tasks at 0% under config where original >= 50%
+
+   univla_libero action_repeat2: 7 fine tasks at 0% (orig>=50%): ['libero_10__task_0', 'libero_10__task_4', 'libero_10__task_8', 'libero_goal__task_3', 'libero_goal__task_8', 'libero_spatial__task_0', 'libero_spatial__task_3']
+   univla_libero action_repeat4: 38 fine tasks at 0% (orig>=50%): ['libero_10__task_0', 'libero_10__task_1', 'libero_10__task_2', 'libero_10__task_3', 'libero_10__task_4', 'libero_10__task_6', 'libero_10__task_7', 'libero_10__task_8', 'libero_10__task_9', 'libero_goal__task_0', 'libero_goal__task_1', 'libero_goal__task_2']
+   univla_libero depth_pruning4: 0 fine tasks at 0% (orig>=50%): []
+   univla_libero fixed_foveation_keep20: 0 fine tasks at 0% (orig>=50%): []
+   openvla_libero action_repeat2: 0 fine tasks at 0% (orig>=50%): []
+   openvla_libero action_repeat4: 0 fine tasks at 0% (orig>=50%): []
+   openvla_libero depth_pruning4: 1 fine tasks at 0% (orig>=50%): ['libero_goal__task_0']
+   openvla_libero fixed_foveation_keep20: 1 fine tasks at 0% (orig>=50%): ['libero_spatial__task_9']
+   smolvla_libero action_repeat2: 0 fine tasks at 0% (orig>=50%): []
+   smolvla_libero action_repeat4: 0 fine tasks at 0% (orig>=50%): []
+   smolvla_libero depth_pruning4: 18 fine tasks at 0% (orig>=50%): ['libero_10__task_1', 'libero_10__task_2', 'libero_10__task_3', 'libero_10__task_5', 'libero_10__task_6', 'libero_10__task_9', 'libero_goal__task_0', 'libero_goal__task_2', 'libero_goal__task_3', 'libero_goal__task_8', 'libero_goal__task_9', 'libero_object__task_0']
+   smolvla_libero fixed_foveation_keep20: 1 fine tasks at 0% (orig>=50%): ['libero_10__task_2']

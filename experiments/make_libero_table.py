@@ -22,8 +22,8 @@ ones the original works report (mentor, 2026-09-11): UniVLA 8.5B, OpenVLA 7B,
 SmolVLA 0.45B (450M).
 
 Known gap: openvla_libero temporal_fusion_conservative_adaptive has no
-libero_10 (Long) run, so the OpenVLA Long fusion row is whichever of the
-other two fusion settings summary.csv selected.
+libero_10 (Long) run, so the OpenVLA Long fusion row is selected by the same
+rule from the two remaining settings (motion_entropy 49 %, task_aware 48 %).
 """
 import csv
 import os

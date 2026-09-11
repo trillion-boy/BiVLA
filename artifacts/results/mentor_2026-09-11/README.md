@@ -28,5 +28,15 @@ episode_index (CronusVLA records no seed). Exception:
 openvla_libero/temporal_fusion_conservative_adaptive lacks the libero_10
 suite (300 episodes instead of 400).
 
+Full audit of every file (2026-09-11): experiments/paper/DataAudit_2026-09-11.md,
+scripts and lens reports in experiments/data_audit_2026-09-11/. Two points to
+know before using the CSVs: the summary.csv files do not all follow the
+mentor's selection rule (simpler_widowx picks CronusVLA depth_pruning1 at
+35.5 % over depth_pruning2 at 36.0 %; libero breaks eight ties by lower cycle
+latency instead of fewer steps), so the table generators select from the
+per-backbone CSVs instead; and univla_simplerenv_bridge/temporal_fusion_task_aware
+has 81 episodes that crashed with CUDA out of memory and are counted as
+failures (48.0 % in the CSV).
+
 Paths inside `summary.json` are the mentor's machine paths and are kept as
 received.
