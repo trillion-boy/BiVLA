@@ -1,0 +1,122 @@
+{
+  "status": "completed",
+  "model_name": "openvla_simplerenv",
+  "config_name": "depth_pruning1",
+  "condition": "depth_pruning",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint_size_bytes": 15082600824,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "bridge_orig",
+    "task_suite": "simpler_widowx",
+    "image_resolution": 224,
+    "center_crop": false
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_spoon_on_towel"
+  ],
+  "episodes": 50,
+  "successes": 22,
+  "success_rate": 0.44,
+  "average_steps": 47.04,
+  "average_policy_calls": 47.04,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 154.8840688856296,
+    "median_ms": 154.78515099994183,
+    "p95_ms": 155.85164289991553
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 162.7055467772108,
+    "median_ms": 162.6120045002608,
+    "p95_ms": 163.72025549992486
+  },
+  "average_episode_ms": 9508.976023799969,
+  "average_control_frequency_hz": 4.946904890943443,
+  "per_task": {
+    "widowx_spoon_on_towel": {
+      "episodes": 50,
+      "successes": 22,
+      "success_rate": 0.44,
+      "average_steps": 47.04,
+      "average_policy_calls": 47.04,
+      "average_episode_ms": 9508.976023799969
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.04706062376499176,
+      0.04410010576248169,
+      0.010407090187072754,
+      0.009134456515312195,
+      0.014608994126319885,
+      0.01307755708694458,
+      0.017886698246002197,
+      0.030825212597846985,
+      0.036108821630477905,
+      0.03877384960651398,
+      0.05048614740371704,
+      0.05048088729381561,
+      0.034164369106292725,
+      0.029001832008361816,
+      0.036721810698509216,
+      0.03480468690395355,
+      0.03324301540851593,
+      0.020966708660125732,
+      0.028324052691459656,
+      0.025085359811782837,
+      0.021156862378120422,
+      0.02452331781387329,
+      0.02790789306163788,
+      0.016795828938484192,
+      0.022814735770225525,
+      0.020068049430847168,
+      0.021667838096618652,
+      0.021068692207336426,
+      0.023721471428871155,
+      0.03629422187805176,
+      0.04656541347503662,
+      0.08935360610485077
+    ],
+    "selected_layers": [
+      23
+    ]
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "condition": "depth_pruning",
+    "tasks": "widowx_spoon_on_towel",
+    "model_name": "openvla_simplerenv",
+    "config_name": "depth_pruning1",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/openvla_simplerenv/depth_pruning1/widowx_spoon_on_towel",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from SimplerEnv rollouts. Compare paired seeds across conditions; synthetic action agreement is not used."
+}

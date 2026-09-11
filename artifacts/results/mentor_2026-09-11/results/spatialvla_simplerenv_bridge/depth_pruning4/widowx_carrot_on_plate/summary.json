@@ -1,0 +1,122 @@
+{
+  "status": "completed",
+  "model_name": "spatialvla_4b_simplerenv_bridge",
+  "config_name": "depth_pruning4",
+  "condition": "depth_pruning",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/SpatialVLA/weights/spatialvla-4b-224-sft-bridge",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/SpatialVLA/weights/spatialvla-4b-224-sft-bridge",
+    "checkpoint_size_bytes": 8055902750,
+    "model_id": "IPEC-COMMUNITY/spatialvla-4b-224-sft-bridge",
+    "base_vlm": "PaLiGemma2-3B",
+    "action_statistics_key": "bridge_orig/1.0.0",
+    "task_suite": "simpler_widowx",
+    "native_action_chunk_size": 4,
+    "action_ensemble_temperature": -0.8,
+    "attention_backend": "native_mixed (SDPA where supported; ZoeDepth compatible)"
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_carrot_on_plate"
+  ],
+  "episodes": 50,
+  "successes": 13,
+  "success_rate": 0.26,
+  "average_steps": 55.66,
+  "average_policy_calls": 55.66,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 332.79854390082454,
+    "median_ms": 332.685059999676,
+    "p95_ms": 335.6224633000238
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 370.82631964104297,
+    "median_ms": 370.5104600003324,
+    "p95_ms": 375.34860640025727
+  },
+  "average_episode_ms": 20640.298414200024,
+  "average_control_frequency_hz": 2.6966802166793133,
+  "per_task": {
+    "widowx_carrot_on_plate": {
+      "episodes": 50,
+      "successes": 13,
+      "success_rate": 0.26,
+      "average_steps": 55.66,
+      "average_policy_calls": 55.66,
+      "average_episode_ms": 20640.298414200024
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.39185748994350433,
+      0.1568472981452942,
+      0.19456961750984192,
+      0.07779504358768463,
+      0.0906745195388794,
+      0.03709724545478821,
+      0.08948968350887299,
+      0.044187963008880615,
+      0.0321531742811203,
+      0.03316996991634369,
+      0.034301742911338806,
+      0.04464989900588989,
+      0.06779170036315918,
+      0.05844709277153015,
+      0.1037725955247879,
+      0.08394114673137665,
+      0.09942764043807983,
+      0.10863730311393738,
+      0.10523734986782074,
+      0.09895738959312439,
+      0.08916094899177551,
+      0.07238945364952087,
+      0.07477869093418121,
+      0.06587909162044525,
+      0.07559630274772644,
+      0.20287753641605377
+    ],
+    "selected_layers": [
+      8,
+      10,
+      13,
+      23
+    ]
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "representation": "SpatialVLA 16x16 projected visual tokens before Gemma decoding"
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/SpatialVLA/weights/spatialvla-4b-224-sft-bridge",
+    "condition": "depth_pruning",
+    "tasks": "widowx_carrot_on_plate",
+    "model_name": "spatialvla_4b_simplerenv_bridge",
+    "config_name": "depth_pruning4",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/spatialvla_simplerenv_bridge/depth_pruning4/widowx_carrot_on_plate",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "attn_backend": "sdpa",
+    "action_repeat": 2,
+    "depth_layers": 4,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Paired SimplerEnv WidowX task success and timing. SpatialVLA's released Bridge image-history and action-ensembling semantics are retained; synthetic action agreement is not used."
+}

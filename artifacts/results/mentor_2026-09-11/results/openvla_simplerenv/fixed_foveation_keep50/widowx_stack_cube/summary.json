@@ -1,0 +1,87 @@
+{
+  "status": "completed",
+  "model_name": "openvla_simplerenv",
+  "config_name": "fixed_foveation_keep50",
+  "condition": "fixed_foveation",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint_size_bytes": 15082600824,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "bridge_orig",
+    "task_suite": "simpler_widowx",
+    "image_resolution": 224,
+    "center_crop": false
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_stack_cube"
+  ],
+  "episodes": 50,
+  "successes": 7,
+  "success_rate": 0.14,
+  "average_steps": 55.6,
+  "average_policy_calls": 55.6,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 156.91277429280518,
+    "median_ms": 156.34620149967304,
+    "p95_ms": 159.4160228002238
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 171.20849070251637,
+    "median_ms": 170.5884705002063,
+    "p95_ms": 174.5139715000732
+  },
+  "average_episode_ms": 11767.691524580026,
+  "average_control_frequency_hz": 4.7248009419574135,
+  "per_task": {
+    "widowx_stack_cube": {
+      "episodes": 50,
+      "successes": 7,
+      "success_rate": 0.14,
+      "average_steps": 55.6,
+      "average_policy_calls": 55.6,
+      "average_episode_ms": 11767.691524580026
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "condition": "fixed_foveation",
+    "tasks": "widowx_stack_cube",
+    "model_name": "openvla_simplerenv",
+    "config_name": "fixed_foveation_keep50",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/openvla_simplerenv/fixed_foveation_keep50/widowx_stack_cube",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.5,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from SimplerEnv rollouts. Compare paired seeds across conditions; synthetic action agreement is not used."
+}

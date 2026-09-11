@@ -1,0 +1,124 @@
+{
+  "status": "completed",
+  "model_name": "openvla_simplerenv_fractal",
+  "config_name": "depth_pruning2",
+  "condition": "depth_pruning",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint_size_bytes": 15082600824,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "fractal20220817_data",
+    "task_suite": "simpler_google_robot_fractal",
+    "image_resolution": 224,
+    "center_crop": false,
+    "policy_setup": "google_robot"
+  },
+  "task_suite_name": "simpler_google_robot_fractal",
+  "tasks": [
+    "google_robot_open_drawer"
+  ],
+  "episodes": 50,
+  "successes": 13,
+  "success_rate": 0.26,
+  "average_steps": 74.08,
+  "average_policy_calls": 74.08,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 150.24942318032865,
+    "median_ms": 149.99023056589067,
+    "p95_ms": 151.4778723998461
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 157.8871493255941,
+    "median_ms": 157.62804448604584,
+    "p95_ms": 159.1733302513603
+  },
+  "average_episode_ms": 17517.702908746433,
+  "average_control_frequency_hz": 4.228864959401299,
+  "per_task": {
+    "google_robot_open_drawer": {
+      "episodes": 50,
+      "successes": 13,
+      "success_rate": 0.26,
+      "average_steps": 74.08,
+      "average_policy_calls": 74.08,
+      "average_episode_ms": 17517.702908746433
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.0453218936920166,
+      0.04337875843048096,
+      0.00775294303894043,
+      0.009916722774505615,
+      0.013738977909088134,
+      0.016492629051208497,
+      0.020130014419555663,
+      0.02733215093612671,
+      0.0353218674659729,
+      0.04118257761001587,
+      0.05480334758758545,
+      0.04686185121536255,
+      0.03136063814163208,
+      0.030238139629364013,
+      0.03815300464630127,
+      0.03715777397155762,
+      0.03586817979812622,
+      0.02160975933074951,
+      0.026805424690246583,
+      0.023917746543884278,
+      0.02311338186264038,
+      0.02378641366958618,
+      0.029810070991516113,
+      0.016344618797302247,
+      0.021001529693603516,
+      0.019220447540283202,
+      0.020298862457275392,
+      0.021121764183044435,
+      0.02488284111022949,
+      0.03484675884246826,
+      0.040893948078155516,
+      0.09232417345046998
+    ],
+    "selected_layers": [
+      23,
+      25
+    ]
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "models/openvla-7b",
+    "condition": "depth_pruning",
+    "tasks": "google_robot_open_drawer",
+    "model_name": "openvla_simplerenv_fractal",
+    "config_name": "depth_pruning2",
+    "output_dir": "artifacts/results/openvla_simplerenv_fractal/depth_pruning2/google_robot_open_drawer",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 80,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 2,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Google Robot/Fractal SimplerEnv setup; report only completed paired rollouts."
+}

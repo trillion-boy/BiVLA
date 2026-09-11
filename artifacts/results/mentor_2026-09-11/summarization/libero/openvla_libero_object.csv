@@ -1,0 +1,15 @@
+model_name,environment,checkpoint_model_id,suite,configuration,tasks,episodes,successes,success_rate_pct,avg_steps,avg_policy_calls,avg_reuses,policy_median_latency_ms,policy_p95_latency_ms,cycle_median_latency_ms,cycle_p95_latency_ms,avg_episode_time_s,control_frequency_hz,action_repeat,depth_layers,selected_depth_layers,fusion_keyframe_interval,fusion_max_reuse_fraction,median_reusable_visual_tokens
+openvla_libero,libero,openvla-7b,libero_object,original,10,100,87,87,165.89,165.89,0.0,157.224,158.481,159.54,160.796,28.84,5.752,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,fixed_foveation_keep20,10,100,74,74,180.12,180.12,0.0,158.271,161.96,166.032,170.876,32.41,5.558,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,fixed_foveation_keep50,10,100,86,86,166.18,166.18,0.0,157.836,163.632,165.999,172.742,29.93,5.552,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,action_repeat2,10,100,84,84,173.96,87.22,86.74,156.752,157.97,157.482,159.914,16.31,10.668,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,action_repeat4,10,100,59,59,212.01,53.24,158.77,156.311,157.214,2.24,158.926,11.52,18.41,4,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,depth_pruning1,10,100,85,85,170.03,170.03,0.0,152.469,154.564,154.783,156.891,28.63,5.94,2,1,17,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,depth_pruning2,10,100,79,79,180.21,180.21,0.0,148.244,149.608,150.558,151.925,29.59,6.089,2,2,17;19,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,depth_pruning4,10,100,65,65,202.99,202.99,0.0,140.525,141.528,142.846,143.86,31.69,6.405,2,4,17;19;21;23,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,guarded_reuse_strict,10,100,85,85,165.41,159.32,6.09,158.617,160.227,161.312,163.139,28,5.907,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,guarded_reuse_moderate,10,100,80,80,171.23,161.72,9.51,156.667,158.742,159.636,161.731,28.09,6.096,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,guarded_reuse_aggressive,10,100,85,85,167.1,151.02,16.08,157.364,161.328,160.175,164.282,26.49,6.307,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_object,temporal_fusion_motion_entropy,10,100,83,83,167.01,167.01,0.0,156.282,158.95,159.26,161.637,28.78,5.804,2,1,N/A,3,0.5,128
+openvla_libero,libero,openvla-7b,libero_object,temporal_fusion_task_aware,10,100,86,86,165.91,165.91,0.0,169.888,171.197,172.901,174.284,30.8,5.387,2,1,N/A,3,0.5,65
+openvla_libero,libero,openvla-7b,libero_object,temporal_fusion_conservative_adaptive,10,100,82,82,171.76,171.76,0.0,157.861,162.153,160.548,164.929,29.94,5.736,2,1,N/A,2,0.25,64

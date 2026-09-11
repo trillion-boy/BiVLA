@@ -1,0 +1,102 @@
+{
+  "status": "completed",
+  "model_name": "cogact_base_simplerenv_bridge",
+  "config_name": "action_repeat2",
+  "condition": "action_repeat",
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_spoon_on_towel",
+    "widowx_carrot_on_plate",
+    "widowx_stack_cube",
+    "widowx_put_eggplant_in_basket"
+  ],
+  "episodes": 200,
+  "successes": 24,
+  "success_rate": 0.12,
+  "episode_errors": 0,
+  "average_steps": 70.605,
+  "average_policy_calls": 35.33,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 98.72788400061393,
+    "median_ms": 98.62983302446082,
+    "p95_ms": 99.44434923818335
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 183.8740745116212,
+    "median_ms": 179.66274803620763,
+    "p95_ms": 207.8106194967404
+  },
+  "average_episode_ms": 6496.346875198942,
+  "per_task": {
+    "widowx_spoon_on_towel": {
+      "episodes": 50,
+      "successes": 9,
+      "success_rate": 0.18,
+      "average_steps": 56.96,
+      "average_policy_calls": 28.52
+    },
+    "widowx_carrot_on_plate": {
+      "episodes": 50,
+      "successes": 7,
+      "success_rate": 0.14,
+      "average_steps": 57.24,
+      "average_policy_calls": 28.64
+    },
+    "widowx_stack_cube": {
+      "episodes": 50,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 60.0,
+      "average_policy_calls": 30.0
+    },
+    "widowx_put_eggplant_in_basket": {
+      "episodes": 50,
+      "successes": 8,
+      "success_rate": 0.16,
+      "average_steps": 108.22,
+      "average_policy_calls": 54.16
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "task_relevance_supported": false,
+    "representation": "CogACT projected visual tokens before Llama cognition-token generation"
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/CogACT/weights/CogACT-Base/checkpoints/CogACT-Base.pt",
+    "base_model_metadata": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/CogACT/weights/llama2-7b-base",
+    "condition": "action_repeat",
+    "config_name": "action_repeat2",
+    "tasks": "widowx_spoon_on_towel,widowx_carrot_on_plate,widowx_stack_cube,widowx_put_eggplant_in_basket",
+    "model_name": "cogact_base_simplerenv_bridge",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/cogact_base_simplerenv_bridge/action_repeat2",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1,
+    "cfg_scale": 1.5,
+    "num_ddim_steps": 10
+  },
+  "claim_scope": "Paired SimpleWidowX Bridge rollouts with CogACT-Base. The 14 controls are evaluated as runtime/task conditions; synthetic action agreement is not used as an accuracy result."
+}

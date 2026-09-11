@@ -1,0 +1,88 @@
+{
+  "status": "completed",
+  "model_name": "openvla_simplerenv_fractal",
+  "config_name": "guarded_reuse_aggressive",
+  "condition": "guarded_action_reuse",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint_size_bytes": 15082600824,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "fractal20220817_data",
+    "task_suite": "simpler_google_robot_fractal",
+    "image_resolution": 224,
+    "center_crop": false,
+    "policy_setup": "google_robot"
+  },
+  "task_suite_name": "simpler_google_robot_fractal",
+  "tasks": [
+    "google_robot_open_drawer"
+  ],
+  "episodes": 50,
+  "successes": 10,
+  "success_rate": 0.2,
+  "average_steps": 74.48,
+  "average_policy_calls": 65.98,
+  "average_reuses": 8.5,
+  "policy_query_latency_ms": {
+    "mean_ms": 161.74708512762297,
+    "median_ms": 161.74194193445146,
+    "p95_ms": 163.17020279821008
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 151.64343777421394,
+    "median_ms": 169.61797152180225,
+    "p95_ms": 171.58330521197058
+  },
+  "average_episode_ms": 17006.142942560837,
+  "average_control_frequency_hz": 4.379593906246714,
+  "per_task": {
+    "google_robot_open_drawer": {
+      "episodes": 50,
+      "successes": 10,
+      "success_rate": 0.2,
+      "average_steps": 74.48,
+      "average_policy_calls": 65.98,
+      "average_episode_ms": 17006.142942560837
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "models/openvla-7b",
+    "condition": "guarded_action_reuse",
+    "tasks": "google_robot_open_drawer",
+    "model_name": "openvla_simplerenv_fractal",
+    "config_name": "guarded_reuse_aggressive",
+    "output_dir": "artifacts/results/openvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_open_drawer",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 80,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.02,
+    "reuse_max_local_patch_mae": 0.05,
+    "reuse_min_action_cosine": 0.98,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 2
+  },
+  "claim_scope": "Google Robot/Fractal SimplerEnv setup; report only completed paired rollouts."
+}

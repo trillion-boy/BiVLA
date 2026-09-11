@@ -1,0 +1,129 @@
+{
+  "status": "completed",
+  "model_name": "univla_simplerenv_bridge",
+  "config_name": "depth_pruning2",
+  "condition": "depth_pruning",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K",
+    "checkpoint_size_bytes": 16984056920,
+    "vision_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/Emu3-VisionTokenizer",
+    "model_id": "Yuqi1997/UniVLA/UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K",
+    "base_vlm": "Emu3MoE",
+    "action_statistics_key": "bridge_robot",
+    "task_suite": "simpler_widowx",
+    "native_action_chunk_size": 5,
+    "attention_backend": "sdpa"
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_spoon_on_towel"
+  ],
+  "episodes": 50,
+  "successes": 38,
+  "success_rate": 0.76,
+  "average_steps": 31.78,
+  "average_policy_calls": 6.58,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 701.5760141535588,
+    "median_ms": 704.5584619627334,
+    "p95_ms": 764.5975194056517
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 896.5950201657929,
+    "median_ms": 906.6801680019125,
+    "p95_ms": 965.9039381891488
+  },
+  "average_episode_ms": 5899.608773743967,
+  "average_control_frequency_hz": 1.1153307541403543,
+  "per_task": {
+    "widowx_spoon_on_towel": {
+      "episodes": 50,
+      "successes": 38,
+      "success_rate": 0.76,
+      "average_steps": 31.78,
+      "average_policy_calls": 6.58,
+      "average_episode_ms": 5899.608773743967
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.9169129207730293,
+      0.011780709028244019,
+      0.004383876919746399,
+      0.005180835723876953,
+      0.005106315016746521,
+      0.015587016940116882,
+      0.027546629309654236,
+      0.03983038663864136,
+      0.05001169443130493,
+      0.07494522631168365,
+      0.09827487170696259,
+      0.08312574028968811,
+      0.058985888957977295,
+      0.04573534429073334,
+      0.03976412117481232,
+      0.03670795261859894,
+      0.03668707609176636,
+      0.03365088999271393,
+      0.022581562399864197,
+      0.020012691617012024,
+      0.012444734573364258,
+      0.011138662695884705,
+      0.01629328727722168,
+      0.02334555983543396,
+      0.017335250973701477,
+      0.008604854345321655,
+      0.0067880600690841675,
+      0.012948185205459595,
+      0.02995564043521881,
+      0.01790948212146759,
+      0.007157802581787109,
+      0.02529972791671753
+    ],
+    "selected_layers": [
+      26,
+      30
+    ]
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "representation": "Emu3 VQ-code fusion before UniVLA language-model input"
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K",
+    "vision_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/Emu3-VisionTokenizer",
+    "action_tokenizer": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/pretrain/fast_bridge_t5_s50",
+    "normalizer": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/configs/normalizer_bridge/norm_stats.json",
+    "condition": "depth_pruning",
+    "tasks": "widowx_spoon_on_towel",
+    "model_name": "univla_simplerenv_bridge",
+    "config_name": "depth_pruning2",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/univla_simplerenv_bridge/depth_pruning2/widowx_spoon_on_towel",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "attn_backend": "sdpa",
+    "action_repeat": 2,
+    "depth_layers": 2,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from paired SimplerEnv WidowX rollouts. UniVLA native five-action chunks are retained; synthetic action agreement is not used."
+}
