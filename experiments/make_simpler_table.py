@@ -40,9 +40,10 @@ CronusVLA depth pruning rows print "--": the mentor is rerunning those six
 settings (three budgets in two environments). Drop the pair from PENDING
 when the new CSVs land. UniVLA and MiniVLA have no Fractal checkpoint.
 
-Ties on success within a family (seven in the current CSVs) are broken the
-way the mentor's summary.csv breaks them; the rule is not documented and is
-on the mentor question list, as are the parameter counts printed here.
+Ties on success within a family (seven in the current CSVs) are broken by
+fewer average steps, the rule the mentor confirmed on 2026-09-11; the three-way
+ties are identical rows, so the choice does not matter there. Row labels stay
+generic (no setting name), also per the mentor.
 """
 import csv
 import os
@@ -63,13 +64,20 @@ ENVS = [
 
 # (display name, parameter count as printed in Overleaf, CSV substring), in
 # the row order of the Overleaf table.
+# Parameter counts as reported by the original works (the mentor's decision
+# of 2026-09-11; the earlier 1.5B / 1.4B came from counting the loaded model
+# including non-trainable parameters): OpenVLA "7B" (paper), CogACT-Base 7.6B
+# (paper), SpatialVLA 4B (paper and checkpoint name), CronusVLA-0.5B (paper and
+# checkpoint name), UniVLA 8.5B (Hardware.md, from the backbone paper), MiniVLA
+# "around 1B" (authors' blog). The caption must say "as reported by the
+# original works".
 BACKBONES = [
     ("CogACT", "7.6B", "cogact"),
-    ("OpenVLA", "7.5B", "openvla"),
-    ("SpatialVLA", "4.0B", "spatialvla"),
-    ("CronusVLA", "1.5B", "cronusvla"),
+    ("OpenVLA", "7B", "openvla"),
+    ("SpatialVLA", "4B", "spatialvla"),
+    ("CronusVLA", "0.5B", "cronusvla"),
     ("UniVLA", "8.5B", "univla"),
-    ("MiniVLA", "1.4B", "minivla"),
+    ("MiniVLA", "1B", "minivla"),
 ]
 
 FAMILIES = [
@@ -230,7 +238,7 @@ def main():
 %% ---------------------------------------------------------------------------
 \\begin{{table*}}[t]
 \\centering
-\\caption{{SimplerEnv results on WidowX and Google Robot/Fractal. Values in parentheses indicate the change relative to the original policy of the same model and environment.}}
+\\caption{{SimplerEnv results on WidowX and Google Robot/Fractal. Values in parentheses indicate the change relative to the original policy of the same model and environment. Parameter counts are as reported by the original works.}}
 \\label{{tab:simplerenv-results}}
 \\small
 \\setlength{{\\tabcolsep}}{{2.2pt}}
