@@ -23,6 +23,10 @@ path constants at the top to run elsewhere):
   Methods claims (depth selector, fusion keyframes, reuse cap, action repeat
   bookkeeping, foveation keep ratio) against the recorded fields (`report2.txt`).
 
+`file_manifest.csv`: every one of the 1,724 files in the zip (path, kind, bytes,
+sha256, parse result); the 301 lock files are all zero bytes and the 1,423
+data files are byte-identical to the committed copy.
+
 Lens reports: `lens_settings.md` (harness settings in `summary.json`),
 `lens_csv.md` (the CSVs), `lens_episodes.md` (per-task and per-episode
 structure), `lens_consistency.md` (three-way consistency and Methods claims).
