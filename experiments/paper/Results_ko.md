@@ -6,6 +6,25 @@
 `data_audit_2026-09-11/per_task_success.csv`에서 왔고, 세 번의 독립 검증(숫자
 재계산, 문체와 I～III절 용어 대조, 심사위원 관점 공격)을 거친 두 번째 판입니다.
 
+## 먼저 알아둘 말
+
+- **유의하다 / 유의하지 않다 (significant / not significant).** 실험이 잘됐다,
+  잘못됐다는 뜻이 아님. "이 변화가 우연으로 생길 수 있는 크기보다 큰가"에 대한
+  답임. 같은 에피소드를 dense 정책과 개입 정책으로 한 번씩 돌려서 실패→성공,
+  성공→실패로 뒤집힌 개수를 세고, 뒤집힘이 양쪽으로 비슷하게 나올 확률(p)을
+  구함. p < 0.05이면 "유의하다"(우연이라고 보기 어렵다), 아니면 "유의하지
+  않다"(우연 범위 안이다)로 부름. 문턱은 0.05이고 0.005가 아님. 그러니
+  "유의한 변화 없음"은 "이 개입은 이 백본에서 성공률을 바꾸지 않았다"는
+  결과이고, 그 자체가 논문의 발견 중 하나임(예: guarded reuse 전부).
+- **예산 (budget).** depth pruning에서 몇 개 층을 제거하는지. 예산 1, 2, 4는
+  각각 1층, 2층, 4층 제거. Methods III-C의 "The budget, how many layers are
+  removed, is the swept quantity"에서 온 말이고, depth pruning의 세 설정
+  (variation)을 가리킴. 표에는 세 예산 중 성공률이 가장 높은 것만 실림.
+- **k.** action repeat에서 한 행동을 몇 스텝 동안 반복하는지. k = 2, 4.
+- **keep 0.2 / 0.5.** foveation에서 선명하게 남기는 중앙 원반의 넓이 비율.
+- **preset.** guarded reuse의 문턱값 묶음 strict / moderate / aggressive.
+- **dense.** 아무 개입도 하지 않은 원래 정책. 표에서는 Original.
+
 ## 쓰기 전에 정한 원칙
 
 - 각주 없음. 예외는 전부 본문 문장으로 넣음.
