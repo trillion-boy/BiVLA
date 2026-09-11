@@ -1,86 +1,104 @@
 % ---------------------------------------------------------------------------
-% Setup and Protocol -- ICRA form. Draft 2, 2026-08-26.
+% Section IV-A Setup and Protocol. Draft of 2026-09-11 for the mentor, who
+% owns this section. Replaces the 2026-08 three-backbone draft. Every number
+% comes from the 2026-09-11 export (summary.json arguments, the CSVs) or from
+% the mentor's attention_backend.md; bracketed items are the mentor's to fill
+% (GPU per backbone, library versions, calibration frames). Style: no
+% em-dashes, no semicolons, no prose colons, no hedges, no footnotes.
 %
-% This section pays the Introduction's debts. Every quantity the Introduction
-% asserted and deferred is settled here with its record:
-%   6,910 episodes        -> the decomposition below (paper/EpisodeCounts.md)
-%   McNemar / alpha=0.05/38 -> "Pairing and significance" (verify_all.py)
-%   "check determinism"   -> "Determinism" (Report_EN.md sec 3.4)
-%   "four baselines above the published figures" -> "Baselines" (Report 3.8)
-%   backbone specs         -> Table II (make_backbone_table.py)
-%   the grid itself        -> Table I (make_grid_table.py)
-%
-% Numbers reproduced by experiments/verify_all.py. Style matches the
-% Introduction: no em-dashes, no semicolons, no prose colons.
-%
-% DRAFT 2 changes (Reviewer 2 pass, 2026-08-26):
-%  - dropped "each spends a different resource" and the fixed-patch-grid
-%    sentence, both verbatim echoes of Related Work.
-%  - dropped "a point we return to in the results" (foreshadowing).
-%  - "broken-setup objection" -> plain environment check.
-%  - CONTENT FIX. Draft 1 said the 11-of-96 UniVLA/Bridge baseline gap was a
-%    "different GPU model" effect and that we "rebuilt the column" to avoid a
-%    hardware boundary. Both are wrong. Report_EN.md 3.4.0 (primary): the two
-%    baselines were re-taken on a MATCHED card, differ by 3.1 points at
-%    p = 0.5488 (indistinguishable from chance), and the files record no GPU
-%    at all, so 3.1 points is a BOUND on an unprovable hardware/session
-%    confound, not a measured card effect. UniVLA always ran on an L4, so no
-%    column ever crossed a hardware boundary to be rebuilt around. The 3.1-pt
-%    bound belongs in Limitations (Hardware.md sec 8), not here; Setup states
-%    only the same-environment reproduction and the pairing rule.
-%
-% ⚠️ EXPANSION. The mentor is running five more backbones (TurboVLA, CoTinyVLA,
-% SmolVLA, FLOWER, MiniVLA) on LIBERO and SimplerEnv. When those land, the grid
-% shape (3x2), the per-cell counts, the 4,464 / 6,910 totals, and the family
-% size 38 all change and must be regenerated. The PROTOCOL below -- pairing,
-% McNemar, the Bonferroni construction, the determinism rule, the within-cell
-% argument -- does not change. Keep the protocol prose and re-derive the counts.
+% What Sections IV-B and IV-C assume this section states: the selection rule
+% for the tables, the paired test named once, latency as wall-clock per
+% environment step, the chunk size per backbone, the decoder depth per
+% backbone, and the SmolVLA two-implementation caveat.
+% Table~\ref{tab:backbones} below replaces tablebackbones.tex (three-backbone
+% version); do not include both.
 % ---------------------------------------------------------------------------
-
-% NOTE 2026-08-26: this is now IV.A, a subsection of "Experiments and
-% Evaluation". The interventions paragraph moved to III.B (bagoftricks.tex);
-% Setup carries only the protocol. In main.tex this file follows
-% \section{Experiments and Evaluation}. If compiled alone, change the
-% \subsection below back to \section.
 
 \subsection{Setup and Protocol}
 
-\textbf{The grid.} We cross three open backbones (OpenVLA, SpatialVLA, UniVLA)
-with two SimplerEnv suites, WidowX-Bridge and Google Robot/Fractal. UniVLA
-releases only a Bridge checkpoint, so five of the six cells are filled and
-UniVLA/Fractal is left empty (Table~\ref{tab:grid}). Each filled cell runs the
-same eight conditions, a baseline and seven interventions, over a fixed episode
-set, 96 episodes on Bridge (four tasks at 24) and 135 on Fractal. The grid is
-therefore $3 \times 96 \times 8 + 2 \times 135 \times 8 = 4{,}464$ episodes.
-Beyond it, eligibility-window controls, a foveation keep sweep, extra depth
-variants, determinism re-runs, and a task-level failure probe bring the
-campaign to $6{,}910$. Table~\ref{tab:backbones} lists the checkpoint, decoder
-depth, actions emitted per call, and GPU for each backbone. Section~III gives
-the three interventions and the conditions swept within each.
+\textbf{Backbones.} We evaluate seven released VLA policies without
+retraining (Table~\ref{tab:backbones}). CogACT, OpenVLA, SpatialVLA,
+CronusVLA, UniVLA and MiniVLA run on SimplerEnv, and OpenVLA, UniVLA and
+SmolVLA run on LIBERO, with the checkpoint each project released for that
+benchmark. Parameter counts are as reported by the original works. The
+decoder depth is the stack that depth pruning scores, the language decoder
+for six backbones and the twelve layer DiT action decoder for CronusVLA.
+Actions per call is how many environment steps one model call covers.
+UniVLA executes its native chunk of five actions on SimplerEnv and ten on
+LIBERO, and every other harness executes one action per call. The attention
+implementation is the one each backbone ships with under the evaluation
+environment [transformers version, torch version], recorded per backbone in
+Table~\ref{tab:backbones}. %PENDING mentor: versions and GPU column.
 
-\textbf{Pairing and significance.} Every condition replays the initial states
-of its cell's baseline, so each episode has a matched control. We compare a
-condition against that baseline with McNemar's exact two-sided test on the
-discordant pairs, the episodes whose success flipped, and report the paired
-change in percentage points. Across the grid this is a family of $38$ paired
-tests, the five cells times the seven interventions plus three depth variants
-that some cells also ran. We control the family with a Bonferroni threshold of
-$\alpha = 0.05/38 \approx 0.0013$, which eight of the $38$ clear. The tables in
-Section~IV-B report each change with its exact $p$-value and mark the ones that
-clear the threshold; Table~\ref{tab:grid} carries the absolute rates the
-changes are taken from.
+\textbf{Environments and episodes.} SimplerEnv WidowX has four tasks (put
+carrot on plate, put eggplant in basket, put spoon on towel, stack cube) at
+50 episodes each, with step caps of 60 and 120 for the eggplant task. Google
+Robot, called Fractal below, has five tasks (close drawer, open drawer, move
+near, pick coke can, place apple in closed top drawer) at 50 episodes each
+and a cap of 80. LIBERO has four suites (Long, Goal, Object, Spatial) of ten
+tasks at 10 episodes each and caps of 520, 300, 280 and 220. Every
+configuration of a backbone replays the same task instances and initial
+states, with the episode seed fixed as 42 plus the episode index, so each
+episode has a matched dense control. A failed episode runs to its cap.
 
-\textbf{Determinism.} With greedy decoding and a seeded environment, re-running
-a condition reproduces it episode for episode, 85 of 85 and 24 of 24 on two
-backbones. The result files do not record the GPU, so we pair only within a
-cell and require a condition and its baseline to share a run environment. The
-two Fractal backbones ran on the same card model (Table~\ref{tab:backbones}),
-which places the cross-backbone contrast on Fractal on matched hardware.
+\textbf{Configurations.} Each backbone and environment pair runs the dense
+policy and thirteen settings, two or three per family. Foveation keeps a
+central disc of 0.2 or 0.5 of the image area. Action repeat holds each
+action for two or four steps. Depth pruning removes one, two or four
+layers, chosen by Block Influence on calibration frames [drawn from ...]
+and fixed before the test episodes. Guarded reuse runs three presets,
+strict, moderate and aggressive, with whole-frame and local signature
+thresholds of 0.01 and 0.03, 0.015 and 0.04, and 0.02 and 0.05, action
+agreement of 0.995, 0.99 and 0.98, a translation floor of 0.01 in all
+three, and a consecutive-reuse cap of one, one and two. Temporal fusion runs
+motion-entropy and task-aware with a keyframe every third call and a reuse
+fraction of 0.5, and conservative-adaptive with a keyframe every second
+call, a reuse fraction of 0.25 and a forced keyframe when any patch moves by
+more than 0.03. The motion threshold is 0.01, the entropy and attention
+protection fractions 0.15 and 0.2, and the protection radius one patch. In
+all, 22 backbone and environment pairs, 14 configurations each, and 47,500
+episodes. %PENDING the three reruns change the CronusVLA and UniVLA WidowX counts only if a run is replaced.
 
-\textbf{Baselines against the reported figures.} To check the environment
-configuration, we compare each baseline against the figure published for the
-same checkpoint. Four of the five sit above it, UniVLA/Bridge by $11.4$ points,
-and the fifth, SpatialVLA/Bridge, is $4.2$ points below. Because every result is
-a within-cell paired change, no claim depends on these rates, and a broken
-setup would depress all five together rather than leave four high and one
-marginally low.
+\textbf{Measures.} Success is the benchmark's own criterion. Latency is
+wall-clock per environment step, the episode time divided by its steps,
+which has the same meaning on every harness whether a call covers one step
+or a chunk. Each harness also records its per-call time, which Section~IV-C
+uses. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
+and~\ref{tab:libero-results} show, for each family, the setting with the
+highest success and, on a tie, the fewer average steps, with the row named
+by the family. The other settings appear in the text.
+
+\textbf{Pairing and significance.} For every cell we compare the same
+episodes under the dense and the intervened policy and count the episodes
+that flipped from failure to success and the reverse. A change is called
+significant when an exact two-sided McNemar test on those flips gives
+$p < 0.05$. Each cell is one seed and one run, so the test speaks to these
+episodes, and generalisation to other initial states is left to Section~V.
+
+\textbf{Hardware and implementation.} [GPU per backbone, one card model per
+backbone and environment.] SmolVLA ran under two implementations, the
+released lerobot stack for the dense policy, foveation, action repeat and
+the depth budget of one, and a reconstructed stack on several GPU models for
+guarded reuse, temporal fusion and the higher depth budgets, so its latency
+is compared only within the first group. %PENDING mentor: SmolVLA rerun or wording. CogACT exposes no text-to-vision attention at the point where fusion runs, so its task-aware setting equals motion-entropy.
+
+\begin{table*}[t]
+\centering
+\caption{The seven backbones, their released checkpoints, and how each was run. Parameter counts are as reported by the original works. Decoder depth is the stack that depth pruning scores. Actions per call is how many environment steps one model call covers.}
+\label{tab:backbones}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l l r r c l l}
+\toprule
+Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & GPU \\
+\midrule
+CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit & [\,] \\
+OpenVLA & openvla-7b, openvla-7b-Fractal, openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA, requested & [\,] \\
+SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder & [\,] \\
+CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit & [\,] \\
+UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & [\,] \\
+MiniVLA & minivla-vq-bridge & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit & [\,] \\
+SmolVLA & smolvla\_libero & 0.45B & 16 (SmolVLM) & 1 & SDPA, explicit & [\,] \\
+\bottomrule
+\end{tabular}
+\end{table*}
