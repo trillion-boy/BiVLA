@@ -9,11 +9,12 @@
 ## 쓰기 전에 정한 원칙
 
 - 각주 없음. 예외는 전부 본문 문장으로 넣음.
-- 상승 4칸은 "significant"라고 부르지 않고 "nominal(명목상)"이라고 부름.
-  110칸 각각이 2~3개 설정 중 최고를 고른 것이라 사후 선택된 비교이고,
-  다중비교 보정(Benjamini-Hochberg, Bonferroni)을 걸면 상승은 하나도 안 남기
-  때문. 이렇게 써야 심사위원이 "그 +9.5는 우연 아니냐"고 할 때 우리가 먼저
-  말해 둔 것이 됨.
+- 통계 용어는 "paired test", "significant", "p < 0.05" 셋만 씀. McNemar라는
+  이름은 Setup(IV-A)에서 한 번만 나오고, Bonferroni나 Benjamini-Hochberg 같은
+  보정 이름은 본문에 쓰지 않음(2026-09-11 결정). 대신 "110번 비교하면 우연히
+  약 다섯 개가 p < 0.05를 넘고, 상승 4칸은 그 크기와 개수"라는 한 문장으로
+  같은 결론을 말함. 보정 결과(BH 통과 하락 16칸, Bonferroni 통과 11칸, 상승은
+  0칸)는 심사 답변용으로 이 문서와 감사 문서에만 남김.
 - 유의하지 않은 변화에는 "lowers, removes, adds" 같은 동사를 쓰지 않고
   "changes by"로 씀.
 - 재실행에 걸린 문장은 `%PENDING` 주석으로 표시. 답이 오면 그 문장만 고침.
@@ -22,11 +23,12 @@
 
 **도입 문단.** 표 두 개가 무엇을 보여주는지(dense 정책과 가족별 최고 설정,
 괄호는 dense 대비 변화, Latency는 스텝당 벽시계 시간), 그리고 검정 결과
-요약. 110칸 중 26칸이 보정 전 p < 0.05, 그중 22칸 하락. 하락 중 16칸은 BH
-보정, 11칸은 Bonferroni 보정을 통과. 상승 4칸(CogACT WidowX depth +9.5,
-CogACT WidowX motion-entropy fusion +8.0, OpenVLA Fractal task-aware +6.8,
-UniVLA Goal foveation +7.0)은 보정을 통과하지 못하므로 "재현해야 할 관찰"로
-보고. 마지막 문장은 방어용입니다. 개입이 한 번도 작동하지 않은 4칸은 dense와
+요약. 110칸 중 26칸이 유의하게 변하고 그중 22칸이 하락. 110번 비교하면
+우연히 약 다섯 개가 문턱을 넘는데, 상승 4칸(CogACT WidowX depth +9.5, CogACT
+WidowX motion-entropy fusion +8.0, OpenVLA Fractal task-aware +6.8, UniVLA
+Goal foveation +7.0)은 딱 그 크기와 개수. 하락은 22칸 중 20칸이 10점 이상이고
+가장 큰 것(UniVLA action repeat)은 58~75점. 그래서 하락은 효과로, 상승은
+"재현해야 할 관찰"로 읽음. 마지막 문장은 방어용입니다. 개입이 한 번도 작동하지 않은 4칸은 dense와
 에피소드 단위로 완전히 같고, 작동한 스텝이 없는 다른 2칸은 100개와 200개 중
 1개, 2개 에피소드만 다르므로 실행 간 잡음은 100개 중 1개 수준이고, "seed
 하나"의 한계는 측정 잡음이 아니라 다른 초기 상태로의 일반화 문제라는
@@ -59,14 +61,14 @@ UniVLA는 모든 suite에서 58~75점 하락, OpenVLA와 SmolVLA는 −3~−12(�
 **Foveation.** 스텝당 시간이 모든 칸에서 오르고(UniVLA 빼고 3~16 %, UniVLA는
 chunk 때문에 블러 비용이 나뉘어 작음). 성공률은 OpenVLA(WidowX −13.5,
 Fractal −11.2, Long −12.0), SmolVLA 세 suite(−13~−21), UniVLA WidowX(−8.5)에서
-유의하게 하락하고 UniVLA Goal(+7.0)에서 한 번 명목상 상승. CogACT, CronusVLA,
+유의하게 하락하고 UniVLA Goal(+7.0)에서 한 번 유의하게 상승. CogACT, CronusVLA,
 SpatialVLA, MiniVLA는 모든 환경에서 5점 이내. keep 0.2 대 0.5 비교는
 OpenVLA에서 0.2가 23~28점 빠지는 곳에서 0.5는 12점 이하이고, WidowX의 CogACT,
 CronusVLA, SpatialVLA, UniVLA에서는 0.2가 오히려 같거나 최대 6점 앞섬.
 
 **Depth pruning.** 호출당 시간은 SmolVLA를 빼고 모든 백본에서 예산에 따라
 단조 감소, 스텝당 시간은 표에서 1~6 % 감소. 성공률은 이 연구에서 가장 뚜렷한
-부호 역전: CogACT WidowX는 예산 2에서 50.0 → 59.5(p = 0.009, 보정 전)인데
+부호 역전: CogACT WidowX는 예산 2에서 50.0 → 59.5(p = 0.009)인데
 CogACT Fractal에서는 어느 예산도 1.6점 이상 안 움직임. 같은 WidowX 과제에서
 MiniVLA는 예산 1에서 −17.5(p < 0.001), 예산 2와 4에서 36점 전부 잃음.
 SpatialVLA는 −6.5, −17.0, −31.0. OpenVLA는 SimplerEnv에서 +4.0, +5.2(유의하지
@@ -87,7 +89,7 @@ LIBERO에서 2~10 % 감소로 건너뛴 스텝에 비례. preset을 느슨하게
 
 **Temporal fusion.** motion-entropy와 conservative-adaptive는 호출당 시간을
 3.5 % 이내로 바꾸고, task-aware의 attention 수집은 OpenVLA 7~9 %, MiniVLA
-14 %, UniVLA LIBERO 10~16 %를 더함. 명목상 상승은 CogACT WidowX
+14 %, UniVLA LIBERO 10~16 %를 더함. 유의한 상승은 CogACT WidowX
 motion-entropy(+8.0, p = 0.020)와 OpenVLA Fractal task-aware(+6.8, p =
 0.012), 그리고 p > 0.1로 +7.0인 OpenVLA WidowX와 Spatial. 나머지는 −7.0~+6.0으로
 유의하지 않음. CogACT는 선택기가 도는 지점에서 텍스트-이미지 attention을 내주지
@@ -97,17 +99,17 @@ UniVLA에서 conservative-adaptive는 재사용 패치를 하나도 안 골라 d
 UniVLA WidowX motion-entropy는 −5.5(p = 0.035). OpenVLA WidowX에서는 설정에
 따라 +7.0(task-aware)과 −2.5(motion-entropy)로 9.5점 차이지만 둘 다 dense와
 유의하게 다르지 않음. fusion은 시간이 아니라 정확도를 위한 후보인데, 실행된
-20칸 중 2칸에서 보정 전 p < 0.05, 보정 후에는 0칸.
+20칸 중 2칸에서 유의한 변화(둘 다 상승)가 있고, 둘 다 위의 우연 개수 안.
 
 **Across families.** 세 가지 패턴. (1) 부호는 규칙의 속성이 아니다: 같은
 WidowX 과제에서 depth pruning이 CogACT +9.5, MiniVLA −17.5. 같은 Goal
-suite에서 foveation이 UniVLA +7.0, SmolVLA −13.0(상승 둘은 보정 전). (2)
+suite에서 foveation이 UniVLA +7.0, SmolVLA −13.0(상승 둘은 우연 개수 안). (2)
 부호는 백본의 속성도 아니다: action repeat가 CogACT WidowX −38.0, Fractal
 −1.2. keep 0.5가 UniVLA WidowX −14.5(p < 0.001), Goal +7.0. (3) 지연 시간과
 성공률은 같이 움직이지 않는다: foveation은 모든 백본에서 느리고 셋에서
 나쁘며, depth pruning은 여섯 백본에서 빠르고 넷에서 나쁘고, action repeat는
-가장 빠르고 가장 나쁨. 빠르면서 명목상 좋아진 유일한 칸(CogACT WidowX
-depth)은 보정을 못 넘고 Fractal에서 0.0. "이 칸들을 근거로 어떤 설정도
+가장 빠르고 가장 나쁨. 빠르면서 좋아진 유일한 칸(CogACT WidowX depth)은
+Fractal에서 0.0. "이 칸들을 근거로 어떤 설정도
 추천하지 않는다"로 닫음.
 
 ## IV-C 문단별
@@ -155,7 +157,9 @@ task-aware는 CogACT에서 attention을 못 찾음. 그래서 후보는 효과�
 - **Methods III-E** "Three settings are evaluated": CogACT는 둘, CronusVLA는
   기록 없음. Results가 본문에서 밝히므로 Methods는 그대로 두어도 됨.
 - **Setup IV-A(멘토님)**: 선택 규칙(최고 성공률, 동률이면 스텝 적은 쪽),
-  McNemar 검정, 스텝당 벽시계 시간 정의, 백본별 chunk 크기(UniVLA 5/10)와
+  짝지은 검정을 쉬운 말로 한 문장("같은 에피소드에서 실패→성공, 성공→실패로
+  뒤집힌 수를 세고, 그 뒤집힘에 대한 짝지은 검정(McNemar)이 p < 0.05이면
+  유의하다고 부른다"), 스텝당 벽시계 시간 정의, 백본별 chunk 크기(UniVLA 5/10)와
   디코더 층 수(CogACT 32, SpatialVLA 26, MiniVLA 24, CronusVLA DiT 12), SmolVLA
   두 구현체가 들어가야 Results의 문장들이 근거를 가짐.
 - **분량**: 현재 약 1,870단어. 표 두 개가 약 한 쪽을 차지하므로 IV-B와

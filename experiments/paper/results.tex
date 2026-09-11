@@ -9,8 +9,8 @@
 % colons, no hedges, no footnotes. Exceptions are stated in the text.
 %
 % Assumes Section IV-A states: highest-success setting per family in the
-% tables with ties broken by fewer steps, exact two-sided McNemar test on the
-% paired episodes, latency as wall-clock per environment step, the chunk size
+% tables with ties broken by fewer steps, a paired test on the same episodes
+% (exact two-sided McNemar, named once there) with significance at p < 0.05, latency as wall-clock per environment step, the chunk size
 % per backbone, and the decoder depth per backbone.
 %
 % %PENDING lines depend on the mentor's reruns (UniVLA WidowX task-aware,
@@ -18,6 +18,10 @@
 % depth answer, and on the margin question (Section II and the Introduction
 % promise a positive rule with margins fixed in IV-A; either IV-A fixes them
 % and one sentence applies the rule here, or the promise is removed there).
+% Multiple-comparison corrections (Benjamini-Hochberg keeps 16 drops, Bonferroni
+% 11, no gain survives either) are kept out of the text by decision of
+% 2026-09-11 and live in Results_ko.md and DataAudit_2026-09-11.md for the
+% rebuttal.
 % The paragraph "Cells that are not what their row says" is written for the
 % data as it stands and shrinks as reruns arrive.
 % ---------------------------------------------------------------------------
@@ -29,15 +33,15 @@ Success, Latency and Avg. Steps columns for the dense policy and for the
 best setting of each family on every backbone and environment, with the
 change from dense in parentheses. Latency is wall-clock per environment
 step. Each cell is the best of two or three settings by the rule of
-Section~IV-A, so its paired test is a selected comparison. Of the 110
-intervention cells, 26 change success at an uncorrected $p < 0.05$, 22 of
-them downward. Sixteen of the drops survive a Benjamini-Hochberg correction
-at $q = 0.05$ and 11 survive Bonferroni over the 110 tests. No gain survives
-either correction. The four nominal gains, depth pruning and motion-entropy
-fusion on CogACT WidowX ($+9.5$ and $+8.0$ points), task-aware fusion on
-OpenVLA Fractal ($+6.8$) and foveation on UniVLA Goal ($+7.0$), are of the
-size and number that 110 selected comparisons at one seed produce by chance,
-and we report them as observations to replicate rather than as effects. Four
+Section~IV-A. Of the 110 intervention cells, 26 change success
+significantly, 22 of them downward. With 110 comparisons, about five would
+pass the threshold by chance alone, and the four gains, depth pruning and
+motion-entropy fusion on CogACT WidowX ($+9.5$ and $+8.0$ points),
+task-aware fusion on OpenVLA Fractal ($+6.8$) and foveation on UniVLA Goal
+($+7.0$), are of that size and number. The drops are not. Twenty of the 22
+remove 10 points or more, and the largest, action repeat on UniVLA, removes
+58 to 75. We therefore read the drops as effects and the gains as
+observations to replicate. Four
 cells whose intervention never fired reproduce the dense outcome on every
 episode, and two others with no fired step differ from dense on one and two
 episodes of 100 and 200, so run-to-run variation is about one episode in a
@@ -85,7 +89,7 @@ percent on every backbone except UniVLA, whose blur is amortized over a
 chunk. Success falls significantly on OpenVLA in both SimplerEnv
 environments ($-13.5$ and $-11.2$) and on LIBERO Long ($-12.0$), on SmolVLA
 on three of four suites ($-13.0$ to $-21.0$), and on UniVLA WidowX ($-8.5$).
-It rises nominally once, on UniVLA Goal ($+7.0$). CogACT, CronusVLA,
+It rises significantly once, on UniVLA Goal ($+7.0$). CogACT, CronusVLA,
 SpatialVLA and MiniVLA stay within 5 points of dense in every environment. A
 keep ratio of 0.2 rather than 0.5 removes 23 to 28 points from OpenVLA on
 Fractal, LIBERO Long and LIBERO Spatial, where 0.5 removes 12 or fewer, and
@@ -96,7 +100,7 @@ by up to 6.0 points.
 every backbone except SmolVLA, monotonically in the budget, and lowers
 latency per step by 1 to 6 percent in the table cells of the other six
 backbones. On CogACT WidowX a budget of two layers raises success from 50.0
-to 59.5 percent ($p = 0.009$, uncorrected), and on CogACT Fractal no budget
+to 59.5 percent ($p = 0.009$), and on CogACT Fractal no budget
 changes it by more than 1.6 points. On the same WidowX task instances a
 budget of one removes 17.5 points from MiniVLA ($p < 0.001$) and 6.5 from
 SpatialVLA ($p = 0.024$), and budgets of two and four remove all 36.0
@@ -129,7 +133,7 @@ within 7 points of dense, none significant.
 \textbf{Temporal fusion.} Motion-entropy and conservative-adaptive change
 latency per call by 3.5 percent or less, and the attention collection of
 task-aware adds 7 to 9 percent per call on OpenVLA, 14 on MiniVLA and 10 to
-16 on UniVLA LIBERO. Success rises nominally on CogACT WidowX under
+16 on UniVLA LIBERO. Success rises significantly on CogACT WidowX under
 motion-entropy ($+8.0$, $p = 0.020$) and on OpenVLA Fractal under task-aware
 ($+6.8$, $p = 0.012$), and by 7.0 points at $p > 0.1$ on OpenVLA WidowX and
 LIBERO Spatial. The remaining cells lie between $-7.0$ and $+6.0$, none
@@ -143,23 +147,23 @@ Object cells come from the other two settings, and on UniVLA WidowX
 motion-entropy loses 5.5 points ($p = 0.035$). On OpenVLA WidowX the two
 settings differ by 9.5 points, $+7.0$ under task-aware and $-2.5$ under
 motion-entropy, neither significantly different from dense. Fusion is the
-candidate designed for accuracy rather than time, and it changes success at
-an uncorrected $p < 0.05$ in two of the 20 cells in which it ran, both
-gains, and in neither after correction.
+candidate designed for accuracy rather than time, and it changes success
+significantly in two of the 20 cells in which it ran, both gains, and both
+within the chance count above.
 
 \textbf{Across families.} Three patterns hold across the tables. First, the
 sign of an intervention is not a property of the rule. Depth pruning adds
 9.5 points to CogACT and removes 17.5 from MiniVLA on the same WidowX task
 instances, and foveation adds 7.0 to UniVLA and removes 13.0 from SmolVLA on
-the same Goal suite, the two gains uncorrected. Second, the sign is not a
+the same Goal suite, the two gains within the chance count. Second, the sign is not a
 property of the backbone either. Action repeat removes 38.0 points from
 CogACT on WidowX and 1.2 on Fractal, and a keep ratio of 0.5 removes 14.5
 points from UniVLA on WidowX ($p < 0.001$) and adds 7.0 on Goal. Third,
 latency and success do not move together. Foveation is slower on every
 backbone and worse on three, depth pruning is faster on six backbones and
 worse on four, and action repeat is fastest and worst. The one cell that is
-both faster and nominally better, depth pruning on CogACT WidowX, does not
-survive correction and reads 0.0 on Fractal. We propose no setting on the
+both faster and better, depth pruning on CogACT WidowX, reads 0.0 on
+Fractal. We propose no setting on the
 strength of these cells. %PENDING margin rule of Section II.
 
 \subsection{Analysis}
