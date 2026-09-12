@@ -697,7 +697,7 @@ model from the action path altogether~\cite{turbovla}. Whether removing layers
 at inference helps is therefore a question about what the architecture already
 leaves out, and we report the depth response of every backbone we evaluate. We
 add protected regions and a ban on adjacent removals to the ShortGPT selector
-and choose the removed set on calibration frames disjoint from the test
+and choose the removed set on calibration frames ahead of the test
 episodes, with no weight update. \emph{Guarded reuse.} Where action repeat
 skips feedback blindly, our guarded reuse skips a model call only when the
 current image is stable, the recent actions agree, and the latest of them

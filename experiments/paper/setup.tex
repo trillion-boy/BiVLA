@@ -60,8 +60,8 @@ its target benchmark rather than how the policy generalises.
 policy and thirteen settings, two or three per family. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area. Action repeat holds each
 action for two or four steps. Depth pruning removes one, two or four
-layers, chosen by Block Influence on calibration frames from episodes disjoint
-from the test episodes and fixed before the test episodes. %PENDING mentor: calibration source per backbone (CronusVLA records seed 10000 on the same task set). Guarded reuse runs three presets,
+layers, chosen by Block Influence on calibration frames ahead of the test
+episodes. % Calibration source recorded only for CronusVLA (seed 10000, same tasks); the disjoint claim is dropped rather than asserted. Guarded reuse runs three presets,
 strict, moderate and aggressive, with whole-frame and local signature
 thresholds of 0.01 and 0.03, 0.015 and 0.04, and 0.02 and 0.05, action
 agreement of 0.995, 0.99 and 0.98, a translation floor of 0.01 in all
