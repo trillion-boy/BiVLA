@@ -125,7 +125,8 @@ against a different backend than its own dense row.
 \label{tab:backbones}
 \small
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{l l r r c l l}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l p{5.2cm} r l c p{3cm} l}
 \toprule
 Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & GPU \\
 \midrule
@@ -137,5 +138,6 @@ UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & S
 MiniVLA & minivla-vq-bridge & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit & [\,] \\
 SmolVLA & smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & SDPA, explicit & [\,] \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table*}
