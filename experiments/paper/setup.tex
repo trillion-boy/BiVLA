@@ -45,9 +45,8 @@ and a cap of 80. LIBERO has four suites (Long, Goal, Object, Spatial) of ten
 tasks at 10 episodes each and caps of 520, 300, 280 and 220. Every
 configuration of a backbone replays the same task instances and initial
 states, with the episode seed fixed as 42 plus the episode index, so each
-episode has a matched dense control. A failed episode that runs normally
-ends at its cap, and an episode that crashes is rerun rather than scored, so
-every reported cell is crash free. Each checkpoint runs on the benchmark its
+episode has a matched dense control. A failed episode runs to its cap. Each
+checkpoint runs on the benchmark its
 training data targets, Bridge for WidowX, Fractal for Google Robot and the
 matching suite for LIBERO. The LIBERO checkpoints run in their training
 distribution, and the WidowX and Fractal checkpoints are real-trained
@@ -77,11 +76,9 @@ temporal fusion setting missing on OpenVLA Long, and 47,500 episodes.
 \textbf{Measures.} Success is the benchmark's own criterion. Latency is
 wall-clock per environment step, the episode time divided by its steps,
 which has the same meaning on every harness whether a call covers one step
-or a chunk. Latency is read only as the change from dense within one
-backbone on one card, and absolute latency is not compared across backbones,
-which run on different cards. Every harness other than CronusVLA also records
-its per-call time, which Section~IV-C uses, and CronusVLA reports only the
-episode clock. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
+or a chunk. We read latency as the change from dense within a backbone.
+Every harness other than CronusVLA also records its per-call time, which
+Section~IV-C uses, and CronusVLA reports only the episode clock. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
 and~\ref{tab:libero-results} show, for each family, the setting with the
 highest success and, on a tie, the fewer average steps, with the row named
 by the family. The other settings appear in the text.
@@ -98,8 +95,11 @@ cells carry a run-to-run floor of about 14 episodes in 200, reported in
 Section~IV-B. Three WidowX cells rerun on a second card report success only,
 and their paired test waits on the per-episode files of a dense run matched
 on that card. With 110 cells this threshold admits about five chance passes, so
-Section~IV-B reads gains against that count. Sixteen of the 22 significant
-drops also pass a false discovery rate correction at 0.05, and no gain does.
+Section~IV-B reads gains against that count. Each table cell is the
+family-best setting chosen by success, so its individual p-value is
+post-selection and read as descriptive. Sixteen of the 22 significant drops
+pass a false discovery rate correction at 0.05, no gain passes it, and no
+gain survives a Bonferroni correction over all 285 settings that were tested.
 
 \textbf{Hardware and implementation.} [GPU per backbone, one card model per
 backbone and environment.] SmolVLA ran under two implementations, the
