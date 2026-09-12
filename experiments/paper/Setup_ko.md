@@ -70,5 +70,9 @@ attention 통로가 없어 task-aware가 motion-entropy와 같다는 것.
 
 - `tablebackbones.tex`(옛 세 백본 표)는 같은 label을 쓰므로 함께 포함하면
   안 됨. setup.tex 안의 표가 대체본.
-- SmolVLA "16 (SmolVLM)"은 감사에서 VLM 층 수로 확인한 값이고, depth 층 번호
-  24～30이 그 범위를 넘는 문제는 멘토님 답을 기다리는 중.
+- SmolVLA 디코더 깊이는 32 (SmolLM2). SmolVLM2-500M의 텍스트 디코더는
+  SmolLM2-360M이고 config의 num_hidden_layers=32 (웹 확인). depth pruning이
+  자른 인덱스가 30까지 나오는 것과, 그 층을 자르니 성공률이 14～33점 떨어지는
+  것(=실제 계산 경로에 있음) 모두 32와 일치. 옛 "16 (SmolVLM)"은 SmolVLA가
+  앞 16층만 쓴다는 노트에서 온 오기였음. SmolVLA는 Block Influence 아닌
+  고정 인덱스로 잘랐다는 점(calibrated:false)은 IV-A에 caveat로 명시됨.
