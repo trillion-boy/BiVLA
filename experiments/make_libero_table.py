@@ -162,7 +162,7 @@ def main():
 %% ---------------------------------------------------------------------------
 \\begin{{table*}}[t]
 \\centering
-\\caption{{LIBERO results across four task suites. Values in parentheses indicate the change relative to the original policy within the same task suite.}}
+\\caption{{LIBERO results across four task suites. Values in parentheses indicate the change relative to the original policy within the same task suite. Parameter counts are as reported by the original works.}}
 \\label{{tab:libero-results}}
 \\small
 \\setlength{{\\tabcolsep}}{{1.8pt}}
