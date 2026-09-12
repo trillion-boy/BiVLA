@@ -38,7 +38,7 @@ Table~\ref{tab:backbones}. %PENDING mentor: versions and GPU column.
 
 \textbf{Environments and episodes.} SimplerEnv WidowX has four tasks (put
 carrot on plate, put eggplant in basket, put spoon on towel, stack cube) at
-50 episodes each, with step caps of 60 and 120 for the eggplant task. Google
+50 episodes each, with a step cap of 60, or 120 for the eggplant task. Google
 Robot, called Fractal below, has five tasks (close drawer, open drawer, move
 near, pick coke can, place apple in closed top drawer) at 50 episodes each
 and a cap of 80. LIBERO has four suites (Long, Goal, Object, Spatial) of ten
@@ -67,8 +67,9 @@ fraction of 0.5, and conservative-adaptive with a keyframe every second
 call, a reuse fraction of 0.25 and a forced keyframe when any patch moves by
 more than 0.03. The motion threshold is 0.01, the entropy and attention
 protection fractions 0.15 and 0.2, and the protection radius one patch. In
-all, 22 backbone and environment pairs, 14 configurations each, and 47,500
-episodes. %PENDING the three reruns change the CronusVLA and UniVLA WidowX counts only if a run is replaced.
+all, 22 backbone and environment pairs, 14 configurations each but for one
+temporal fusion setting missing on OpenVLA Long, and 47,500 episodes.
+%PENDING the three reruns change the CronusVLA and UniVLA WidowX counts only if a run is replaced.
 
 \textbf{Measures.} Success is the benchmark's own criterion. Latency is
 wall-clock per environment step, the episode time divided by its steps,
