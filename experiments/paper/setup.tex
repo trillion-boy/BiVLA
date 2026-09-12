@@ -81,9 +81,9 @@ about one episode in a hundred, so for them the single-run limit concerns
 other initial states, left to Section~V. CronusVLA does not reproduce its rollout
 under the same fixed seed, so its dense and intervened runs diverge and its
 cells carry a run-to-run floor of about 14 episodes in 200, reported in
-Section~IV-B. Three WidowX cells rerun on a second card report success only,
-and their paired test waits on the per-episode files of a dense run matched
-on that card. With 110 cells this threshold admits about five chance passes, so
+Section~IV-B. Three WidowX cells rerun on a second card report success but
+not latency, since the card differs from their dense baseline. With 110
+cells this threshold admits about five chance passes, so
 Section~IV-B reads gains against that count. Each table cell is the
 family-best setting chosen by success, so its individual p-value is
 post-selection and read as descriptive. Sixteen of the 22 significant drops

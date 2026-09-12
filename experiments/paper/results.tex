@@ -18,9 +18,12 @@
 % CronusVLA WidowX moderate (71/200) and aggressive (72/200) presets, both
 % on an RTX PRO 6000 against RTX 5090 originals; table cells unchanged
 % (conservative-adaptive 87.5 still highest; strict ties aggressive at 36.0
-% with fewer steps). Per-episode files for the paired test not yet received.
-% %PENDING lines depend on the mentor's reruns (CronusVLA fusion settings,
-% per-episode files of the repeated runs) and on the SmolVLA depth answer.
+% with fewer steps). 2026-09-12 later: per-episode files received in
+% results_corrected.zip; the UniVLA WidowX task-aware paired test is now
+% computed (b=21, c=10, p=0.071, not significant), and the CronusVLA
+% moderate and aggressive reruns are also not significant (p=0.70, 0.50).
+% Remaining %PENDING lines depend on the mentor's CronusVLA fusion rerun,
+% the OpenVLA Long conservative-adaptive run, and the SmolVLA depth answer.
 % The margin question is resolved: the positive-candidate rule of Related
 % Work now reads on the paired test, not a preregistered margin, so the
 % closing sentence of IV-B states the transfer thesis and cites no margin.
@@ -69,7 +72,7 @@ cells are one run whose fusion settings were not recorded.
 The UniVLA WidowX task-aware run and the CronusVLA WidowX moderate and
 aggressive presets were repeated on another GPU after the first runs
 crashed or ran with the strict thresholds, so their success counts are used
-and their latency is not compared. %PENDING per-episode files of the three repeated runs for the paired test.
+and their latency is not compared.
 SmolVLA's guarded reuse, temporal fusion and higher depth budgets ran under
 a second implementation on other GPUs, so we read no latency change from
 those cells and read their success changes as unmatched, and its removed
@@ -153,8 +156,8 @@ patch, so it equals the dense policy on UniVLA and differs from dense on two
 episodes on SpatialVLA WidowX. The SpatialVLA cells and the UniVLA Long,
 Goal and Object cells therefore come from the other two settings. On UniVLA
 WidowX both of those, motion-entropy and task-aware, lose 5.5 points (164 of
-200 against 175, $p = 0.035$ for motion-entropy).
-%PENDING paired p for task-aware once its episode files arrive.
+200 against 175), which is significant for motion-entropy ($p = 0.035$) but
+not for task-aware ($p = 0.071$), the same net loss on different episodes.
 On OpenVLA WidowX the two settings differ by 9.5 points, $+7.0$ under
 task-aware and $-2.5$ under motion-entropy, neither significantly different
 from dense. Fusion is the
