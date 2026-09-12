@@ -58,20 +58,15 @@ its target benchmark rather than how the policy generalises.
 
 \textbf{Configurations.} Each backbone and environment pair runs the dense
 policy and thirteen settings, two or three per family. Foveation keeps a
-central disc of 0.2 or 0.5 of the image area. Action repeat holds each
-action for two or four steps. Depth pruning removes one, two or four
-layers, chosen by Block Influence on calibration frames ahead of the test
-episodes. % Calibration source recorded only for CronusVLA (seed 10000, same tasks); the disjoint claim is dropped rather than asserted. Guarded reuse runs three presets,
-strict, moderate and aggressive, with whole-frame and local signature
-thresholds of 0.01 and 0.03, 0.015 and 0.04, and 0.02 and 0.05, action
-agreement of 0.995, 0.99 and 0.98, a translation floor of 0.01 in all
-three, and a consecutive-reuse cap of one, one and two. Temporal fusion runs
-motion-entropy and task-aware with a keyframe every third call and a reuse
-fraction of 0.5, and conservative-adaptive with a keyframe every second
-call, a reuse fraction of 0.25 and a forced keyframe when any patch moves by
-more than 0.03. The motion threshold is 0.01, the entropy and attention
-protection fractions 0.15 and 0.2, and the protection radius one patch. In
-all, 22 backbone and environment pairs, 14 configurations each but for one
+central disc of 0.2 or 0.5 of the image area, action repeat holds each
+action for two or four steps, and depth pruning removes one, two or four
+layers chosen by Block Influence on calibration frames ahead of the test
+episodes. % Calibration source recorded only for CronusVLA (seed 10000, same tasks); the disjoint claim is dropped rather than asserted. Guarded reuse
+runs three presets from strict to aggressive that gate on whole-frame and
+local motion, action agreement and a translation floor, and temporal fusion
+runs motion-entropy, task-aware and conservative-adaptive, differing in the
+keyframe interval, the reuse fraction and the forced-keyframe rule. In all,
+22 backbone and environment pairs, 14 configurations each but for one
 temporal fusion setting missing on OpenVLA Long, and 47,500 episodes.
 %PENDING the three reruns change the CronusVLA and UniVLA WidowX counts only if a run is replaced.
 
