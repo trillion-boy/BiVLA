@@ -24,7 +24,7 @@ retraining (Table~\ref{tab:backbones}). CogACT, OpenVLA, SpatialVLA,
 CronusVLA, UniVLA and MiniVLA run on SimplerEnv, and OpenVLA, UniVLA and
 SmolVLA run on LIBERO, with the checkpoint each project released for that
 benchmark. Parameter counts are as reported by the original works. The
-decoder depth is the stack that depth pruning scores, the language decoder
+decoder depth is the stack that depth pruning acts on, the language decoder
 for six backbones and the twelve layer DiT action decoder for CronusVLA.
 Block Influence is defined on any residual block as one minus the cosine
 similarity of the block's input and output, so it applies to the DiT blocks
@@ -122,7 +122,7 @@ against a different backend than its own dense row.
 
 \begin{table*}[t]
 \centering
-\caption{The seven backbones, their released checkpoints, and how each was run. Parameter counts are as reported by the original works. Decoder depth is the stack that depth pruning scores. Actions per call is how many environment steps one model call covers.}
+\caption{The seven backbones, their released checkpoints, and how each was run. Parameter counts are as reported by the original works. Decoder depth is the stack that depth pruning acts on. Actions per call is how many environment steps one model call covers.}
 \label{tab:backbones}
 \small
 \setlength{\tabcolsep}{4pt}
