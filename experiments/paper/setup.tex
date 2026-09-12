@@ -22,29 +22,19 @@
 \textbf{Backbones.} We evaluate seven released VLA policies without
 retraining (Table~\ref{tab:backbones}). CogACT, OpenVLA, SpatialVLA,
 CronusVLA, UniVLA and MiniVLA run on SimplerEnv, and OpenVLA, UniVLA and
-SmolVLA run on LIBERO, with the checkpoint each project released for that
-benchmark. Parameter counts are as reported by the original works. The
-decoder depth is the stack that depth pruning acts on, the language decoder
-for six backbones and the twelve layer DiT action decoder for CronusVLA.
-Block Influence is defined on any residual block as one minus the cosine
-similarity of the block's input and output, so it applies to the DiT blocks
-unchanged, and the CronusVLA rows test that transfer rather than assume it.
-Actions per call is how many environment steps one model call covers.
-UniVLA executes its native chunk of five actions on SimplerEnv and ten on
-LIBERO, and every other harness executes one action per call. The attention
-implementation is the one each backbone ships with, resolved under the
-evaluation environment with transformers 4.47.0, and SmolVLA under an
-isolated 4.51.3 stack, recorded per backbone in Table~\ref{tab:backbones}.
-OpenVLA requests SDPA on SimplerEnv, and its LIBERO loader defaults to eager.
+SmolVLA run on LIBERO, each on the checkpoint released for that benchmark.
+Depth pruning acts on the language decoder for six backbones and on the
+twelve layer DiT action decoder for CronusVLA, whose rows apply the same
+Block Influence selector to that DiT. Every model runs under transformers
+4.47.0, with SmolVLA on an isolated 4.51.3 stack, and OpenVLA requests SDPA
+on SimplerEnv but defaults to eager on LIBERO.
 %PENDING mentor: torch version and GPU column.
 
-\textbf{Environments and episodes.} SimplerEnv WidowX has four tasks (put
-carrot on plate, put eggplant in basket, put spoon on towel, stack cube) at
-50 episodes each, with a step cap of 60, or 120 for the eggplant task. Google
-Robot, called Fractal below, has five tasks (close drawer, open drawer, move
-near, pick coke can, place apple in closed top drawer) at 50 episodes each
-and a cap of 80. LIBERO has four suites (Long, Goal, Object, Spatial) of ten
-tasks at 10 episodes each and caps of 520, 300, 280 and 220. Every
+\textbf{Environments and episodes.} SimplerEnv WidowX has four tasks at 50
+episodes each, with a step cap of 60, or 120 for the eggplant task. Google
+Robot, called Fractal below, has five tasks at 50 episodes each and a cap of
+80. LIBERO has four suites (Long, Goal, Object, Spatial) of ten tasks at 10
+episodes each and caps of 520, 300, 280 and 220. Every
 configuration of a backbone replays the same task instances and initial
 states, with the episode seed fixed as 42 plus the episode index, so each
 episode has a matched dense control. A failed episode runs to its cap. Each
