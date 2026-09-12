@@ -18,6 +18,18 @@ paper can say, 4 findings that shape the Results text, 5 metadata and
 hygiene, 6 what this touches in our text and tables, 7 questions for the
 mentor, 8 reproduction.
 
+## Update 2026-09-12 (mentor's report.xlsx, artifacts/results/mentor_2026-09-12/)
+
+- F1 resolved: UniVLA WidowX task-aware rerun, eggplant 50/50, stack cube
+  34/50, 164/200 = 82.0 %, no errors, on an RTX PRO 6000 (originals on an
+  RTX 5090).
+- F2 reuse resolved: CronusVLA WidowX moderate 71/200 (0.14 reuses per
+  episode) and aggressive 72/200 (0.935) with the correct thresholds, RTX PRO 6000.
+- F2 fusion open: CronusVLA temporal fusion is not in the report.
+- F4 confirmed: the mentor marks CogACT task-aware "VALID AS DUPLICATE ONLY".
+- Table I cells unchanged. The paired test needs the episodes.jsonl of the
+  three repeated runs, not yet received.
+
 ## 1. Layout
 
 | backbone and environment | folders | records per `episodes.jsonl` | notes |

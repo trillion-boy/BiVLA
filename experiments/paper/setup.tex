@@ -94,7 +94,10 @@ backbone and environment.] SmolVLA ran under two implementations, the
 released lerobot stack for the dense policy, foveation, action repeat and
 the depth budget of one, and a reconstructed stack on several GPU models for
 guarded reuse, temporal fusion and the higher depth budgets, so its latency
-is compared only within the first group. %PENDING mentor: SmolVLA rerun or wording. CogACT exposes no text-to-vision attention at the point where fusion runs, so its task-aware setting equals motion-entropy.
+is compared only within the first group. The UniVLA WidowX task-aware run
+and the CronusVLA WidowX moderate and aggressive presets were repeated on
+an RTX PRO 6000 after the first runs, on an RTX 5090, crashed or ran with
+the strict thresholds, so their latency is not compared either. %PENDING mentor: SmolVLA rerun or wording. CogACT exposes no text-to-vision attention at the point where fusion runs, so its task-aware setting equals motion-entropy.
 
 \begin{table*}[t]
 \centering
@@ -109,8 +112,8 @@ Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & 
 CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit & [\,] \\
 OpenVLA & openvla-7b, openvla-7b-Fractal, openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA, requested & [\,] \\
 SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder & [\,] \\
-CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit & [\,] \\
-UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & [\,] \\
+CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit & RTX 5090 \\
+UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & RTX 5090 (WidowX), [\,] \\
 MiniVLA & minivla-vq-bridge & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit & [\,] \\
 SmolVLA & smolvla\_libero & 0.45B & 16 (SmolVLM) & 1 & SDPA, explicit & [\,] \\
 \bottomrule

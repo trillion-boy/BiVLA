@@ -64,9 +64,13 @@ fusion 칸은 conservative-adaptive인데 그 설정이 거기서는 재사용 �
 칸은 재사용 38번에 에피소드 3개 차이. CronusVLA WidowX reuse 칸은 재사용
 5번인데 에피소드 14개가 달라서, seed를 기록하지 않는 그 하네스는 결정적이지
 않음(이 사실은 CronusVLA의 작은 변화량을 읽을 때 잡음 수준으로 쓰임).
-CronusVLA fusion 칸은 설정 기록이 없는 한 번의 실행, CronusVLA WidowX reuse
-칸은 strict만 실행. UniVLA WidowX task-aware는 81개 크래시로 모든 집계에서
-제외. SmolVLA의 reuse, fusion, 높은 depth 예산은 다른 구현과 GPU라 지연 시간을
+CronusVLA fusion 칸은 설정 기록이 없는 한 번의 실행(아직 열린 항목).
+2026-09-12 멘토님 재실행으로 UniVLA WidowX task-aware(164/200 = 82.0 %)와
+CronusVLA WidowX moderate(71/200), aggressive(72/200)는 정상 실행됐고, 다만
+원래 GPU(RTX 5090)가 아닌 RTX PRO 6000에서 돌아 지연 시간은 비교하지 않음.
+표의 칸은 둘 다 안 바뀜(UniVLA fusion은 conservative-adaptive 87.5가 여전히
+최고, CronusVLA reuse는 strict와 aggressive가 36.0 동률에 strict가 스텝이
+적음). 짝지은 검정(p)은 에피소드 파일이 와야 계산 가능. SmolVLA의 reuse, fusion, 높은 depth 예산은 다른 구현과 GPU라 지연 시간을
 읽지 않고 성공률 변화도 짝지어진 실행이 아님, depth 층 번호는 고정값. OpenVLA
 Long fusion 칸은 두 설정 중 선택. 재실행 결과가 오면 이 문단이 줄어듭니다.
 

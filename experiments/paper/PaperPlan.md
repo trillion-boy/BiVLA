@@ -449,6 +449,8 @@ To do next, in order:
    IV-A fixes" sentence, since IV-A uses the paired test instead.
 6. Optional: significance stars in Tables I and II (one flag in the two
    generators).
-7. When reruns arrive: copy folders into artifacts/results/mentor_2026-09-11/,
+7. 2026-09-12: report.xlsx received (aggregates only). Ask for the
+   episodes.jsonl of the three repeated runs and the CronusVLA fusion
+   settings. When the files arrive: copy folders into artifacts/results/mentor_2026-09-11/,
    rerun make_simpler_table.py, paired_analysis.py, update the three cells
    and shrink the "Cells that are not what their row says" paragraph.

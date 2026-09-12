@@ -13,8 +13,14 @@
 % (exact two-sided McNemar, named once there) with significance at p < 0.05, latency as wall-clock per environment step, the chunk size
 % per backbone, and the decoder depth per backbone.
 %
-% %PENDING lines depend on the mentor's reruns (UniVLA WidowX task-aware,
-% CronusVLA WidowX reuse presets, CronusVLA fusion settings), on the SmolVLA
+% 2026-09-12: the mentor's report.xlsx (artifacts/results/mentor_2026-09-12)
+% gives the UniVLA WidowX task-aware rerun (164/200, 82.0 %) and the
+% CronusVLA WidowX moderate (71/200) and aggressive (72/200) presets, both
+% on an RTX PRO 6000 against RTX 5090 originals; table cells unchanged
+% (conservative-adaptive 87.5 still highest; strict ties aggressive at 36.0
+% with fewer steps). Per-episode files for the paired test not yet received.
+% %PENDING lines depend on the mentor's reruns (CronusVLA fusion settings,
+% per-episode files of the repeated runs), on the SmolVLA
 % depth answer, and on the margin question (Section II and the Introduction
 % promise a positive rule with margins fixed in IV-A; either IV-A fixes them
 % and one sentence applies the rule here, or the promise is removed there).
@@ -58,11 +64,12 @@ of 6,000 to 65,600 and match the dense outcome on every episode but one. The Spa
 from dense on three episodes. The CronusVLA WidowX reuse cell fired on 5
 steps of 9,947 and still differs from dense on 14 of 200 episodes, so that
 harness, which records no seed, is not deterministic. The CronusVLA fusion
-cells are one run whose fusion settings were not recorded, and the CronusVLA
-WidowX reuse cell ran the strict setting only.
-%PENDING CronusVLA fusion and WidowX reuse reruns.
-The UniVLA WidowX task-aware run crashed on 81 of 200 episodes and is
-excluded from every count. %PENDING UniVLA WidowX task-aware rerun.
+cells are one run whose fusion settings were not recorded.
+%PENDING CronusVLA fusion rerun.
+The UniVLA WidowX task-aware run and the CronusVLA WidowX moderate and
+aggressive presets were repeated on another GPU after the first runs
+crashed or ran with the strict thresholds, so their success counts are used
+and their latency is not compared. %PENDING per-episode files of the three repeated runs for the paired test.
 SmolVLA's guarded reuse, temporal fusion and higher depth budgets ran under
 a second implementation on other GPUs, so we read no latency change from
 those cells and read their success changes as unmatched, and its removed
@@ -144,8 +151,8 @@ CogACT has two fusion settings. On SpatialVLA and UniVLA the
 conservative-adaptive setting was ineffective and selected no reusable
 patch, so those rows equal the dense policy on UniVLA and differ from it on
 two episodes on SpatialVLA WidowX, the SpatialVLA cells and the UniVLA Long, Goal and
-Object cells come from the other two settings, and on UniVLA WidowX
-motion-entropy loses 5.5 points ($p = 0.035$). On OpenVLA WidowX the two
+Object cells come from the other two settings, and on UniVLA WidowX motion-entropy and task-aware each lose 5.5 points
+(164 of 200 against 175, $p = 0.035$ for motion-entropy). %PENDING paired p for task-aware once its episode files arrive. On OpenVLA WidowX the two
 settings differ by 9.5 points, $+7.0$ under task-aware and $-2.5$ under
 motion-entropy, neither significantly different from dense. Fusion is the
 candidate designed for accuracy rather than time, and it changes success

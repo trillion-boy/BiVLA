@@ -3,6 +3,18 @@
 영문 원본은 `DataAudit_2026-09-11.md`이고, 이 문서는 같은 내용을 처음 보는
 사람도 따라올 수 있게 풀어 쓴 것입니다. 숫자는 영문판과 같습니다.
 
+## 2026-09-12 갱신 (멘토님 report.xlsx, artifacts/results/mentor_2026-09-12/)
+
+- F1 해결: UniVLA WidowX task-aware 재실행. 가지 50/50, 큐브 34/50, 합계
+  164/200 = 82.0 %(에러 0). RTX PRO 6000에서 실행(원래는 RTX 5090).
+- F2 reuse 해결: CronusVLA WidowX moderate 71/200(재사용 0.14/에피소드),
+  aggressive 72/200(0.935/에피소드), 올바른 문턱값으로 실행. RTX PRO 6000.
+- F2 fusion 미해결: CronusVLA temporal fusion은 보고서에 없음.
+- F4 확인: 멘토님도 CogACT task-aware를 "VALID AS DUPLICATE ONLY"로 표시,
+  각주 처리에 동의.
+- 표: Table I 칸은 변화 없음. 짝지은 검정에는 세 재실행의 episodes.jsonl이
+  필요하며 아직 받지 못함.
+
 ## 0. 한 줄 요약
 
 zip 안의 파일 1,724개를 하나도 빠짐없이 열어 확인했습니다. 파일끼리 서로
