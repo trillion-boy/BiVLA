@@ -51,9 +51,11 @@ policy and thirteen settings, two or three per family. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area, action repeat holds each
 action for two or four steps, and depth pruning removes one, two or four
 layers chosen by Block Influence on calibration frames ahead of the test
-episodes. % Calibration source recorded only for CronusVLA (seed 10000, same tasks); the disjoint claim is dropped rather than asserted. Guarded reuse
-runs three presets from strict to aggressive that gate on whole-frame and
-local motion, action agreement and a translation floor, and temporal fusion
+episodes.
+% Calibration source recorded only for CronusVLA (seed 10000, same tasks); the disjoint claim is dropped rather than asserted.
+Guarded reuse runs three presets from strict to aggressive that gate on
+whole-frame and local motion, action agreement and a translation floor, and
+temporal fusion
 runs motion-entropy, task-aware and conservative-adaptive, differing in the
 keyframe interval, the reuse fraction and the forced-keyframe rule. In all,
 22 backbone and environment pairs, 14 configurations each but for one
