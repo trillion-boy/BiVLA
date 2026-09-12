@@ -105,15 +105,20 @@ gain survives a Bonferroni correction over all 285 settings that were tested.
 
 \textbf{Hardware and implementation.} [GPU per backbone, one card model per
 backbone and environment.] SmolVLA ran under two implementations, the
-released lerobot stack for the dense policy, foveation, action repeat and
-the depth budget of one, and a reconstructed stack on several GPU models for
-guarded reuse, temporal fusion and the higher depth budgets, so its latency
-is compared only within the first group. SmolVLA depth pruning removes fixed
+released lerobot stack for the dense policy, foveation, action repeat and the
+depth cells it could run, and a reconstructed stack on several GPU models for
+guarded reuse, temporal fusion and the depth cells that fell back to it, so
+its latency is compared only within the first group. SmolVLA depth pruning removes fixed
 layer indices rather than the Block Influence selection, so its depth cells
-are read as unmatched to the method of Section~III. The UniVLA WidowX task-aware run
-and the CronusVLA WidowX moderate and aggressive presets were repeated on
-an RTX PRO 6000 after the first runs, on an RTX 5090, crashed or ran with
-the strict thresholds, so their latency is not compared either. %PENDING mentor: SmolVLA rerun or wording. CogACT exposes no text-to-vision attention at the point where fusion runs, so its task-aware setting equals motion-entropy.
+are read as unmatched to the method of Section~III. The UniVLA WidowX
+task-aware run, in the two tasks that crashed, and the CronusVLA WidowX
+moderate and aggressive presets were repeated on an RTX PRO 6000 after the
+first runs, on an RTX 5090, crashed or ran with the strict thresholds, so
+their latency is not compared either. CogACT exposes no text-to-vision
+attention at the point where fusion runs, so its task-aware setting equals
+motion-entropy. The task-aware fusion setting collects attention relevance,
+which runs the decoder in eager attention, so its per-call time is measured
+against a different backend than its own dense row.
 
 \begin{table*}[t]
 \centering
@@ -126,7 +131,7 @@ the strict thresholds, so their latency is not compared either. %PENDING mentor:
 Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & GPU \\
 \midrule
 CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit & [\,] \\
-OpenVLA & openvla-7b, openvla-7b-Fractal, openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO & [\,] \\
+OpenVLA & openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO & [\,] \\
 SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder & [\,] \\
 CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit & RTX 5090 \\
 UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & RTX 5090 (WidowX), [\,] \\
