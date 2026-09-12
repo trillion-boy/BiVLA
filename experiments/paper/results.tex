@@ -22,8 +22,10 @@
 % results_corrected.zip; the UniVLA WidowX task-aware paired test is now
 % computed (b=21, c=10, p=0.071, not significant), and the CronusVLA
 % moderate and aggressive reruns are also not significant (p=0.70, 0.50).
-% Remaining %PENDING lines depend on the mentor's CronusVLA fusion rerun,
-% the OpenVLA Long conservative-adaptive run, and the SmolVLA depth answer.
+% CronusVLA fusion is final as one unrecorded run (the mentor will not rerun
+% it), so its three fusion cells are reported as identical. The remaining
+% %PENDING lines depend only on the OpenVLA Long conservative-adaptive run
+% and the SmolVLA depth answer.
 % The margin question is resolved: the positive-candidate rule of Related
 % Work now reads on the paired test, not a preregistered margin, so the
 % closing sentence of IV-B states the transfer thesis and cites no margin.
@@ -67,8 +69,8 @@ of 6,000 to 65,600 and match the dense outcome on every episode but one. The Spa
 from dense on three episodes. The CronusVLA WidowX reuse cell fired on 5
 steps of 9,947 and still differs from dense on 14 of 200 episodes, so that
 harness does not reproduce its rollout under the fixed seed. The CronusVLA fusion
-cells are one run whose fusion settings were not recorded.
-%PENDING CronusVLA fusion rerun.
+cells are one run whose fusion settings were not recorded, so the three
+fusion settings are identical.
 The UniVLA WidowX task-aware run and the CronusVLA WidowX moderate and
 aggressive presets were repeated on another GPU after the first runs
 crashed or ran with the strict thresholds, so their success counts are used
