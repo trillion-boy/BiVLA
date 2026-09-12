@@ -83,8 +83,8 @@
 %         - dense baseline under fused attention (SDPA / FlashAttention),
 %           backend per backbone to be confirmed
 %         - a candidate is positive when it lowers end-to-end latency with
-%           its own signal cost included, or raises success, while the other
-%           stays within a preregistered margin of dense
+%           its own signal cost included, or significantly raises success
+%           under the paired test, with no significant cost to the other
 %         - depth calibration on a disjoint split (confirm; the harness
 %           calibrates on the test tasks and seed)
 %         - one GPU, one run per configuration
@@ -762,6 +762,6 @@ size is released, as listed in Section~IV-A. Every comparison is on matched
 episodes against dense inference with the implementation each backbone ships
 with. A candidate is called
 positive only when it lowers latency, with the cost of any run-time signal
-included, or raises success, by more than the preregistered margin that
-Section~IV-A fixes for that quantity. The quantity it does not improve must
-stay within its own margin of the dense value.
+included, or significantly raises success under the paired test that
+Section~IV-A records. A candidate that improves one measure at a significant
+cost to the other is not counted.

@@ -20,10 +20,10 @@
 % (conservative-adaptive 87.5 still highest; strict ties aggressive at 36.0
 % with fewer steps). Per-episode files for the paired test not yet received.
 % %PENDING lines depend on the mentor's reruns (CronusVLA fusion settings,
-% per-episode files of the repeated runs), on the SmolVLA
-% depth answer, and on the margin question (Section II and the Introduction
-% promise a positive rule with margins fixed in IV-A; either IV-A fixes them
-% and one sentence applies the rule here, or the promise is removed there).
+% per-episode files of the repeated runs) and on the SmolVLA depth answer.
+% The margin question is resolved: the positive-candidate rule of Related
+% Work now reads on the paired test, not a preregistered margin, so the
+% closing sentence of IV-B states the transfer thesis and cites no margin.
 % Multiple-comparison corrections are named once, in IV-A (16 of the 22
 % drops pass a false discovery rate correction at 0.05, no gain does);
 % this section uses only significant and the chance count. Bonferroni
@@ -171,8 +171,10 @@ latency and success do not move together. Foveation is slower on every
 backbone and worse on three, depth pruning is faster on six backbones and
 worse on four, and action repeat is fastest and worst. The one cell that is
 both faster and better, depth pruning on CogACT WidowX, reads 0.0 on
-Fractal. We propose no setting on the
-strength of these cells. %PENDING margin rule of Section II.
+Fractal. Taken together, the sign of a training-free intervention is a joint
+property of the rule, the backbone and the environment rather than of any
+one of them, and an efficiency or accuracy claim made on one combination
+does not transfer to another without a matched test on the target.
 
 \subsection{Analysis}
 
@@ -218,4 +220,6 @@ bound the candidates before their effect does, and a backbone on which the
 signal never fires reports the dense policy under the intervention's name.
 A protocol that pairs episodes and keeps the per-step record of the gates
 and selectors exposes this, and one that reports aggregate rates alone does
-not.
+not. A latency figure reported without the per-step gate record cannot show
+whether the gate fired at all, so we report how often each reuse and fusion
+gate fired and recommend the same for any gated intervention.
