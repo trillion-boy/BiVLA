@@ -3,7 +3,8 @@
 % owns this section. Replaces the 2026-08 three-backbone draft. Every number
 % comes from the 2026-09-11 export (summary.json arguments, the CSVs) or from
 % the mentor's attention_backend.md; bracketed items are the mentor's to fill
-% (GPU per backbone, library versions, calibration frames). Style: no
+% (GPU per backbone, torch version). Attention backends and transformers
+% versions come from attention_backend.md and are filled. Style: no
 % em-dashes, no semicolons, no prose colons, no hedges, no footnotes.
 %
 % What Sections IV-B and IV-C assume this section states: the selection rule
@@ -11,8 +12,7 @@
 % environment step, the chunk size per backbone, the decoder depth per
 % backbone, and the SmolVLA two-implementation caveat.
 % Peak memory was not measured in any run (no memory field in the export);
-% Section V states it as a limitation. Ask the mentor to log
-% torch.cuda.max_memory_allocated on the reruns.
+% Section V states it as a limitation. No rerun is requested for it.
 % Table~\ref{tab:backbones} below replaces tablebackbones.tex (three-backbone
 % version); do not include both.
 % ---------------------------------------------------------------------------
@@ -32,9 +32,11 @@ unchanged, and the CronusVLA rows test that transfer rather than assume it.
 Actions per call is how many environment steps one model call covers.
 UniVLA executes its native chunk of five actions on SimplerEnv and ten on
 LIBERO, and every other harness executes one action per call. The attention
-implementation is the one each backbone ships with under the evaluation
-environment [transformers version, torch version], recorded per backbone in
-Table~\ref{tab:backbones}. %PENDING mentor: versions and GPU column.
+implementation is the one each backbone ships with, resolved under the
+evaluation environment with transformers 4.47.0, and SmolVLA under an
+isolated 4.51.3 stack, recorded per backbone in Table~\ref{tab:backbones}.
+OpenVLA requests SDPA on SimplerEnv, and its LIBERO loader defaults to eager.
+%PENDING mentor: torch version and GPU column.
 
 \textbf{Environments and episodes.} SimplerEnv WidowX has four tasks (put
 carrot on plate, put eggplant in basket, put spoon on towel, stack cube) at
@@ -124,7 +126,7 @@ the strict thresholds, so their latency is not compared either. %PENDING mentor:
 Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & GPU \\
 \midrule
 CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit & [\,] \\
-OpenVLA & openvla-7b, openvla-7b-Fractal, openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA, requested & [\,] \\
+OpenVLA & openvla-7b, openvla-7b-Fractal, openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO & [\,] \\
 SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder & [\,] \\
 CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit & RTX 5090 \\
 UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & RTX 5090 (WidowX), [\,] \\
