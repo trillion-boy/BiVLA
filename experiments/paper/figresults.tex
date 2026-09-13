@@ -1,81 +1,88 @@
 % ---------------------------------------------------------------------------
-% Figure environments for Section IV-B. The six figures are the mentor's
-% selection in plots/paper_figures/PAPER_SELECTION.md, at the full
-% two-column width they were designed for. Paths assume the mentor's
-% paper_figures/pdf folder is uploaded next to the main file. Drop figures
-% from the bottom of this file first if the page limit bites. The seventh,
-% commented out, is the significance-colored variant of cross_setting.
+% Figure environments for Section IV-B. Final main-paper set of 2026-09-13
+% after a 13-agent review of all 35 catalog figures against the paper text:
+% four figures, in order of importance, with the fourth conditional on the
+% page budget. Two are draft variants regenerated from the mentor's scripts
+% (scripts/regen_draft_variants.py): success_change_bridge with a backbone
+% name in each panel, and ablation_depth_pruning with the SmolVLA speedup
+% points at budgets two and four removed, since Setup reads SmolVLA latency
+% only within the released stack. They render in Liberation Serif; rerun on
+% the mentor's machine for Times New Roman. Paths assume paper_figures/pdf
+% is uploaded next to the main file. Supplement candidates are commented
+% out at the bottom.
 % ---------------------------------------------------------------------------
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_bridge.pdf}
+  \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_bridge_labeled.pdf}
   \caption{Success change from the dense policy on SimplerEnv WidowX, in
-  percentage points, for all 13 intervention settings. Panels read left to
-  right, top to bottom, as CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA
-  and UniVLA. Colors identify families. Values are point estimates from the
-  paired runs, and the paired test of Section~IV-A decides significance in
-  the text.}
+  percentage points, for all 13 intervention settings on the six WidowX
+  backbones. Colors identify families and match the row labels. Values are
+  point estimates from the paired runs, and the paired test of
+  Section~IV-A decides significance in the text.}
   \label{fig:success-widowx}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_libero.pdf}
-  \caption{Success change from the dense policy on LIBERO, all four suites
-  combined per backbone, for all 13 settings. Panels are OpenVLA, SmolVLA
-  and UniVLA.}
-  \label{fig:success-libero}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/tradeoff_univla_libero.pdf}
-  \caption{Success change against effective time-per-step speedup for
-  UniVLA on LIBERO, relative to the dense policy in the same environment.
-  The star is the dense policy, the shaded region is faster and more
-  successful, and the dashed line connects the nondominated settings
-  without implying significance. The overview panel shows all settings and
-  the five panels show one family each with its own axis limits.}
-  \label{fig:tradeoff-univla}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/tradeoff_cogact_base_simplerenv_bridge.pdf}
-  \caption{Success change against effective time-per-step speedup for
-  CogACT on SimplerEnv WidowX, in the layout of
-  Fig.~\ref{fig:tradeoff-univla}. Depth pruning at a budget of two is the
-  one table cell in the study that is both faster and more successful.}
-  \label{fig:tradeoff-cogact}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/ablation_action_repeat.pdf}
-  \caption{Action repeat across every backbone and environment. Left,
-  success change from dense at repeat factors of two and four. Right,
-  time-per-step speedup. Lines are backbone and environment pairs.}
-  \label{fig:ablation-repeat}
 \end{figure*}
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{paper_figures/pdf/cross_setting_consistency.pdf}
   \caption{For each setting, the number of the 13 backbone and environment
-  combinations (LIBERO suites combined per backbone) whose success is
-  lower, unchanged or higher than dense. Counts are point estimates.
-  Under the paired test only six settings across the study raise success
-  significantly, all on three combinations (Section~IV-B).}
+  combinations, with LIBERO suites pooled per backbone, whose success is
+  lower, unchanged or higher than dense. Lower and higher count any nonzero
+  change, and unchanged includes the cells of RQ4 whose gates never fired.
+  Conservative fusion counts 12 combinations because the OpenVLA LIBERO
+  cell was incomplete when the figure was drawn, and the completed cell (45
+  of 100 on Long) is reported in Section~IV-B without a paired test. Under
+  the paired test, six of the 285 setting and combination cells raise
+  success significantly, on three combinations.}
   \label{fig:consistency}
 \end{figure*}
 
-% Optional variant colored by the paired test rather than by sign:
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{paper_figures/pdf/ablation_depth_pruning_masked.pdf}
+  \caption{Depth pruning across every backbone and environment as the
+  number of removed decoder layers rises. Left, success change from dense
+  in percentage points. Right, dense time per step divided by intervened
+  time per step. LIBERO suites are pooled per backbone, so 13 lines stand
+  for the 22 pairs of the text. Marker shape encodes the environment,
+  circle for WidowX, square for Google robot and triangle for LIBERO. The
+  SmolVLA speedups at budgets two and four are omitted because those runs
+  used a second software stack (Section~IV-A). Values are point estimates,
+  and the paired test decides significance in the text.}
+  \label{fig:ablation-depth}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{paper_figures/pdf/ablation_action_repeat.pdf}
+  \caption{Action repeat across every backbone and environment at repeat
+  factors of two and four. Left, success change from dense in percentage
+  points. Right, dense time per step divided by intervened time per step.
+  LIBERO suites are pooled per backbone, and marker shape encodes the
+  environment as in Fig.~\ref{fig:ablation-depth}. Values are point
+  estimates, and the paired test decides significance in the text.}
+  \label{fig:ablation-repeat}
+\end{figure*}
+
+% ---- Supplement candidates (not in the main paper) -----------------------
+% success_change_libero: same layout as Fig. 1 for OpenVLA, SmolVLA and
+% UniVLA on LIBERO with suites pooled. Its render prints "Incomplete
+% coverage" in the OpenVLA conservative-fusion row and cannot be
+% regenerated until the per-episode file for that cell arrives; if used,
+% the caption must say so.
 % \begin{figure*}[t]
 %   \centering
-%   \includegraphics[width=\textwidth]{paper_figures/pdf/cross_setting_significance.pdf}
-%   \caption{As Fig.~\ref{fig:consistency}, with each combination colored
-%   by an exact two-sided McNemar test at $p<0.05$ on episodes matched by
-%   task and index. Incomplete combinations are excluded.}
-%   \label{fig:consistency-sig}
+%   \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_libero.pdf}
+%   \caption{Success change from the dense policy on LIBERO, all four
+%   suites pooled per backbone, for all 13 settings. Panels are OpenVLA,
+%   SmolVLA and UniVLA. The OpenVLA conservative-fusion row is marked
+%   incomplete because its Long suite was not available when the figure
+%   was drawn, and the completed cell (45 of 100) is reported in
+%   Section~IV-B.}
+%   \label{fig:success-libero}
 % \end{figure*}
+%
+% tradeoff_univla_libero and tradeoff_cogact_base_simplerenv_bridge: one
+% backbone each at 6.5 in; every family-best point is in Table I or II and
+% the informative points are in Figs. 1, 3 and 4.

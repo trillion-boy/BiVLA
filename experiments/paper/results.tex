@@ -28,7 +28,8 @@ Tables~\ref{tab:simplerenv-results} and~\ref{tab:libero-results} report
 Success, Latency and Avg.\ Steps for the dense policy and for the
 family-best setting on every backbone and environment, with the change from
 dense in parentheses, and Figs.~\ref{fig:success-widowx}
-to~\ref{fig:consistency} show every tested setting. We read them through
+to~\ref{fig:ablation-repeat} show every tested setting on WidowX and the
+depth and repeat sweeps on every pair. We read them through
 four questions. RQ1 asks whether any intervention reliably improves success
 or efficiency. RQ2 asks whether the sign of an intervention transfers across
 backbones and environments. RQ3 asks whether computation, runtime and
@@ -45,7 +46,9 @@ and $+9.5$ points on three backbone and environment pairs. The drops do
 not. Twenty of the 22 remove 10 points or more, and action repeat on UniVLA
 removes 58 to 75. Over all 285 tested settings the count is 76 significant
 drops against six significant gains, and the six gains sit on the same
-three pairs (Fig.~\ref{fig:consistency}). Guarded reuse changes success
+three pairs. No setting raises success on more than six of the 13 backbone
+and environment combinations, and every setting lowers it on at least
+three (Fig.~\ref{fig:consistency}). Guarded reuse changes success
 significantly in none of its 66 settings, and its largest change is 7.0
 points. On the efficiency side only action repeat and depth pruning lower
 latency per step, by 28 to 48 percent at two steps and by 1 to 6 percent
@@ -57,12 +60,13 @@ harmless because its gates rarely fire (RQ4).}
 
 \textbf{RQ2. Does the sign of an intervention transfer across backbones
 and environments?} Fig.~\ref{fig:success-widowx} shows the same 13
-settings on the six WidowX backbones, and no setting keeps one sign down
-the column. Depth pruning at a budget of two adds 9.5 points to CogACT
+settings on the six WidowX backbones, and no setting other than action
+repeat keeps one sign down the column, while action repeat is negative on
+all six. Depth pruning at a budget of two adds 9.5 points to CogACT
 ($p = 0.009$) and removes 36.0 from MiniVLA and 17.0 from SpatialVLA (both
 $p < 0.001$) on the same WidowX task instances. Foveation at a keep ratio
 of 0.5 adds 7.0 to UniVLA ($p = 0.039$) and removes 13.0 from SmolVLA
-($p = 0.015$) on the same Goal suite (Fig.~\ref{fig:success-libero}). The
+($p = 0.015$) on the same Goal suite (Table~\ref{tab:libero-results}). The
 environment changes the outcome for a fixed backbone and rule as well. The
 same keep ratio removes 14.5 points from UniVLA on WidowX ($p < 0.001$)
 and adds 7.0 on Goal, and action repeat at two steps costs CogACT 38.0
@@ -71,7 +75,8 @@ Raising the depth budget from one to two to four lifts the number of
 significant drops from 8 to 9 to 14 of 22, while CogACT WidowX moves by
 $+7.0$, $+9.5$ and $+2.5$ and MiniVLA WidowX by $-17.5$, $-36.0$ and
 $-36.0$, so the knob that collapses one backbone peaks and recedes on
-another (Fig.~\ref{fig:ablation-repeat} shows the same for action repeat).
+another (Fig.~\ref{fig:ablation-depth}, and Fig.~\ref{fig:ablation-repeat}
+for action repeat).
 \textbf{The sign is a joint property of the rule, the backbone and the
 environment. Each of the three sign flips above is significant on both
 sides, and none of the four gains reaches significance on any other
@@ -90,12 +95,14 @@ and adds about 8 percent per call on OpenVLA and 14 to 17 on MiniVLA and
 UniVLA under task-aware. Action repeat is the fastest family, 0.52 to 0.72
 of dense latency per step at two steps, and the worst, with significant
 drops in 8 of 22 cells at two steps and 20 of 22 at four. Depth pruning
-lowers latency per call on every backbone except SmolVLA, monotonically in
-the budget, and its success response at one budget spans $+9.5$ to $-36.0$.
-Figs.~\ref{fig:tradeoff-univla} and~\ref{fig:tradeoff-cogact} show the two
-extremes on one axis pair. On UniVLA LIBERO a large per-step gain coexists
-with a 58 to 75 point loss, and on CogACT WidowX the only cell that is both
-faster and better, depth pruning at a budget of two, reads 0.0 on Fractal.
+lowers latency per call at budgets of two and four on every backbone except
+SmolVLA, and at a budget of one on all but CogACT Fractal, where it stays
+within one percent of dense, while its success response at one budget spans
+$+9.5$ to $-36.0$. The right panels of Figs.~\ref{fig:ablation-depth}
+and~\ref{fig:ablation-repeat} show the two extremes. On UniVLA LIBERO a
+large per-step gain coexists with a 58 to 75 point loss, and the only
+significant gain that also lowers latency, depth pruning at a budget of two
+on CogACT WidowX, reads 0.0 on Fractal at its family-best budget of four.
 \textbf{Lower computation implies neither lower latency nor preserved
 success. Foveation and fusion change success without changing
 computation, and action repeat and depth pruning change computation with a
