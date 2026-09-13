@@ -2,22 +2,20 @@
 % Figure environments for Section IV-B. Final main-paper set of 2026-09-13
 % after a 13-agent review of all 35 catalog figures against the paper text:
 % four figures, in order of importance, with the fourth conditional on the
-% page budget. Two are draft variants regenerated from the mentor's scripts
-% (scripts/regen_draft_variants.py): success_change_bridge with a backbone
-% name in each panel, and ablation_depth_pruning with the SmolVLA speedup
-% points at budgets two and four removed, since Setup reads SmolVLA latency
-% only within the released stack. They render in Liberation Serif; rerun on
-% the mentor's machine for Times New Roman. Paths assume paper_figures/pdf
-% is uploaded next to the main file. Supplement candidates are commented
+% page budget. All four are the mentor's catalog figures unchanged; panel
+% identities and the SmolVLA stack note live in the captions. Paths assume
+% paper_figures/pdf is uploaded next to the main file. Supplement candidates are commented
 % out at the bottom.
 % ---------------------------------------------------------------------------
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_bridge_labeled.pdf}
+  \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_bridge.pdf}
   \caption{Success change from the dense policy on SimplerEnv WidowX, in
   percentage points, for all 13 intervention settings on the six WidowX
-  backbones. Colors identify families and match the row labels. Values are
+  backbones. Panels read left to right and top to bottom as CogACT,
+  CronusVLA, MiniVLA, OpenVLA, SpatialVLA and UniVLA. Colors identify
+  families and match the row labels. Values are
   point estimates from the paired runs, and the paired test of
   Section~IV-A decides significance in the text.}
   \label{fig:success-widowx}
@@ -40,15 +38,15 @@
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/ablation_depth_pruning_masked.pdf}
+  \includegraphics[width=\textwidth]{paper_figures/pdf/ablation_depth_pruning.pdf}
   \caption{Depth pruning across every backbone and environment as the
   number of removed decoder layers rises. Left, success change from dense
   in percentage points. Right, dense time per step divided by intervened
   time per step. LIBERO suites are pooled per backbone, so 13 lines stand
   for the 22 pairs of the text. Marker shape encodes the environment,
   circle for WidowX, square for Google robot and triangle for LIBERO. The
-  SmolVLA speedups at budgets two and four are omitted because those runs
-  used a second software stack (Section~IV-A). Values are point estimates,
+  SmolVLA speedups at budgets two and four come from a second software
+  stack and are not read (Section~IV-A). Values are point estimates,
   and the paired test decides significance in the text.}
   \label{fig:ablation-depth}
 \end{figure*}
