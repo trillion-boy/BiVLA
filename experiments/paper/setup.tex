@@ -29,7 +29,7 @@ Block Influence selector to that DiT. CogACT, CronusVLA, MiniVLA and
 SpatialVLA run under transformers 4.47.0, SmolVLA on an isolated 4.51.3
 stack, [OpenVLA and UniVLA transformers versions, mentor], and OpenVLA
 requests SDPA on SimplerEnv but defaults to eager on LIBERO.
-%PENDING mentor: torch version and GPU column.
+%PENDING mentor: torch version. (GPU column dropped 2026-09-13: shared cluster, card not fixed per backbone; stated in the Hardware paragraph instead.)
 
 \textbf{Environments and episodes.} SimplerEnv WidowX has four tasks at 50
 episodes each, with a step cap of 60, or 120 for the eggplant task. Google
@@ -67,8 +67,8 @@ episodes.
 wall-clock per environment step, the episode time divided by its steps,
 which has the same meaning on every harness whether a call covers one step
 or a chunk. We read latency only as the change from dense within one backbone, one
-environment, one card and one software stack, and cells that break this
-rule report success alone.
+environment, one software stack and one GPU class, and cells that break
+this rule report success alone.
 Every harness other than CronusVLA also records its per-call time, which
 Sections~IV-B and~IV-C use, and CronusVLA reports only the episode clock. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
 and~\ref{tab:libero-results} show, for each family, the setting with the
@@ -93,8 +93,11 @@ its individual p-value is post-selection and read as descriptive. Sixteen
 of the 22 significant drops reported in Section~IV-B pass a false discovery
 rate correction at 0.05, and no gain does.
 
-\textbf{Hardware and implementation.} [GPU per backbone, one card model per
-backbone and environment.] SmolVLA ran under two implementations. The released
+\textbf{Hardware and implementation.} Runs were scheduled on a shared GPU
+cluster, so the card is not fixed per backbone and VRAM class was matched
+across a backbone's runs. The card is recorded where known, CronusVLA and
+UniVLA WidowX on an RTX 5090 and the three reruns below on an RTX PRO 6000.
+SmolVLA ran under two implementations. The released
 lerobot stack covered the dense policy, foveation, action repeat and some
 depth cells, and a reconstructed stack on several GPU models covered guarded
 reuse, temporal fusion and the remaining depth cells, so its latency is
@@ -119,17 +122,17 @@ and UniVLA the two are not separated.
 \small
 \setlength{\tabcolsep}{4pt}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{l p{5.2cm} r l c p{3cm} l}
+\begin{tabular}{l p{5.2cm} r l c p{3cm}}
 \toprule
-Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & GPU \\
+Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention \\
 \midrule
-CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit & [\,] \\
-OpenVLA & openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO & [\,] \\
-SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder & [\,] \\
-CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit (Qwen2.5), timm (DiT) & RTX 5090 \\
-UniVLA & UNIVLA\_SIMPLER\_BRIDGE\_VIDEO\_BS128\_20K, UNIVLA\_LIBERO\_VIDEO\_BS192\_8K & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & RTX 5090 (WidowX), [\,] \\
-MiniVLA & minivla-vq-bridge-prismatic & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit & [\,] \\
-SmolVLA & smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & SDPA, explicit & [\,] \\
+CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit \\
+OpenVLA & openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO \\
+SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder \\
+CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit (Qwen2.5), timm (DiT) \\
+UniVLA & UNIVLA\_SIMPLER\_BRIDGE\_VIDEO\_BS128\_20K, UNIVLA\_LIBERO\_VIDEO\_BS192\_8K & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested \\
+MiniVLA & minivla-vq-bridge-prismatic & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit \\
+SmolVLA & smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & SDPA, explicit \\
 \bottomrule
 \end{tabular}%
 }
