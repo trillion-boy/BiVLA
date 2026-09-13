@@ -1,0 +1,322 @@
+[
+  {
+    "name": "success_change_bridge",
+    "function": "comparison",
+    "args": [
+      "bridge",
+      "delta"
+    ],
+    "caption": "Success-rate change relative to each original policy, in percentage points. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "step_speedup_bridge",
+    "function": "comparison",
+    "args": [
+      "bridge",
+      "speedup"
+    ],
+    "caption": "Effective time-per-step speedup: original pooled elapsed time per step divided by the configuration value. Includes recorded rollout overhead. Dots show measured speedup on a logarithmic axis; stems connect each measurement to the 1\u00d7 original-policy reference. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "episode_steps_bridge",
+    "function": "comparison",
+    "args": [
+      "bridge",
+      "step_change"
+    ],
+    "caption": "Change in mean episode steps relative to original, including successful and failed episodes. Fewer steps alone do not establish better policy performance. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Supplement"
+  },
+  {
+    "name": "success_change_fractal",
+    "function": "comparison",
+    "args": [
+      "fractal",
+      "delta"
+    ],
+    "caption": "Success-rate change relative to each original policy, in percentage points. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, OpenVLA, SpatialVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "step_speedup_fractal",
+    "function": "comparison",
+    "args": [
+      "fractal",
+      "speedup"
+    ],
+    "caption": "Effective time-per-step speedup: original pooled elapsed time per step divided by the configuration value. Includes recorded rollout overhead. Dots show measured speedup on a logarithmic axis; stems connect each measurement to the 1\u00d7 original-policy reference. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, OpenVLA, SpatialVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "episode_steps_fractal",
+    "function": "comparison",
+    "args": [
+      "fractal",
+      "step_change"
+    ],
+    "caption": "Change in mean episode steps relative to original, including successful and failed episodes. Fewer steps alone do not establish better policy performance. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, OpenVLA, SpatialVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Supplement"
+  },
+  {
+    "name": "success_change_libero",
+    "function": "comparison",
+    "args": [
+      "libero",
+      "delta"
+    ],
+    "caption": "Success-rate change relative to each original policy, in percentage points. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: OpenVLA, SmolVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "step_speedup_libero",
+    "function": "comparison",
+    "args": [
+      "libero",
+      "speedup"
+    ],
+    "caption": "Effective time-per-step speedup: original pooled elapsed time per step divided by the configuration value. Includes recorded rollout overhead. Dots show measured speedup on a logarithmic axis; stems connect each measurement to the 1\u00d7 original-policy reference. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: OpenVLA, SmolVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "episode_steps_libero",
+    "function": "comparison",
+    "args": [
+      "libero",
+      "step_change"
+    ],
+    "caption": "Change in mean episode steps relative to original, including successful and failed episodes. Fewer steps alone do not establish better policy performance. All 13 non-original configurations are shown in aligned backbone panels with shared axes. Color identifies the intervention family. Bars extend from zero for success and episode-step changes. Missing full-benchmark coverage is labeled explicitly. Backbone panels, left to right and then top to bottom: OpenVLA, SmolVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Supplement"
+  },
+  {
+    "name": "tradeoff_cogact_base_simplerenv_bridge",
+    "function": "pareto",
+    "args": [
+      "cogact_base_simplerenv_bridge"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_cogact_base_simplerenv_fractal",
+    "function": "pareto",
+    "args": [
+      "cogact_base_simplerenv_fractal"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_cronusvla_simplerenv_bridge",
+    "function": "pareto",
+    "args": [
+      "cronusvla_simplerenv_bridge"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_cronusvla_simplerenv_fractal",
+    "function": "pareto",
+    "args": [
+      "cronusvla_simplerenv_fractal"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_minivla_simplerenv",
+    "function": "pareto",
+    "args": [
+      "minivla_simplerenv"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_openvla_simplerenv",
+    "function": "pareto",
+    "args": [
+      "openvla_simplerenv"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_openvla_simplerenv_fractal",
+    "function": "pareto",
+    "args": [
+      "openvla_simplerenv_fractal"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_openvla_libero",
+    "function": "pareto",
+    "args": [
+      "openvla_libero"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_smolvla_libero",
+    "function": "pareto",
+    "args": [
+      "smolvla_libero"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_spatialvla_simplerenv_bridge",
+    "function": "pareto",
+    "args": [
+      "spatialvla_simplerenv_bridge"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_spatialvla_simplerenv_fractal",
+    "function": "pareto",
+    "args": [
+      "spatialvla_simplerenv_fractal"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_univla_simplerenv_bridge",
+    "function": "pareto",
+    "args": [
+      "univla_simplerenv_bridge"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "tradeoff_univla_libero",
+    "function": "pareto",
+    "args": [
+      "univla_libero"
+    ],
+    "caption": "Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1\u00d7, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper: select representative settings; remaining plots in supplement"
+  },
+  {
+    "name": "ablation_foveation",
+    "function": "ablation",
+    "args": [
+      1
+    ],
+    "caption": "Foveation configuration sensitivity across all model\u2013environment settings. Left: success change in percentage points; right: effective time-per-step speedup. Lines connect measured configurations only. Categorical reuse/fusion settings are not a continuous numerical scale. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper or supplement"
+  },
+  {
+    "name": "ablation_action_repeat",
+    "function": "ablation",
+    "args": [
+      2
+    ],
+    "caption": "Action repeat configuration sensitivity across all model\u2013environment settings. Left: success change in percentage points; right: effective time-per-step speedup. Lines connect measured configurations only. Categorical reuse/fusion settings are not a continuous numerical scale. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper or supplement"
+  },
+  {
+    "name": "ablation_depth_pruning",
+    "function": "ablation",
+    "args": [
+      3
+    ],
+    "caption": "Depth pruning configuration sensitivity across all model\u2013environment settings. Left: success change in percentage points; right: effective time-per-step speedup. Lines connect measured configurations only. Categorical reuse/fusion settings are not a continuous numerical scale. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper or supplement"
+  },
+  {
+    "name": "ablation_guarded_reuse",
+    "function": "ablation",
+    "args": [
+      4
+    ],
+    "caption": "Guarded reuse configuration sensitivity across all model\u2013environment settings. Left: success change in percentage points; right: effective time-per-step speedup. Lines connect measured configurations only. Categorical reuse/fusion settings are not a continuous numerical scale. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper or supplement"
+  },
+  {
+    "name": "ablation_temporal_fusion",
+    "function": "ablation",
+    "args": [
+      5
+    ],
+    "caption": "Temporal fusion configuration sensitivity across all model\u2013environment settings. Left: success change in percentage points; right: effective time-per-step speedup. Lines connect measured configurations only. Categorical reuse/fusion settings are not a continuous numerical scale. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper or supplement"
+  },
+  {
+    "name": "libero_suites_openvla",
+    "function": "suite_success",
+    "args": [
+      "openvla_libero"
+    ],
+    "caption": "Success point estimates for every configuration in Spatial, Object, Goal, and Long (libero_10). Each available suite has 100 episodes. A missing point means the suite was not recorded. No across-seed uncertainty is available. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "libero_suites_smolvla",
+    "function": "suite_success",
+    "args": [
+      "smolvla_libero"
+    ],
+    "caption": "Success point estimates for every configuration in Spatial, Object, Goal, and Long (libero_10). Each available suite has 100 episodes. A missing point means the suite was not recorded. No across-seed uncertainty is available. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "libero_suites_univla",
+    "function": "suite_success",
+    "args": [
+      "univla_libero"
+    ],
+    "caption": "Success point estimates for every configuration in Spatial, Object, Goal, and Long (libero_10). Each available suite has 100 episodes. A missing point means the suite was not recorded. No across-seed uncertainty is available. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "episode_duration_ecdf_bridge",
+    "function": "duration_ecdf",
+    "args": [
+      "bridge"
+    ],
+    "caption": "Empirical CDF of all recorded episode durations, including failures, normalized by the original mean within each model and environment. Six prespecified representatives: O, F20, A2, D1, RM, FT (see code key). Duration reflects termination and failure as well as computation; read alongside success. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Supplement"
+  },
+  {
+    "name": "episode_duration_ecdf_fractal",
+    "function": "duration_ecdf",
+    "args": [
+      "fractal"
+    ],
+    "caption": "Empirical CDF of all recorded episode durations, including failures, normalized by the original mean within each model and environment. Six prespecified representatives: O, F20, A2, D1, RM, FT (see code key). Duration reflects termination and failure as well as computation; read alongside success. Backbone panels, left to right and then top to bottom: CogACT, CronusVLA, OpenVLA, SpatialVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Supplement"
+  },
+  {
+    "name": "episode_duration_ecdf_libero",
+    "function": "duration_ecdf",
+    "args": [
+      "libero"
+    ],
+    "caption": "Empirical CDF of all recorded episode durations, including failures, normalized by the original mean within each model and environment. Six prespecified representatives: O, F20, A2, D1, RM, FT (see code key). Duration reflects termination and failure as well as computation; read alongside success. Backbone panels, left to right and then top to bottom: OpenVLA, SmolVLA, UniVLA. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Supplement"
+  },
+  {
+    "name": "cross_setting_consistency",
+    "function": "consistency",
+    "args": [],
+    "caption": "Counts of model\u2013environment settings with lower, identical, or higher observed success than original. Each setting has equal weight. These are descriptive point-estimate comparisons, not significance tests. The incomplete configuration has 12 settings rather than 13. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Main paper"
+  },
+  {
+    "name": "evaluation_coverage",
+    "function": "coverage",
+    "args": [],
+    "caption": "Total recorded episodes across all 14 configurations by model\u2013environment setting. The hatched segment marks 100 missing episodes: OpenVLA LIBERO conservative fusion has only three of four suites. Figure and panel titles are omitted; panel identities are specified in this caption and the legends.",
+    "placement": "Supplement"
+  }
+]

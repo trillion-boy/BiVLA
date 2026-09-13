@@ -1,0 +1,88 @@
+{
+  "status": "completed",
+  "model_name": "openvla_simplerenv_fractal",
+  "config_name": "action_repeat4",
+  "condition": "action_repeat",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint_size_bytes": 15082600824,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "fractal20220817_data",
+    "task_suite": "simpler_google_robot_fractal",
+    "image_resolution": 224,
+    "center_crop": false,
+    "policy_setup": "google_robot"
+  },
+  "task_suite_name": "simpler_google_robot_fractal",
+  "tasks": [
+    "google_robot_pick_coke_can"
+  ],
+  "episodes": 50,
+  "successes": 26,
+  "success_rate": 0.52,
+  "average_steps": 60.5,
+  "average_policy_calls": 15.36,
+  "average_reuses": 45.14,
+  "policy_query_latency_ms": {
+    "mean_ms": 162.8148176794942,
+    "median_ms": 161.1462355358526,
+    "p95_ms": 163.52665597223677
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 48.94146710822805,
+    "median_ms": 7.650692947208881,
+    "p95_ms": 170.56249699089676
+  },
+  "average_episode_ms": 6899.182550399564,
+  "average_control_frequency_hz": 8.769154832190397,
+  "per_task": {
+    "google_robot_pick_coke_can": {
+      "episodes": 50,
+      "successes": 26,
+      "success_rate": 0.52,
+      "average_steps": 60.5,
+      "average_policy_calls": 15.36,
+      "average_episode_ms": 6899.182550399564
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "models/openvla-7b",
+    "condition": "action_repeat",
+    "tasks": "google_robot_pick_coke_can",
+    "model_name": "openvla_simplerenv_fractal",
+    "config_name": "action_repeat4",
+    "output_dir": "artifacts/results/openvla_simplerenv_fractal/action_repeat4/google_robot_pick_coke_can",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 80,
+    "device": "cuda:0",
+    "action_repeat": 4,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Google Robot/Fractal SimplerEnv setup; report only completed paired rollouts."
+}

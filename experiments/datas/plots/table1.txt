@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\caption{The seven backbones, their released checkpoints, and how each was run. Parameter counts are as reported by the original works. Decoder depth is the stack that depth pruning acts on. Actions per call is how many environment steps one model call covers.}
+\label{tab:backbones}
+\small
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l p{5.2cm} r l c p{3cm} l}
+\toprule
+Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & GPU \\
+\midrule
+CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit & [\,] \\
+OpenVLA & openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO & [\,] \\
+SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder & [\,] \\
+CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit & RTX 5090 \\
+UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & RTX 5090 (WidowX), [\,] \\
+MiniVLA & minivla-vq-bridge & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit & [\,] \\
+SmolVLA & smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & SDPA, explicit & [\,] \\
+\bottomrule
+\end{tabular}%
+}
+\end{table*}

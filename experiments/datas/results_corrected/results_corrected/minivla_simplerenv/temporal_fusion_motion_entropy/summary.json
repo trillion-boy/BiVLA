@@ -1,0 +1,99 @@
+{
+  "status": "completed",
+  "condition": "temporal_fusion",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic/checkpoints/step-362500-epoch-21-loss=0.2259.pt",
+    "resolved_checkpoint_size_bytes": 5554882540,
+    "model_id": "prism-qwen25-extra-dinosiglip-224px+0_5b",
+    "base_vlm": "prism-qwen25-extra-dinosiglip-224px+0_5b",
+    "action_statistics_key": "bridge_dataset",
+    "task_suite": "simpler_widowx",
+    "image_resolution": 224,
+    "center_crop": false
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_spoon_on_towel",
+    "widowx_carrot_on_plate",
+    "widowx_stack_cube",
+    "widowx_put_eggplant_in_basket"
+  ],
+  "episodes": 200,
+  "successes": 78,
+  "success_rate": 0.39,
+  "average_steps": 61.165,
+  "average_policy_calls": 61.165,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 98.77270679511902,
+    "median_ms": 98.5735270078294,
+    "p95_ms": 99.85622140811756
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 107.08272964571272,
+    "median_ms": 106.97237399290316,
+    "p95_ms": 108.42847659369
+  },
+  "average_episode_ms": 9167.024273881398,
+  "average_control_frequency_hz": 6.672285157384252,
+  "per_task": {
+    "widowx_spoon_on_towel": {
+      "episodes": 50,
+      "successes": 24,
+      "success_rate": 0.48,
+      "average_steps": 45.78,
+      "average_policy_calls": 45.78,
+      "average_episode_ms": 6729.441026845598
+    },
+    "widowx_carrot_on_plate": {
+      "episodes": 50,
+      "successes": 1,
+      "success_rate": 0.02,
+      "average_steps": 59.64,
+      "average_policy_calls": 59.64,
+      "average_episode_ms": 8819.351662659901
+    },
+    "widowx_stack_cube": {
+      "episodes": 50,
+      "successes": 42,
+      "success_rate": 0.84,
+      "average_steps": 38.08,
+      "average_policy_calls": 38.08,
+      "average_episode_ms": 5597.786778601585
+    },
+    "widowx_put_eggplant_in_basket": {
+      "episodes": 50,
+      "successes": 11,
+      "success_rate": 0.22,
+      "average_steps": 101.16,
+      "average_policy_calls": 101.16,
+      "average_episode_ms": 15521.517627418507
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 107.0,
+    "keyframes": 4102
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic",
+    "condition": "temporal_fusion",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/minivla_simplerenv_temporal_fusion_50",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false
+  },
+  "claim_scope": "Task success and timing from SimplerEnv rollouts. Compare paired seeds across conditions; synthetic action agreement is not used.",
+  "model_name": "minivla_simplerenv",
+  "config_name": "temporal_fusion_motion_entropy"
+}

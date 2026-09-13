@@ -1,0 +1,60 @@
+{
+  "status": "completed",
+  "config_name": "depth_pruning1",
+  "condition": "depth_pruning",
+  "episodes": 50,
+  "successes": 1,
+  "episode_errors": 0,
+  "depth_calibration": {
+    "mode": "protected_calibrated",
+    "seed": 10000,
+    "tasks": [
+      "widowx_spoon_on_towel",
+      "widowx_carrot_on_plate",
+      "widowx_stack_cube",
+      "widowx_put_eggplant_in_basket"
+    ],
+    "influence": [
+      0.8067812770605087,
+      0.09067235887050629,
+      0.05383691191673279,
+      0.03292873501777649,
+      0.028842300176620483,
+      0.016044214367866516,
+      0.01408374309539795,
+      0.012240573763847351,
+      0.009275346994400024,
+      0.008230209350585938,
+      0.004366591572761536,
+      0.006381601095199585
+    ],
+    "selected_layers": [
+      10
+    ],
+    "rules": {
+      "min_layer_fraction": 0.25,
+      "protect_last": 1,
+      "min_gap": 1
+    }
+  },
+  "arguments": {
+    "condition": "depth_pruning",
+    "config_name": "depth_pruning1",
+    "tasks": "widowx_stack_cube",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/cronusvla_simplerenv_bridge_protected/depth_pruning1/widowx_stack_cube",
+    "checkpoint": "models/cronusvla_0.5B_bridge_rt_1/checkpoints/step-042500-epoch-07-loss=0.0587.pt",
+    "trials": 50,
+    "seed": 42,
+    "fovea_keep_ratio": 0.2,
+    "action_repeat": 2,
+    "depth_indices": "",
+    "depth_layers": 1,
+    "depth_calibration_seed": 10000,
+    "depth_calibration_tasks": "widowx_spoon_on_towel,widowx_carrot_on_plate,widowx_stack_cube,widowx_put_eggplant_in_basket",
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  }
+}

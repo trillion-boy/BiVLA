@@ -1,0 +1,66 @@
+{
+  "status": "completed",
+  "config_name": "depth_pruning2",
+  "condition": "depth_pruning",
+  "episodes": 50,
+  "successes": 18,
+  "episode_errors": 0,
+  "depth_calibration": {
+    "mode": "protected_calibrated",
+    "seed": 10000,
+    "tasks": [
+      "google_robot_pick_coke_can",
+      "google_robot_move_near",
+      "google_robot_open_drawer",
+      "google_robot_close_drawer",
+      "google_robot_place_apple_in_closed_top_drawer"
+    ],
+    "influence": [
+      0.8015000402927399,
+      0.08469567298889161,
+      0.04843822717666626,
+      0.03145034313201904,
+      0.03185138702392578,
+      0.015004706382751466,
+      0.013990426063537597,
+      0.01204911470413208,
+      0.009467983245849609,
+      0.008374297618865966,
+      0.004326999187469482,
+      0.0064571619033813475
+    ],
+    "selected_layers": [
+      8,
+      10
+    ],
+    "rules": {
+      "min_layer_fraction": 0.25,
+      "protect_last": 1,
+      "min_gap": 1
+    }
+  },
+  "arguments": {
+    "condition": "depth_pruning",
+    "config_name": "depth_pruning2",
+    "tasks": "google_robot_open_drawer",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/cronusvla_simplerenv_fractal_protected/depth_pruning2/google_robot_open_drawer",
+    "checkpoint": "models/cronusvla_0.5B_bridge_rt_1/checkpoints/step-042500-epoch-07-loss=0.0587.pt",
+    "trials": 50,
+    "seed": 42,
+    "fovea_keep_ratio": 0.2,
+    "action_repeat": 2,
+    "depth_indices": "",
+    "depth_layers": 2,
+    "depth_calibration_seed": 10000,
+    "depth_calibration_tasks": "google_robot_pick_coke_can,google_robot_move_near,google_robot_open_drawer,google_robot_close_drawer,google_robot_place_apple_in_closed_top_drawer",
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "task_suite_name": "simpler_google_robot_fractal",
+  "policy_setup": "google_robot",
+  "action_statistics_key": "fractal20220817_data",
+  "claim_scope": "Google Robot/Fractal SimplerEnv setup; report only completed paired rollouts."
+}

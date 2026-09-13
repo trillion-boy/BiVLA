@@ -1,0 +1,73 @@
+{
+  "status": "completed",
+  "model_name": "smolvla_libero",
+  "config_name": "temporal_fusion_motion_entropy",
+  "condition": "temporal_fusion",
+  "task_suite_name": "libero_10",
+  "tasks": [
+    "libero_10__task_0",
+    "libero_10__task_1",
+    "libero_10__task_2",
+    "libero_10__task_3",
+    "libero_10__task_4",
+    "libero_10__task_5",
+    "libero_10__task_6",
+    "libero_10__task_7",
+    "libero_10__task_8",
+    "libero_10__task_9"
+  ],
+  "episodes": 100,
+  "successes": 44,
+  "success_rate": 0.44,
+  "episode_errors": 0,
+  "implementation_versions": [
+    "smolvla-reconstructed-sdpa-v1"
+  ],
+  "claim_scope": "Reconstructed continuation. Legacy and new implementation/hardware timings are not a matched comparison; no improvement claim.",
+  "average_steps": 415.45,
+  "average_policy_calls": 415.45,
+  "average_reuses": 0.0,
+  "average_episode_ms": 115645.16962371659,
+  "per_task": {
+    "libero_10__task_0": {
+      "episodes": 10,
+      "successes": 1
+    },
+    "libero_10__task_1": {
+      "episodes": 10,
+      "successes": 6
+    },
+    "libero_10__task_2": {
+      "episodes": 10,
+      "successes": 4
+    },
+    "libero_10__task_3": {
+      "episodes": 10,
+      "successes": 8
+    },
+    "libero_10__task_4": {
+      "episodes": 10,
+      "successes": 0
+    },
+    "libero_10__task_5": {
+      "episodes": 10,
+      "successes": 9
+    },
+    "libero_10__task_6": {
+      "episodes": 10,
+      "successes": 7
+    },
+    "libero_10__task_7": {
+      "episodes": 10,
+      "successes": 2
+    },
+    "libero_10__task_8": {
+      "episodes": 10,
+      "successes": 3
+    },
+    "libero_10__task_9": {
+      "episodes": 10,
+      "successes": 4
+    }
+  }
+}

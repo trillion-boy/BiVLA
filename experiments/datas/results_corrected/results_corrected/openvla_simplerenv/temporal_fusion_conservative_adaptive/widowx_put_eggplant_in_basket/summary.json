@@ -1,0 +1,87 @@
+{
+  "status": "completed",
+  "model_name": "openvla_simplerenv",
+  "config_name": "temporal_fusion_conservative_adaptive",
+  "condition": "temporal_fusion",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint_size_bytes": 15082600824,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "bridge_orig",
+    "task_suite": "simpler_widowx",
+    "image_resolution": 224,
+    "center_crop": false
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_put_eggplant_in_basket"
+  ],
+  "episodes": 50,
+  "successes": 41,
+  "success_rate": 0.82,
+  "average_steps": 46.6,
+  "average_policy_calls": 46.6,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 158.9643599991324,
+    "median_ms": 158.58242000035716,
+    "p95_ms": 160.17162304999601
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 167.1135140180298,
+    "median_ms": 166.74450550021902,
+    "p95_ms": 168.38949635011886
+  },
+  "average_episode_ms": 9950.722531839947,
+  "average_control_frequency_hz": 4.6830770178638845,
+  "per_task": {
+    "widowx_put_eggplant_in_basket": {
+      "episodes": 50,
+      "successes": 41,
+      "success_rate": 0.82,
+      "average_steps": 46.6,
+      "average_policy_calls": 46.6,
+      "average_episode_ms": 9950.722531839947
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 64.0,
+    "keyframes": 2196
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "condition": "temporal_fusion",
+    "tasks": "widowx_put_eggplant_in_basket",
+    "model_name": "openvla_simplerenv",
+    "config_name": "temporal_fusion_conservative_adaptive",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/openvla_simplerenv/temporal_fusion_conservative_adaptive/widowx_put_eggplant_in_basket",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 2,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.25,
+    "fusion_event_motion_threshold": 0.03,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from SimplerEnv rollouts. Compare paired seeds across conditions; synthetic action agreement is not used."
+}

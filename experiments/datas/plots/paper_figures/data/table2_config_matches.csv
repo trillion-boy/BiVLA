@@ -1,0 +1,73 @@
+model,suite,policy,table_success,table_latency_ms,table_steps,matching_configs
+univla_libero,libero_10,Original,86.0,59.85,280.36,original
+openvla_libero,libero_10,Original,56.0,171.55,396.79,original
+smolvla_libero,libero_10,Original,42.0,289.48,428.35,original
+univla_libero,libero_10,Foveation,90.0,60.58,268.88,fixed_foveation_keep50
+openvla_libero,libero_10,Foveation,44.0,178.55,410.31,fixed_foveation_keep50
+smolvla_libero,libero_10,Foveation,21.0,306.48,477.84,fixed_foveation_keep50
+univla_libero,libero_10,Action repeat,27.0,35.9,465.5,action_repeat2
+openvla_libero,libero_10,Action repeat,46.0,93.16,407.47,action_repeat2
+smolvla_libero,libero_10,Action repeat,31.0,152.13,443.45,action_repeat2
+univla_libero,libero_10,Depth pruning,89.0,57.22,282.61,depth_pruning2
+openvla_libero,libero_10,Depth pruning,53.0,168.38,398.62,depth_pruning1
+smolvla_libero,libero_10,Depth pruning,9.0,291.58,500.07,depth_pruning1
+univla_libero,libero_10,Guarded reuse,86.0,59.48,280.58,guarded_reuse_strict
+openvla_libero,libero_10,Guarded reuse,51.0,163.76,396.62,guarded_reuse_moderate
+smolvla_libero,libero_10,Guarded reuse,47.0,nan,419.34,guarded_reuse_aggressive
+univla_libero,libero_10,Temporal fusion,87.0,64.88,281.91,temporal_fusion_task_aware
+openvla_libero,libero_10,Temporal fusion,49.0,172.91,410.34,temporal_fusion_motion_entropy
+smolvla_libero,libero_10,Temporal fusion,44.0,nan,414.93,temporal_fusion_conservative_adaptive
+univla_libero,libero_goal,Original,92.0,65.1,122.58,original
+openvla_libero,libero_goal,Original,75.0,176.09,157.59,original
+smolvla_libero,libero_goal,Original,80.0,295.68,147.66,original
+univla_libero,libero_goal,Foveation,99.0,65.49,114.37,fixed_foveation_keep50
+openvla_libero,libero_goal,Foveation,75.0,181.32,157.29,fixed_foveation_keep50
+smolvla_libero,libero_goal,Foveation,67.0,304.08,168.51,fixed_foveation_keep50
+univla_libero,libero_goal,Action repeat,34.0,39.75,244.05,action_repeat2
+openvla_libero,libero_goal,Action repeat,68.0,96.25,175.16,action_repeat2
+smolvla_libero,libero_goal,Action repeat,72.0,154.18,164.22,action_repeat2
+univla_libero,libero_goal,Depth pruning,93.0,63.19,121.69,depth_pruning1
+openvla_libero,libero_goal,Depth pruning,72.0,170.53,165.43,depth_pruning1
+smolvla_libero,libero_goal,Depth pruning,62.0,293.54,187.03,depth_pruning1
+univla_libero,libero_goal,Guarded reuse,93.0,64.69,121.34,guarded_reuse_strict
+openvla_libero,libero_goal,Guarded reuse,72.0,157.86,163.88,guarded_reuse_aggressive
+smolvla_libero,libero_goal,Guarded reuse,77.0,nan,151.78,guarded_reuse_aggressive
+univla_libero,libero_goal,Temporal fusion,95.0,64.96,122.07,temporal_fusion_motion_entropy
+openvla_libero,libero_goal,Temporal fusion,77.0,176.23,158.66,temporal_fusion_conservative_adaptive
+smolvla_libero,libero_goal,Temporal fusion,77.0,nan,150.61,temporal_fusion_motion_entropy
+univla_libero,libero_object,Original,96.0,62.41,145.82,original
+openvla_libero,libero_object,Original,87.0,173.85,165.89,original
+smolvla_libero,libero_object,Original,94.0,290.85,162.25,original
+univla_libero,libero_object,Foveation,100.0,63.0,136.04,fixed_foveation_keep20
+openvla_libero,libero_object,Foveation,86.0,180.11,166.18,fixed_foveation_keep50
+smolvla_libero,libero_object,Foveation,81.0,309.09,176.39,fixed_foveation_keep50
+univla_libero,libero_object,Action repeat,21.0,37.61,266.12,action_repeat2
+openvla_libero,libero_object,Action repeat,84.0,93.76,173.96,action_repeat2
+smolvla_libero,libero_object,Action repeat,90.0,150.16,169.02,action_repeat2
+univla_libero,libero_object,Depth pruning,99.0,61.65,143.23,depth_pruning1
+openvla_libero,libero_object,Depth pruning,85.0,168.38,170.03,depth_pruning1
+smolvla_libero,libero_object,Depth pruning,73.0,294.8,193.35,depth_pruning1
+univla_libero,libero_object,Guarded reuse,96.0,62.68,145.82,guarded_reuse_strict;guarded_reuse_moderate;guarded_reuse_aggressive
+openvla_libero,libero_object,Guarded reuse,85.0,169.28,165.41,guarded_reuse_strict
+smolvla_libero,libero_object,Guarded reuse,91.0,nan,162.41,guarded_reuse_aggressive
+univla_libero,libero_object,Temporal fusion,98.0,61.38,142.56,temporal_fusion_motion_entropy
+openvla_libero,libero_object,Temporal fusion,86.0,185.64,165.91,temporal_fusion_task_aware
+smolvla_libero,libero_object,Temporal fusion,90.0,nan,162.51,temporal_fusion_task_aware
+univla_libero,libero_spatial,Original,95.0,72.29,108.31,original
+openvla_libero,libero_spatial,Original,78.0,181.02,133.91,original
+smolvla_libero,libero_spatial,Original,76.0,292.28,132.92,original
+univla_libero,libero_spatial,Foveation,96.0,73.9,108.93,fixed_foveation_keep50
+openvla_libero,libero_spatial,Foveation,83.0,187.09,129.4,fixed_foveation_keep50
+smolvla_libero,libero_spatial,Foveation,76.0,313.86,135.92,fixed_foveation_keep50
+univla_libero,libero_spatial,Action repeat,27.0,46.4,208.63,action_repeat2
+openvla_libero,libero_spatial,Action repeat,72.0,101.16,142.05,action_repeat2
+smolvla_libero,libero_spatial,Action repeat,64.0,157.71,148.18,action_repeat2
+univla_libero,libero_spatial,Depth pruning,96.0,71.59,107.83,depth_pruning1
+openvla_libero,libero_spatial,Depth pruning,62.0,175.02,149.98,depth_pruning1
+smolvla_libero,libero_spatial,Depth pruning,62.0,296.09,151.44,depth_pruning1
+univla_libero,libero_spatial,Guarded reuse,95.0,73.31,108.31,guarded_reuse_strict;guarded_reuse_moderate;guarded_reuse_aggressive
+openvla_libero,libero_spatial,Guarded reuse,82.0,177.48,129.59,guarded_reuse_strict
+smolvla_libero,libero_spatial,Guarded reuse,79.0,nan,129.2,guarded_reuse_strict
+univla_libero,libero_spatial,Temporal fusion,95.0,72.2,108.31,temporal_fusion_conservative_adaptive
+openvla_libero,libero_spatial,Temporal fusion,85.0,180.8,125.72,temporal_fusion_motion_entropy
+smolvla_libero,libero_spatial,Temporal fusion,82.0,nan,125.71,temporal_fusion_conservative_adaptive

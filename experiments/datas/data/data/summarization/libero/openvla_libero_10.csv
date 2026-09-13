@@ -1,0 +1,14 @@
+model_name,environment,checkpoint_model_id,suite,configuration,tasks,episodes,successes,success_rate_pct,avg_steps,avg_policy_calls,avg_reuses,policy_median_latency_ms,policy_p95_latency_ms,cycle_median_latency_ms,cycle_p95_latency_ms,avg_episode_time_s,control_frequency_hz,action_repeat,depth_layers,selected_depth_layers,fusion_keyframe_interval,fusion_max_reuse_fraction,median_reusable_visual_tokens
+openvla_libero,libero,openvla-7b,libero_10,original,10,100,56,56,396.79,396.79,0.0,156.101,157.552,158.417,159.875,68.07,5.829,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,fixed_foveation_keep20,10,100,30,30,446.81,446.81,0.0,156.631,162.231,164.445,171.029,79.61,5.613,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,fixed_foveation_keep50,10,100,44,44,410.31,410.31,0.0,157.163,159.726,165.256,168.82,73.26,5.6,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,action_repeat2,10,100,46,46,407.47,203.85,203.62,156.735,158.257,157.213,160.171,37.96,10.735,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,action_repeat4,10,100,32,32,461.14,115.36,345.78,157.217,158.938,2.243,160.3,24.76,18.621,4,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,depth_pruning1,10,100,53,53,398.62,398.62,0.0,153.09,155.118,155.407,157.453,67.12,5.939,2,1,23,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,depth_pruning2,10,100,45,45,406.28,406.28,0.0,148.974,150.29,151.286,152.61,66.84,6.078,2,2,23;25,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,depth_pruning4,10,100,26,26,466.78,466.78,0.0,138.745,140.512,141.061,142.833,72,6.483,2,4,19;21;23;25,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,guarded_reuse_strict,10,100,51,51,397.87,383.5,14.37,157.001,158.553,159.795,161.515,66.38,5.994,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,guarded_reuse_moderate,10,100,51,51,396.62,374.49,22.13,156.996,159.724,159.916,162.674,64.95,6.107,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,guarded_reuse_aggressive,10,100,50,50,399.28,358.81,40.47,156.269,159.475,159.105,162.43,62.4,6.399,2,1,N/A,N/A,N/A,0.0
+openvla_libero,libero,openvla-7b,libero_10,temporal_fusion_motion_entropy,10,100,49,49,410.34,410.34,0.0,157.322,160.458,160.359,163.371,70.95,5.784,2,1,N/A,3,0.5,128
+openvla_libero,libero,openvla-7b,libero_10,temporal_fusion_task_aware,10,100,48,48,409.33,409.33,0.0,170.178,173.391,173.17,176.123,75.99,5.386,2,1,N/A,3,0.5,69

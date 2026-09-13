@@ -1,0 +1,90 @@
+{
+  "status": "completed",
+  "model_name": "spatialvla_4b_simplerenv_bridge",
+  "config_name": "action_repeat2",
+  "condition": "action_repeat",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/SpatialVLA/weights/spatialvla-4b-224-sft-bridge",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/SpatialVLA/weights/spatialvla-4b-224-sft-bridge",
+    "checkpoint_size_bytes": 8055902750,
+    "model_id": "IPEC-COMMUNITY/spatialvla-4b-224-sft-bridge",
+    "base_vlm": "PaLiGemma2-3B",
+    "action_statistics_key": "bridge_orig/1.0.0",
+    "task_suite": "simpler_widowx",
+    "native_action_chunk_size": 4,
+    "action_ensemble_temperature": -0.8,
+    "attention_backend": "native_mixed (SDPA where supported; ZoeDepth compatible)"
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_put_eggplant_in_basket"
+  ],
+  "episodes": 50,
+  "successes": 49,
+  "success_rate": 0.98,
+  "average_steps": 35.96,
+  "average_policy_calls": 18.46,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 391.35618945504933,
+    "median_ms": 383.0944789997375,
+    "p95_ms": 386.60677270017914
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 476.19965998483565,
+    "median_ms": 467.5380039998345,
+    "p95_ms": 489.35769399986384
+  },
+  "average_episode_ms": 8790.683404280026,
+  "average_control_frequency_hz": 2.0999595002479516,
+  "per_task": {
+    "widowx_put_eggplant_in_basket": {
+      "episodes": 50,
+      "successes": 49,
+      "success_rate": 0.98,
+      "average_steps": 35.96,
+      "average_policy_calls": 18.46,
+      "average_episode_ms": 8790.683404280026
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "representation": "SpatialVLA 16x16 projected visual tokens before Gemma decoding"
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/SpatialVLA/weights/spatialvla-4b-224-sft-bridge",
+    "condition": "action_repeat",
+    "tasks": "widowx_put_eggplant_in_basket",
+    "model_name": "spatialvla_4b_simplerenv_bridge",
+    "config_name": "action_repeat2",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/spatialvla_simplerenv_bridge/action_repeat2/widowx_put_eggplant_in_basket",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "attn_backend": "sdpa",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Paired SimplerEnv WidowX task success and timing. SpatialVLA's released Bridge image-history and action-ensembling semantics are retained; synthetic action agreement is not used."
+}

@@ -1,0 +1,215 @@
+{
+  "status": "completed",
+  "model_name": "univla_libero",
+  "config_name": "depth_pruning2",
+  "condition": "depth_pruning",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "checkpoint_size_bytes": 16984056920,
+    "vision_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/Emu3-VisionTokenizer",
+    "model_id": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "base_vlm": "Emu3MoE",
+    "action_statistics_key": "libero",
+    "task_suite": "libero",
+    "native_action_chunk_size": 10,
+    "attention_backend": "sdpa"
+  },
+  "task_suite_name": "libero",
+  "tasks": [
+    "libero_goal__task_0",
+    "libero_goal__task_1",
+    "libero_goal__task_2",
+    "libero_goal__task_3",
+    "libero_goal__task_4",
+    "libero_goal__task_5",
+    "libero_goal__task_6",
+    "libero_goal__task_7",
+    "libero_goal__task_8",
+    "libero_goal__task_9"
+  ],
+  "episodes": 100,
+  "successes": 89,
+  "episode_errors": 0,
+  "success_rate": 0.89,
+  "average_steps": 129.01,
+  "average_policy_calls": 13.34,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 468.50919961603637,
+    "median_ms": 462.3438575072214,
+    "p95_ms": 616.3974853290711
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 603.9373831586274,
+    "median_ms": 597.1422219881788,
+    "p95_ms": 747.126631141873
+  },
+  "average_episode_ms": 8056.539461180801,
+  "average_control_frequency_hz": 1.6558007963837942,
+  "per_task": {
+    "libero_goal__task_0": {
+      "episodes": 10,
+      "successes": 7,
+      "success_rate": 0.7,
+      "average_steps": 176.3,
+      "average_policy_calls": 18.0,
+      "average_episode_ms": 10441.185521287844
+    },
+    "libero_goal__task_1": {
+      "episodes": 10,
+      "successes": 8,
+      "success_rate": 0.8,
+      "average_steps": 134.2,
+      "average_policy_calls": 13.8,
+      "average_episode_ms": 8501.166213897523
+    },
+    "libero_goal__task_2": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 86.1,
+      "average_policy_calls": 9.1,
+      "average_episode_ms": 5671.069077262655
+    },
+    "libero_goal__task_3": {
+      "episodes": 10,
+      "successes": 7,
+      "success_rate": 0.7,
+      "average_steps": 214.6,
+      "average_policy_calls": 21.8,
+      "average_episode_ms": 13116.476889699697
+    },
+    "libero_goal__task_4": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 84.5,
+      "average_policy_calls": 8.9,
+      "average_episode_ms": 5590.598007896915
+    },
+    "libero_goal__task_5": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 159.1,
+      "average_policy_calls": 16.5,
+      "average_episode_ms": 9476.321176823694
+    },
+    "libero_goal__task_6": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 114.4,
+      "average_policy_calls": 11.9,
+      "average_episode_ms": 7652.286422811449
+    },
+    "libero_goal__task_7": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 75.6,
+      "average_policy_calls": 8.1,
+      "average_episode_ms": 4562.57167251315
+    },
+    "libero_goal__task_8": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 77.6,
+      "average_policy_calls": 8.2,
+      "average_episode_ms": 5075.3138022031635
+    },
+    "libero_goal__task_9": {
+      "episodes": 10,
+      "successes": 8,
+      "success_rate": 0.8,
+      "average_steps": 167.7,
+      "average_policy_calls": 17.1,
+      "average_episode_ms": 10478.405827411916
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.9069685027003288,
+      0.016004693508148194,
+      0.0060924232006072995,
+      0.003851330280303955,
+      0.005335789918899536,
+      0.009590440988540649,
+      0.024390029907226562,
+      0.03172057867050171,
+      0.02456991672515869,
+      0.042421150207519534,
+      0.032634013891220094,
+      0.03828744292259216,
+      0.03183835744857788,
+      0.04108782410621643,
+      0.017504334449768066,
+      0.015033537149429321,
+      0.016591370105743408,
+      0.011592292785644531,
+      0.008389979600906372,
+      0.006894487142562866,
+      0.010190719366073608,
+      0.00999305248260498,
+      0.01116439700126648,
+      0.014923971891403199,
+      0.012748026847839355,
+      0.01318703293800354,
+      0.011146146059036254,
+      0.012408506870269776,
+      0.015766060352325438,
+      0.010683304071426392,
+      0.011977589130401612,
+      0.04259882569313049
+    ],
+    "selected_layers": [
+      19,
+      21
+    ]
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "representation": "Emu3 VQ-code fusion before UniVLA language-model input"
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "vision_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/Emu3-VisionTokenizer",
+    "action_tokenizer": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/pretrain/fast",
+    "normalizer": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/configs/normalizer_libero/norm_stats.json",
+    "normalizer_key": "libero",
+    "condition": "depth_pruning",
+    "tasks": "libero_goal__task_0,libero_goal__task_1,libero_goal__task_2,libero_goal__task_3,libero_goal__task_4,libero_goal__task_5,libero_goal__task_6,libero_goal__task_7,libero_goal__task_8,libero_goal__task_9",
+    "model_name": "univla_libero",
+    "config_name": "depth_pruning2",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/univla_libero/depth_pruning2/libero_goal",
+    "num_trials_per_task": 10,
+    "resume": true,
+    "seed": 42,
+    "max_steps": 300,
+    "device": "cuda:0",
+    "attn_backend": "sdpa",
+    "predict_action_frames": 10,
+    "environment_action_format": "libero",
+    "action_repeat": 2,
+    "depth_layers": 2,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from paired SimplerEnv WidowX rollouts. UniVLA native five-action chunks are retained; synthetic action agreement is not used."
+}

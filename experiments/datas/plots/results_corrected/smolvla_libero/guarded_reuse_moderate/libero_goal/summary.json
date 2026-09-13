@@ -1,0 +1,73 @@
+{
+  "status": "completed",
+  "model_name": "smolvla_libero",
+  "config_name": "guarded_reuse_moderate",
+  "condition": "guarded_action_reuse",
+  "task_suite_name": "libero_goal",
+  "tasks": [
+    "libero_goal__task_0",
+    "libero_goal__task_1",
+    "libero_goal__task_2",
+    "libero_goal__task_3",
+    "libero_goal__task_4",
+    "libero_goal__task_5",
+    "libero_goal__task_6",
+    "libero_goal__task_7",
+    "libero_goal__task_8",
+    "libero_goal__task_9"
+  ],
+  "episodes": 100,
+  "successes": 75,
+  "success_rate": 0.75,
+  "episode_errors": 0,
+  "implementation_versions": [
+    "smolvla-reconstructed-sdpa-v1"
+  ],
+  "claim_scope": "Reconstructed continuation. Legacy and new implementation/hardware timings are not a matched comparison; no improvement claim.",
+  "average_steps": 155.36,
+  "average_policy_calls": 154.6,
+  "average_reuses": 0.76,
+  "average_episode_ms": 42873.452873004855,
+  "per_task": {
+    "libero_goal__task_0": {
+      "episodes": 10,
+      "successes": 8
+    },
+    "libero_goal__task_1": {
+      "episodes": 10,
+      "successes": 8
+    },
+    "libero_goal__task_2": {
+      "episodes": 10,
+      "successes": 8
+    },
+    "libero_goal__task_3": {
+      "episodes": 10,
+      "successes": 3
+    },
+    "libero_goal__task_4": {
+      "episodes": 10,
+      "successes": 10
+    },
+    "libero_goal__task_5": {
+      "episodes": 10,
+      "successes": 9
+    },
+    "libero_goal__task_6": {
+      "episodes": 10,
+      "successes": 6
+    },
+    "libero_goal__task_7": {
+      "episodes": 10,
+      "successes": 10
+    },
+    "libero_goal__task_8": {
+      "episodes": 10,
+      "successes": 7
+    },
+    "libero_goal__task_9": {
+      "episodes": 10,
+      "successes": 6
+    }
+  }
+}

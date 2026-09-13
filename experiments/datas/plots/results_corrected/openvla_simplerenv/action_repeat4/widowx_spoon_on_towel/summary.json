@@ -1,0 +1,87 @@
+{
+  "status": "completed",
+  "model_name": "openvla_simplerenv",
+  "config_name": "action_repeat4",
+  "condition": "action_repeat",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "resolved_checkpoint_size_bytes": 15082600824,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "bridge_orig",
+    "task_suite": "simpler_widowx",
+    "image_resolution": 224,
+    "center_crop": false
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_spoon_on_towel"
+  ],
+  "episodes": 50,
+  "successes": 3,
+  "success_rate": 0.06,
+  "average_steps": 59.3,
+  "average_policy_calls": 14.86,
+  "average_reuses": 44.44,
+  "policy_query_latency_ms": {
+    "mean_ms": 159.7711149331127,
+    "median_ms": 158.50952302571386,
+    "p95_ms": 161.11985931638628
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 47.95073014793958,
+    "median_ms": 7.903744000941515,
+    "p95_ms": 167.38044638186693
+  },
+  "average_episode_ms": 5193.760894123698,
+  "average_control_frequency_hz": 11.417545244928958,
+  "per_task": {
+    "widowx_spoon_on_towel": {
+      "episodes": 50,
+      "successes": 3,
+      "success_rate": 0.06,
+      "average_steps": 59.3,
+      "average_policy_calls": 14.86,
+      "average_episode_ms": 5193.760894123698
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla-7b",
+    "condition": "action_repeat",
+    "tasks": "widowx_spoon_on_towel",
+    "model_name": "openvla_simplerenv",
+    "config_name": "action_repeat4",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/openvla_simplerenv/action_repeat4/widowx_spoon_on_towel",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 4,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from SimplerEnv rollouts. Compare paired seeds across conditions; synthetic action agreement is not used."
+}

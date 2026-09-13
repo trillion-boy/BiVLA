@@ -1,0 +1,104 @@
+{
+  "status": "completed",
+  "condition": "guarded_action_reuse",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic/checkpoints/step-362500-epoch-21-loss=0.2259.pt",
+    "resolved_checkpoint_size_bytes": 5554882540,
+    "model_id": "prism-qwen25-extra-dinosiglip-224px+0_5b",
+    "base_vlm": "prism-qwen25-extra-dinosiglip-224px+0_5b",
+    "action_statistics_key": "bridge_dataset",
+    "task_suite": "simpler_widowx",
+    "image_resolution": 224,
+    "center_crop": false
+  },
+  "task_suite_name": "simpler_widowx",
+  "tasks": [
+    "widowx_spoon_on_towel",
+    "widowx_carrot_on_plate",
+    "widowx_stack_cube",
+    "widowx_put_eggplant_in_basket"
+  ],
+  "episodes": 200,
+  "successes": 67,
+  "success_rate": 0.335,
+  "average_steps": 65.37,
+  "average_policy_calls": 62.73,
+  "average_reuses": 2.64,
+  "policy_query_latency_ms": {
+    "mean_ms": 97.81584938015438,
+    "median_ms": 97.72211949166376,
+    "p95_ms": 98.68407700560056
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 102.29099953351768,
+    "median_ms": 106.11114600033034,
+    "p95_ms": 107.2847069503041
+  },
+  "average_episode_ms": 9468.221214549994,
+  "average_control_frequency_hz": 6.9041479406442985,
+  "per_task": {
+    "widowx_spoon_on_towel": {
+      "episodes": 50,
+      "successes": 22,
+      "success_rate": 0.44,
+      "average_steps": 48.26,
+      "average_policy_calls": 47.94,
+      "average_episode_ms": 7053.347064561094
+    },
+    "widowx_carrot_on_plate": {
+      "episodes": 50,
+      "successes": 4,
+      "success_rate": 0.08,
+      "average_steps": 59.12,
+      "average_policy_calls": 58.08,
+      "average_episode_ms": 8583.460152818589
+    },
+    "widowx_stack_cube": {
+      "episodes": 50,
+      "successes": 36,
+      "success_rate": 0.72,
+      "average_steps": 42.52,
+      "average_policy_calls": 42.46,
+      "average_episode_ms": 6195.085627980297
+    },
+    "widowx_put_eggplant_in_basket": {
+      "episodes": 50,
+      "successes": 5,
+      "success_rate": 0.1,
+      "average_steps": 111.58,
+      "average_policy_calls": 102.44,
+      "average_episode_ms": 16040.992012839997
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/minivla-vq-bridge-prismatic",
+    "condition": "guarded_action_reuse",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/minivla_simplerenv_guarded_action_reuse_aggressive_50",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 150,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "reuse_max_frame_mae": 0.02,
+    "reuse_max_local_patch_mae": 0.05,
+    "reuse_min_action_cosine": 0.98,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 2
+  },
+  "claim_scope": "Task success and timing from SimplerEnv rollouts. Compare paired seeds across conditions; synthetic action agreement is not used.",
+  "model_name": "minivla_simplerenv",
+  "config_name": "guarded_reuse_aggressive"
+}

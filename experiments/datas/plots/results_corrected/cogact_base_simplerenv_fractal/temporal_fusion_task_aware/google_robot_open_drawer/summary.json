@@ -1,0 +1,82 @@
+{
+  "status": "completed",
+  "model_name": "cogact_base_simplerenv_fractal",
+  "config_name": "temporal_fusion_task_aware",
+  "condition": "temporal_fusion",
+  "task_suite_name": "simpler_google_robot_fractal",
+  "tasks": [
+    "google_robot_open_drawer"
+  ],
+  "episodes": 50,
+  "successes": 37,
+  "success_rate": 0.74,
+  "episode_errors": 0,
+  "average_steps": 50.96,
+  "average_policy_calls": 50.96,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 100.08360372831221,
+    "median_ms": 98.41717954259366,
+    "p95_ms": 100.47504108515568
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 174.80881925558253,
+    "median_ms": 170.50908302189782,
+    "p95_ms": 201.42996227950792
+  },
+  "average_episode_ms": 8908.36615192471,
+  "per_task": {
+    "google_robot_open_drawer": {
+      "episodes": 50,
+      "successes": 37,
+      "success_rate": 0.74,
+      "average_steps": 50.96,
+      "average_policy_calls": 50.96
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "median_reusable_visual_tokens": 112.0,
+    "keyframes": 866,
+    "task_relevance_supported": false,
+    "representation": "CogACT projected visual tokens before Llama cognition-token generation"
+  },
+  "arguments": {
+    "checkpoint": "models/CogACT/weights/CogACT-Base/checkpoints/CogACT-Base.pt",
+    "base_model_metadata": "models/CogACT/weights/llama2-7b-base",
+    "condition": "temporal_fusion",
+    "config_name": "temporal_fusion_task_aware",
+    "tasks": "google_robot_open_drawer",
+    "model_name": "cogact_base_simplerenv_fractal",
+    "output_dir": "artifacts/results/cogact_base_simplerenv_fractal/temporal_fusion_task_aware/google_robot_open_drawer",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 80,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1,
+    "cfg_scale": 1.5,
+    "num_ddim_steps": 10
+  },
+  "claim_scope": "Google Robot/Fractal SimplerEnv setup; report only completed paired rollouts.",
+  "checkpoint_manifest": {
+    "policy_setup": "google_robot",
+    "action_statistics_key": "fractal20220817_data"
+  }
+}

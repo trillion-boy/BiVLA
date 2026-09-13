@@ -1,0 +1,155 @@
+{
+  "status": "completed",
+  "model_name": "smolvla_libero",
+  "config_name": "fixed_foveation_keep50",
+  "condition": "fixed_foveation",
+  "task_suite_name": "libero_10",
+  "tasks": [
+    "libero_10__task_0",
+    "libero_10__task_1",
+    "libero_10__task_2",
+    "libero_10__task_3",
+    "libero_10__task_4",
+    "libero_10__task_5",
+    "libero_10__task_6",
+    "libero_10__task_7",
+    "libero_10__task_8",
+    "libero_10__task_9"
+  ],
+  "episodes": 100,
+  "successes": 21,
+  "success_rate": 0.21,
+  "episode_errors": 0,
+  "average_steps": 477.84,
+  "average_policy_calls": 477.84,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 278.08027763772986,
+    "median_ms": 277.8186700306833,
+    "p95_ms": 281.0551929695066
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 306.4794873160993,
+    "median_ms": 305.8483244967647,
+    "p95_ms": 312.61565196327865
+  },
+  "average_episode_ms": 146448.59004107304,
+  "average_control_frequency_hz": 3.2628514884710382,
+  "per_task": {
+    "libero_10__task_0": {
+      "episodes": 10,
+      "successes": 1,
+      "success_rate": 0.1,
+      "average_steps": 518.7,
+      "average_policy_calls": 518.7,
+      "average_episode_ms": 160345.23040329805
+    },
+    "libero_10__task_1": {
+      "episodes": 10,
+      "successes": 2,
+      "success_rate": 0.2,
+      "average_steps": 472.3,
+      "average_policy_calls": 472.3,
+      "average_episode_ms": 144946.43747709924
+    },
+    "libero_10__task_2": {
+      "episodes": 10,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 520.0,
+      "average_policy_calls": 520.0,
+      "average_episode_ms": 158518.95009159343
+    },
+    "libero_10__task_3": {
+      "episodes": 10,
+      "successes": 6,
+      "success_rate": 0.6,
+      "average_steps": 358.7,
+      "average_policy_calls": 358.7,
+      "average_episode_ms": 109885.5672769132
+    },
+    "libero_10__task_4": {
+      "episodes": 10,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 520.0,
+      "average_policy_calls": 520.0,
+      "average_episode_ms": 160489.7836385877
+    },
+    "libero_10__task_5": {
+      "episodes": 10,
+      "successes": 2,
+      "success_rate": 0.2,
+      "average_steps": 485.9,
+      "average_policy_calls": 485.9,
+      "average_episode_ms": 149030.70340616396
+    },
+    "libero_10__task_6": {
+      "episodes": 10,
+      "successes": 6,
+      "success_rate": 0.6,
+      "average_steps": 416.1,
+      "average_policy_calls": 416.1,
+      "average_episode_ms": 127609.84099697089
+    },
+    "libero_10__task_7": {
+      "episodes": 10,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 520.0,
+      "average_policy_calls": 520.0,
+      "average_episode_ms": 158733.04768468952
+    },
+    "libero_10__task_8": {
+      "episodes": 10,
+      "successes": 1,
+      "success_rate": 0.1,
+      "average_steps": 513.7,
+      "average_policy_calls": 513.7,
+      "average_episode_ms": 156624.70738028642
+    },
+    "libero_10__task_9": {
+      "episodes": 10,
+      "successes": 3,
+      "success_rate": 0.3,
+      "average_steps": 453.0,
+      "average_policy_calls": 453.0,
+      "average_episode_ms": 138301.632055128
+    }
+  },
+  "depth_calibration": {
+    "selected_layers": [],
+    "calibrated": false
+  },
+  "fusion": null,
+  "checkpoint_manifest": {
+    "policy": "/home/shriram003/soumya/VisionLanguageAction/models/SmolVLA/checkpoints/smolvla_libero",
+    "vlm": "/home/shriram003/soumya/VisionLanguageAction/models/SmolVLA/checkpoints/SmolVLM2-500M-Instruct",
+    "lerobot": "0.4.4",
+    "transformers": "4.51.3 (isolated)"
+  },
+  "arguments": {
+    "suite": "libero_10",
+    "condition": "fixed_foveation",
+    "config_name": "fixed_foveation_keep50",
+    "output_dir": "artifacts/results/smolvla_libero/fixed_foveation_keep50/libero_10",
+    "checkpoint": "/home/shriram003/soumya/VisionLanguageAction/models/SmolVLA/checkpoints/smolvla_libero",
+    "vlm_checkpoint": "/home/shriram003/soumya/VisionLanguageAction/models/SmolVLA/checkpoints/SmolVLM2-500M-Instruct",
+    "num_trials_per_task": 10,
+    "seed": 42,
+    "device": "cuda",
+    "resume": true,
+    "fovea_keep_ratio": 0.5,
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1,
+    "fusion_keyframe_interval": 3,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null
+  },
+  "claim_scope": "SmolVLA LIBERO paired rollout evidence. Depth and temporal settings are candidate controls; no calibration or improvement claim is implied."
+}

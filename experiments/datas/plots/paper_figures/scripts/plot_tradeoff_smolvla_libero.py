@@ -1,0 +1,5 @@
+"""Success change in percentage points versus effective time-per-step speedup, relative to the original policy in the same model and environment. Panels in reading order (left to right, top to bottom): all configurations, foveation, action repeat, depth pruning, guarded reuse, and temporal fusion. Family panels use independent axis limits. Black stars and dotted reference lines mark the original policy (1×, 0 pp). Light green marks simultaneous improvement in success and speed. Local legends identify every configuration; colors encode families, and marker shapes distinguish settings within a family. The dashed line in the overview connects empirically nondominated measurements and does not imply interpolated or statistically significant performance. Incomplete full-benchmark measurements are omitted and labeled in the relevant legend. Figure and panel titles are omitted; panel identities are specified in this caption and the legends."""
+from common import pareto
+
+if __name__ == "__main__":
+    pareto('tradeoff_smolvla_libero', 'smolvla_libero')

@@ -1,0 +1,15 @@
+model_name,environment,checkpoint_model_id,suite,configuration,tasks,episodes,successes,success_rate_pct,avg_steps,avg_policy_calls,avg_reuses,policy_median_latency_ms,policy_p95_latency_ms,cycle_median_latency_ms,cycle_p95_latency_ms,avg_episode_time_s,control_frequency_hz,action_repeat,depth_layers,selected_depth_layers,fusion_keyframe_interval,fusion_max_reuse_fraction,median_reusable_visual_tokens
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,original,10,100,42,42,428.35,428.35,0.0,274.699,279.376,288.922,295.456,124,3.455,2,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,fixed_foveation_keep20,10,100,19,19,481.49,481.49,0.0,277.17,284.885,304.954,313.503,147.14,3.272,2,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,fixed_foveation_keep50,10,100,21,21,477.84,477.84,0.0,277.819,281.055,305.848,312.616,146.45,3.263,2,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,action_repeat2,10,100,31,31,443.45,221.8,221.65,278.117,280.136,286.798,294.949,67.46,6.573,2,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,action_repeat4,10,100,20,20,470.22,117.64,352.58,272.208,274.706,12.523,288.107,37.88,12.413,4,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,depth_pruning1,10,100,9,9,500.07,500.07,0.0,277.256,281.634,290.971,297.029,145.81,3.43,2,1,30,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,depth_pruning2,10,100,3,3,515.08,515.08,0.0,278.295,291.471,292.673,305.924,148.05,3.478,2,2,28;30,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,depth_pruning4,10,100,0,0.0,520,520,0.0,238.464,280.54,251.844,296.438,134.65,3.862,2,4,24;26;28;30,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,guarded_reuse_strict,10,100,40,40,426.45,425.75,0.7,260.791,300.174,273.851,314.149,121.85,3.454,2,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,guarded_reuse_moderate,10,100,37,37,437.84,435.61,2.23,260.954,293.026,274.637,306.795,116.75,3.735,2,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,guarded_reuse_aggressive,10,100,47,47,419.34,407.87,11.47,262.607,485.629,276.365,507.279,120.31,3.42,2,1,N/A,N/A,N/A,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,temporal_fusion_motion_entropy,10,100,44,44,415.45,415.45,0.0,261.144,300.781,274.693,312.66,115.65,3.586,2,1,N/A,3,0.5,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,temporal_fusion_task_aware,10,100,41,41,422.78,422.78,0.0,262.194,300.266,275.306,314.363,114.86,3.68,2,1,N/A,3,0.5,0
+smolvla_libero,libero,SmolVLA-LIBERO,libero_10,temporal_fusion_conservative_adaptive,10,100,44,44,414.93,414.93,0.0,262.615,302.401,275.218,317.215,113.09,3.669,2,1,N/A,2,0.25,0

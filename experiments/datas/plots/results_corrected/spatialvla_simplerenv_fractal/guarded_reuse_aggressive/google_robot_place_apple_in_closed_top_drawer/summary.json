@@ -1,0 +1,91 @@
+{
+  "status": "completed",
+  "model_name": "spatialvla_4b_simplerenv_fractal",
+  "config_name": "guarded_reuse_aggressive",
+  "condition": "guarded_action_reuse",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "models/SpatialVLA/weights/spatialvla-4b-224-sft-fractal",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/SpatialVLA/weights/spatialvla-4b-224-sft-fractal",
+    "checkpoint_size_bytes": 8055902750,
+    "model_id": "IPEC-COMMUNITY/spatialvla-4b-224-sft-fractal",
+    "base_vlm": "PaLiGemma2-3B",
+    "action_statistics_key": "fractal20220817_data/0.1.0",
+    "task_suite": "simpler_google_robot_fractal",
+    "native_action_chunk_size": 4,
+    "action_ensemble_temperature": -0.8,
+    "attention_backend": "native_mixed (SDPA where supported; ZoeDepth compatible)",
+    "policy_setup": "google_robot"
+  },
+  "task_suite_name": "simpler_google_robot_fractal",
+  "tasks": [
+    "google_robot_place_apple_in_closed_top_drawer"
+  ],
+  "episodes": 50,
+  "successes": 0,
+  "success_rate": 0.0,
+  "average_steps": 80.0,
+  "average_policy_calls": 78.92,
+  "average_reuses": 1.08,
+  "policy_query_latency_ms": {
+    "mean_ms": 382.2433054260426,
+    "median_ms": 381.8560954532586,
+    "p95_ms": 385.40928723523393
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 447.7990086815844,
+    "median_ms": 450.3430689801462,
+    "p95_ms": 469.24702508258633
+  },
+  "average_episode_ms": 35824.08445915207,
+  "average_control_frequency_hz": 2.233144738181116,
+  "per_task": {
+    "google_robot_place_apple_in_closed_top_drawer": {
+      "episodes": 50,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 80.0,
+      "average_policy_calls": 78.92,
+      "average_episode_ms": 35824.08445915207
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "representation": "SpatialVLA 16x16 projected visual tokens before Gemma decoding"
+  },
+  "arguments": {
+    "checkpoint": "models/SpatialVLA/weights/spatialvla-4b-224-sft-fractal",
+    "condition": "guarded_action_reuse",
+    "tasks": "google_robot_place_apple_in_closed_top_drawer",
+    "model_name": "spatialvla_4b_simplerenv_fractal",
+    "config_name": "guarded_reuse_aggressive",
+    "output_dir": "artifacts/results/spatialvla_simplerenv_fractal/guarded_reuse_aggressive/google_robot_place_apple_in_closed_top_drawer",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 80,
+    "device": "cuda:0",
+    "attn_backend": "sdpa",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.02,
+    "reuse_max_local_patch_mae": 0.05,
+    "reuse_min_action_cosine": 0.98,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 2
+  },
+  "claim_scope": "Google Robot/Fractal SimplerEnv setup; report only completed paired rollouts."
+}

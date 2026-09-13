@@ -1,0 +1,171 @@
+{
+  "status": "completed",
+  "model_name": "openvla_libero",
+  "config_name": "temporal_fusion_task_aware",
+  "condition": "temporal_fusion",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla_libero/openvla-7b-finetuned-libero-object",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla_libero/openvla-7b-finetuned-libero-object",
+    "resolved_checkpoint_size_bytes": 15082600832,
+    "model_id": "openvla-7b",
+    "base_vlm": "openvla-7b",
+    "action_statistics_key": "libero_object",
+    "task_suite": "libero_object",
+    "image_resolution": 224,
+    "center_crop": false,
+    "libero_root": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/third_party/LIBERO"
+  },
+  "task_suite_name": "libero_object",
+  "tasks": [
+    "libero_object__task_0",
+    "libero_object__task_1",
+    "libero_object__task_2",
+    "libero_object__task_3",
+    "libero_object__task_4",
+    "libero_object__task_5",
+    "libero_object__task_6",
+    "libero_object__task_7",
+    "libero_object__task_8",
+    "libero_object__task_9"
+  ],
+  "episodes": 100,
+  "successes": 86,
+  "episode_errors": 0,
+  "success_rate": 0.86,
+  "average_steps": 165.91,
+  "average_policy_calls": 165.91,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 170.01997443229067,
+    "median_ms": 169.88804296124727,
+    "p95_ms": 171.1968159652315
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 172.89753965773278,
+    "median_ms": 172.90122609119862,
+    "p95_ms": 174.28422847297043
+  },
+  "average_episode_ms": 30797.374493227107,
+  "average_control_frequency_hz": 5.3871475322185844,
+  "per_task": {
+    "libero_object__task_0": {
+      "episodes": 10,
+      "successes": 8,
+      "success_rate": 0.8,
+      "average_steps": 181.2,
+      "average_policy_calls": 181.2,
+      "average_episode_ms": 33785.75258960482
+    },
+    "libero_object__task_1": {
+      "episodes": 10,
+      "successes": 7,
+      "success_rate": 0.7,
+      "average_steps": 194.6,
+      "average_policy_calls": 194.6,
+      "average_episode_ms": 36067.10523479851
+    },
+    "libero_object__task_2": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 115.9,
+      "average_policy_calls": 115.9,
+      "average_episode_ms": 21533.896276494488
+    },
+    "libero_object__task_3": {
+      "episodes": 10,
+      "successes": 6,
+      "success_rate": 0.6,
+      "average_steps": 212.2,
+      "average_policy_calls": 212.2,
+      "average_episode_ms": 39385.932024614885
+    },
+    "libero_object__task_4": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 159.5,
+      "average_policy_calls": 159.5,
+      "average_episode_ms": 29562.29758441914
+    },
+    "libero_object__task_5": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 160.3,
+      "average_policy_calls": 160.3,
+      "average_episode_ms": 29881.273759691976
+    },
+    "libero_object__task_6": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 157.8,
+      "average_policy_calls": 157.8,
+      "average_episode_ms": 29215.05080999341
+    },
+    "libero_object__task_7": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 153.3,
+      "average_policy_calls": 153.3,
+      "average_episode_ms": 28531.17379930336
+    },
+    "libero_object__task_8": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 175.0,
+      "average_policy_calls": 175.0,
+      "average_episode_ms": 32323.347601969726
+    },
+    "libero_object__task_9": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 149.3,
+      "average_policy_calls": 149.3,
+      "average_episode_ms": 27687.915251380764
+    }
+  },
+  "depth_calibration": {
+    "influence": null,
+    "selected_layers": []
+  },
+  "fusion": {
+    "collect_relevance": true,
+    "median_reusable_visual_tokens": 65.0,
+    "keyframes": 5568
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/openvla_libero/openvla-7b-finetuned-libero-object",
+    "condition": "temporal_fusion",
+    "tasks": "libero_object__task_0,libero_object__task_1,libero_object__task_2,libero_object__task_3,libero_object__task_4,libero_object__task_5,libero_object__task_6,libero_object__task_7,libero_object__task_8,libero_object__task_9",
+    "model_name": "openvla_libero",
+    "config_name": "temporal_fusion_task_aware",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/openvla_libero/temporal_fusion_task_aware/libero_object",
+    "num_trials_per_task": 10,
+    "resume": true,
+    "seed": 42,
+    "max_steps": 280,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": true,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from LIBERO rollouts. Compare paired seeds across conditions; synthetic action agreement is not used."
+}

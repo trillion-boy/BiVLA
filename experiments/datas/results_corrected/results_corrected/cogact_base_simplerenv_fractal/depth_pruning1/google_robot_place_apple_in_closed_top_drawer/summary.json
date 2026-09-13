@@ -1,0 +1,117 @@
+{
+  "status": "completed",
+  "model_name": "cogact_base_simplerenv_fractal",
+  "config_name": "depth_pruning1",
+  "condition": "depth_pruning",
+  "task_suite_name": "simpler_google_robot_fractal",
+  "tasks": [
+    "google_robot_place_apple_in_closed_top_drawer"
+  ],
+  "episodes": 50,
+  "successes": 0,
+  "success_rate": 0.0,
+  "episode_errors": 0,
+  "average_steps": 80.0,
+  "average_policy_calls": 80.0,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 99.64737198571675,
+    "median_ms": 97.44248149218038,
+    "p95_ms": 105.8712913363706
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 168.05034272535704,
+    "median_ms": 162.04995103180408,
+    "p95_ms": 187.39729420049113
+  },
+  "average_episode_ms": 13444.187284798827,
+  "per_task": {
+    "google_robot_place_apple_in_closed_top_drawer": {
+      "episodes": 50,
+      "successes": 0,
+      "success_rate": 0.0,
+      "average_steps": 80.0,
+      "average_policy_calls": 80.0
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.047943365573883054,
+      0.05588090419769287,
+      0.008357715606689454,
+      0.008505940437316895,
+      0.012510693073272705,
+      0.013736438751220704,
+      0.01811920404434204,
+      0.02434030771255493,
+      0.028671848773956298,
+      0.03333789110183716,
+      0.03548507690429688,
+      0.03151068687438965,
+      0.02124614715576172,
+      0.022596681118011476,
+      0.027403008937835694,
+      0.026511645317077635,
+      0.02932804822921753,
+      0.01792665719985962,
+      0.020727169513702393,
+      0.018936824798583985,
+      0.019047999382019044,
+      0.02120276689529419,
+      0.020900511741638185,
+      0.01648789644241333,
+      0.019890141487121583,
+      0.018745231628417968,
+      0.022805118560791017,
+      0.01941903829574585,
+      0.022969579696655272,
+      0.029162871837615966,
+      0.030289173126220703,
+      0.0848733901977539
+    ],
+    "selected_layers": [
+      23
+    ]
+  },
+  "fusion": {
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "task_relevance_supported": false,
+    "representation": "CogACT projected visual tokens before Llama cognition-token generation"
+  },
+  "arguments": {
+    "checkpoint": "models/CogACT/weights/CogACT-Base/checkpoints/CogACT-Base.pt",
+    "base_model_metadata": "models/CogACT/weights/llama2-7b-base",
+    "condition": "depth_pruning",
+    "config_name": "depth_pruning1",
+    "tasks": "google_robot_place_apple_in_closed_top_drawer",
+    "model_name": "cogact_base_simplerenv_fractal",
+    "output_dir": "artifacts/results/cogact_base_simplerenv_fractal/depth_pruning1/google_robot_place_apple_in_closed_top_drawer",
+    "num_trials_per_task": 50,
+    "seed": 42,
+    "max_steps": 80,
+    "device": "cuda:0",
+    "action_repeat": 2,
+    "depth_layers": 1,
+    "fovea_keep_ratio": 0.2,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1,
+    "cfg_scale": 1.5,
+    "num_ddim_steps": 10
+  },
+  "claim_scope": "Google Robot/Fractal SimplerEnv setup; report only completed paired rollouts.",
+  "checkpoint_manifest": {
+    "policy_setup": "google_robot",
+    "action_statistics_key": "fractal20220817_data"
+  }
+}

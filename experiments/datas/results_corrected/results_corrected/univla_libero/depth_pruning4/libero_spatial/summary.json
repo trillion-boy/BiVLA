@@ -1,0 +1,217 @@
+{
+  "status": "completed",
+  "model_name": "univla_libero",
+  "config_name": "depth_pruning4",
+  "condition": "depth_pruning",
+  "checkpoint_manifest": {
+    "requested_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "resolved_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "checkpoint_size_bytes": 16984056920,
+    "vision_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/Emu3-VisionTokenizer",
+    "model_id": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "base_vlm": "Emu3MoE",
+    "action_statistics_key": "libero",
+    "task_suite": "libero",
+    "native_action_chunk_size": 10,
+    "attention_backend": "sdpa"
+  },
+  "task_suite_name": "libero",
+  "tasks": [
+    "libero_spatial__task_0",
+    "libero_spatial__task_1",
+    "libero_spatial__task_2",
+    "libero_spatial__task_3",
+    "libero_spatial__task_4",
+    "libero_spatial__task_5",
+    "libero_spatial__task_6",
+    "libero_spatial__task_7",
+    "libero_spatial__task_8",
+    "libero_spatial__task_9"
+  ],
+  "episodes": 100,
+  "successes": 94,
+  "episode_errors": 0,
+  "success_rate": 0.94,
+  "average_steps": 109.17,
+  "average_policy_calls": 11.34,
+  "average_reuses": 0.0,
+  "policy_query_latency_ms": {
+    "mean_ms": 467.26695809078467,
+    "median_ms": 455.4725145571865,
+    "p95_ms": 609.9526215344667
+  },
+  "inference_cycle_latency_ms": {
+    "mean_ms": 647.797624779002,
+    "median_ms": 639.5367530058138,
+    "p95_ms": 790.819724247558
+  },
+  "average_episode_ms": 7346.039054484572,
+  "average_control_frequency_hz": 1.5436919830342892,
+  "per_task": {
+    "libero_spatial__task_0": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 91.4,
+      "average_policy_calls": 9.6,
+      "average_episode_ms": 6416.829510196112
+    },
+    "libero_spatial__task_1": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 114.7,
+      "average_policy_calls": 11.9,
+      "average_episode_ms": 7506.477809895296
+    },
+    "libero_spatial__task_2": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 90.9,
+      "average_policy_calls": 9.4,
+      "average_episode_ms": 5820.846295612864
+    },
+    "libero_spatial__task_3": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 83.3,
+      "average_policy_calls": 8.8,
+      "average_episode_ms": 5716.507289407309
+    },
+    "libero_spatial__task_4": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 135.4,
+      "average_policy_calls": 14.0,
+      "average_episode_ms": 8857.86606221227
+    },
+    "libero_spatial__task_5": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 93.0,
+      "average_policy_calls": 9.8,
+      "average_episode_ms": 6495.630882366095
+    },
+    "libero_spatial__task_6": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 106.4,
+      "average_policy_calls": 11.1,
+      "average_episode_ms": 7111.387793091126
+    },
+    "libero_spatial__task_7": {
+      "episodes": 10,
+      "successes": 10,
+      "success_rate": 1.0,
+      "average_steps": 117.2,
+      "average_policy_calls": 12.1,
+      "average_episode_ms": 7700.675341999158
+    },
+    "libero_spatial__task_8": {
+      "episodes": 10,
+      "successes": 9,
+      "success_rate": 0.9,
+      "average_steps": 111.0,
+      "average_policy_calls": 11.5,
+      "average_episode_ms": 7605.209688981995
+    },
+    "libero_spatial__task_9": {
+      "episodes": 10,
+      "successes": 8,
+      "success_rate": 0.8,
+      "average_steps": 148.4,
+      "average_policy_calls": 15.2,
+      "average_episode_ms": 10228.959871083498
+    }
+  },
+  "depth_calibration": {
+    "influence": [
+      0.9063240356743336,
+      0.016329753398895263,
+      0.006090956926345825,
+      0.0037511467933654787,
+      0.005462276935577393,
+      0.009440279006958008,
+      0.023903661966323854,
+      0.03331194519996643,
+      0.02419649362564087,
+      0.0450190007686615,
+      0.03270940780639649,
+      0.03891804814338684,
+      0.030709660053253172,
+      0.03051988482475281,
+      0.01726328730583191,
+      0.014753562211990357,
+      0.01685011386871338,
+      0.012354272603988647,
+      0.00906212329864502,
+      0.00766865611076355,
+      0.009304708242416382,
+      0.012224674224853516,
+      0.010956907272338867,
+      0.013640755414962768,
+      0.011852264404296875,
+      0.012053179740905761,
+      0.011173117160797118,
+      0.013268572092056275,
+      0.016609877347946167,
+      0.011787647008895874,
+      0.013247525691986084,
+      0.04540466070175171
+    ],
+    "selected_layers": [
+      19,
+      22,
+      26,
+      29
+    ]
+  },
+  "fusion": {
+    "collect_relevance": false,
+    "median_reusable_visual_tokens": 0.0,
+    "keyframes": 0,
+    "representation": "Emu3 VQ-code fusion before UniVLA language-model input"
+  },
+  "arguments": {
+    "checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/UNIVLA_LIBERO_VIDEO_BS192_8K",
+    "vision_checkpoint": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/weights/Emu3-VisionTokenizer",
+    "action_tokenizer": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/pretrain/fast",
+    "normalizer": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/models/UniVLA/configs/normalizer_libero/norm_stats.json",
+    "normalizer_key": "libero",
+    "condition": "depth_pruning",
+    "tasks": "libero_spatial__task_0,libero_spatial__task_1,libero_spatial__task_2,libero_spatial__task_3,libero_spatial__task_4,libero_spatial__task_5,libero_spatial__task_6,libero_spatial__task_7,libero_spatial__task_8,libero_spatial__task_9",
+    "model_name": "univla_libero",
+    "config_name": "depth_pruning4",
+    "output_dir": "/home/soumyara004/soumyaratnadebnath/VisionLanguageAction/artifacts/results/univla_libero/depth_pruning4/libero_spatial",
+    "num_trials_per_task": 10,
+    "resume": true,
+    "seed": 42,
+    "max_steps": 220,
+    "device": "cuda:0",
+    "attn_backend": "sdpa",
+    "predict_action_frames": 10,
+    "environment_action_format": "libero",
+    "action_repeat": 2,
+    "depth_layers": 4,
+    "fovea_keep_ratio": 0.2,
+    "fusion_collect_relevance": false,
+    "fusion_keyframe_interval": 3,
+    "fusion_motion_threshold": 0.01,
+    "fusion_entropy_protect_fraction": 0.15,
+    "fusion_task_protect_fraction": 0.2,
+    "fusion_protect_radius": 1,
+    "fusion_max_reuse_fraction": 0.5,
+    "fusion_event_motion_threshold": null,
+    "reuse_max_frame_mae": 0.01,
+    "reuse_max_local_patch_mae": 0.03,
+    "reuse_min_action_cosine": 0.995,
+    "reuse_min_translation_norm": 0.01,
+    "reuse_max_consecutive": 1
+  },
+  "claim_scope": "Task success and timing from paired SimplerEnv WidowX rollouts. UniVLA native five-action chunks are retained; synthetic action agreement is not used."
+}
