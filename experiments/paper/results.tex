@@ -52,8 +52,9 @@ three (Fig.~\ref{fig:consistency}). Guarded reuse changes success
 significantly in none of its 66 settings, and its largest change is 7.0
 points. On the efficiency side only action repeat and depth pruning lower
 latency per step, by 28 to 48 percent at two steps and by 1 to 6 percent
-in the depth pruning table cells, and both pay for it in success on some
-backbone (RQ3). \textbf{No intervention is a reliable gain. Significant
+in the depth pruning table cells of six backbones, while SmolVLA's depth
+cells stay within 1.5 percent of dense, and both pay for it in success on
+some backbone (RQ3). \textbf{No intervention is a reliable gain. Significant
 changes are drops by more than twelve to one, the gains are of the size
 and number that chance allows, and the one family that is never harmful is
 harmless because its gates rarely fire (RQ4).}
@@ -79,8 +80,9 @@ another (Fig.~\ref{fig:ablation-depth}, and Fig.~\ref{fig:ablation-repeat}
 for action repeat).
 \textbf{The sign is a joint property of the rule, the backbone and the
 environment. Each of the three sign flips above is significant on both
-sides, and none of the four gains reaches significance on any other
-backbone or environment.} Across the 22 pairs a keep ratio of 0.5 matches
+sides, and no setting is a significant gain on more than one backbone and
+environment pair, CogACT's task-aware cell being its motion-entropy run
+under another name (RQ4).} Across the 22 pairs a keep ratio of 0.5 matches
 or beats 0.2 in 18, so the milder setting is the safer default, with the
 exceptions on WidowX for CronusVLA, SpatialVLA and UniVLA and on Object for
 UniVLA.
@@ -95,8 +97,9 @@ and adds about 8 percent per call on OpenVLA and 14 to 17 on MiniVLA and
 UniVLA under task-aware. Action repeat is the fastest family, 0.52 to 0.72
 of dense latency per step at two steps, and the worst, with significant
 drops in 8 of 22 cells at two steps and 20 of 22 at four. Depth pruning
-lowers latency per call at budgets of two and four on every backbone, and
-at a budget of one on all but CogACT Fractal and SmolVLA, where it stays
+lowers latency per call at budgets of two and four on every backbone that
+records it, and at a budget of one on all of those but CogACT Fractal and
+SmolVLA, where it stays
 within one percent of dense, while its success response at one budget spans
 $+9.5$ to $-36.0$. The right panels of Figs.~\ref{fig:ablation-depth}
 and~\ref{fig:ablation-repeat} show the two extremes. On UniVLA LIBERO a
@@ -119,8 +122,8 @@ cells fired on 0 to 5 steps of 6,000 to 65,600 and match dense on every
 episode but one, the conservative-adaptive fusion cells on UniVLA WidowX
 and Spatial selected no reusable patch and equal dense, and CogACT's
 task-aware setting equals motion-entropy because the harness exposes no
-text-to-vision attention where the selector runs. Reuse fires on at most
-one step in ten anywhere, so the null result of that family is a statement
+text-to-vision attention where the selector runs. Reuse fires on about
+one step in ten at most anywhere, so the null result of that family is a statement
 about its gates rather than about reuse. Third, the record separates two
 kinds of loss. Action repeat loses across every task at once, 42, 49, 44
 and 40 successes of 50 on UniVLA WidowX falling to 12, 3, 6 and 4, while
@@ -170,9 +173,8 @@ step, and finds all three on one step in ten for OpenVLA on LIBERO under
 the aggressive setting, on 2 to 6 percent of steps for OpenVLA elsewhere
 and for MiniVLA, on under 5 percent for the other backbones, and on fewer
 than one step in a thousand for UniVLA. Loosening the gates from strict to
-aggressive raises the reuse share by 1.3 to 4.5 times where reuse fires on
-more than 1 percent of steps, and every setting stays within 7 points of
-dense. Conservative-adaptive fusion, with its smaller reuse fraction,
+aggressive raises the reuse share to about one step in ten at most, and
+every setting stays within 7 points of dense. Conservative-adaptive fusion, with its smaller reuse fraction,
 shorter keyframe interval and forced keyframes, finds no reusable patch on
 SpatialVLA and UniVLA. Their signals bound the candidates before their
 effect does, and a backbone on which the signal never fires reports the
