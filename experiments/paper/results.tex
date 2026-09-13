@@ -80,8 +80,6 @@ and their latency is not compared.
 SmolVLA's guarded reuse, temporal fusion and higher depth budgets ran under
 a second implementation on other GPUs, so we read no latency change from
 those cells.
-The OpenVLA Long fusion cell is the better of two settings, since the third
-did not run there.
 
 \textbf{Action repeat.} Holding each action for two steps halves the model
 calls per environment step and lowers latency per step to between 0.52 and

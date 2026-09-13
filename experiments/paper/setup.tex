@@ -25,9 +25,10 @@ CronusVLA, UniVLA and MiniVLA run on SimplerEnv, and OpenVLA, UniVLA and
 SmolVLA run on LIBERO, each on the checkpoint released for that benchmark.
 Depth pruning acts on the language decoder for six backbones and on the
 twelve layer DiT action decoder for CronusVLA, which applies the same
-Block Influence selector to that DiT. Every model runs under transformers
-4.47.0, with SmolVLA on an isolated 4.51.3 stack, and OpenVLA requests SDPA
-on SimplerEnv but defaults to eager on LIBERO.
+Block Influence selector to that DiT. CogACT, CronusVLA, MiniVLA and
+SpatialVLA run under transformers 4.47.0, SmolVLA on an isolated 4.51.3
+stack, [OpenVLA and UniVLA transformers versions, mentor], and OpenVLA
+requests SDPA on SimplerEnv but defaults to eager on LIBERO.
 %PENDING mentor: torch version and GPU column.
 
 \textbf{Environments and episodes.} SimplerEnv WidowX has four tasks at 50
@@ -67,7 +68,7 @@ wall-clock per environment step, the episode time divided by its steps,
 which has the same meaning on every harness whether a call covers one step
 or a chunk. We read latency as the change from dense within a backbone.
 Every harness other than CronusVLA also records its per-call time, which
-Section~IV-C uses, and CronusVLA reports only the episode clock. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
+Sections~IV-B and~IV-C use, and CronusVLA reports only the episode clock. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
 and~\ref{tab:libero-results} show, for each family, the setting with the
 highest success and, on a tie, the fewer average steps, with each row
 labelled by its family. The other settings appear in the text.
@@ -76,17 +77,17 @@ labelled by its family. The other settings appear in the text.
 episodes under the dense and the intervened policy and count the episodes
 that flipped from failure to success and the reverse. A change is called
 significant when an exact two-sided McNemar test on those flips gives
-$p < 0.05$. The other six backbones reproduce the dense outcome on all but
-about one episode in a hundred, so for them the single-run limit concerns
-other initial states, left to Section~V. CronusVLA does not reproduce its rollout
-under the same fixed seed, so its dense and intervened runs diverge and its
-cells carry a run-to-run floor of about 14 episodes in 200, reported in
-Section~IV-B. With 110
-cells this threshold admits about five chance passes, so
-Section~IV-B reads gains against that count. Each table cell is the
-family-best setting chosen by success, so its individual p-value is
-post-selection and read as descriptive. Sixteen of the 22 significant drops
-pass a false discovery rate correction at 0.05, and no gain does.
+$p < 0.05$. With 110 cells this threshold admits about five chance passes,
+so Section~IV-B reads gains against that count. CronusVLA does not
+reproduce its rollout under the same fixed seed, so its dense and
+intervened runs diverge and its cells carry a run-to-run floor of about 14
+episodes in 200, reported in Section~IV-B. The other six backbones
+reproduce the dense outcome on all but about one episode in a hundred, so
+for them the single-run limit concerns other initial states, left to
+Section~V. Each table cell is the family-best setting chosen by success, so
+its individual p-value is post-selection and read as descriptive. Sixteen
+of the 22 significant drops reported in Section~IV-B pass a false discovery
+rate correction at 0.05, and no gain does.
 
 \textbf{Hardware and implementation.} [GPU per backbone, one card model per
 backbone and environment.] SmolVLA ran under two implementations. The released
@@ -100,8 +101,9 @@ were repeated on an RTX PRO 6000. Their success is used and their latency is
 not, since the card differs. CogACT exposes no text-to-vision
 attention at the point where fusion runs, so its task-aware setting equals
 motion-entropy. The task-aware fusion setting collects attention relevance,
-which forces the decoder into eager attention, so its per-call time is
-measured against a different backend than its own dense row.
+which forces an SDPA decoder into eager attention, so on those backbones
+its per-call time is measured against a different backend than its own
+dense row.
 
 \begin{table*}[t]
 \centering
@@ -117,9 +119,9 @@ Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention & 
 CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit & [\,] \\
 OpenVLA & openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO & [\,] \\
 SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder & [\,] \\
-CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit & RTX 5090 \\
-UniVLA & UNIVLA\_SIMPLER\_BRIDGE, UNIVLA\_LIBERO & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & RTX 5090 (WidowX), [\,] \\
-MiniVLA & minivla-vq-bridge & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit & [\,] \\
+CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit (Qwen2.5), timm (DiT) & RTX 5090 \\
+UniVLA & UNIVLA\_SIMPLER\_BRIDGE\_VIDEO\_BS128\_20K, UNIVLA\_LIBERO\_VIDEO\_BS192\_8K & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested & RTX 5090 (WidowX), [\,] \\
+MiniVLA & minivla-vq-bridge-prismatic & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit & [\,] \\
 SmolVLA & smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & SDPA, explicit & [\,] \\
 \bottomrule
 \end{tabular}%
