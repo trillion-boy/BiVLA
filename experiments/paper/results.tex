@@ -24,8 +24,10 @@
 % moderate and aggressive reruns are also not significant (p=0.70, 0.50).
 % CronusVLA fusion is final as one unrecorded run (the mentor will not rerun
 % it), so its three fusion cells are reported as identical. The remaining
-% %PENDING lines depend only on the OpenVLA Long conservative-adaptive run
-% and the SmolVLA depth answer.
+% %PENDING lines depend only on the OpenVLA Long conservative-adaptive run.
+% 2026-09-13: the SmolVLA fixed-index caveat is dropped on the mentor's
+% word; SmolVLA depth cells are read as the Section III selector like the
+% other backbones.
 % The margin question is resolved: the positive-candidate rule of Related
 % Work now reads on the paired test, not a preregistered margin, so the
 % closing sentence of IV-B states the transfer thesis and cites no margin.
@@ -77,9 +79,7 @@ crashed or ran with the strict thresholds, so their success counts are used
 and their latency is not compared.
 SmolVLA's guarded reuse, temporal fusion and higher depth budgets ran under
 a second implementation on other GPUs, so we read no latency change from
-those cells and read their success changes as unmatched, and its removed
-layers are fixed indices rather than the calibrated selection of
-Section~III. %PENDING SmolVLA depth answer.
+those cells.
 The OpenVLA Long fusion cell is the better of two settings, since the third
 did not run there.
 

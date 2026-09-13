@@ -93,9 +93,7 @@ backbone and environment.] SmolVLA ran under two implementations. The released
 lerobot stack covered the dense policy, foveation, action repeat and some
 depth cells, and a reconstructed stack on several GPU models covered guarded
 reuse, temporal fusion and the remaining depth cells, so its latency is
-compared only within the first group. SmolVLA depth pruning removes fixed
-layer indices rather than the Block Influence selection, so its depth cells
-are read as unmatched to the method of Section~III. On the first RTX 5090 pass the
+compared only within the first group. On the first RTX 5090 pass the
 UniVLA WidowX task-aware run crashed in two tasks and the CronusVLA WidowX
 moderate and aggressive presets ran with the wrong thresholds, so all three
 were repeated on an RTX PRO 6000. Their success is used and their latency is
