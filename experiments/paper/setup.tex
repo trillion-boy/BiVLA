@@ -95,9 +95,8 @@ rate correction at 0.05, and no gain does.
 cluster, so the card is not fixed per backbone and VRAM class was matched
 across a backbone's runs. The card is recorded where known, CronusVLA and
 UniVLA WidowX on an RTX 5090 and the three reruns below on an RTX PRO 6000.
-SmolVLA's guarded reuse, temporal fusion and higher depth budgets ran under
-a reconstructed stack on other cards, so its latency is read only within
-the released lerobot stack. The three reruns are the UniVLA WidowX
+SmolVLA's guarded reuse and temporal fusion ran under a reconstructed
+stack on other cards, so their latency is not read. The three reruns are the UniVLA WidowX
 task-aware run and the CronusVLA WidowX moderate and aggressive presets,
 repeated after failing on the RTX 5090. CogACT exposes no text-to-vision
 attention at the point where fusion runs, so its task-aware setting equals
