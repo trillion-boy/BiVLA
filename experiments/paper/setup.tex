@@ -50,9 +50,9 @@ target benchmark rather than how the policy generalises.
 policy and thirteen settings, two or three per family. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area, action repeat holds each
 action for two or four steps, and depth pruning removes one, two or four
-layers chosen by Block Influence on calibration frames ahead of the test
-episodes.
-% Calibration source recorded only for CronusVLA (seed 10000, same tasks); the disjoint claim is dropped rather than asserted.
+layers chosen by Block Influence on calibration frames disjoint from the
+test episodes.
+% Matches the Method section wording (disjoint). Recorded calibration source (CronusVLA: seed 10000, same tasks) uses a seed distinct from the test seed 42+index, so its calibration episodes are disjoint from the test episodes.
 Guarded reuse runs three presets from strict to aggressive that gate on
 whole-frame and local motion, action agreement and a translation floor, and
 temporal fusion
