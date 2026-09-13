@@ -66,7 +66,9 @@ episodes.
 \textbf{Measures.} Success is the benchmark's own criterion. Latency is
 wall-clock per environment step, the episode time divided by its steps,
 which has the same meaning on every harness whether a call covers one step
-or a chunk. We read latency as the change from dense within a backbone.
+or a chunk. We read latency only as the change from dense within one backbone, one
+environment, one card and one software stack, and cells that break this
+rule report success alone.
 Every harness other than CronusVLA also records its per-call time, which
 Sections~IV-B and~IV-C use, and CronusVLA reports only the episode clock. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
 and~\ref{tab:libero-results} show, for each family, the setting with the
@@ -81,7 +83,9 @@ $p < 0.05$. With 110 cells this threshold admits about five chance passes,
 so Section~IV-B reads gains against that count. CronusVLA does not
 reproduce its rollout under the same fixed seed, so its dense and
 intervened runs diverge and its cells carry a run-to-run floor of about 14
-episodes in 200, reported in Section~IV-B. The other six backbones
+episodes in 200, reported in Section~IV-B. Its cells whose net change lies
+within that floor are read as no change, and its only significant table
+cell, action repeat, exceeds the floor several times over. The other six backbones
 reproduce the dense outcome on all but about one episode in a hundred, so
 for them the single-run limit concerns other initial states, left to
 Section~V. Each table cell is the family-best setting chosen by success, so
@@ -103,7 +107,10 @@ attention at the point where fusion runs, so its task-aware setting equals
 motion-entropy. The task-aware fusion setting collects attention relevance,
 which forces an SDPA decoder into eager attention, so on those backbones
 its per-call time is measured against a different backend than its own
-dense row.
+dense row. On OpenVLA, whose LIBERO dense row already runs eager, task-aware
+adds the same eight percent per call as on its SDPA rows, so that cost is
+the relevance collection rather than the backend change, while on MiniVLA
+and UniVLA the two are not separated.
 
 \begin{table*}[t]
 \centering
