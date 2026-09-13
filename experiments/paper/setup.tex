@@ -116,17 +116,17 @@ and UniVLA the two are not separated.
 \small
 \setlength{\tabcolsep}{4pt}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{l >{\raggedright\arraybackslash}p{5.2cm} r l c >{\raggedright\arraybackslash}p{3.2cm}}
+\begin{tabular}{l p{5.2cm} r l c p{3.2cm}}
 \toprule
-Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention \\
+Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention \tabularnewline
 \midrule
-CogACT & CogACT-Base & 7.6B & 32 (Llama) & 1 & SDPA, implicit \\
-OpenVLA & openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & SDPA on SimplerEnv, eager on LIBERO \\
-SpatialVLA & spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & native mixed, eager text decoder \\
-CronusVLA & CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & SDPA, implicit (Qwen2.5), timm (DiT) \\
-UniVLA & UNIVLA\_\allowbreak SIMPLER\_\allowbreak BRIDGE\_\allowbreak VIDEO\_\allowbreak BS128\_\allowbreak 20K, UNIVLA\_\allowbreak LIBERO\_\allowbreak VIDEO\_\allowbreak BS192\_\allowbreak 8K & 8.5B & 32 (Emu3) & 5 / 10 & SDPA, requested \\
-MiniVLA & minivla-vq-bridge-prismatic & 1B & 24 (Qwen2.5) & 1 & SDPA, implicit \\
-SmolVLA & smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & SDPA, explicit \\
+CogACT & \raggedright CogACT-Base & 7.6B & 32 (Llama) & 1 & \raggedright SDPA, implicit \tabularnewline
+OpenVLA & \raggedright openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & \raggedright SDPA on SimplerEnv, eager on LIBERO \tabularnewline
+SpatialVLA & \raggedright spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & \raggedright native mixed, eager text decoder \tabularnewline
+CronusVLA & \raggedright CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & \raggedright SDPA, implicit (Qwen2.5), timm (DiT) \tabularnewline
+UniVLA & \raggedright UNIVLA\_\allowbreak SIMPLER\_\allowbreak BRIDGE\_\allowbreak VIDEO\_\allowbreak BS128\_\allowbreak 20K, UNIVLA\_\allowbreak LIBERO\_\allowbreak VIDEO\_\allowbreak BS192\_\allowbreak 8K & 8.5B & 32 (Emu3) & 5 / 10 & \raggedright SDPA, requested \tabularnewline
+MiniVLA & \raggedright minivla-vq-bridge-prismatic & 1B & 24 (Qwen2.5) & 1 & \raggedright SDPA, implicit \tabularnewline
+SmolVLA & \raggedright smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & \raggedright SDPA, explicit \tabularnewline
 \bottomrule
 \end{tabular}%
 }
