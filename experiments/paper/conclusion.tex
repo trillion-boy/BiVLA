@@ -15,10 +15,10 @@ the safe trick. It never lowers success significantly on any of the seven
 policies, but its gates rarely open, so it saves a tenth of the time at
 most, on OpenVLA, and under 5 percent elsewhere.
 Action repeat is the fast trick and the harmful one. It is the only trick
-that runs far faster than the original, and it lowers success on six of the
-seven policies. Depth pruning sits between them. One removed layer buys
+that runs far faster than the original, and at some setting it lowers
+success on six of the seven policies. Depth pruning sits between them. One removed layer buys
 a small speedup on most policies and leaves success intact on three of
-the seven, and each further layer costs more. Foveation and temporal
+the seven, and each further layer adds pairs where success falls. Foveation and temporal
 fusion buy no speed, foveation lowers success on three policies, and
 fusion moves it only within what chance allows. No trick raises success,
 and the sign of
@@ -30,7 +30,9 @@ redundant on some policies and needed on others.
 \textbf{Limitations and future work.} Each cell is one run, so the paired
 test speaks to the same initial states under two policies and not to other
 initial states, and CronusVLA does not reproduce its rollout under a fixed
-seed. Latency is read only within one backbone, environment, software stack
+seed. LIBERO cells, with 100 episodes, have less power than SimplerEnv
+cells, and guarded reuse ran fixed presets rather than thresholds tuned
+per policy. Latency is read only within one backbone, environment, software stack
 and GPU class, peak memory was not measured, and all runs are in
 simulation. Several seeds per cell, real-robot replication of the sign
 flips of Section~IV-B, and a measured integration of the fusion reuse mask
