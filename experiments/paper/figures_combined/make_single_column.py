@@ -87,8 +87,8 @@ def ablation_col(name, families=(3, 2), size=(3.5, 3.9)):
                 ax.set_xticks(range(len(cs)), labs); ax.grid(alpha=.16, lw=.4); ax.tick_params(length=2, pad=1.5)
         axs[k][0].set_ylabel('Success change (points)'); axs[k][1].set_ylabel('Speedup (×)')
         axs[k][0].axhline(0, c='#aaaaaa', lw=.5); axs[k][1].axhline(1, c='#aaaaaa', lw=.5)
-    axs[0][0].set_xlabel('Removed decoder layers'); axs[0][1].set_xlabel('Removed decoder layers')
-    axs[1][0].set_xlabel('Steps per action'); axs[1][1].set_xlabel('Steps per action')
+    axs[0][0].set_xlabel('Depth pruning'); axs[0][1].set_xlabel('Depth pruning')
+    axs[1][0].set_xlabel('Action repeat'); axs[1][1].set_xlabel('Action repeat')
     fig.legend(*axs[0][0].get_legend_handles_labels(), loc='outside lower center', ncol=3, frameon=False, handletextpad=.3, columnspacing=.8, labelspacing=.25)
     save(fig, name)
 
