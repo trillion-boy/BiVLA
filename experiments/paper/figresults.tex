@@ -1,11 +1,13 @@
 % ---------------------------------------------------------------------------
-% Figure blocks for Section IV, 2026-09-15 (lab meeting): Fig. 2 is the
-% six-panel trade-off row with all 14 settings, Fig. 3 the depth and repeat
-% row, Fig. 4 the consistency chart. Files live in figure/ on Overleaf.
-% Placement: Fig. 2 and Fig. 3 blocks before \subsection{Setup and
-% Protocol}, Fig. 4 before \subsection{Results and Discussion}.
-% The teaser block goes in main.tex right after \end{abstract}, so it floats
-% to the top of the right column of page 1.
+% Figure blocks for Section IV, 2026-09-15 (lab meeting): Fig. 1 is the
+% page-1 teaser (six bar panels, all 14 configurations), Fig. 3 the
+% single-column trade-off grid, Fig. 4 the single-column depth and repeat
+% grid, Fig. 5 the consistency chart. Files live in figure/ on Overleaf.
+% Placement: the teaser block after the second paragraph of the
+% Introduction (so it lands in the right column of page 1), the trade-off
+% block before \subsection{Setup and Protocol}, the depth and repeat block
+% after \input{tables/libero}, the consistency block before
+% \subsection{Results and Discussion}. All four are single-column floats.
 % ---------------------------------------------------------------------------
 
 \begin{figure}[!t]
@@ -21,29 +23,29 @@
   \label{fig:teaser}
 \end{figure}
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{figure/tradeoff_bridge_row.pdf}
+  \includegraphics[width=\columnwidth]{figure/tradeoff_bridge_col.pdf}
   \caption{Every setting of every trick on the six SimplerEnv WidowX
   backbones, placed by its speedup per environment step and its success
-  change from the original policy (the star). Panels read left to right as
-  CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA and UniVLA, colors
-  identify tricks, and the legend names each setting. The shaded corner
-  is faster and no worse than the original.}
+  change from the original policy (the star). Panels read left to right
+  and top to bottom as CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA
+  and UniVLA, colors identify tricks, and the legend names each setting.
+  The shaded corner is faster and no worse than the original.}
   \label{fig:tradeoff-widowx}
-\end{figure*}
+\end{figure}
 
-\begin{figure*}[!t]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{figure/ablation_depth_repeat_row.pdf}
-  \caption{Depth pruning and action repeat on every backbone and
-  environment. Panels read left to right as depth pruning success change,
-  depth pruning speedup, action repeat success change and action repeat
-  speedup, against the number of removed decoder layers or the repeat
-  factor. Speedup is the original's time per step divided by the trick's, and LIBERO suites are pooled per backbone, so 13 lines stand for
-  the 22 pairs of the text.}
+  \includegraphics[width=\columnwidth]{figure/ablation_depth_repeat_col.pdf}
+  \caption{Depth pruning (top) and action repeat (bottom) on every
+  backbone and environment, success change on the left and speedup on the
+  right, against the number of removed decoder layers or the repeat
+  factor. Speedup is the original's time per step divided by the trick's,
+  and LIBERO suites are pooled per backbone, so 13 lines stand for the 22
+  pairs of the text.}
   \label{fig:ablation-depth}
-\end{figure*}
+\end{figure}
 
 \begin{figure}[t]
   \centering
