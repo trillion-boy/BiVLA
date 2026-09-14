@@ -44,8 +44,9 @@ Fractal checkpoints under SimplerEnv's visual matching protocol, so success
 measures what a trick does to a trained policy on its target
 benchmark rather than how the policy generalizes.
 
-\textbf{Configurations.} Each backbone and environment pair runs the original
-policy and thirteen settings, two or three per trick. Foveation keeps a
+\textbf{Configurations.} Each backbone and environment pair runs 14
+configurations, the original policy and thirteen settings of the five
+other tricks, two or three per trick. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area, action repeat holds each
 action for two or four steps, and depth pruning removes one, two or four
 layers chosen by Block Influence on calibration frames disjoint from the
