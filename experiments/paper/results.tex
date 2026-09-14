@@ -20,7 +20,7 @@
 Tables~\ref{tab:simplerenv-results} and~\ref{tab:libero-results} report
 Success, Latency and Avg.\ Steps for the dense policy and the family-best
 setting on every backbone and environment, and
-Figs.~\ref{fig:success-widowx} to~\ref{fig:ablation-repeat} show every
+Figs.~\ref{fig:success-widowx} to~\ref{fig:ablation-depth} show every
 tested setting on WidowX and the depth and repeat sweeps on every pair. We
 structure the results around four research questions (RQs) and answer each
 in turn.
@@ -85,7 +85,7 @@ about 8 percent per call on OpenVLA and 14 to 17 on MiniVLA and UniVLA
 under task-aware. Action repeat is the fastest family, 0.52 to 0.72 of
 dense latency per step at two steps, and the worst, with significant drops
 in 8 of 22 cells at two steps and 20 of 22 at four
-(Fig.~\ref{fig:ablation-repeat}). Depth pruning lowers latency per call at
+(Fig.~\ref{fig:ablation-depth}, right). Depth pruning lowers latency per call at
 budgets of two and four on every backbone that records it, while its
 success response at one budget spans $+9.5$ to $-36.0$, and the only
 significant gain that also lowers latency, depth pruning at a budget of two
