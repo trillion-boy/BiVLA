@@ -40,9 +40,9 @@ aggregate success rates hide?
 downward and four upward. With 110 comparisons about five would pass the
 threshold by chance, and the four gains, depth pruning and motion-entropy
 fusion on CogACT WidowX ($+9.5$ and $+8.0$), task-aware fusion on OpenVLA
-Fractal ($+6.8$) and foveation on UniVLA Goal ($+7.0$), lie between $+6.8$
-and $+9.5$ points on three backbone and environment pairs, while twenty of
-the 22 drops remove 10 points or more. Over all 285 tested settings the
+Fractal ($+6.8$) and foveation on UniVLA Goal ($+7.0$), lie on three
+backbone and environment pairs, while twenty of the 22 drops remove 10
+points or more. Over all 285 tested settings the
 count is 76 significant drops against six significant gains on the same
 three pairs, and no setting raises success on more than six of the 13
 backbone and environment combinations (Fig.~\ref{fig:consistency}).
@@ -62,12 +62,11 @@ adds 9.5 points to CogACT ($p = 0.009$) and removes 36.0 from MiniVLA and
 17.0 from SpatialVLA (both $p < 0.001$).
 Foveation at a keep ratio of 0.5 adds 7.0 to UniVLA ($p = 0.039$) and
 removes 13.0 from SmolVLA ($p = 0.015$) on the same Goal suite
-(Table~\ref{tab:libero-results}). The environment changes the outcome for
-a fixed backbone and rule as well. The same keep ratio removes 14.5 points
+(Table~\ref{tab:libero-results}). The same keep ratio removes 14.5 points
 from UniVLA on WidowX ($p < 0.001$) and adds 7.0 on Goal, and action
 repeat at two steps is negative on all six WidowX backbones yet moves the
-four Fractal backbones by $-1.2$ to $+4.4$ points, none significant. The
-dose does not restore transfer. Raising the depth budget from one to two
+four Fractal backbones by $-1.2$ to $+4.4$ points, none significant.
+Raising the depth budget from one to two
 to four lifts the significant drops from 8 to 9 to 14 of 22, while CogACT
 WidowX moves by $+7.0$, $+9.5$ and $+2.5$ and MiniVLA WidowX by $-17.5$,
 $-36.0$ and $-36.0$ (Fig.~\ref{fig:ablation-depth}). \textbf{[A-2] The sign is a
@@ -87,9 +86,7 @@ dense latency per step at two steps, and the worst, with significant drops
 in 8 of 22 cells at two steps and 20 of 22 at four
 (Fig.~\ref{fig:ablation-depth}, right). Depth pruning lowers latency per call at
 budgets of two and four on every backbone that records it, while its
-success response at one budget spans $+9.5$ to $-36.0$, and the only
-significant gain that also lowers latency, depth pruning at a budget of two
-on CogACT WidowX, reads 0.0 on Fractal at its family-best budget of four.
+success response at one budget spans $+9.5$ to $-36.0$.
 \textbf{[A-3] Lower computation implies neither lower latency nor preserved
 success. Foveation and fusion change success without changing
 computation, and action repeat and depth pruning change computation with a
@@ -104,8 +101,8 @@ dense policy under its own name. The five UniVLA guarded reuse cells fired
 on 0 to 5 steps of 6,000 to 65,600 and match dense on every episode but
 one, the conservative-adaptive fusion cells on UniVLA WidowX and Spatial
 selected no reusable patch and equal dense, and CogACT's task-aware
-setting equals motion-entropy because the harness exposes no
-text-to-vision attention where the selector runs. Third, the record
+setting equals motion-entropy because the harness exposes no attention
+where the selector runs. Third, the record
 separates two kinds of loss. Action repeat loses across every task at
 once, 42, 49, 44 and 40 successes of 50 on UniVLA WidowX falling to 12, 3,
 6 and 4, while depth pruning and foveation lose in particular tasks, such
@@ -122,10 +119,9 @@ points (45 of 100) and is reported without a paired test.
 \subsection{Analysis}
 
 \textbf{Episode length follows success.} Every failed episode ran to its
-step cap, so Avg.\ Steps is a success-weighted average of the successful
-episodes and the cap, tracks the Success column and is not an independent
-measure of efficiency. CronusVLA on Fractal, where a share of successful
-episodes also reaches the cap, is the one exception.
+step cap, so Avg.\ Steps tracks the Success column and is not an
+independent measure of efficiency, with CronusVLA on Fractal, where
+successful episodes also reach the cap, as the one exception.
 
 \textbf{What a repeated call saves.} Latency per step under action repeat
 is 0.52 to 0.72 of dense at two steps and 0.28 to 0.58 at four, against
@@ -141,8 +137,8 @@ and finds all three on about one step in ten for OpenVLA on LIBERO under
 the aggressive setting, on 2 to 6 percent of steps for OpenVLA elsewhere
 and for MiniVLA, on under 5 percent for the other backbones, and on fewer
 than one step in a thousand for UniVLA. Conservative-adaptive fusion finds
-no reusable patch on SpatialVLA and UniVLA. The signal bounds a candidate
-before its effect does, and a backbone on which it never fires reports the
-dense policy under the intervention's name, which no latency figure
-without the per-step gate record can show. We therefore report how often
-each gate fired and recommend the same for any gated intervention.
+no reusable patch on SpatialVLA and UniVLA. A backbone on which the
+signal never fires reports the dense policy under the intervention's name,
+which no latency figure without the per-step gate record can show, so we
+report how often each gate fired and recommend the same for any gated
+intervention.
