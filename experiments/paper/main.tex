@@ -35,7 +35,7 @@
 % }
 
 \title{\LARGE \bf
-Bag of Tricks for  Training-Free VLA Models:  A Visual Representation Perspective Perception in
+Bag of Tricks for  Training-Free VLA Models from a Visual Representation Perspective
 }
 
 \author{Anonymous Authors}
@@ -108,9 +108,22 @@ The interventions evaluated in this work can be understood through this distinct
 % \end{minipage}}
 % \end{center}
 
-
 \section{Bag of Tricks}
 \label{sec:bag_of_tricks}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figure/overview_A3.pdf}
+  \caption{Where each intervention enters the control loop of a frozen VLA
+  policy. Candidates (top) act on the model call, the visual tokens, and the
+  decoder depth, each where a signal admits it. Controls (bottom) use no
+  signal, one blurring the input image and the other holding each action for
+  a fixed number of steps. The dots and the diamond mark the points of effect,
+  and the dashed path marks the skipped call. Every intervention is compared
+  with the unmodified policy on matched episodes.}
+  \label{fig:overview}
+\end{figure*}
+
 
 \subsection{Overview and Design Principle}
 
@@ -148,6 +161,7 @@ to connect these axes through two conservative mechanisms: (i) a guarded
 action-reuse rule that interprets policy evaluation as an event-triggered
 decision, and (ii) an interaction-aware temporal selector whose invariance mask
 can be shared by representation fusion and model-internal caching.
+Fig.~\ref{fig:overview} marks where each intervention enters the control loop.
 % This unified
 % view turns a collection of heuristics into a controlled study of when a VLA
 % must perceive, reason, and act again.
@@ -412,15 +426,39 @@ Temporal fusion itself does not reduce FLOPs, since the full policy still execut
 % Accordingly, we evaluate temporal fusion and VLA-Cache separately and do not
 % attribute a measured acceleration to the combined interface.
 
-
 \section{Experiments and Evaluation}
 
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figure/success_change_bridge_row.pdf}
+  \caption{Success change from the dense policy on SimplerEnv WidowX, in
+  percentage points, for all 13 intervention settings on the six WidowX
+  backbones. Panels read left to right as CogACT, CronusVLA, MiniVLA,
+  OpenVLA, SpatialVLA and UniVLA. Colors identify families and match the
+  row labels. Values are point estimates from the paired runs, and the
+  paired test of Section~IV-A decides significance in the text.}
+  \label{fig:success-widowx}
+\end{figure*}
 
 \input{tables/simplr}
 
 \input{tables/libero}
 
-
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{figure/ablation_depth_repeat_row.pdf}
+  \caption{Depth pruning and action repeat across every backbone and
+  environment. Panels read left to right as depth pruning success change,
+  depth pruning speedup, action repeat success change and action repeat
+  speedup, against the number of removed decoder layers or the repeat
+  factor. Success change is from dense in percentage points, and speedup is
+  dense time per step divided by intervened time per step. LIBERO suites are pooled per backbone, so 13
+  lines stand for the 22 pairs of the text. Marker shape encodes the
+  environment, circle for WidowX, square for Google robot and triangle for
+  LIBERO. Values are point estimates, and the paired test decides
+  significance in the text.}
+  \label{fig:ablation-depth}
+\end{figure*}
 
 \subsection{Setup and Protocol}
 
@@ -533,22 +571,9 @@ SmolVLA & \raggedright smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & \raggedright
 }
 \end{table*}
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=0.78\textwidth]{figure/success_change_bridge.pdf}
-  \caption{Success change from the dense policy on SimplerEnv WidowX, in
-  percentage points, for all 13 intervention settings on the six WidowX
-  backbones. Panels read left to right and top to bottom as CogACT,
-  CronusVLA, MiniVLA, OpenVLA, SpatialVLA and UniVLA. Colors identify
-  families and match the row labels. Values are
-  point estimates from the paired runs, and the paired test of
-  Section~IV-A decides significance in the text.}
-  \label{fig:success-widowx}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.72\textwidth]{figure/cross_setting_consistency.pdf}
+  \includegraphics[width=\columnwidth]{figure/cross_setting_consistency_col.pdf}
   \caption{For each setting, the number of the 13 backbone and environment
   combinations, with LIBERO suites pooled per backbone, whose success is
   lower, unchanged or higher than dense. Lower and higher count any nonzero
@@ -558,40 +583,14 @@ SmolVLA & \raggedright smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & \raggedright
   without a paired test. Under the paired test, six of the 285 setting and
   combination cells raise success significantly, on three combinations.}
   \label{fig:consistency}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figure/ablation_depth_pruning.pdf}
-  \caption{Depth pruning across every backbone and environment as the
-  number of removed decoder layers rises. Left, success change from dense
-  in percentage points. Right, dense time per step divided by intervened
-  time per step. LIBERO suites are pooled per backbone, so 13 lines stand
-  for the 22 pairs of the text. Marker shape encodes the environment,
-  circle for WidowX, square for Google robot and triangle for LIBERO.
-  Values are point estimates, and the paired test decides significance in
-  the text.}
-  \label{fig:ablation-depth}
-\end{figure*}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.8\textwidth]{figure/ablation_action_repeat.pdf}
-  \caption{Action repeat across every backbone and environment at repeat
-  factors of two and four. Left, success change from dense in percentage
-  points. Right, dense time per step divided by intervened time per step.
-  LIBERO suites are pooled per backbone, and marker shape encodes the
-  environment as in Fig.~\ref{fig:ablation-depth}. Values are point
-  estimates, and the paired test decides significance in the text.}
-  \label{fig:ablation-repeat}
-\end{figure*}
+\end{figure}
 
 \subsection{Results and Discussion}
 
 Tables~\ref{tab:simplerenv-results} and~\ref{tab:libero-results} report
 Success, Latency and Avg.\ Steps for the dense policy and the family-best
 setting on every backbone and environment, and
-Figs.~\ref{fig:success-widowx} to~\ref{fig:ablation-repeat} show every
+Figs.~\ref{fig:success-widowx} to~\ref{fig:ablation-depth} show every
 tested setting on WidowX and the depth and repeat sweeps on every pair. We
 structure the results around four research questions (RQs) and answer each
 in turn.
@@ -656,7 +655,7 @@ about 8 percent per call on OpenVLA and 14 to 17 on MiniVLA and UniVLA
 under task-aware. Action repeat is the fastest family, 0.52 to 0.72 of
 dense latency per step at two steps, and the worst, with significant drops
 in 8 of 22 cells at two steps and 20 of 22 at four
-(Fig.~\ref{fig:ablation-repeat}). Depth pruning lowers latency per call at
+(Fig.~\ref{fig:ablation-depth}, right). Depth pruning lowers latency per call at
 budgets of two and four on every backbone that records it, while its
 success response at one budget spans $+9.5$ to $-36.0$, and the only
 significant gain that also lowers latency, depth pruning at a budget of two
@@ -720,6 +719,28 @@ each gate fired and recommend the same for any gated intervention.
 
 \section{Conclusion, Limitation and Future Works}
 
+We evaluated five training-free interventions on seven released VLA
+policies and three environments under one matched protocol, 47,600 paired
+episodes in all. No intervention is a reliable gain. Significant changes
+are drops by more than twelve to one, the few gains are of the size and
+number that chance allows, and the sign of an intervention is a joint
+property of the rule, the backbone and the environment, so a claim made on
+one combination does not transfer to another without a matched test on the
+target. Lower computation implies neither lower latency nor preserved
+success, and the one family that never harms success, guarded reuse, is
+harmless because its gates rarely fire, which only the per-episode record
+with per-step gate counts can show.
+
+\textbf{Limitations and future work.} Each cell is one run, so the paired
+test speaks to the same initial states under two policies and not to other
+initial states, and CronusVLA does not reproduce its rollout under a fixed
+seed. Latency is read only within one backbone, environment, software stack
+and GPU class, peak memory was not measured, and all runs are in
+simulation. Several seeds per cell, real-robot replication of the sign
+flips of Section~IV-B, and a measured integration of the fusion reuse mask
+with the cache path are the next steps, and the paired records and gate
+counts of every run allow a new intervention to be tested against the same
+episodes.
 
 \bibliographystyle{ieeetr}
 \bibliography{main}
