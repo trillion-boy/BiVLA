@@ -40,7 +40,7 @@ n = sum(p['n'] for p in parts) + long['episodes']
 agg[(m, c)].update({'successes': succ, 'n': n, 'success': 100 * succ / n, 'complete': True})
 
 
-def comparison_row(name, env, key='delta', height=3.3):
+def comparison_row(name, env, key='delta', height=3.1):
     """comparison() with one row of panels instead of a 2x3 grid."""
     common.style(); ms = common.models(env)
     fig, axs = plt.subplots(1, len(ms), figsize=(7.16, height), sharex=True, sharey=True,
@@ -62,7 +62,6 @@ def comparison_row(name, env, key='delta', height=3.3):
         ax.spines['left'].set_visible(False); ax.grid(axis='x', color='#e5e5e5', lw=.5)
         ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
         ax.tick_params(axis='x', labelbottom=True)
-        ax.text(.5, 1.01, common.model_name(mm), transform=ax.transAxes, ha='center', va='bottom', fontsize=7.5)
     fig.supxlabel('Success change from original (percentage points)', fontsize=8)
     common.save(fig, name)
 
