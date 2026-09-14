@@ -82,6 +82,10 @@ without a matched test there.}
 
 \subsection{Analysis}
 
+\textbf{Episode length follows success.} Every failed episode ran to its
+step cap, so Avg.\ Steps in the tables tracks the Success column and is
+not an independent measure of efficiency.
+
 \textbf{What a repeated call saves.} Per-step latency under action repeat
 lands above the halving that the call count predicts, because the
 simulator step is paid on every environment step and only the model
