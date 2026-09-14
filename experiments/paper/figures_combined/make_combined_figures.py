@@ -30,14 +30,7 @@ def style_fallback():
 common.style = style_fallback
 groups, agg, suites, audit, allrows = common.data()
 
-# Pool the OpenVLA LIBERO conservative cell with its Long summary, as for Fig. 2.
-m, c = 'openvla_libero', 'temporal_fusion_conservative_adaptive'
-long = json.loads((common.ROOT.parent / 'OpenVLA_Libero_Long.json').read_text())
-assert long['config_name'] == c and long['task_suite_name'] == 'libero_10'
-parts = [suites[(m, c, s)] for s in ('libero_goal', 'libero_object', 'libero_spatial')]
-succ = sum(p['successes'] for p in parts) + long['successes']
-n = sum(p['n'] for p in parts) + long['episodes']
-agg[(m, c)].update({'successes': succ, 'n': n, 'success': 100 * succ / n, 'complete': True})
+# All 13 combinations are complete in the export (OpenVLA Long conservative-adaptive added 2026-09-15).
 
 
 def comparison_row(name, env, key='delta', height=2.3):
