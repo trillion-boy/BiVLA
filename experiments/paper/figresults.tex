@@ -15,9 +15,11 @@
   \includegraphics[width=\columnwidth]{figure/teaser_bridge_bars.pdf}
   \caption{Success of all 14 configurations on the six SimplerEnv WidowX
   backbones, the original policy counted as one of six tricks. Within a
-  trick the bars run from its first to its last setting in the order of
-  Section~IV-A, the dotted line marks the original, and a 0 stands where
-  a setting succeeded on no episode. No trick raises success by more
+  trick the bars follow the order of its settings in Section~IV-A, keep
+  ratio 0.2 then 0.5, two then four steps, one, two then four layers,
+  strict, moderate then aggressive, and motion-entropy, task-aware then
+  conservative-adaptive, darkest first. The dotted line marks the
+  original, and a 0 stands where a setting succeeded on no episode. No trick raises success by more
   than 10 points on any backbone, while action repeat, depth pruning and
   foveation lower it by 10 to 85 points on several.}
   \label{fig:teaser}
@@ -42,8 +44,9 @@
   \includegraphics[width=\columnwidth]{figure/ablation_depth_repeat_col.pdf}
   \caption{Depth pruning (top) and action repeat (bottom) on every
   backbone and environment, success change on the left and speedup on the
-  right, against the number of removed decoder layers or the repeat
-  factor. Speedup is the original's time per step divided by the trick's,
+  right, against the number of removed decoder layers or the number of
+  steps each action is held. Speedup is the original's time per step
+  divided by the trick's,
   and LIBERO suites are pooled per backbone, so 13 lines stand for the 22
   pairs of the text.}
   \label{fig:ablation-depth}

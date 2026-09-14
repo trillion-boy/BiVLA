@@ -10,6 +10,18 @@ from matplotlib import font_manager
 from matplotlib.patches import Patch
 from matplotlib.ticker import MaxNLocator
 import common
+# Settings in the order of Section IV-A: keep 0.2 then 0.5; repeat 2 then 4; one, two, four
+# layers; strict, moderate, aggressive; motion-entropy, task-aware, conservative-adaptive.
+ORDER = ['original', 'fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4',
+         'depth_pruning1', 'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate',
+         'guarded_reuse_aggressive', 'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware',
+         'temporal_fusion_conservative_adaptive']
+FAM = [0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
+NAMES = {'fixed_foveation_keep20': 'Keep 20%', 'fixed_foveation_keep50': 'Keep 50%', 'action_repeat2': 'Repeat 2',
+         'action_repeat4': 'Repeat 4', 'depth_pruning1': 'Prune 1 layer', 'depth_pruning2': 'Prune 2 layers',
+         'depth_pruning4': 'Prune 4 layers', 'guarded_reuse_strict': 'Reuse strict', 'guarded_reuse_moderate': 'Reuse moderate',
+         'guarded_reuse_aggressive': 'Reuse aggressive', 'temporal_fusion_motion_entropy': 'Fusion motion/entropy',
+         'temporal_fusion_task_aware': 'Fusion task-aware', 'temporal_fusion_conservative_adaptive': 'Fusion conservative'}
 HERE = Path(__file__).resolve().parent
 for p in font_manager.findSystemFonts():
     if 'LiberationSerif' in p: font_manager.fontManager.addfont(p)
@@ -26,9 +38,9 @@ def shade(hexcol, k):
 def teaser(name, env='bridge', size=(3.5, 2.75)):
     ms = common.models(env)
     fig, axs = plt.subplots(2, 3, figsize=size, layout='constrained')
-    fams = common.FAMILY_IDS
+    fams = FAM
     for ax, mm in zip(axs.flat, ms):
-        vals = [common.metric(mm, c, 'success') for c in common.CONFIGS]
+        vals = [common.metric(mm, c, 'success') for c in ORDER]
         x = []; pos = 0.0
         for i, f in enumerate(fams):
             if i and f != fams[i - 1]: pos += .6
