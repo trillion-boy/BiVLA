@@ -36,6 +36,8 @@ def teaser(name, env='bridge', size=(3.5, 2.75)):
         k_in_family = [sum(1 for j in range(i) if fams[j] == fams[i]) for i in range(14)]
         cols = [common.COLORS[0] if i == 0 else shade(common.COLORS[fams[i]], k_in_family[i]) for i in range(14)]
         ax.bar(x, vals, width=.9, color=cols, edgecolor='none', zorder=3)
+        for xi, v, col in zip(x, vals, cols):
+            if v == 0: ax.text(xi, 0.6, '0', ha='center', va='bottom', fontsize=5, color=col, fontweight='bold', zorder=4)
         ax.axhline(vals[0], color='#444444', ls=':', lw=.6, zorder=2)
         lo, hi = np.nanmin(vals), np.nanmax(vals); pad = max(4, (hi - lo) * .12)
         ax.set_ylim(max(0, lo - pad), min(100, hi + pad))
