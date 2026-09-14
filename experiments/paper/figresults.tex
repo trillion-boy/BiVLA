@@ -4,7 +4,21 @@
 % row, Fig. 4 the consistency chart. Files live in figure/ on Overleaf.
 % Placement: Fig. 2 and Fig. 3 blocks before \subsection{Setup and
 % Protocol}, Fig. 4 before \subsection{Results and Discussion}.
+% The teaser block goes in main.tex right after \end{abstract}, so it floats
+% to the top of the right column of page 1.
 % ---------------------------------------------------------------------------
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=\columnwidth]{figure/teaser_bridge_bars.pdf}
+  \caption{Success of all 14 configurations on the six SimplerEnv WidowX
+  backbones, the original policy counted as one of six tricks. Within a
+  trick the bars run from its first to its third setting in the order of
+  Section~IV-A, and the dotted line marks the original. No trick raises
+  success far above the original on any backbone, and action repeat and
+  depth pruning lower it far below on several.}
+  \label{fig:teaser}
+\end{figure}
 
 \begin{figure*}[t]
   \centering

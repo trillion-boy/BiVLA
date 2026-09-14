@@ -13,8 +13,8 @@
 
 Tables~\ref{tab:simplerenv-results} and~\ref{tab:libero-results} give the
 best setting of each trick on every backbone and environment, and
-Figs.~\ref{fig:tradeoff-widowx} to~\ref{fig:consistency} show all 13
-settings. We read them through three questions, one for each part of the
+Fig.~\ref{fig:teaser} and Figs.~\ref{fig:tradeoff-widowx}
+to~\ref{fig:consistency} show all 13 settings. We read them through three questions, one for each part of the
 control loop that a trick touches.
 \begin{list}{}{\setlength{\labelwidth}{2.9em}\setlength{\labelsep}{0.4em}%
   \setlength{\leftmargin}{3.3em}\setlength{\itemsep}{0pt}%
@@ -27,9 +27,12 @@ each unit of speed cost?
 \item[\textbf{RQ-3:}] Does a trick that helps one policy help another?
 \end{list}
 
-\textbf{RQ-1.} In Tables~\ref{tab:simplerenv-results}
-and~\ref{tab:libero-results} the green success cells are few and small,
-and the red ones are many and large. Of the 110 best-setting cells, 22
+\textbf{RQ-1.} Fig.~\ref{fig:teaser} shows every configuration on the
+six WidowX backbones, and no bar rises far above the dotted line of the
+original, while the bars that fall far below it belong to action repeat
+and depth pruning. Tables~\ref{tab:simplerenv-results}
+and~\ref{tab:libero-results} say the same for every environment, with
+few and small green success cells against many and large red ones. Of the 110 best-setting cells, 22
 lower success significantly and four raise it, and the four gains, on
 CogACT WidowX, OpenVLA Fractal and UniVLA Goal, are of the size and
 number that chance allows over this many comparisons, while most of the
