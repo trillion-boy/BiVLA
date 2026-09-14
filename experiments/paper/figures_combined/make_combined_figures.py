@@ -59,7 +59,7 @@ def comparison_row(name, env, key='delta', height=2.3):
     common.save(fig, name)
 
 
-def ablation_row(name, families=(3, 2), height=2.1):
+def ablation_row(name, families=(3, 2), height=2.7):
     """ablation() for two families side by side: four panels in one row, one legend."""
     common.style(); palette = plt.get_cmap('tab20')
     fig, axs = plt.subplots(1, 4, figsize=(7.16, height), layout='constrained')
