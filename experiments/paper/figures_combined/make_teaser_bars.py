@@ -35,9 +35,11 @@ def shade(hexcol, k):
     r, g, b = (int(hexcol[i:i + 2], 16) / 255 for i in (1, 3, 5)); f = [1.0, .72, .46][k]
     return (1 - f * (1 - r), 1 - f * (1 - g), 1 - f * (1 - b))
 
-def teaser(name, env='bridge', size=(3.5, 2.75)):
+def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3)):
+    """grid = (rows, columns) of the six panels: (2, 3) is the original layout, (3, 2) the
+    taller variant Soumya asked for (2026-09-15) to match the reference figure's finish."""
     ms = common.models(env)
-    fig, axs = plt.subplots(2, 3, figsize=size, layout='constrained')
+    fig, axs = plt.subplots(*grid, figsize=size, layout='constrained')
     fams = FAM
     for ax, mm in zip(axs.flat, ms):
         vals = [common.metric(mm, c, 'success') for c in ORDER]
@@ -65,4 +67,5 @@ def teaser(name, env='bridge', size=(3.5, 2.75)):
         fig.savefig(HERE / ext / f'{name}.{ext}', bbox_inches='tight', pad_inches=.03, dpi=300, facecolor='white')
 
 teaser('teaser_bridge_bars')
+teaser('teaser_bridge_bars_3x2', size=(3.5, 3.55), grid=(3, 2))
 print('done', common.FAMILIES)
