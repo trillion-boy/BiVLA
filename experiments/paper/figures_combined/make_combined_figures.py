@@ -82,8 +82,6 @@ def ablation_row(name, families=(3, 2), height=2.7):
                 ax.set_xticks(range(len(cs)), labs); ax.grid(alpha=.16)
         axs[2 * k].set_ylabel('Success change (points)'); axs[2 * k + 1].set_ylabel('Time-per-step speedup (×)')
         axs[2 * k].axhline(0, c='#aaaaaa', lw=.6); axs[2 * k + 1].axhline(1, c='#aaaaaa', lw=.6)
-        for ax in axs[2 * k:2 * k + 2]:
-            ax.text(.5, 1.02, common.FAMILIES[family], transform=ax.transAxes, ha='center', va='bottom', fontsize=7.5)
     fig.legend(*axs[0].get_legend_handles_labels(), loc='outside lower center', ncol=5, fontsize=6)
     common.save(fig, name)
 

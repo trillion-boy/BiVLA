@@ -37,11 +37,12 @@
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures_combined/ablation_depth_repeat_row.pdf}
-  \caption{Depth pruning (left pair) and action repeat (right pair) across
-  every backbone and environment as the number of removed decoder layers
-  or the repeat factor rises. In each pair, left is the success change from
-  dense in percentage points and right is dense time per step divided by
-  intervened time per step. LIBERO suites are pooled per backbone, so 13
+  \caption{Depth pruning and action repeat across every backbone and
+  environment. Panels read left to right as depth pruning success change,
+  depth pruning speedup, action repeat success change and action repeat
+  speedup, against the number of removed decoder layers or the repeat
+  factor. Success change is from dense in percentage points, and speedup is
+  dense time per step divided by intervened time per step. LIBERO suites are pooled per backbone, so 13
   lines stand for the 22 pairs of the text. Marker shape encodes the
   environment, circle for WidowX, square for Google robot and triangle for
   LIBERO. Values are point estimates, and the paired test decides
