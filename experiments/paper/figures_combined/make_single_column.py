@@ -31,6 +31,10 @@ def tradeoff_col(name, env='bridge', size=(3.5, 3.5)):
     for ax, mm in zip(axs.flat, ms):
         pts = [(common.metric(mm, c, 'speedup'), common.metric(mm, c, 'delta'), i) for i, c in enumerate(common.CONFIGS)]
         pts = [p for p in pts if np.isfinite(p[0] + p[1])]
+        # CronusVLA WidowX moderate and aggressive reuse were rerun on another GPU, so their
+        # latency is not read (Section IV-A); they are omitted here rather than plotted.
+        if mm.startswith('cronusvla'):
+            pts = [p for p in pts if common.CONFIGS[p[2]] not in ('guarded_reuse_moderate', 'guarded_reuse_aggressive')]
         xx = [p[0] for p in pts]; yy = [p[1] for p in pts]
         dx = max(.06, (max(xx) - min(xx)) * .15); dy = max(3, (max(yy) - min(yy)) * .12)
         ax.set_xlim(min(xx) - dx, max(xx) + dx); ax.set_ylim(min(yy) - dy, max(yy) + dy)
