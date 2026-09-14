@@ -38,22 +38,24 @@ threshold by chance, and the four gains, depth pruning and motion-entropy
 fusion on CogACT WidowX ($+9.5$ and $+8.0$), task-aware fusion on OpenVLA
 Fractal ($+6.8$) and foveation on UniVLA Goal ($+7.0$), lie on three
 backbone and environment pairs, while twenty of the 22 drops remove 10
-points or more. Over all 286 settings the count is 77 significant drops
-against six significant gains on the same three pairs, five of them
+points or more. Over all 286 settings the count is 77 significant drops,
+one of them a CronusVLA WidowX cell within its floor, against six
+significant gains on the same three pairs, five of them
 distinct since CogACT's task-aware run repeats its motion-entropy run, and
 no setting raises success on more than six of the 13 backbone and
 environment combinations (Fig.~\ref{fig:consistency}). Guarded reuse
 changes success significantly in none of its 66 settings. Action repeat
 and depth pruning lower latency per step, by 28 to 48 percent at two steps
-and by 1 to 6 percent in the depth cells of six backbones, and both pay
+and by up to 6 percent in the depth cells of six backbones, and both pay
 for it in success on some backbone (RQ-3), while guarded reuse lowers it
 by up to 10 percent on OpenVLA LIBERO, where its gates fire most, and by
 under 5 percent elsewhere. \textbf{[A-1] No intervention is a reliable
 gain. Significant changes are drops by more than twelve to one, the gains
 are of the size and number that chance allows, and the one family that
 never changes success significantly, guarded reuse, fires on about one
-step in ten at most and on fewer than one in twenty on most backbones, so on most
-of them it reports the dense policy under its own name (RQ-4).}
+step in ten at most and on fewer than one in twenty on most backbones, so
+where its gates stay shut it reports the dense policy under its own name
+(RQ-4).}
 
 \textbf{RQ-2.} Fig.~\ref{fig:success-widowx} shows the same 13
 settings on the six WidowX backbones, and no setting other than action
@@ -66,19 +68,23 @@ removes 13.0 from SmolVLA ($p = 0.015$) on the same Goal suite
 from UniVLA on WidowX ($p < 0.001$) and adds 7.0 on Goal, the smaller
 keep ratio of 0.2 removes only 8.5 on WidowX ($p = 0.010$), so the dose is
 not monotone on that pair, and action
-repeat at two steps is negative on all six WidowX backbones yet moves the
+repeat at two steps is negative on all six WidowX backbones, significant
+on four, yet moves the
 four Fractal backbones by $-1.2$ to $+4.4$ points, none significant.
 Raising the depth budget from one to two
 to four lifts the significant drops from 8 to 9 to 14 of 22, while CogACT
 WidowX moves by $+7.0$, $+9.5$ and $+2.5$ and MiniVLA WidowX by $-17.5$,
 $-36.0$ and $-36.0$ (Fig.~\ref{fig:ablation-depth}). \textbf{[A-2] The sign is a
 joint property of the rule, the backbone and the environment. Each sign
-flip above is significant on both sides, and no setting is a significant
+flip above is significant on both sides, and even with its gain side read
+as chance it leaves a significant drop on one backbone against none on
+another, and no setting is a significant
 gain on more than one pair, CogACT's task-aware cell being its
 motion-entropy run under another name (RQ-4).}
 
 \textbf{RQ-3.} Foveation changes no model computation, is slower in every table cell by 3
-to 16 percent except on UniVLA, whose blur is amortized over a chunk, and
+to 16 percent, the cost of the blur itself, except on UniVLA, where the
+blur is amortized over a chunk, and
 lowers success significantly in seven cells. Temporal fusion changes which
 tokens enter the decoder and not how many, moves latency per call by 5
 percent or less under motion-entropy and conservative-adaptive, and adds
@@ -91,8 +97,8 @@ budgets of two and four on every backbone that records it, SmolVLA's
 table cell being its budget of one, which moves per-call time by under 1
 percent, while
 its success response at one budget spans $+9.5$ to $-36.0$.
-\textbf{[A-3] Lower computation implies neither lower latency nor preserved
-success. Foveation and fusion change success without changing
+\textbf{[A-3] Lower computation implies neither proportionally lower
+latency nor preserved success. Foveation and fusion change success without changing
 computation, and action repeat and depth pruning change computation with a
 success cost that the backbone sets.}
 
@@ -110,7 +116,8 @@ where the selector runs. Third, the record
 separates two kinds of loss. Action repeat loses across every task at
 once, 42, 49, 44 and 40 successes of 50 on UniVLA WidowX falling to 12, 3,
 6 and 4, while depth pruning and foveation lose in particular tasks, such
-as MiniVLA's depth loss concentrated in stack cube, 36 to 8 of 50, with
+as MiniVLA's depth loss at a budget of one concentrated in stack cube, 36
+to 8 of 50, with
 the other tasks moving by at most 6. \textbf{[A-4] A paired record with per-step
 gate counts tells a real effect from a silent gate and a task-specific
 failure from a global one. Aggregate success rates do neither.} Two
@@ -121,7 +128,7 @@ three fusion cells are one run whose settings were not recorded.
 
 \textbf{Episode length follows success.} Every failed episode ran to its
 step cap, so Avg.\ Steps tracks the Success column and is not an
-independent measure of efficiency, with CronusVLA on Fractal, where
+independent measure of efficiency, with CronusVLA on Fractal, where some
 successful episodes also reach the cap, as the one exception.
 
 \textbf{What a repeated call saves.} Latency per step under action repeat
