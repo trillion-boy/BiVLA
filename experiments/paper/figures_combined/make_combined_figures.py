@@ -40,7 +40,7 @@ n = sum(p['n'] for p in parts) + long['episodes']
 agg[(m, c)].update({'successes': succ, 'n': n, 'success': 100 * succ / n, 'complete': True})
 
 
-def comparison_row(name, env, key='delta', height=3.1):
+def comparison_row(name, env, key='delta', height=2.3):
     """comparison() with one row of panels instead of a 2x3 grid."""
     common.style(); ms = common.models(env)
     fig, axs = plt.subplots(1, len(ms), figsize=(7.16, height), sharex=True, sharey=True,
@@ -62,11 +62,11 @@ def comparison_row(name, env, key='delta', height=3.1):
         ax.spines['left'].set_visible(False); ax.grid(axis='x', color='#e5e5e5', lw=.5)
         ax.xaxis.set_major_locator(MaxNLocator(nbins=3))
         ax.tick_params(axis='x', labelbottom=True)
-    fig.supxlabel('Success change from original (percentage points)', fontsize=8)
+    fig.supxlabel('Success change from dense (percentage points)', fontsize=8)
     common.save(fig, name)
 
 
-def ablation_row(name, families=(3, 2), height=2.7):
+def ablation_row(name, families=(3, 2), height=2.1):
     """ablation() for two families side by side: four panels in one row, one legend."""
     common.style(); palette = plt.get_cmap('tab20')
     fig, axs = plt.subplots(1, 4, figsize=(7.16, height), layout='constrained')
@@ -78,7 +78,7 @@ def ablation_row(name, families=(3, 2), height=2.7):
             for ax, key in zip(axs[2 * k:2 * k + 2], ['delta', 'speedup']):
                 ax.plot(range(len(cs)), [common.metric(mm, cc, key) for cc in cs],
                         marker=['o', 's', '^'][list(common.ENVS).index(common.env_name(mm))], color=palette(j),
-                        label=f'{common.model_name(mm)} / {common.env_name(mm).replace("bridge", "WidowX").replace("fractal", "Google")}')
+                        label=f'{common.model_name(mm)} / {common.env_name(mm).replace("bridge", "WidowX").replace("fractal", "Fractal").replace("libero", "LIBERO")}')
                 ax.set_xticks(range(len(cs)), labs); ax.grid(alpha=.16)
         axs[2 * k].set_ylabel('Success change (points)'); axs[2 * k + 1].set_ylabel('Time-per-step speedup (×)')
         axs[2 * k].axhline(0, c='#aaaaaa', lw=.6); axs[2 * k + 1].axhline(1, c='#aaaaaa', lw=.6)
@@ -86,7 +86,7 @@ def ablation_row(name, families=(3, 2), height=2.7):
     common.save(fig, name)
 
 
-def consistency_col(name, size=(3.5, 3.4)):
+def consistency_col(name, size=(3.5, 2.5)):
     """consistency() at single-column width."""
     common.style(); fig, ax = plt.subplots(figsize=size, layout='constrained'); counts = []
     for cc in common.CONFIGS[1:]:
@@ -100,7 +100,7 @@ def consistency_col(name, size=(3.5, 3.4)):
             if k: ax.text(left[i] + k / 2, i, str(k), ha='center', va='center', fontsize=6.5)
         left += v
     ax.set_yticks(range(13), common.LABELS[1:]); ax.invert_yaxis()
-    ax.set_xlabel('Number of model–environment settings'); ax.set_xlim(0, 13.4)
+    ax.set_xlabel('Number of backbone and environment combinations'); ax.set_xlim(0, 13.4)
     fig.legend(*ax.get_legend_handles_labels(), loc='outside lower center', ncol=3, fontsize=6.5)
     common.save(fig, name)
 

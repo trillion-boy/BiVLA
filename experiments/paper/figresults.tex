@@ -14,9 +14,7 @@
   \caption{Success change from the dense policy on SimplerEnv WidowX, in
   percentage points, for all 13 intervention settings on the six WidowX
   backbones. Panels read left to right as CogACT, CronusVLA, MiniVLA,
-  OpenVLA, SpatialVLA and UniVLA. Colors identify families and match the
-  row labels. Values are point estimates from the paired runs, and the
-  paired test of Section~IV-A decides significance in the text.}
+  OpenVLA, SpatialVLA and UniVLA, and colors identify families.}
   \label{fig:success-widowx}
 \end{figure*}
 
@@ -24,28 +22,21 @@
   \centering
   \includegraphics[width=\columnwidth]{figures_combined/cross_setting_consistency_col.pdf}
   \caption{For each setting, the number of the 13 backbone and environment
-  combinations, with LIBERO suites pooled per backbone, whose success is
-  lower, unchanged or higher than dense. Lower and higher count any nonzero
-  change, and unchanged includes the cells of RQ-4 whose gates never fired.
-  The OpenVLA LIBERO conservative-fusion cell enters with its pooled
-  success over the four suites, the Long suite from its run summary, and
-  without a paired test. Under the paired test, six of the 285 setting and
-  combination cells raise success significantly, on three combinations.}
+  combinations of Fig.~\ref{fig:ablation-depth} whose success is lower,
+  unchanged or higher than dense, counting any nonzero change. The OpenVLA
+  Long conservative-adaptive cell enters by its run summary.}
   \label{fig:consistency}
 \end{figure}
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures_combined/ablation_depth_repeat_row.pdf}
-  \caption{Depth pruning and action repeat across every backbone and
+  \caption{Depth pruning and action repeat on every backbone and
   environment. Panels read left to right as depth pruning success change,
   depth pruning speedup, action repeat success change and action repeat
   speedup, against the number of removed decoder layers or the repeat
-  factor. Success change is from dense in percentage points, and speedup is
-  dense time per step divided by intervened time per step. LIBERO suites are pooled per backbone, so 13
-  lines stand for the 22 pairs of the text. Marker shape encodes the
-  environment, circle for WidowX, square for Google robot and triangle for
-  LIBERO. Values are point estimates, and the paired test decides
-  significance in the text.}
+  factor. Speedup is dense time per step divided by intervened time per
+  step, and LIBERO suites are pooled per backbone, so 13 lines stand for
+  the 22 pairs of the text.}
   \label{fig:ablation-depth}
 \end{figure*}
