@@ -73,21 +73,19 @@ labeled by its family. The other settings appear in the text.
 under the dense and the intervened policy, and a change is called
 significant when an exact two-sided McNemar test on the episodes that
 flipped between failure and success gives $p < 0.05$. The test pools the
-tasks of a cell, and Section~IV-B reports the per-task split where a loss
-concentrates in one task. The figures show point estimates, and this test
-decides significance. Each table cell is the best of two or three settings,
+tasks of a cell. The figures show point estimates, and this test decides
+significance. Each table cell is the best of two or three settings,
 so its p-value is post-selection and read as descriptive, and
 Section~IV-B reads gains over all 286 settings, where about 14
 chance passes are expected at this threshold, about seven per direction.
 Sixteen of the 22 significant table drops pass a false discovery rate
 correction at 0.05 over the 110 table cells, and no gain does. CronusVLA
-does not reproduce its rollout under the same fixed seed. Its strict reuse
-cell fired on 5 of 9,947 steps and still differs from dense on 14 of 200
-WidowX episodes, which we take as its run-to-run floor, so its cells whose
-net change lies within that floor are read as no change, and its only
-significant table cell, action repeat, exceeds the floor several times
-over. No floor was measured on Fractal. The other six backbones reproduce
-the dense outcome on all but about one episode in a hundred.
+does not reproduce its rollout under a fixed seed. Its strict reuse cell
+fired on 5 of 9,947 steps and still differs from dense on 14 of 200 WidowX
+episodes, which we take as its run-to-run floor, so its WidowX cells within
+that floor are read as no change, and no floor was measured on Fractal.
+The other six backbones reproduce the dense outcome on all but about one
+episode in a hundred.
 
 \textbf{Hardware and implementation.} Runs were scheduled on a shared GPU
 cluster with VRAM class matched within a backbone, and the card is
@@ -99,13 +97,11 @@ were repeated on an RTX PRO 6000 after failing on the RTX 5090. Three
 table cells whose gates never fired differ from their dense row by 0.4 to
 1.4 percent in latency, which we take as the latency floor. CogACT exposes
 no text-to-vision attention at the point where fusion runs, so its
-task-aware setting equals motion-entropy. The task-aware setting collects
-attention relevance, which forces an SDPA decoder into eager attention, so
-its per-call time is measured against a different backend than its dense
-row. On OpenVLA, whose LIBERO dense row already runs eager, task-aware adds
-the same eight percent per call as on its SDPA rows, so that cost is the
-relevance collection, while on MiniVLA and UniVLA the two are not
-separated.
+task-aware setting equals motion-entropy. Collecting attention relevance
+for the task-aware setting forces an SDPA decoder into eager attention. On
+OpenVLA, whose LIBERO dense row already runs eager, task-aware adds the
+same eight percent per call as on its SDPA rows, so that cost is the
+relevance collection, and on MiniVLA and UniVLA the two are not separated.
 
 \begin{table*}[t]
 \centering
