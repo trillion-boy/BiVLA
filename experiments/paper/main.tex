@@ -1,0 +1,727 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ICRA 2027 Double-Anonymous Submission Template
+% Mirror of the shared Overleaf main.tex as pasted 2026-09-14 (mentor edits of
+% 2026-09-13/14). Legacy commented-out blocks (old abstract, old Related Work
+% versions, old Bag of Tricks versions) are omitted here; they remain in
+% Overleaf and in this repository's history. Active content is verbatim.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+
+\IEEEoverridecommandlockouts
+\overrideIEEEmargins
+
+% Uncomment if you encounter PDF compatibility issues
+% \pdfobjcompresslevel=0
+% \pdfminorversion=4
+
+% Common packages
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{cite}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \title{\LARGE \bf
+% Bag of Tricks for Training-Free Perception in Vision-Language-Action Models
+% }
+
+\title{\LARGE \bf
+Bag of Tricks for  Training-Free VLA Models:  A Visual Representation Perspective Perception in
+}
+
+\author{Anonymous Authors}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+
+Vision-Language-Action (VLA) models have shown strong performance in robotic manipulation, but their high inference cost can limit practical deployment.
+Recent training-free methods aim to improve efficiency without modifying or retraining the underlying policy.
+However, existing studies evaluate these methods on only a small number of models or benchmarks, so their behavior across different VLA systems has not been studied in a consistent way.
+In this work, we present a systematic study of training-free VLA efficiency methods across three parts of the control loop: \emph{what} the policy observes, \emph{when} it is evaluated, and \emph{how much} computation is used at each evaluation.
+We study five representative methods (tricks) -- visual foveation, action repetition, depth pruning, guarded action reuse, and temporal feature fusion.
+We evaluate these tricks under a common protocol across seven VLA backbones and multiple manipulation environments, measuring both task performance and efficiency.
+Our results show that no single method consistently improves both efficiency and task performance across all models and settings. Different methods work better for different VLA backbones and tasks, and the same method can produce different outcomes across evaluation settings.
+These findings show the importance of evaluating efficiency methods across a broader range of VLA systems rather than relying on results from a single model or benchmark.
+We hope this study provides a useful empirical basis for the design and evaluation of future efficient VLA systems.
+
+\end{abstract}
+
+
+\section{INTRODUCTION}
+
+Vision-language-action (VLA) models are emerging as general-purpose policies for instruction-conditioned robotic manipulation~\cite{openvla,spatialvla,univla}. However, their growing capabilities come with substantial inference cost. Large vision encoders and language backbones repeatedly process high-dimensional observations, while some policies additionally rely on iterative action-generation modules. In closed-loop manipulation, this cost directly affects how frequently the policy can observe the environment, update its decisions, and respond to changes during execution. Improving VLA efficiency without modifying or retraining the underlying policy is therefore important for practical deployment.
+
+Recent training-free approaches reduce inference cost by exploiting redundancy at different stages of the VLA pipeline. Visual-token methods remove or reuse redundant image features~\cite{fastv,vlacache,vlapruner}; depth-pruning methods skip transformer layers whose representations change little~\cite{shortgpt,efficientvla}; and temporal methods reuse computation or actions across nearby control steps~\cite{vlacache,flashvla,ttfvla}. These methods often demonstrate favorable trade-offs between reduced computation and preserved task performance. However, such gains are typically reported for a specific intervention, backbone, benchmark, and implementation. This leaves an important question for efficient VLA deployment: \textbf{\emph{do training-free efficiency interventions provide consistent benefits across different VLA models and manipulation settings, or are their gains inherently configuration-dependent?}}
+
+This question is particularly important for VLAs because efficiency interventions operate within a closed-loop control system. Unlike compression of a static recognition model, modifying VLA inference can change both the computational cost and the behavior of the policy. For example, action repetition reduces the number of policy evaluations but also reduces the frequency of environmental feedback. Visual foveation changes the information presented to the policy without necessarily reducing the number of visual tokens. Temporal reuse introduces information from previous observations, while depth pruning may affect different functions across different VLA architectures. Consequently, reduced computation does not necessarily lead to lower runtime or preserved manipulation performance. The effectiveness of an intervention (tricks) can therefore depend on the underlying architecture, action representation, task, embodiment, and implementation.
+
+In this work, we investigate this question through a study of training-free VLA efficiency interventions. We examine when and where commonly used interventions remain effective across models and manipulation environments. We organize the interventions along three complementary dimensions of the VLA control loop: \textbf{\emph{what}} visual information the policy observes, \textbf{\emph{when}} the policy is evaluated, and \textbf{\emph{how much}} computation is performed during each evaluation. Specifically, we evaluate visual foveation, action repetition, depth pruning, guarded action reuse, and temporal feature fusion across \textit{\textbf{seven}} VLA backbones and \textbf{\textit{three}} sets for benchmarks. All interventions are evaluated against the corresponding unmodified policy using matched initial conditions, identical task instances, and a common latency protocol. We additionally retain per-episode outcomes to analyze how individual episodes change under each intervention rather than relying only on aggregate success rates.
+
+Our results show that the effectiveness of training-free VLA efficiency interventions is highly configuration-dependent. No single method consistently improves both efficiency and manipulation performance across all models and settings, with outcomes varying across backbones and implementation choices.
+
+Our main contributions and observations include the following: 1) \textbf{Evaluation of Key Efficiency Tricks:} We systematically evaluate five representative training-free efficiency tricks -- visual foveation, action repetition, depth pruning, guarded action reuse, and temporal feature fusion -- that target different sources of inference cost in VLA systems. Key insights include: no single trick consistently improves both efficiency and manipulation performance across all settings; the effectiveness of visual and temporal interventions varies substantially across VLA backbones and tasks; and reducing computation does not necessarily translate into proportional runtime gains or preserved task success. 2) \textbf{Cross-Model and Implementation Analysis:} We further study how the behavior of these tricks changes across model architectures and implementation choices. Our empirical results show that the same intervention can improve one backbone while degrading another under comparable evaluation conditions. 3) \textbf{Comprehensive Benchmarking:} We conduct extensive experiments across seven representative VLA backbones and multiple manipulation environments under a unified evaluation protocol, measuring both task performance and inference efficiency. Our results provide a common empirical benchmark for understanding when training-free efficiency interventions transfer across VLA systems.
+
+
+\section{Related Work}
+
+Training-free VLA efficiency methods reduce cost along three parts of the inference loop: the visual information given to the policy, the network computation used in each policy call, and how often the policy is invoked. We review prior work along these axes and position the five interventions evaluated in this study.
+
+\noindent\textbf{Visual Efficiency.}
+A direct way to reduce visual cost is to avoid processing every image region with the same fidelity. Classical foveated vision preserves high resolution near a region of interest while compressing peripheral regions~\cite{schwartz,traver}, and recent robot-learning methods adopt related ideas through gaze-centered tokenization or gaze supervision to guide visual processing~\cite{lookfocusact,gazereg}. However, for transformer-based VLAs with a fixed visual-token grid, changing the image only in pixel space does not necessarily reduce the computation inside the model. This motivates methods that operate on the visual representation itself by selecting, pruning, caching, or reusing visual tokens.
+
+VLA-Cache follows this direction by reusing cached representations for temporally stable patches and recomputing regions that change or remain task-relevant~\cite{vlacache}. It shows that visual computation can be reduced while largely preserving manipulation performance, and has become a reference point for later training-free VLA acceleration methods~\cite{vlapruner,efficientvla,specprune}. At the same time, VLA-Cache and VLA-Pruner show that token-reduction methods transferred directly from generic VLMs, such as FastV and SparseVLM, can degrade VLA control, since token importance for action prediction does not always align with generic visual-language saliency~\cite{fastv,sparsevlm,vlacache,vlapruner}. These findings suggest that visual efficiency in VLAs must be guided by the requirements of closed-loop action generation, rather than image or language relevance alone.
+
+\noindent\textbf{Network Depth Reduction.}
+Beyond reducing visual tokens, another line of work improves efficiency by reducing the amount of computation performed inside the policy network. ShortGPT ranks layers using Block Influence, while Gromov et al.\ remove contiguous layer groups based on representation similarity~\cite{shortgpt,gromov}. Building on this idea, EfficientVLA applies non-contiguous layer pruning to VLAs without retraining~\cite{efficientvla}, and MoLe-VLA learns an input-dependent layer router through self-distillation~\cite{molevla}. Compact VLA architectures also reduce depth at design time by using fewer language-model layers or by removing the language-model pathway from action prediction~\cite{flower,smolvla,turbovla}. Together, these methods show that some VLA backbones contain redundant depth, but the benefit of depth reduction depends strongly on the model architecture, action head, and the amount of redundancy available in the pretrained policy.
+
+\noindent\textbf{Temporal Efficiency.}
+A complementary source of efficiency comes from temporal redundancy. In robotic manipulation, consecutive observations and actions often change slowly, which motivates frame skipping and action chunking~\cite{dqn,act,diffusionpolicy,openvlaoft}. These methods reduce the number of policy calls, but they also reduce how often the policy receives updated feedback from the environment. Therefore, recent methods use state-dependent signals to decide when computation can be safely skipped or reused. FlashVLA gates action reuse based on visual and action consistency, while SpecPrune-VLA adapts computation according to action dynamics~\cite{flashvla,specprune}. Other methods reuse temporal visual information without skipping policy calls. TTF-VLA fuses current and historical visual tokens using motion and attention relevance, VLA-InfoEntropy uses entropy-based signals, and VLA-IAP relies on interaction alignment for visual-token selection~\cite{ttfvla,vlainfoentropy,vlaiap}. These approaches indicate that temporal redundancy can be exploited either at the action level or at the visual-feature level, but both require signals that are sensitive to the current interaction state.
+
+\noindent\textbf{Static and Conditional Interventions.}
+The interventions evaluated in this work can be understood through this distinction between fixed reductions and signal-driven adaptation. Visual foveation and fixed action repetition apply the same reduction throughout execution, and therefore serve as static controls. Depth pruning reduces network computation using a signal estimated once from calibration data, following the Block Influence criterion of ShortGPT~\cite{shortgpt}. In contrast, guarded reuse follows FlashVLA and SpecPrune-VLA by checking the newest observation, recent action consistency, gripper state, and translation before deciding whether to skip a policy call~\cite{flashvla,specprune}. Temporal fusion reuses visual features across frames while still querying the policy at every step, allowing temporal visual redundancy to be studied separately from policy-call skipping~\cite{ttfvla,vlainfoentropy,vlaiap}. Section~III specifies each mechanism and uses this grouping to separate static controls from conditional interventions.
+
+% \subsection{Evaluation of Efficient VLA Inference}
+% Efficient VLA methods are commonly evaluated on LIBERO and SimplerEnv~\cite{libero,simplerenv}, and recent efforts such as \texttt{vla-eval} and StarVLA aim to make evaluation consistent across models and codebases~\cite{vlaeval,starvla}. Acceleration studies still differ in their backbones, benchmarks, dense baselines, and inference backends, so it is difficult to tell whether a reported gain comes from the intervention itself or from the configuration in which it was tested. Multi-backbone studies often evaluate all models on one benchmark, while other works evaluate different models on different environment subsets~\cite{molevla,vlacache,specprune,vlapruner,gazereg,vlaiap}. Most results are aggregate success rates, which do not show whether the same episodes improve or fail after an intervention, and measured speedup depends on the dense implementation and attention backend used for reference~\cite{specprune}.
+
+% Our study addresses this gap by placing five representative training-free interventions (visual foveation, fixed action repetition, depth pruning, guarded action reuse, and temporal feature fusion) under one matched evaluation protocol. Each intervention is compared against the corresponding dense policy using the same task instances, matched episodes, and consistent runtime measurement. We exclude quantization because it changes numerical precision rather than visual, temporal, or network computation, and we exclude learned early-exit methods such as DeeR-VLA because they require additional training~\cite{deervla}. Following controlled ``bag-of-tricks'' evaluations~\cite{bagoftricks_cnn,bagoftricks_llm}, our goal is to compare representative training-free strategies under the same conditions rather than to introduce another isolated acceleration mechanism.
+
+% \begin{center}
+% \fbox{
+% \begin{minipage}{0.94\linewidth}
+% \textbf{Takeaway.}
+% Existing training-free VLA efficiency methods exploit redundancy across visual processing, network depth, and temporal execution. Their mechanisms range from fixed reductions to interaction-dependent adaptation, suggesting that efficiency depends not only on \emph{where} computation is reduced, but also on \emph{how} that reduction is controlled during closed-loop execution.
+% \end{minipage}}
+% \end{center}
+
+
+\section{Bag of Tricks}
+\label{sec:bag_of_tricks}
+
+\subsection{Overview and Design Principle}
+
+Vision--language--action (VLA) policies inherit the semantic generality of
+large vision--language models, but also inherit their inference cost. This is
+particularly restrictive in robotic manipulation, where inference is embedded
+inside a feedback loop: an inefficient policy lowers the control frequency,
+whereas an overly aggressive approximation can remove the visual or temporal
+cues required for contact-rich behavior. We therefore seek training-free
+interventions that reduce redundant computation while preserving the feedback
+structure of the pretrained policy.
+
+At time $t$, a VLA policy maps an RGB observation $I_t$ and language instruction
+$\ell$ to an action or action chunk,
+\begin{equation}
+    A_t=\pi_\theta(I_t,\ell)
+       =(a_{t,0},\ldots,a_{t,m-1}),
+    \qquad a_{t,j}\in\mathbb{R}^{d_a}.
+    \label{eq:vla_formulation}
+\end{equation}
+The parameters $\theta$ remain fixed throughout. Our central premise is that
+VLA inference contains three distinct forms of redundancy: \emph{spatial
+redundancy} in the visual observation, \emph{structural redundancy} across
+decoder blocks, and \emph{temporal redundancy} across consecutive control
+steps. Treating these as separate axes provides a principled way to determine
+where computation may be removed and what failure mode each approximation can
+introduce.
+
+% This perspective also clarifies the scientific role of the individual methods.
+Foveation and action repeat are intentionally simple controls that isolate
+spatial and temporal perturbations. Depth pruning and VLA-Cache instantiate
+established structural and cache-based acceleration principles
+~\cite{shortgpt,efficientvla,vlacache}. Our main methodological contribution is
+to connect these axes through two conservative mechanisms: (i) a guarded
+action-reuse rule that interprets policy evaluation as an event-triggered
+decision, and (ii) an interaction-aware temporal selector whose invariance mask
+can be shared by representation fusion and model-internal caching.
+% This unified
+% view turns a collection of heuristics into a controlled study of when a VLA
+% must perceive, reason, and act again.
+
+\subsection{Foveation: Spatial Allocation of Perceptual Fidelity}
+\label{sec:method_foveation}
+
+Uniform image fidelity is expensive but not necessarily uniformly useful.
+Manipulation tasks often concentrate geometric and semantic evidence around a
+small set of objects, the gripper, and their interaction region. Motivated by
+foveated perception~\cite{schwartz,traver}, we study whether a pretrained VLA
+remains functional when visual fidelity decreases with distance from a central
+region of interest.
+
+For a keep ratio $\rho$, the sharp central disc has radius
+$r_s=\sqrt{\rho HW/\pi}$. Let $d(x)$ denote the distance of pixel $x$ from the
+image center and let $\tau(x)$ increase from zero at $r_s$ to one at the image
+boundary. The foveated observation is a radial mixture
+\begin{equation}
+\begin{aligned}
+\widetilde I_t(x)
+&= w_0(x)I_t(x) + w_3(x)G_3(I_t)(x) \\
+&\quad + w_9(x)G_9(I_t)(x), \\
+&\text{s.t.}\quad
+w_0(x)+w_3(x)+w_9(x)=1.
+\end{aligned}
+\label{eq:foveation}
+\end{equation}
+where $G_3$ and $G_9$ are Gaussian filters of increasing strength, and the
+weights vary monotonically with $\tau(x)$. Pixels inside the fovea are retained
+exactly. We evaluate keep ratios of $20\%$ and $50\%$.
+
+% The purpose of this intervention is conceptual as much as computational.
+% It
+
+This tests the hypothesis that manipulation policies require high-frequency detail
+only in a restricted spatial support. However, because the image resolution
+and token count remain unchanged, fixed foveation does not itself reduce VLA
+FLOPs. It is therefore a perceptual robustness baseline and a diagnostic for
+future adaptive or task-conditioned foveation, rather than a claimed
+acceleration method.
+
+\subsection{Action Repeat: A Temporal Redundancy Control}
+\label{sec:method_action_repeat}
+
+Consecutive robot observations are strongly correlated, and the corresponding
+actions often vary smoothly. The simplest exploitation of this redundancy is
+to hold a predicted action for multiple control transitions. For repeat factor
+$k$, the controller applies
+\begin{equation}
+    u_{t+j}=a_t,\qquad j=0,\ldots,k-1,
+    \label{eq:action_repeat}
+\end{equation}
+and does not query the policy during the repeated steps. For an action-chunking
+policy, the same operator may be applied to each element of the chunk.
+
+Action repeat exposes a fundamental tension between inference efficiency and
+feedback. It reduces the number of policy calls by approximately a factor of
+$k$, but proportionally enlarges the open-loop interval. This is especially
+problematic near contact, grasp closure, and final placement, where small
+perceptual changes can require qualitatively different actions. We therefore
+use $k\in\{2,4\}$ as negative temporal controls. Their role is to measure how
+much apparent efficiency can be obtained by ignoring state-dependent risk and,
+in turn establish a conditional reuse mechanism.
+
+\subsection{Depth Pruning: Structural Redundancy in the Decoder}
+\label{sec:method_depth_pruning}
+
+The language-model decoder is a major source of per-query cost in OpenVLA.
+Residual architectures suggest a natural redundancy criterion: if a block
+produces only a small directional change in its hidden state over the target
+distribution, then bypassing that block may preserve the local representation
+while reducing both prefill and autoregressive computation.
+% This reasoning
+% follows Block Influence in ShortGPT and its adaptation to VLA acceleration
+% ~\cite{shortgpt,efficientvla}.
+
+For decoder block $j$, calibration example $n$, and token position $q$, we
+measure
+\begin{equation}
+    s_j=\frac{1}{N}\sum_{n=1}^{N}
+        \left[1-\frac{1}{Q_n}\sum_{q=1}^{Q_n}
+        \cos\!\left(h^{\mathrm{in}}_{j,n,q},
+                    h^{\mathrm{out}}_{j,n,q}\right)\right].
+    \label{eq:block_influence}
+\end{equation}
+Low-influence blocks are candidates for removal. Selection is deliberately
+conservative: the early decoder, which establishes multimodal processing, and
+the final block, which directly precedes action generation, are protected;
+adjacent blocks are not removed together; and the selected indices are frozen
+before evaluation. The resulting network is structurally shortened rather
+than emulated with identity layers, so the method removes real computation and
+maintains a consistent generation cache.
+
+The underlying assumption is distributional rather than universal. A block
+that is nearly redundant on calibration trajectories may become important
+under a different scene, instruction, or contact state. Moreover, cosine
+similarity measures representational direction, not action equivalence.
+% Accordingly, we evaluate increasing removal budgets and separately inspect
+% continuous-action and binary-gripper disagreement.
+The contribution here is
+not a new pruning score, but a VLA-specific, cache-safe, calibration-controlled
+application of structural redundancy.
+
+\subsection{Guarded Reuse: State-Conditional Policy Evaluation}
+\label{sec:method_guarded_reuse}
+
+Unconditional repetition treats every control phase as equally predictable.
+Our guarded-reuse mechanism instead asks whether the information available at
+the current step is sufficiently consistent with continued execution of the
+previous action. This can be interpreted as event-triggered inference: the
+expensive VLA is evaluated only when a perceptual or control event invalidates
+the local assumption of temporal continuity.
+
+The gate combines complementary evidence. A global image-change statistic
+detects camera or scene motion; a maximum local-patch statistic detects small
+changes that would disappear in a whole-image average; agreement between the
+two most recent inferred pose actions estimates local policy smoothness; and a
+gripper-consistency test protects discrete mode transitions. We additionally
+reject reuse for near-zero translational commands.
+% Although such commands look
+% stable numerically, they frequently occur during precise alignment or contact,
+% where fresh feedback is most valuable.
+
+Let $d_t^g$ and $d_t^l$ be global and maximum-local differences between cheap
+signatures of consecutive observations, let $c_t$ be the cosine similarity of
+the two most recent densely inferred six-dimensional pose actions, let $v_t$
+be the current translation magnitude, and let $r_t$ count consecutive reuses.
+The decision is
+\begin{equation}
+\begin{aligned}
+G_t ={}&
+[d_t^g \le \tau_g] \wedge [d_t^l \le \tau_l]
+\wedge [c_t \ge \tau_a] \wedge [v_t \ge \tau_v] \\
+&\wedge [\text{gripper state unchanged}]
+\wedge [r_t < R_{\max}], \\[2pt]
+u_t ={}&
+\begin{cases}
+u_{t-1}, & G_t = 1,\\
+\pi_\theta(I_t,\ell), & G_t = 0.
+\end{cases}
+\end{aligned}
+\label{eq:guarded_reuse}
+\end{equation}
+The current observation is examined at every step even when inference is
+skipped. Any failed condition immediately returns the controller to dense
+inference, and a maximum reuse horizon prevents prolonged open-loop behavior.
+
+We study strict, moderate, and aggressive operating points that jointly relax visual-change and action-agreement thresholds, tracing the efficiency–reliability trade-off. Unlike action-reuse methods such as FlashVLA~\cite{flashvla}, our conservative guard combines global and local visual evidence, action geometry, and gripper state to determine when action similarity is sufficiently reliable to skip a policy query.
+
+\subsection{VLA-Cache: Task-Aware Reuse of Visual Computation}
+\label{sec:method_vla_cache}
+
+Guarded reuse skips the entire model, whereas VLA-Cache~\cite{vlacache} targets
+redundancy inside a policy call. Its premise is that consecutive manipulation
+frames contain many visually stable patches whose previously computed states
+can be retained. Crucially, visual stability is not equivalent to task
+irrelevance: a target object may remain static while still determining the
+correct action. VLA-Cache therefore combines inter-frame similarity with
+language-conditioned attention.
+
+For patch $i$, let $\gamma_{t,i}$ denote its cosine similarity across frames
+and let $r_{t,i}$ be its text-to-vision attention score from the preceding
+query. Reuse is restricted to patches that are both sufficiently stable and
+outside the most task-relevant set:
+\begin{equation}
+    \mathcal C_t=
+    \operatorname{TopK}\!\left({i:\gamma_{t,i}\ge\tau_s\},K_s\right)
+    \setminus\operatorname{TopK}(r_t,K_r).
+    \label{eq:vla_cache}
+\end{equation}
+The corresponding historical cache entries are reused according to a
+layer-adaptive schedule derived from attention concentration. This preserves
+historical information rather than simply discarding tokens, distinguishing
+caching from token pruning.
+
+% We include VLA-Cache as a recent literature baseline because it directly tests
+% whether temporal visual redundancy produces actual decoder-level savings.
+The first observation remains dense, while stability and relevance filtering may retain fewer patches than the nominal budget. We therefore separate cache construction from steady-state cost and report actual reuse. This motivates whether task-conditioned temporal invariance can govern both representation fusion and computational reuse.
+
+
+\subsection{Interaction-Aware Temporal Fusion}
+\label{sec:method_temporal_fusion}
+
+Frame-independent VLA inference discards a useful prior: physical scenes evolve
+continuously, so a stable visual representation should not fluctuate
+arbitrarily between adjacent steps. Temporal fusion exploits this continuity by
+retaining historical projected tokens for regions judged invariant. Our formulation develops this reasoning with
+an explicit interaction-aware protection rule and a cache-compatible shared
+mask.
+
+For every visual patch $i$, we compute three signals. Motion $m_{t,i}$ captures
+physical change; normalized image entropy $e_{t,i}$ acts as a task-agnostic
+proxy for local structure and object boundaries; and optional relevance
+$r_{t,i}$ captures language-conditioned importance from the preceding query.
+These signals are complementary rather than interchangeable. Motion protects
+dynamic regions, entropy protects visually informative regions even before
+their role is known, and attention protects instruction-relevant regions that
+may be static.
+% Since patch boundaries and attention maps are imperfect, the
+% protected mask is spatially dilated to preserve the neighborhood of potential
+% interactions.
+Let $\mathcal P_t$ be the union of high-motion, high-entropy, task-relevant,
+and externally protected patches after dilation. Among its complement, we rank
+patches by the combined risk $R_{t,i}=m_{t,i}+e_{t,i}+r_{t,i}$ and select a
+bounded reusable set
+\begin{equation}
+\begin{aligned}
+\mathcal P_t
+&=\operatorname{Dilate}\!\left(
+    \{i:m_{t,i}>\tau_m\}
+    \cup \operatorname{TopFrac}(e_t,\eta_e)\right.\\
+&\qquad\left.
+    \cup \operatorname{TopFrac}(r_t,\eta_r)
+    \cup \mathcal P_t^{\mathrm{interaction}}
+    \right),\\
+\mathcal R_t
+&=\operatorname{BottomK}\!\left(
+    \{R_{t,i}:i\notin\mathcal P_t\},
+    \lfloor\beta P\rfloor
+    \right).
+\end{aligned}
+\label{eq:interaction_selector}
+\end{equation}
+This construction encodes a conservative asymmetry: evidence is required to
+reuse a patch, whereas any plausible indication of motion, information content,
+or task relevance is sufficient to recompute it.
+
+Let $z_{t,i}$ be the current projected token and
+$\widetilde z_{t-1,i}$ the previously retained representation. Temporal fusion
+updates the decoder input as
+\begin{equation}
+    \widetilde z_{t,i}=
+    \begin{cases}
+      \widetilde z_{t-1,i},&i\in\mathcal R_t,\\
+      z_{t,i},&i\notin\mathcal R_t.
+    \end{cases}
+    \label{eq:temporal_fusion}
+\end{equation}
+% Because historical fused tokens are propagated recursively, reuse can suppress
+% transient visual noise but can also accumulate stale information. Periodic
+% dense keyframes bound this temporal horizon, while an abrupt-motion detector
+% can force an early reset. We evaluate motion--entropy, task-aware, and
+% conservative-adaptive variants to isolate the contribution of semantic
+% relevance and reuse aggressiveness.
+
+% Temporal fusion alone does not reduce model FLOPs: the current visual encoder,
+% projector, and decoder are still executed, and the token sequence is unchanged.
+% Its role is to test whether temporally coherent representations improve policy
+% stability. The acceleration opportunity arises from sharing $\mathcal R_t$
+% with the cache path, so that a patch considered invariant at the representation
+% level is also eligible for internal compute reuse. This \emph{shared invariance
+% mask} is the central conceptual link between temporal fusion and caching. It
+% prevents two independently tuned mechanisms from making contradictory decisions
+% about interaction-critical regions.
+Recursive fusion can suppress transient noise but risks stale information; periodic keyframes and abrupt-motion resets bound this effect. We evaluate motion--entropy, task-aware, and conservative-adaptive variants to separate semantic relevance from reuse aggressiveness.
+
+Temporal fusion itself does not reduce FLOPs, since the full policy still executes. Efficiency arises by sharing $\mathcal R_t$ with the cache, making representation-level invariance directly determine compute reuse. This \emph{shared invariance mask} unifies fusion and caching while protecting interaction-critical regions.
+
+% The current implementation exposes this shared mask, but selective KV/KQV
+% execution under the optimized SDPA path remains future integration work.
+% Accordingly, we evaluate temporal fusion and VLA-Cache separately and do not
+% attribute a measured acceleration to the combined interface.
+
+
+\section{Experiments and Evaluation}
+
+
+\input{tables/simplr}
+
+\input{tables/libero}
+
+
+
+\subsection{Setup and Protocol}
+
+\textbf{Backbones.} We evaluate seven released VLA policies without
+retraining (Table~\ref{tab:backbones}). CogACT, OpenVLA, SpatialVLA,
+CronusVLA, UniVLA and MiniVLA run on SimplerEnv, and OpenVLA, UniVLA and
+SmolVLA run on LIBERO, each on the checkpoint released for that benchmark.
+Depth pruning acts on the decoder stack listed in Table~\ref{tab:backbones},
+the language decoder for six backbones and the DiT action decoder for
+CronusVLA. CogACT, CronusVLA, MiniVLA and
+SpatialVLA run under transformers 4.47.0, SmolVLA on an isolated 4.51.3
+stack, [OpenVLA and UniVLA transformers versions, mentor], and OpenVLA
+requests SDPA on SimplerEnv but defaults to eager on LIBERO.
+
+\textbf{Environments and episodes.} SimplerEnv WidowX has four tasks at 50
+episodes each, with a step cap of 60, or 120 for the eggplant task. Google
+Robot, called Fractal below, has five tasks at 50 episodes each and a cap of
+80. LIBERO has four suites (Long, Goal, Object, Spatial) of ten tasks at 10
+episodes each and caps of 520, 300, 280 and 220. Every
+configuration of a backbone replays the same task instances and initial
+states, with the episode seed fixed as 42 plus the episode index, so each
+episode has a matched dense control. A failed episode runs to its cap. The
+LIBERO checkpoints run in their training distribution, and the WidowX and
+Fractal checkpoints, trained on Bridge and Fractal real robot data, run in
+simulation under SimplerEnv's visual matching protocol,
+so success measures what an intervention does to a trained policy on its
+target benchmark rather than how the policy generalises.
+
+\textbf{Configurations.} Each backbone and environment pair runs the dense
+policy and thirteen settings, two or three per family. Foveation keeps a
+central disc of 0.2 or 0.5 of the image area, action repeat holds each
+action for two or four steps, and depth pruning removes one, two or four
+layers chosen by Block Influence on calibration frames disjoint from the
+test episodes.
+Guarded reuse runs three presets from strict to aggressive that gate on
+whole-frame and local motion, action agreement and a translation floor, and
+temporal fusion
+runs motion-entropy, task-aware and conservative-adaptive, differing in the
+keyframe interval, the reuse fraction and the forced-keyframe rule. In all,
+22 backbone and environment pairs, 14 configurations each, and 47,600
+episodes.
+
+\textbf{Measures.} Success is the benchmark's own criterion. Latency is
+wall-clock per environment step, the episode time divided by its steps,
+which has the same meaning on every harness whether a call covers one step
+or a chunk. We read latency only as the change from dense within one backbone, one
+environment, one software stack and one GPU class, and cells that break
+this rule report success alone.
+Every harness other than CronusVLA also records its per-call time, which
+Sections~IV-B and~IV-C use, and CronusVLA reports only the episode clock. Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
+and~\ref{tab:libero-results} show, for each family, the setting with the
+highest success and, on a tie, the fewer average steps, with each row
+labelled by its family. The other settings appear in the text.
+
+\textbf{Pairing and significance.} For every cell we compare the same
+episodes under the dense and the intervened policy and count the episodes
+that flipped from failure to success and the reverse. A change is called
+significant when an exact two-sided McNemar test on those flips gives
+$p < 0.05$. With 110 cells this threshold admits about five chance passes,
+so Section~IV-B reads gains against that count. CronusVLA does not
+reproduce its rollout under the same fixed seed, so its dense and
+intervened runs diverge and its cells carry a run-to-run floor of about 14
+episodes in 200, reported in Section~IV-B. Its cells whose net change lies
+within that floor are read as no change, and its only significant table
+cell, action repeat, exceeds the floor several times over. The other six backbones
+reproduce the dense outcome on all but about one episode in a hundred, so
+for them the single-run limit concerns other initial states, left to
+Section~V. Each table cell is the family-best setting chosen by success, so
+its individual p-value is post-selection and read as descriptive. Sixteen
+of the 22 significant drops reported in Section~IV-B pass a false discovery
+rate correction at 0.05, and no gain does.
+
+\textbf{Hardware and implementation.} Runs were scheduled on a shared GPU
+cluster, so the card is not fixed per backbone and VRAM class was matched
+across a backbone's runs. The card is recorded where known, CronusVLA and
+UniVLA WidowX on an RTX 5090 and the three reruns below on an RTX PRO 6000.
+SmolVLA's guarded reuse and temporal fusion ran under
+a reconstructed stack on other cards, so their latency is not read. The three reruns are the UniVLA WidowX
+task-aware run and the CronusVLA WidowX moderate and aggressive presets,
+repeated after failing on the RTX 5090. CogACT exposes no text-to-vision
+attention at the point where fusion runs, so its task-aware setting equals
+motion-entropy. The task-aware fusion setting collects attention relevance,
+which forces an SDPA decoder into eager attention, so on those backbones
+its per-call time is measured against a different backend than its own
+dense row. On OpenVLA, whose LIBERO dense row already runs eager, task-aware
+adds the same eight percent per call as on its SDPA rows, so that cost is
+the relevance collection rather than the backend change, while on MiniVLA
+and UniVLA the two are not separated.
+
+\begin{table*}[t]
+\centering
+\caption{The seven backbones, their released checkpoints, and how each was run. Parameter counts are as reported by the original works. Decoder depth is the stack that depth pruning acts on. Actions per call is how many environment steps one model call covers.}
+\label{tab:backbones}
+\small
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l p{5.2cm} r l c p{3.2cm}}
+\toprule
+Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention \tabularnewline
+\midrule
+CogACT & \raggedright CogACT-Base & 7.6B & 32 (Llama) & 1 & \raggedright SDPA, implicit \tabularnewline
+OpenVLA & \raggedright openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & \raggedright SDPA on SimplerEnv, eager on LIBERO \tabularnewline
+SpatialVLA & \raggedright spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & \raggedright native mixed, eager text decoder \tabularnewline
+CronusVLA & \raggedright CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & \raggedright SDPA, implicit (Qwen2.5), timm (DiT) \tabularnewline
+UniVLA & \raggedright UNIVLA\_\allowbreak SIMPLER\_\allowbreak BRIDGE\_\allowbreak VIDEO\_\allowbreak BS128\_\allowbreak 20K, UNIVLA\_\allowbreak LIBERO\_\allowbreak VIDEO\_\allowbreak BS192\_\allowbreak 8K & 8.5B & 32 (Emu3) & 5 / 10 & \raggedright SDPA, requested \tabularnewline
+MiniVLA & \raggedright minivla-vq-bridge-prismatic & 1B & 24 (Qwen2.5) & 1 & \raggedright SDPA, implicit \tabularnewline
+SmolVLA & \raggedright smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & \raggedright SDPA, explicit \tabularnewline
+\bottomrule
+\end{tabular}%
+}
+\end{table*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.78\textwidth]{figure/success_change_bridge.pdf}
+  \caption{Success change from the dense policy on SimplerEnv WidowX, in
+  percentage points, for all 13 intervention settings on the six WidowX
+  backbones. Panels read left to right and top to bottom as CogACT,
+  CronusVLA, MiniVLA, OpenVLA, SpatialVLA and UniVLA. Colors identify
+  families and match the row labels. Values are
+  point estimates from the paired runs, and the paired test of
+  Section~IV-A decides significance in the text.}
+  \label{fig:success-widowx}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.72\textwidth]{figure/cross_setting_consistency.pdf}
+  \caption{For each setting, the number of the 13 backbone and environment
+  combinations, with LIBERO suites pooled per backbone, whose success is
+  lower, unchanged or higher than dense. Lower and higher count any nonzero
+  change, and unchanged includes the cells of RQ-4 whose gates never fired.
+  The OpenVLA LIBERO conservative-fusion cell enters with its pooled
+  success over the four suites, the Long suite from its run summary, and
+  without a paired test. Under the paired test, six of the 285 setting and
+  combination cells raise success significantly, on three combinations.}
+  \label{fig:consistency}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figure/ablation_depth_pruning.pdf}
+  \caption{Depth pruning across every backbone and environment as the
+  number of removed decoder layers rises. Left, success change from dense
+  in percentage points. Right, dense time per step divided by intervened
+  time per step. LIBERO suites are pooled per backbone, so 13 lines stand
+  for the 22 pairs of the text. Marker shape encodes the environment,
+  circle for WidowX, square for Google robot and triangle for LIBERO.
+  Values are point estimates, and the paired test decides significance in
+  the text.}
+  \label{fig:ablation-depth}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.8\textwidth]{figure/ablation_action_repeat.pdf}
+  \caption{Action repeat across every backbone and environment at repeat
+  factors of two and four. Left, success change from dense in percentage
+  points. Right, dense time per step divided by intervened time per step.
+  LIBERO suites are pooled per backbone, and marker shape encodes the
+  environment as in Fig.~\ref{fig:ablation-depth}. Values are point
+  estimates, and the paired test decides significance in the text.}
+  \label{fig:ablation-repeat}
+\end{figure*}
+
+\subsection{Results and Discussion}
+
+Tables~\ref{tab:simplerenv-results} and~\ref{tab:libero-results} report
+Success, Latency and Avg.\ Steps for the dense policy and the family-best
+setting on every backbone and environment, and
+Figs.~\ref{fig:success-widowx} to~\ref{fig:ablation-repeat} show every
+tested setting on WidowX and the depth and repeat sweeps on every pair. We
+structure the results around four research questions (RQs) and answer each
+in turn.
+\begin{list}{}{\setlength{\labelwidth}{2.9em}\setlength{\labelsep}{0.4em}%
+  \setlength{\leftmargin}{3.3em}\setlength{\itemsep}{0pt}%
+  \setlength{\parsep}{0pt}\setlength{\topsep}{2pt}}
+\item[\textbf{RQ-1:}] Does any intervention reliably improve success or
+efficiency?
+\item[\textbf{RQ-2:}] Does the sign of an intervention transfer across
+backbones and environments?
+\item[\textbf{RQ-3:}] Do computation, runtime and success move together?
+\item[\textbf{RQ-4:}] What does the per-episode record show that
+aggregate success rates hide?
+\end{list}
+
+\textbf{RQ-1.} Of the 110 table cells, 26 change success significantly, 22
+downward and four upward. With 110 comparisons about five would pass the
+threshold by chance, and the four gains, depth pruning and motion-entropy
+fusion on CogACT WidowX ($+9.5$ and $+8.0$), task-aware fusion on OpenVLA
+Fractal ($+6.8$) and foveation on UniVLA Goal ($+7.0$), lie between $+6.8$
+and $+9.5$ points on three backbone and environment pairs, while twenty of
+the 22 drops remove 10 points or more. Over all 285 tested settings the
+count is 76 significant drops against six significant gains on the same
+three pairs, and no setting raises success on more than six of the 13
+backbone and environment combinations (Fig.~\ref{fig:consistency}).
+Guarded reuse changes success significantly in none of its 66 settings.
+Only action repeat and depth pruning lower latency per step, by 28 to 48
+percent at two steps and by 1 to 6 percent in the depth cells of six
+backbones, and both pay for it in success on some backbone (RQ-3).
+\textbf{[A-1] No intervention is a reliable gain. Significant changes are drops
+by more than twelve to one, the gains are of the size and number that
+chance allows, and the one family that is never harmful is harmless
+because its gates rarely fire (RQ-4).}
+
+\textbf{RQ-2.} Fig.~\ref{fig:success-widowx} shows the same 13
+settings on the six WidowX backbones, and no setting other than action
+repeat keeps one sign down the column. Depth pruning at a budget of two
+adds 9.5 points to CogACT ($p = 0.009$) and removes 36.0 from MiniVLA and
+17.0 from SpatialVLA (both $p < 0.001$).
+Foveation at a keep ratio of 0.5 adds 7.0 to UniVLA ($p = 0.039$) and
+removes 13.0 from SmolVLA ($p = 0.015$) on the same Goal suite
+(Table~\ref{tab:libero-results}). The environment changes the outcome for
+a fixed backbone and rule as well. The same keep ratio removes 14.5 points
+from UniVLA on WidowX ($p < 0.001$) and adds 7.0 on Goal, and action
+repeat at two steps is negative on all six WidowX backbones yet moves the
+four Fractal backbones by $-1.2$ to $+4.4$ points, none significant. The
+dose does not restore transfer. Raising the depth budget from one to two
+to four lifts the significant drops from 8 to 9 to 14 of 22, while CogACT
+WidowX moves by $+7.0$, $+9.5$ and $+2.5$ and MiniVLA WidowX by $-17.5$,
+$-36.0$ and $-36.0$ (Fig.~\ref{fig:ablation-depth}). \textbf{[A-2] The sign is a
+joint property of the rule, the backbone and the environment. Each sign
+flip above is significant on both sides, and no setting is a significant
+gain on more than one pair, CogACT's task-aware cell being its
+motion-entropy run under another name (RQ-4).}
+
+\textbf{RQ-3.} Foveation changes no model computation, is slower in every table cell by 3
+to 16 percent except on UniVLA, whose blur is amortized over a chunk, and
+lowers success significantly in seven cells. Temporal fusion changes which
+tokens enter the decoder and not how many, moves latency per call by 3.5
+percent or less under motion-entropy and conservative-adaptive, and adds
+about 8 percent per call on OpenVLA and 14 to 17 on MiniVLA and UniVLA
+under task-aware. Action repeat is the fastest family, 0.52 to 0.72 of
+dense latency per step at two steps, and the worst, with significant drops
+in 8 of 22 cells at two steps and 20 of 22 at four
+(Fig.~\ref{fig:ablation-repeat}). Depth pruning lowers latency per call at
+budgets of two and four on every backbone that records it, while its
+success response at one budget spans $+9.5$ to $-36.0$, and the only
+significant gain that also lowers latency, depth pruning at a budget of two
+on CogACT WidowX, reads 0.0 on Fractal at its family-best budget of four.
+\textbf{[A-3] Lower computation implies neither lower latency nor preserved
+success. Foveation and fusion change success without changing
+computation, and action repeat and depth pruning change computation with a
+success cost that the backbone sets.}
+
+\textbf{RQ-4.} First, the same aggregate change can carry different evidence. On
+UniVLA WidowX motion-entropy and task-aware fusion both lose 5.5 points,
+164 of 200 against 175, and the loss is significant for motion-entropy
+($p = 0.035$) and not for task-aware ($p = 0.071$), because the two
+settings flip different episodes. Second, an intervention can report the
+dense policy under its own name. The five UniVLA guarded reuse cells fired
+on 0 to 5 steps of 6,000 to 65,600 and match dense on every episode but
+one, the conservative-adaptive fusion cells on UniVLA WidowX and Spatial
+selected no reusable patch and equal dense, and CogACT's task-aware
+setting equals motion-entropy because the harness exposes no
+text-to-vision attention where the selector runs. Third, the record
+separates two kinds of loss. Action repeat loses across every task at
+once, 42, 49, 44 and 40 successes of 50 on UniVLA WidowX falling to 12, 3,
+6 and 4, while depth pruning and foveation lose in particular tasks, such
+as MiniVLA's depth loss concentrated in stack cube, 36 to 8 of 50, with
+the other tasks moving by at most 6. \textbf{[A-4] A paired record with per-step
+gate counts tells a real effect from a silent gate and a task-specific
+failure from a global one. Aggregate success rates do neither.} Two cells
+carry a caveat. The CronusVLA WidowX reuse cell fired on 5 steps of 9,947
+and still differs from dense on 14 of 200 episodes, the floor of
+Section~IV-A, and its three fusion cells are one run whose settings were
+not recorded. The conservative-adaptive cell on OpenVLA Long loses 11.0
+points (45 of 100) and is reported without a paired test.
+
+\subsection{Analysis}
+
+\textbf{Episode length follows success.} Every failed episode ran to its
+step cap, so Avg.\ Steps is a success-weighted average of the successful
+episodes and the cap, tracks the Success column and is not an independent
+measure of efficiency. CronusVLA on Fractal, where a share of successful
+episodes also reaches the cap, is the one exception.
+
+\textbf{What a repeated call saves.} Latency per step under action repeat
+is 0.52 to 0.72 of dense at two steps and 0.28 to 0.58 at four, against
+the 0.50 and 0.25 that the call count predicts, because the simulator step
+is paid on every environment step and only the model computation scales
+with the calls. The same accounting bounds guarded reuse at the reuse
+share times the call time, at most about 10 percent, and fusion at zero,
+since fusion changes no call and no token count.
+
+\textbf{Where the signal admits it.} Guarded reuse needs a stable image,
+two agreeing actions and a translation above the floor on the same step,
+and finds all three on about one step in ten for OpenVLA on LIBERO under
+the aggressive setting, on 2 to 6 percent of steps for OpenVLA elsewhere
+and for MiniVLA, on under 5 percent for the other backbones, and on fewer
+than one step in a thousand for UniVLA. Conservative-adaptive fusion finds
+no reusable patch on SpatialVLA and UniVLA. The signal bounds a candidate
+before its effect does, and a backbone on which it never fires reports the
+dense policy under the intervention's name, which no latency figure
+without the per-step gate record can show. We therefore report how often
+each gate fired and recommend the same for any gated intervention.
+
+\section{Conclusion, Limitation and Future Works}
+
+
+\bibliographystyle{ieeetr}
+\bibliography{main}
+
+\end{document}

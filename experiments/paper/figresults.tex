@@ -10,7 +10,7 @@
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_bridge.pdf}
+  \includegraphics[width=0.78\textwidth]{paper_figures/pdf/success_change_bridge.pdf}
   \caption{Success change from the dense policy on SimplerEnv WidowX, in
   percentage points, for all 13 intervention settings on the six WidowX
   backbones. Panels read left to right and top to bottom as CogACT,
@@ -23,7 +23,7 @@
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/cross_setting_consistency.pdf}
+  \includegraphics[width=0.72\textwidth]{paper_figures/pdf/cross_setting_consistency.pdf}
   \caption{For each setting, the number of the 13 backbone and environment
   combinations, with LIBERO suites pooled per backbone, whose success is
   lower, unchanged or higher than dense. Lower and higher count any nonzero
@@ -37,7 +37,7 @@
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/ablation_depth_pruning.pdf}
+  \includegraphics[width=0.8\textwidth]{paper_figures/pdf/ablation_depth_pruning.pdf}
   \caption{Depth pruning across every backbone and environment as the
   number of removed decoder layers rises. Left, success change from dense
   in percentage points. Right, dense time per step divided by intervened
@@ -51,7 +51,7 @@
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{paper_figures/pdf/ablation_action_repeat.pdf}
+  \includegraphics[width=0.8\textwidth]{paper_figures/pdf/ablation_action_repeat.pdf}
   \caption{Action repeat across every backbone and environment at repeat
   factors of two and four. Left, success change from dense in percentage
   points. Right, dense time per step divided by intervened time per step.
@@ -60,25 +60,3 @@
   estimates, and the paired test decides significance in the text.}
   \label{fig:ablation-repeat}
 \end{figure*}
-
-% ---- Supplement candidates (not in the main paper) -----------------------
-% success_change_libero: same layout as Fig. 1 for OpenVLA, SmolVLA and
-% UniVLA on LIBERO with suites pooled. Its render prints "Incomplete
-% coverage" in the OpenVLA conservative-fusion row and cannot be
-% regenerated until the per-episode file for that cell arrives; if used,
-% the caption must say so.
-% \begin{figure*}[t]
-%   \centering
-%   \includegraphics[width=\textwidth]{paper_figures/pdf/success_change_libero.pdf}
-%   \caption{Success change from the dense policy on LIBERO, all four
-%   suites pooled per backbone, for all 13 settings. Panels are OpenVLA,
-%   SmolVLA and UniVLA. The OpenVLA conservative-fusion row is marked
-%   incomplete because its Long suite was not available when the figure
-%   was drawn, and the completed cell (45 of 100) is reported in
-%   Section~IV-B.}
-%   \label{fig:success-libero}
-% \end{figure*}
-%
-% tradeoff_univla_libero and tradeoff_cogact_base_simplerenv_bridge: one
-% backbone each at 6.5 in; every family-best point is in Table I or II and
-% the informative points are in Figs. 1, 3 and 4.

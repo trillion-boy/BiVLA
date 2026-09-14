@@ -29,7 +29,6 @@ CronusVLA. CogACT, CronusVLA, MiniVLA and
 SpatialVLA run under transformers 4.47.0, SmolVLA on an isolated 4.51.3
 stack, [OpenVLA and UniVLA transformers versions, mentor], and OpenVLA
 requests SDPA on SimplerEnv but defaults to eager on LIBERO.
-%PENDING mentor: torch version. (GPU column dropped 2026-09-13: shared cluster, card not fixed per backbone; stated in the Hardware paragraph instead.)
 
 \textbf{Environments and episodes.} SimplerEnv WidowX has four tasks at 50
 episodes each, with a step cap of 60, or 120 for the eggplant task. Google
@@ -39,10 +38,11 @@ episodes each and caps of 520, 300, 280 and 220. Every
 configuration of a backbone replays the same task instances and initial
 states, with the episode seed fixed as 42 plus the episode index, so each
 episode has a matched dense control. A failed episode runs to its cap. The
-LIBERO checkpoints run in their training distribution and the WidowX and
-Fractal checkpoints under SimplerEnv's visual matching protocol, so success
-measures what an intervention does to a trained policy on its target
-benchmark rather than how the policy generalises.
+LIBERO checkpoints run in their training distribution, and the WidowX and
+Fractal checkpoints, trained on Bridge and Fractal real robot data, run in
+simulation under SimplerEnv's visual matching protocol,
+so success measures what an intervention does to a trained policy on its
+target benchmark rather than how the policy generalises.
 
 \textbf{Configurations.} Each backbone and environment pair runs the dense
 policy and thirteen settings, two or three per family. Foveation keeps a
@@ -50,12 +50,13 @@ central disc of 0.2 or 0.5 of the image area, action repeat holds each
 action for two or four steps, and depth pruning removes one, two or four
 layers chosen by Block Influence on calibration frames disjoint from the
 test episodes.
-% Matches the Method section wording (disjoint). Recorded calibration source (CronusVLA: seed 10000, same tasks) uses a seed distinct from the test seed 42+index, so its calibration episodes are disjoint from the test episodes.
-Guarded reuse runs the strict, moderate and aggressive presets and
-temporal fusion the motion-entropy, task-aware and conservative-adaptive
-settings of Section~III. In all, 22 backbone and environment pairs, 14
-configurations each, and 47,600 episodes.
-% 2026-09-13: OpenVLA Long conservative-adaptive arrived (45/100), so all 22 pairs have 14 configurations. The three reruns replaced runs at the same n, so no count changed.
+Guarded reuse runs three presets from strict to aggressive that gate on
+whole-frame and local motion, action agreement and a translation floor, and
+temporal fusion
+runs motion-entropy, task-aware and conservative-adaptive, differing in the
+keyframe interval, the reuse fraction and the forced-keyframe rule. In all,
+22 backbone and environment pairs, 14 configurations each, and 47,600
+episodes.
 
 \textbf{Measures.} Success is the benchmark's own criterion. Latency is
 wall-clock per environment step, the episode time divided by its steps,
@@ -69,19 +70,20 @@ and~\ref{tab:libero-results} show, for each family, the setting with the
 highest success and, on a tie, the fewer average steps, with each row
 labelled by its family. The other settings appear in the text.
 
-\textbf{Pairing and significance.} Every cell compares the same episodes
-under the dense and the intervened policy, and a change is called
-significant when an exact two-sided McNemar test on the episodes that
-flipped between failure and success gives $p < 0.05$. With 110 cells this
-threshold admits about five chance passes,
+\textbf{Pairing and significance.} For every cell we compare the same
+episodes under the dense and the intervened policy and count the episodes
+that flipped from failure to success and the reverse. A change is called
+significant when an exact two-sided McNemar test on those flips gives
+$p < 0.05$. With 110 cells this threshold admits about five chance passes,
 so Section~IV-B reads gains against that count. CronusVLA does not
 reproduce its rollout under the same fixed seed, so its dense and
 intervened runs diverge and its cells carry a run-to-run floor of about 14
 episodes in 200, reported in Section~IV-B. Its cells whose net change lies
 within that floor are read as no change, and its only significant table
 cell, action repeat, exceeds the floor several times over. The other six backbones
-reproduce the dense outcome on all but about one episode in a hundred.
-Each table cell is the family-best setting chosen by success, so
+reproduce the dense outcome on all but about one episode in a hundred, so
+for them the single-run limit concerns other initial states, left to
+Section~V. Each table cell is the family-best setting chosen by success, so
 its individual p-value is post-selection and read as descriptive. Sixteen
 of the 22 significant drops reported in Section~IV-B pass a false discovery
 rate correction at 0.05, and no gain does.
@@ -90,8 +92,8 @@ rate correction at 0.05, and no gain does.
 cluster, so the card is not fixed per backbone and VRAM class was matched
 across a backbone's runs. The card is recorded where known, CronusVLA and
 UniVLA WidowX on an RTX 5090 and the three reruns below on an RTX PRO 6000.
-SmolVLA's guarded reuse and temporal fusion ran under a reconstructed
-stack on other cards, so their latency is not read. The three reruns are the UniVLA WidowX
+SmolVLA's guarded reuse and temporal fusion ran under
+a reconstructed stack on other cards, so their latency is not read. The three reruns are the UniVLA WidowX
 task-aware run and the CronusVLA WidowX moderate and aggressive presets,
 repeated after failing on the RTX 5090. CogACT exposes no text-to-vision
 attention at the point where fusion runs, so its task-aware setting equals
