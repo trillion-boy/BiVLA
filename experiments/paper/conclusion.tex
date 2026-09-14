@@ -1,44 +1,31 @@
 % ---------------------------------------------------------------------------
-% Section V Conclusion, Limitation and Future Works. Draft of 2026-09-14.
-% Every number repeats one already stated in Section IV. Style: no
-% em-dashes, no semicolons, no prose colons, no hedges, no footnotes.
-% Carries the two sentences moved out of IV-A and IV-B on 2026-09-13: the
-% single-run limit on other initial states, and the transfer statement.
+% Section V Conclusion, Limitation and Future Works. Short draft of
+% 2026-09-14 (about 200 words). Every number repeats one already stated in
+% Section IV. Style: no em-dashes, no semicolons, no prose colons, no hedges,
+% no footnotes. Carries the single-run sentence moved out of IV-A.
 % ---------------------------------------------------------------------------
 
 \section{Conclusion, Limitation and Future Works}
 
 We evaluated five training-free interventions on seven released VLA
-policies and three environments under one matched protocol, 47,600
-episodes in all, with every intervened episode paired to its dense control.
-No intervention is a reliable gain. Significant changes are drops by more
-than twelve to one, the few gains are of the size and number that chance
-allows, and the sign of an intervention is a joint property of the rule,
-the backbone and the environment, so a claim made on one combination does
-not transfer to another without a matched test on the target. Lower
-computation implies neither lower latency nor preserved success, and the
-one family that never harms success, guarded reuse, is harmless because its
-gates rarely fire. The per-episode record with per-step gate counts is what
-separates a real effect from a silent gate and a task-specific loss from a
-global one, and we recommend that any gated intervention report how often
-its gate fired.
+policies and three environments under one matched protocol, 47,600 paired
+episodes in all. No intervention is a reliable gain. Significant changes
+are drops by more than twelve to one, the few gains are of the size and
+number that chance allows, and the sign of an intervention is a joint
+property of the rule, the backbone and the environment, so a claim made on
+one combination does not transfer to another without a matched test on the
+target. Lower computation implies neither lower latency nor preserved
+success, and the one family that never harms success, guarded reuse, is
+harmless because its gates rarely fire, which only the per-episode record
+with per-step gate counts can show.
 
-\textbf{Limitations.} Each cell is one run, so the paired test speaks to
-the same initial states under two policies and not to other initial states.
-CronusVLA does not reproduce its rollout under a fixed seed, so its cells
-carry a run-to-run floor and its conclusions are weaker than the other
-six. Latency is read only within one backbone, environment, software
-stack and GPU class, so SmolVLA's guarded reuse and temporal fusion report
-success alone, and peak memory was not measured. One cell, OpenVLA Long
-under conservative-adaptive fusion, is reported without a paired test. All
-runs are in simulation, and the WidowX and Fractal checkpoints run under
-SimplerEnv's visual matching protocol rather than on the robot.
-
-\textbf{Future work.} A matched protocol with several seeds per cell would
-turn the single-run limit into a measured variance. Real-robot replication
-of the sign flips reported in Section~IV-B would test whether they survive
-the simulator. The reuse mask of temporal fusion is exposed to the cache
-path but not yet executed under the optimized attention backend, and
-measuring that integration is the natural next step. Finally, the paired
-per-episode records and gate counts of every run make it possible to test
-a new intervention against the same episodes under the same test.
+\textbf{Limitations and future work.} Each cell is one run, so the paired
+test speaks to the same initial states under two policies and not to other
+initial states, and CronusVLA does not reproduce its rollout under a fixed
+seed. Latency is read only within one backbone, environment, software stack
+and GPU class, peak memory was not measured, and all runs are in
+simulation. Several seeds per cell, real-robot replication of the sign
+flips of Section~IV-B, and a measured integration of the fusion reuse mask
+with the cache path are the next steps, and the paired records and gate
+counts of every run allow a new intervention to be tested against the same
+episodes.
