@@ -79,12 +79,17 @@ def ablation_row(name, families=(3, 2), height=2.7):
     common.save(fig, name)
 
 
+ORDER = ['fixed_foveation_keep20', 'fixed_foveation_keep50', 'action_repeat2', 'action_repeat4', 'depth_pruning1',
+         'depth_pruning2', 'depth_pruning4', 'guarded_reuse_strict', 'guarded_reuse_moderate', 'guarded_reuse_aggressive',
+         'temporal_fusion_motion_entropy', 'temporal_fusion_task_aware', 'temporal_fusion_conservative_adaptive']
+
+
 def consistency_col(name, size=(3.5, 2.5)):
-    """consistency() at single-column width."""
-    common.style(); fig, ax = plt.subplots(figsize=size, layout='constrained'); counts = []
-    for cc in common.CONFIGS[1:]:
+    """consistency() at single-column width, rows in the Section IV-A setting order."""
+    common.style(); fig, ax = plt.subplots(figsize=size, layout='constrained'); counts = []; labels = []
+    for cc in ORDER:
         v = np.array([common.metric(mm, cc, 'delta') for mm in common.models()]); v = v[np.isfinite(v)]
-        counts.append([sum(v < -.0001), sum(abs(v) <= .0001), sum(v > .0001)])
+        counts.append([sum(v < -.0001), sum(abs(v) <= .0001), sum(v > .0001)]); labels.append(common.LABELS[common.CONFIGS.index(cc)])
     assert all(sum(r) == 13 for r in counts), counts
     left = np.zeros(13)
     for j, (lab, col) in enumerate(zip(['Lower success', 'Unchanged success', 'Higher success'], ['#C45A52', '#D8D8D8', '#377D9C'])):
@@ -92,7 +97,7 @@ def consistency_col(name, size=(3.5, 2.5)):
         for i, k in enumerate(v):
             if k: ax.text(left[i] + k / 2, i, str(k), ha='center', va='center', fontsize=6.5)
         left += v
-    ax.set_yticks(range(13), common.LABELS[1:]); ax.invert_yaxis()
+    ax.set_yticks(range(13), labels); ax.invert_yaxis()
     ax.set_xlabel('Number of backbone and environment combinations'); ax.set_xlim(0, 13.4)
     fig.legend(*ax.get_legend_handles_labels(), loc='outside lower center', ncol=3, fontsize=6.5)
     common.save(fig, name)
