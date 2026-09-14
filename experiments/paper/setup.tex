@@ -96,8 +96,8 @@ SmolVLA's guarded reuse and temporal fusion ran under a reconstructed
 stack on other cards, so their latency is not read, and three runs, UniVLA
 WidowX task-aware and the CronusVLA WidowX moderate and aggressive presets,
 were repeated on an RTX PRO 6000 after failing on the RTX 5090. Three
-table cells whose gates never fired differ from their dense row by 0.3 to
-0.7 percent in latency, which we take as the latency floor. CogACT exposes
+table cells whose gates never fired differ from their dense row by 0.4 to
+1.4 percent in latency, which we take as the latency floor. CogACT exposes
 no text-to-vision attention at the point where fusion runs, so its
 task-aware setting equals motion-entropy. The task-aware setting collects
 attention relevance, which forces an SDPA decoder into eager attention, so

@@ -51,8 +51,8 @@ by up to 10 percent on OpenVLA LIBERO, where its gates fire most, and by
 under 5 percent elsewhere. \textbf{[A-1] No intervention is a reliable
 gain. Significant changes are drops by more than twelve to one, the gains
 are of the size and number that chance allows, and the one family that
-never changes success significantly, guarded reuse, fires on at most one
-step in ten and on fewer than one in twenty on most backbones, so on most
+never changes success significantly, guarded reuse, fires on about one
+step in ten at most and on fewer than one in twenty on most backbones, so on most
 of them it reports the dense policy under its own name (RQ-4).}
 
 \textbf{RQ-2.} Fig.~\ref{fig:success-widowx} shows the same 13
@@ -80,15 +80,16 @@ motion-entropy run under another name (RQ-4).}
 \textbf{RQ-3.} Foveation changes no model computation, is slower in every table cell by 3
 to 16 percent except on UniVLA, whose blur is amortized over a chunk, and
 lowers success significantly in seven cells. Temporal fusion changes which
-tokens enter the decoder and not how many, moves latency per call by 3.5
+tokens enter the decoder and not how many, moves latency per call by 5
 percent or less under motion-entropy and conservative-adaptive, and adds
-about 8 percent per call on OpenVLA and 14 to 17 on MiniVLA and UniVLA
+about 8 percent per call on OpenVLA and 12 to 17 on MiniVLA and UniVLA
 under task-aware. Action repeat is the fastest family, 0.52 to 0.72 of
 dense latency per step at two steps, and the worst, with significant drops
 in 8 of 22 cells at two steps and 20 of 22 at four
 (Fig.~\ref{fig:ablation-depth}, right). Depth pruning lowers latency per call at
 budgets of two and four on every backbone that records it, SmolVLA's
-table cell being its budget of one, which adds 0.9 percent per call, while
+table cell being its budget of one, which moves per-call time by under 1
+percent, while
 its success response at one budget spans $+9.5$ to $-36.0$.
 \textbf{[A-3] Lower computation implies neither lower latency nor preserved
 success. Foveation and fusion change success without changing
@@ -101,7 +102,7 @@ UniVLA WidowX motion-entropy and task-aware fusion both lose 5.5 points,
 ($p = 0.035$) and not for task-aware ($p = 0.071$), because the two
 settings flip different episodes. Second, an intervention can report the
 dense policy under its own name. The five UniVLA guarded reuse cells fired
-on 0 to 5 steps of 6,000 to 65,600 and match dense on every episode but
+on 0 to 5 steps of 6,000 to 28,100 and match dense on every episode but
 one, the conservative-adaptive fusion cells on UniVLA WidowX and Spatial
 selected no reusable patch and equal dense, and CogACT's task-aware
 setting equals motion-entropy because the harness exposes no attention
