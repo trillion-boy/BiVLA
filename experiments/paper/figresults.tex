@@ -7,7 +7,8 @@
 % Introduction (so it lands in the right column of page 1), the trade-off
 % block before \subsection{Setup and Protocol}, the depth and repeat block
 % after \input{tables/libero}, the consistency block before
-% \subsection{Results and Discussion}. All four are single-column floats.
+% \subsection{Results and Discussion}. The overview block (Fig. 2, full
+% width) sits right after \section{Bag of Tricks}.
 % ---------------------------------------------------------------------------
 
 \begin{figure}[!t]
@@ -24,6 +25,18 @@
   foveation lower it by 10 to 85 points on several.}
   \label{fig:teaser}
 \end{figure}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figure/overview_A3.pdf}
+  \caption{Where each trick enters the control loop of a frozen VLA
+  policy. Candidates (top) act on the model call, the visual tokens, and the
+  decoder depth, each where a signal admits it. Controls (bottom) use no
+  signal, one blurring the input image and the other holding each action for
+  a fixed number of steps. The dots and the diamond mark the points of effect,
+  and the dashed path marks the skipped call.}
+  \label{fig:overview}
+\end{figure*}
 
 \begin{figure}[t]
   \centering
