@@ -1,35 +1,27 @@
 % ---------------------------------------------------------------------------
-% Figure environments for Section IV-B, combined layout of 2026-09-14 after
-% the mentor's request to combine the plots. Three files in figures_combined/,
-% drawn by make_combined_figures.py from the mentor's common.py with the data,
-% colors and markers unchanged and only the subplot grid and size changed:
-% success_change_bridge_row (1x6, 7.16x3.3 in), cross_setting_consistency_col
-% (single column, 3.5x3.4 in), ablation_depth_repeat_row (1x4, 7.16x2.7 in).
-% The catalog paper_figures/pdf is untouched. Overleaf paths use figure/.
+% Figure blocks for Section IV, 2026-09-15 (lab meeting): Fig. 2 is the
+% six-panel trade-off row with all 14 settings, Fig. 3 the depth and repeat
+% row, Fig. 4 the consistency chart. Files live in figure/ on Overleaf.
+% Placement: Fig. 2 and Fig. 3 blocks before \subsection{Setup and
+% Protocol}, Fig. 4 before \subsection{Results and Discussion}.
 % ---------------------------------------------------------------------------
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{figures_combined/success_change_bridge_row.pdf}
-  \caption{Success change from the dense policy on SimplerEnv WidowX, in
-  percentage points, for all 13 intervention settings on the six WidowX
-  backbones. Panels read left to right as CogACT, CronusVLA, MiniVLA,
-  OpenVLA, SpatialVLA and UniVLA, and colors identify families.}
-  \label{fig:success-widowx}
+  \includegraphics[width=\textwidth]{figure/tradeoff_bridge_row.pdf}
+  \caption{Every setting of every trick on the six SimplerEnv WidowX
+  backbones, placed by its speedup per environment step and its success
+  change from the original policy (the star). Panels read left to right as
+  CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA and UniVLA, colors
+  identify tricks, and within a trick the circle, square and triangle mark
+  its first, second and third setting in the order of Section~IV-A. The
+  shaded corner is faster and no worse than the original.}
+  \label{fig:tradeoff-widowx}
 \end{figure*}
 
-\begin{figure}[t]
+\begin{figure*}[!t]
   \centering
-  \includegraphics[width=\columnwidth]{figures_combined/cross_setting_consistency_col.pdf}
-  \caption{For each setting, the number of the 13 backbone and environment
-  combinations of Fig.~\ref{fig:ablation-depth} whose success is lower,
-  unchanged or higher than dense, counting any nonzero change.}
-  \label{fig:consistency}
-\end{figure}
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures_combined/ablation_depth_repeat_row.pdf}
+  \includegraphics[width=\textwidth]{figure/ablation_depth_repeat_row.pdf}
   \caption{Depth pruning and action repeat on every backbone and
   environment. Panels read left to right as depth pruning success change,
   depth pruning speedup, action repeat success change and action repeat
@@ -39,3 +31,13 @@
   the 22 pairs of the text.}
   \label{fig:ablation-depth}
 \end{figure*}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{figure/cross_setting_consistency_col.pdf}
+  \caption{For each setting, the number of the 13 backbone and environment
+  combinations of Fig.~\ref{fig:ablation-depth} whose success is lower,
+  unchanged or higher than the original policy, counting any nonzero
+  change.}
+  \label{fig:consistency}
+\end{figure}
