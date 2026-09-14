@@ -13,23 +13,23 @@
 % backbone, and the SmolVLA two-implementation caveat.
 % Peak memory was not measured in any run (no memory field in the export);
 % Section V states it as a limitation. No rerun is requested for it.
-% Table~\ref{tab:backbones} below replaces tablebackbones.tex (three-backbone
-% version); do not include both.
+% Table III (backbones) was folded into the Backbones paragraph on 2026-09-15.
 % ---------------------------------------------------------------------------
 
 \subsection{Setup and Protocol}
 
 \textbf{Backbones.} We evaluate seven released VLA policies without
-retraining (Table~\ref{tab:backbones}). CogACT, OpenVLA, SpatialVLA,
-CronusVLA, UniVLA and MiniVLA run on SimplerEnv, and OpenVLA, UniVLA and
-SmolVLA run on LIBERO, each on the checkpoint released for that benchmark.
-Depth pruning acts on the decoder stack listed in Table~\ref{tab:backbones},
-the language decoder for six backbones and the DiT action decoder for
-CronusVLA. CogACT, CronusVLA, MiniVLA and
-SpatialVLA run under transformers 4.47.0, SmolVLA on an isolated 4.51.3
-stack, [OpenVLA and UniVLA transformers versions, mentor], and OpenVLA
-requests SDPA on SimplerEnv but defaults to eager on LIBERO.
-%PENDING mentor: torch version. (GPU column dropped 2026-09-13: shared cluster, card not fixed per backbone; stated in the Hardware paragraph instead.)
+retraining. CogACT (7.6B, 32 Llama decoder layers), OpenVLA (7B, 32
+Llama-2 layers), SpatialVLA (4B, 26 Gemma2 layers), CronusVLA (0.5B, a
+12-layer DiT action decoder), UniVLA (8.5B, 32 Emu3 layers) and MiniVLA
+(1B, 24 Qwen2.5 layers) run on SimplerEnv, and OpenVLA, UniVLA and SmolVLA
+(0.45B, 32 SmolLM2 layers) run on LIBERO, each on the checkpoint released
+for that benchmark, named in the code release. Depth pruning acts on the
+decoder stack named for each. Every backbone emits one action per call
+except UniVLA, whose chunk covers five steps on WidowX and ten on LIBERO.
+CogACT, CronusVLA, MiniVLA and SpatialVLA run under transformers 4.47.0
+and SmolVLA on an isolated 4.51.3 stack, and OpenVLA requests SDPA on
+SimplerEnv but defaults to eager on LIBERO.
 
 \textbf{Environments and episodes.} SimplerEnv WidowX has four tasks at 50
 episodes each, with a step cap of 60, or 120 for the eggplant task. Google
@@ -103,25 +103,3 @@ OpenVLA, whose LIBERO dense row already runs eager, task-aware adds the
 same eight percent per call as on its SDPA rows, so that cost is the
 relevance collection, and on MiniVLA and UniVLA the two are not separated.
 
-\begin{table*}[t]
-\centering
-\caption{The seven backbones, their released checkpoints, and how each was run. Parameter counts are as reported by the original works. Decoder depth is the stack that depth pruning acts on. Actions per call is how many environment steps one model call covers.}
-\label{tab:backbones}
-\small
-\setlength{\tabcolsep}{4pt}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{l p{5.2cm} r l c p{3.2cm}}
-\toprule
-Backbone & Checkpoint & Params & Decoder depth & Actions per call & Attention \tabularnewline
-\midrule
-CogACT & \raggedright CogACT-Base & 7.6B & 32 (Llama) & 1 & \raggedright SDPA, implicit \tabularnewline
-OpenVLA & \raggedright openvla-7b (both SimplerEnv environments), openvla-7b-finetuned-libero (per suite) & 7B & 32 (Llama-2) & 1 & \raggedright SDPA on SimplerEnv, eager on LIBERO \tabularnewline
-SpatialVLA & \raggedright spatialvla-4b-224-sft-bridge, -fractal & 4B & 26 (Gemma2) & 1 & \raggedright native mixed, eager text decoder \tabularnewline
-CronusVLA & \raggedright CronusVLA-0.5B-Bridge-RT-1 & 0.5B & 12 (DiT action decoder) & 1 & \raggedright SDPA, implicit (Qwen2.5), timm (DiT) \tabularnewline
-UniVLA & \raggedright UNIVLA\_\allowbreak SIMPLER\_\allowbreak BRIDGE\_\allowbreak VIDEO\_\allowbreak BS128\_\allowbreak 20K, UNIVLA\_\allowbreak LIBERO\_\allowbreak VIDEO\_\allowbreak BS192\_\allowbreak 8K & 8.5B & 32 (Emu3) & 5 / 10 & \raggedright SDPA, requested \tabularnewline
-MiniVLA & \raggedright minivla-vq-bridge-prismatic & 1B & 24 (Qwen2.5) & 1 & \raggedright SDPA, implicit \tabularnewline
-SmolVLA & \raggedright smolvla\_libero & 0.45B & 32 (SmolLM2) & 1 & \raggedright SDPA, explicit \tabularnewline
-\bottomrule
-\end{tabular}%
-}
-\end{table*}
