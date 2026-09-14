@@ -38,13 +38,13 @@ Robot, called Fractal below, has five tasks at 50 episodes each and a cap of
 episodes each and caps of 520, 300, 280 and 220. Every
 configuration of a backbone replays the same task instances and initial
 states, with the episode seed fixed as 42 plus the episode index, so each
-episode has a matched dense control. A failed episode runs to its cap. The
+episode has a matched control under the original policy. A failed episode runs to its cap. The
 LIBERO checkpoints run in their training distribution and the WidowX and
 Fractal checkpoints under SimplerEnv's visual matching protocol, so success
 measures what a trick does to a trained policy on its target
 benchmark rather than how the policy generalizes.
 
-\textbf{Configurations.} Each backbone and environment pair runs the dense
+\textbf{Configurations.} Each backbone and environment pair runs the original
 policy and thirteen settings, two or three per trick. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area, action repeat holds each
 action for two or four steps, and depth pruning removes one, two or four
@@ -60,7 +60,7 @@ configurations each, and 47,600 episodes.
 \textbf{Measures.} Success is the benchmark's own criterion. Latency is
 wall-clock per environment step, the episode time divided by its steps,
 which has the same meaning on every harness whether a call covers one step
-or a chunk. We read latency only as the change from dense within one backbone, one
+or a chunk. We read latency only as the change from the original within one backbone, one
 environment, one software stack and one GPU class, and cells that break
 this rule report success alone.
 Every harness other than CronusVLA also records its per-call time, which
@@ -71,7 +71,7 @@ highest success and, on a tie, the fewer average steps, with each row
 labeled by its trick, and the figures show every setting.
 
 \textbf{Pairing and significance.} Every cell compares the same episodes
-under the dense and the intervened policy, and a change is called
+under the original policy and under the trick, and a change is called
 significant when an exact two-sided McNemar test on the episodes that
 flipped between failure and success gives $p < 0.05$. The test pools the
 tasks of a cell. The figures show point estimates, and this test decides
@@ -82,10 +82,10 @@ chance passes are expected at this threshold, about seven per direction.
 Sixteen of the 22 significant table drops pass a false discovery rate
 correction at 0.05 over the 110 table cells, and no gain does. CronusVLA
 does not reproduce its rollout under a fixed seed. Its strict reuse cell
-fired on 5 of 9,947 steps and still differs from dense on 14 of 200 WidowX
+fired on 5 of 9,947 steps and still differs from the original on 14 of 200 WidowX
 episodes, which we take as its run-to-run floor, so its WidowX cells within
 that floor are read as no change, and no floor was measured on Fractal.
-The other six backbones reproduce the dense outcome on all but about one
+The other six backbones reproduce the original outcome on all but about one
 episode in a hundred.
 
 \textbf{Hardware and implementation.} Runs were scheduled on a shared GPU
@@ -95,12 +95,12 @@ SmolVLA's guarded reuse and temporal fusion ran under a reconstructed
 stack on other cards, so their latency is not read, and three runs, UniVLA
 WidowX task-aware and the CronusVLA WidowX moderate and aggressive presets,
 were repeated on an RTX PRO 6000 after failing on the RTX 5090. Three
-table cells whose gates never fired differ from their dense row by 0.4 to
+table cells whose gates never fired differ from their original row by 0.4 to
 1.4 percent in latency, which we take as the latency floor. CogACT exposes
 no text-to-vision attention at the point where fusion runs, so its
 task-aware setting equals motion-entropy. Collecting attention relevance
 for the task-aware setting forces an SDPA decoder into eager attention. On
-OpenVLA, whose LIBERO dense row already runs eager, task-aware adds the
+OpenVLA, whose LIBERO original row already runs eager, task-aware adds the
 same eight percent per call as on its SDPA rows, so that cost is the
 relevance collection, and on MiniVLA and UniVLA the two are not separated.
 

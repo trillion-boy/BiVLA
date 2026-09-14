@@ -15,8 +15,8 @@
   backbones, the original policy counted as one of six tricks. Within a
   trick the bars run from its first to its third setting in the order of
   Section~IV-A, and the dotted line marks the original. No trick raises
-  success far above the original on any backbone, and action repeat and
-  depth pruning lower it far below on several.}
+  success far above the original on any backbone, and action repeat,
+  depth pruning and foveation lower it far below on several.}
   \label{fig:teaser}
 \end{figure}
 
@@ -39,8 +39,7 @@
   environment. Panels read left to right as depth pruning success change,
   depth pruning speedup, action repeat success change and action repeat
   speedup, against the number of removed decoder layers or the repeat
-  factor. Speedup is dense time per step divided by intervened time per
-  step, and LIBERO suites are pooled per backbone, so 13 lines stand for
+  factor. Speedup is the original's time per step divided by the trick's, and LIBERO suites are pooled per backbone, so 13 lines stand for
   the 22 pairs of the text.}
   \label{fig:ablation-depth}
 \end{figure*}

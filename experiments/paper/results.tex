@@ -29,8 +29,8 @@ each unit of speed cost?
 
 \textbf{RQ-1.} Fig.~\ref{fig:teaser} shows every configuration on the
 six WidowX backbones, and no bar rises far above the dotted line of the
-original, while the bars that fall far below it belong to action repeat
-and depth pruning. Tables~\ref{tab:simplerenv-results}
+original, while the bars that fall far below it belong to action repeat,
+depth pruning and, on OpenVLA and UniVLA, foveation. Tables~\ref{tab:simplerenv-results}
 and~\ref{tab:libero-results} say the same for every environment, with
 few and small green success cells against many and large red ones. Of the 110 best-setting cells, 22
 lower success significantly and four raise it, and the four gains, on
@@ -48,15 +48,15 @@ pruning each cost success on about half of them.}
 \textbf{RQ-2.} Fig.~\ref{fig:tradeoff-widowx} places every setting by its
 speedup and its success change, and the favorable corner, faster and no
 worse, is nearly empty on every backbone. Action repeat is the only trick
-far to the right, at 1.4 to 1.9 times dense speed per step with two steps
+far to the right, at 1.4 to 1.9 times the original's speed per step with two steps
 and up to 3.6 with four, and it is also the trick that falls furthest,
 with significant drops on 8 of 22 backbone and environment pairs at two
 steps and 20 at four (Fig.~\ref{fig:ablation-depth}). Depth pruning moves
 a little to the right and, on some backbones, far down. One removed
-layer is faster than dense on 14 of the 22 pairs and costs success
+layer is faster than the original on 14 of the 22 pairs and costs success
 significantly on 8, and four layers are faster on 21 and cost success on
 14. Guarded reuse saves time only where its gates open, a tenth at most on
-OpenVLA LIBERO and under 5 percent elsewhere, and reports the dense policy
+OpenVLA LIBERO and under 5 percent elsewhere, and reports the original policy
 under its own name where they stay shut. Foveation makes every backbone but UniVLA
 slower, and task-aware fusion adds about a tenth to every call on
 OpenVLA, MiniVLA and UniVLA, since the blur and the attention collection
@@ -67,14 +67,14 @@ the tricks that touch what the policy sees buy no speed at all.}
 
 \textbf{RQ-3.} The sign of a trick changes with the backbone and the
 environment. In Fig.~\ref{fig:tradeoff-widowx} depth pruning sits above
-dense on CogACT and far below it on MiniVLA and SpatialVLA, on the same
+the original on CogACT and far below it on MiniVLA and SpatialVLA, on the same
 tasks and episodes. Foveation at the same keep ratio raises UniVLA and
 lowers SmolVLA on the same LIBERO suite. Action repeat at two steps
 lowers success on all six WidowX backbones and leaves the four Fractal
 backbones where they were (Fig.~\ref{fig:ablation-depth}).
 Fig.~\ref{fig:consistency} counts this over the 13 backbone and
-environment combinations. No setting is above dense on more than six,
-and the settings that most often leave dense unchanged are the ones whose
+environment combinations. No setting is above the original on more than six,
+and the settings that most often leave it unchanged are the ones whose
 gates rarely fire. \textbf{[A-3] A trick does not transfer.
 Its sign is a joint property of the rule, the backbone and the
 environment, so a gain on one combination says nothing about the next
@@ -97,8 +97,8 @@ fusion at zero.
 same success rate on different episodes. On UniVLA WidowX, motion-entropy
 and task-aware fusion both lose 11 of 200 episodes net, and only the first
 loss is significant, because the two settings flip different episodes.
-A setting can also report the dense policy under its own name. The UniVLA
-guarded reuse cells fired on at most five steps and match dense on every
+A setting can also report the original policy under its own name. The UniVLA
+guarded reuse cells fired on at most five steps and match the original on every
 episode but one, and conservative-adaptive fusion selected no reusable
 patch on SpatialVLA and UniVLA. We therefore report how often each gate
 fired and recommend the same for any gated trick. Two caveats remain.
