@@ -21,7 +21,7 @@ def style_fallback():
         'axes.spines.right': False, 'axes.linewidth': .6, 'lines.markersize': 4, 'savefig.dpi': 300, 'axes.axisbelow': True})
 common.style = style_fallback
 
-def tradeoff_row(name, env='bridge', height=2.45):
+def tradeoff_row(name, env='bridge', height=2.5):
     common.style(); ms = common.models(env)
     fig, axs = plt.subplots(1, len(ms), figsize=(7.16, height), layout='constrained')
     symbols = ['o', 's', '^']; markers = {0: '*'}
@@ -46,11 +46,18 @@ def tradeoff_row(name, env='bridge', height=2.45):
     for ax in axs: ax.set_xlabel('Speedup (×)', fontsize=7.5)
     labels = {1: ['Keep 50%', 'Keep 20%'], 2: ['Repeat 2', 'Repeat 4'], 3: ['Prune 1 layer', 'Prune 2 layers', 'Prune 4 layers'],
               4: ['Reuse strict', 'Reuse moderate', 'Reuse aggressive'], 5: ['Fusion conservative', 'Fusion motion/entropy', 'Fusion task-aware']}
-    handles = [Line2D([], [], marker='*', color='#202020', ls='', markersize=7, label='Original')]
-    for i in range(1, 14):
+    def h(i):
         f = common.FAMILY_IDS[i]; j = sum(1 for k in range(i) if common.FAMILY_IDS[k] == f)
-        handles.append(Line2D([], [], marker=markers[i], ls='', color=common.COLORS[f], markersize=4, label=labels[f][j]))
-    fig.legend(handles=handles, loc='outside lower center', ncol=7, frameon=False, handletextpad=.3, columnspacing=.8)
+        return Line2D([], [], marker=markers[i], ls='', color=common.COLORS[f], markersize=4, label=labels[f][j])
+    original = Line2D([], [], marker='*', color='#202020', ls='', markersize=7, label='Original')
+    # One legend, two rows, read left to right with a trick's settings side by side.
+    # Matplotlib fills legend columns top to bottom, so the two rows are interleaved.
+    row1 = [original] + [h(i) for i in range(1, 8)]      # foveation, action repeat, depth pruning
+    row2 = [h(i) for i in range(8, 14)]                   # guarded reuse, temporal fusion
+    blank = lambda: Line2D([], [], ls='', marker='', label=' ')
+    row2 += [blank() for _ in range(len(row1) - len(row2))]
+    handles = [x for pair in zip(row1, row2) for x in pair]
+    fig.legend(handles=handles, loc='outside lower center', ncol=len(row1), frameon=False, handletextpad=.3, columnspacing=1.0)
     common.save(fig, name)
 
 tradeoff_row('tradeoff_bridge_row')
