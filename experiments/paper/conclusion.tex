@@ -13,7 +13,7 @@ configurations per backbone and environment and 47,600 episodes in all, each
 paired with an episode of the original policy on the same initial state. Guarded reuse is
 the safe trick. It never lowers success significantly on any of the seven
 policies, but its gates rarely open, so it saves a tenth of the time at
-most, on OpenVLA, and under 5 percent elsewhere.
+most, on OpenVLA, and about 5 percent or less elsewhere.
 Action repeat is the fast trick and the harmful one. It is the only trick
 that runs far faster than the original, and at some setting it lowers
 success on six of the seven policies. Depth pruning sits between them. One removed layer buys
