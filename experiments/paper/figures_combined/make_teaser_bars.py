@@ -35,9 +35,11 @@ def shade(hexcol, k):
     r, g, b = (int(hexcol[i:i + 2], 16) / 255 for i in (1, 3, 5)); f = [1.0, .72, .46][k]
     return (1 - f * (1 - r), 1 - f * (1 - g), 1 - f * (1 - b))
 
-def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3)):
+def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3), legend='top'):
     """grid = (rows, columns) of the six panels: (2, 3) is the original layout, (3, 2) the
-    taller variant Soumya asked for (2026-09-15) to match the reference figure's finish."""
+    taller variant Soumya asked for (2026-09-15) to match the reference figure's finish.
+    legend = 'top' (two rows above the panels) or 'right' (one column beside them, which
+    frees the height the top legend used; Soumya, 2026-09-15 evening)."""
     ms = common.models(env)
     fig, axs = plt.subplots(*grid, figsize=size, layout='constrained')
     fams = FAM
@@ -61,11 +63,15 @@ def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3)):
         ax.set_title(common.model_name(mm), pad=2)
     for ax in axs[:, 0]: ax.set_ylabel('Success (%)')
     handles = [Patch(color=common.COLORS[f], label=common.FAMILIES[f]) for f in range(6)]
-    fig.legend(handles=handles, loc='outside upper center', ncol=3, frameon=False, handlelength=1.1, handletextpad=.4, columnspacing=1.0, borderaxespad=.1)
+    if legend == 'right':
+        fig.legend(handles=handles, loc='outside right center', ncol=1, frameon=False, handlelength=1.1, handletextpad=.4, labelspacing=.9, borderaxespad=.1)
+    else:
+        fig.legend(handles=handles, loc='outside upper center', ncol=3, frameon=False, handlelength=1.1, handletextpad=.4, columnspacing=1.0, borderaxespad=.1)
     for ext in ['pdf', 'png']:
         (HERE / ext).mkdir(exist_ok=True)
         fig.savefig(HERE / ext / f'{name}.{ext}', bbox_inches='tight', pad_inches=.03, dpi=300, facecolor='white')
 
 teaser('teaser_bridge_bars')
 teaser('teaser_bridge_bars_3x2', size=(3.5, 3.55), grid=(3, 2))
+teaser('teaser_bridge_bars_3x2_rl', size=(3.5, 3.15), grid=(3, 2), legend='right')
 print('done', common.FAMILIES)
