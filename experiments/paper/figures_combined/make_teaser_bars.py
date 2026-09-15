@@ -41,7 +41,15 @@ def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3), legend='top'):
     legend = 'top' (two rows above the panels) or 'right' (one column beside them, which
     frees the height the top legend used; Soumya, 2026-09-15 evening)."""
     ms = common.models(env)
-    fig, axs = plt.subplots(*grid, figsize=size, layout='constrained')
+    if legend == 'right_rot':
+        # A narrow strip at the right holds the legend with the labels rotated upright,
+        # Soumya's sketch (2026-09-15 evening): swatch at the bottom, label read upward.
+        fig = plt.figure(figsize=size, layout='constrained')
+        gs = fig.add_gridspec(grid[0], grid[1] + 1, width_ratios=[1] * grid[1] + [0.09])
+        axs = np.array([[fig.add_subplot(gs[r, c]) for c in range(grid[1])] for r in range(grid[0])])
+        lax = fig.add_subplot(gs[:, grid[1]]); lax.axis('off')
+    else:
+        fig, axs = plt.subplots(*grid, figsize=size, layout='constrained')
     fams = FAM
     for ax, mm in zip(axs.flat, ms):
         vals = [common.metric(mm, c, 'success') for c in ORDER]
@@ -65,6 +73,37 @@ def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3), legend='top'):
     handles = [Patch(color=common.COLORS[f], label=common.FAMILIES[f]) for f in range(6)]
     if legend == 'right':
         fig.legend(handles=handles, loc='outside right center', ncol=1, frameon=False, handlelength=1.1, handletextpad=.4, labelspacing=.9, borderaxespad=.1)
+    elif legend == 'right_rot':
+        from matplotlib.patches import Rectangle
+        fs = 6.0; lax.set_xlim(0, 1); lax.set_ylim(0, 1)
+        fig.canvas.draw()  # so text extents and the strip height are known
+        bbox = lax.get_window_extent(); strip_h = bbox.height  # pixels
+        # measure each rotated label's length in pixels
+        lens = []
+        for f in range(6):
+            t = lax.text(0, 0, common.FAMILIES[f], rotation=90, fontsize=fs); ext = t.get_window_extent(fig.canvas.get_renderer()); lens.append(ext.height); t.remove()
+        sw = fs * fig.dpi / 72 * 1.1   # swatch side in pixels
+        gap = fs * fig.dpi / 72 * 0.5
+        need = sum(lens) + 6 * (sw + gap) + 5 * gap
+        for _ in range(4):  # shrink the font until the six labels fit the strip
+            if need <= strip_h: break
+            fs *= 0.97 * strip_h / need
+            lens = []
+            for f in range(6):
+                t = lax.text(0, 0, common.FAMILIES[f], rotation=90, fontsize=fs); ext = t.get_window_extent(fig.canvas.get_renderer()); lens.append(ext.height); t.remove()
+            sw = fs * fig.dpi / 72 * 1.1; gap = fs * fig.dpi / 72 * 0.5
+            need = sum(lens) + 6 * (sw + gap) + 5 * gap
+        print(f'[right_rot] font {fs:.2f} pt, strip {strip_h / fig.dpi:.2f} in, needed {need / fig.dpi:.2f} in')
+        scale = min(1.0, strip_h / need)
+        y = 1.0  # stack from the top so the first entry (Original) is at the top
+        for f in range(6):
+            h_text = lens[f] * scale / strip_h; h_sw = sw * scale / strip_h; g = gap * scale / strip_h
+            y -= h_text
+            lax.text(0.5, y, common.FAMILIES[f], rotation=90, fontsize=fs, ha='center', va='bottom', color='#202020')
+            y -= g + h_sw
+            lax.add_patch(Rectangle((0.5 - 0.35, y), 0.7, h_sw, transform=lax.transAxes, color=common.COLORS[f], clip_on=False))
+            y -= g
+        lax.set_clip_on(False)
     else:
         fig.legend(handles=handles, loc='outside upper center', ncol=3, frameon=False, handlelength=1.1, handletextpad=.4, columnspacing=1.0, borderaxespad=.1)
     for ext in ['pdf', 'png']:
@@ -74,4 +113,5 @@ def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3), legend='top'):
 teaser('teaser_bridge_bars')
 teaser('teaser_bridge_bars_3x2', size=(3.5, 3.55), grid=(3, 2))
 teaser('teaser_bridge_bars_3x2_rl', size=(3.5, 3.15), grid=(3, 2), legend='right')
+teaser('teaser_bridge_bars_3x2_rot', size=(3.5, 3.15), grid=(3, 2), legend='right_rot')
 print('done', common.FAMILIES)
