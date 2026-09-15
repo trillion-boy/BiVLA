@@ -94,16 +94,19 @@ def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3), legend='top'):
             if need <= strip_h: break
             fs *= 0.97 * strip_h / need; lens, sw, gap, need = measure(fs)
         print(f'[{legend}] font {fs:.2f} pt, strip {strip_h / fig.dpi:.2f} in, needed {need / fig.dpi:.2f} in')
-        for c, col in enumerate(cols):
-            xc = (c + 0.5) / ncols; hw = 0.35 / ncols
-            y = 1.0  # stack from the top so the first entry of the column is at the top
-            for f in col:
-                h_text = lens[f] / strip_h; h_sw = sw / strip_h; g = gap / strip_h
-                y -= h_text
-                lax.text(xc, y, common.FAMILIES[f], rotation=90, fontsize=fs, ha='center', va='bottom', color='#202020')
-                y -= g + h_sw
-                lax.add_patch(Rectangle((xc - hw, y), 2 * hw, h_sw, transform=lax.transAxes, color=common.COLORS[f], clip_on=False))
-                y -= g
+        # Rows across the columns share a baseline (the swatches line up), each row as tall
+        # as its longest label, and the whole block is centred vertically in the strip.
+        rows = list(zip(*cols))  # ncols == 1: six rows of one; ncols == 2: three rows of two
+        h_sw = sw / strip_h; g = gap / strip_h
+        row_h = [max(lens[f] for f in row) / strip_h + h_sw + 2 * g for row in rows]
+        y = 1.0 - (1.0 - sum(row_h)) / 2
+        for row, rh in zip(rows, row_h):
+            for c, f in enumerate(row):
+                xc = (c + 0.5) / ncols; hw = 0.35 / ncols
+                y_sw = y - rh + g                       # swatch at the bottom of the row
+                lax.add_patch(Rectangle((xc - hw, y_sw), 2 * hw, h_sw, transform=lax.transAxes, color=common.COLORS[f], clip_on=False))
+                lax.text(xc, y_sw + h_sw + g, common.FAMILIES[f], rotation=90, fontsize=fs, ha='center', va='bottom', color='#202020')
+            y -= rh
         lax.set_clip_on(False)
     else:
         fig.legend(handles=handles, loc='outside upper center', ncol=3, frameon=False, handlelength=1.1, handletextpad=.4, columnspacing=1.0, borderaxespad=.1)
