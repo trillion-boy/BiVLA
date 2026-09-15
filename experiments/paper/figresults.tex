@@ -41,9 +41,7 @@
   \includegraphics[width=\columnwidth]{figure/tradeoff_bridge_col.pdf}
   \caption{Every setting of every trick on the six SimplerEnv WidowX
   backbones, placed by its speedup per environment step and its success
-  change from the original policy (the star). Panels read left to right
-  and top to bottom as CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA
-  and UniVLA. The shaded corner is faster beyond the latency floor and no worse than
+  change from the original policy (the star). The shaded corner is faster beyond the latency floor and no worse than
   the original. CronusVLA's moderate and aggressive reuse settings and
   UniVLA's task-aware fusion setting are omitted because their latency is
   not read (Section~IV-A).}
@@ -53,8 +51,9 @@
 \begin{figure}[t]
   \centering
   \includegraphics[width=\columnwidth]{figure/ablation_depth_repeat_col.pdf}
-  \caption{Depth pruning (top) and action repeat (bottom) on every
-  backbone and environment, success change and speedup against the number of removed decoder layers or the number of
+  \caption{Depth pruning (a, b) and action repeat (c, d) on every
+  backbone and environment, success change (a, c) and speedup (b, d)
+  against the number of removed decoder layers or the number of
   times each action is repeated. Speedup is the original's time per step
   divided by the trick's,
   and LIBERO suites are pooled per backbone, so 13 lines stand for the 22

@@ -60,7 +60,7 @@ def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3), legend='top'):
         ax.set_xticks([]); ax.tick_params(axis='y', length=2, pad=1)
         ax.yaxis.set_major_locator(MaxNLocator(nbins=4, integer=True))
         ax.grid(axis='y', color='#e6e6e6', lw=.5, zorder=0)
-        ax.set_title(common.model_name(mm), pad=2)
+        ax.set_title(f'({"abcdefg"[ms.index(mm)]}) {common.model_name(mm)}', pad=2)
     for ax in axs[:, 0]: ax.set_ylabel('Success (%)')
     handles = [Patch(color=common.COLORS[f], label=common.FAMILIES[f]) for f in range(6)]
     if legend == 'right':

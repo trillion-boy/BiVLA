@@ -25,7 +25,7 @@ HERE = Path(__file__).resolve().parent
 for p in font_manager.findSystemFonts():
     if 'LiberationSerif' in p: font_manager.fontManager.addfont(p)
 plt.rcParams.update({'font.family': 'serif', 'font.serif': ['Liberation Serif'], 'font.size': 7,
-    'axes.labelsize': 7, 'xtick.labelsize': 6, 'ytick.labelsize': 6, 'legend.fontsize': 5.8,
+    'axes.labelsize': 7, 'axes.titlesize': 7, 'xtick.labelsize': 6, 'ytick.labelsize': 6, 'legend.fontsize': 5.8,
     'pdf.fonttype': 42, 'ps.fonttype': 42, 'mathtext.fontset': 'stix', 'axes.spines.top': False,
     'axes.spines.right': False, 'axes.linewidth': .5, 'lines.linewidth': .9, 'lines.markersize': 3, 'axes.axisbelow': True})
 
@@ -65,6 +65,8 @@ def tradeoff_col(name, env='bridge', size=(3.5, 3.5)):
         ax.xaxis.set_major_formatter(FuncFormatter(lambda x, p: f'{x:g}'))
         ax.yaxis.set_major_formatter(FuncFormatter(lambda x, p: f'{x:+g}' if abs(x) > 1e-10 else '0'))
         ax.tick_params(length=2, pad=1.5); ax.grid(alpha=.13, lw=.4)
+        # Soumya (2026-09-15 evening): backbone names above the panels, lettered as in Fig. 1.
+        ax.set_title(f'({"abcdefg"[ms.index(mm)]}) {common.model_name(mm)}', pad=2)
     for ax in axs[1]: ax.set_xlabel('Speedup (×)')
     for ax in axs[:, 0]: ax.set_ylabel('Success change (points)')
     def h(i):
@@ -100,6 +102,8 @@ def ablation_col(name, families=(3, 2), size=(3.5, 3.9)):
         axs[k][0].axhline(0, c='#aaaaaa', lw=.5); axs[k][1].axhline(1, c='#aaaaaa', lw=.5)
     axs[0][0].set_xlabel('Depth pruning'); axs[0][1].set_xlabel('Depth pruning')
     axs[1][0].set_xlabel('Action repeat'); axs[1][1].set_xlabel('Action repeat')
+    # Soumya (2026-09-15 evening): panel letters, read row by row.
+    for ax, letter in zip(axs.flat, 'abcd'): ax.set_title(f'({letter})', pad=2)
     fig.legend(*axs[0][0].get_legend_handles_labels(), loc='outside lower center', ncol=3, frameon=False, handletextpad=.3, columnspacing=.8, labelspacing=.25)
     save(fig, name)
 
