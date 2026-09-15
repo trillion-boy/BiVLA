@@ -11,10 +11,9 @@
 
 \subsection{Results and Discussion}
 
-Tables~\ref{tab:simplerenv-results} and~\ref{tab:libero-results} give the
-best setting of each trick on every backbone and environment, and
-Fig.~\ref{fig:teaser} and Figs.~\ref{fig:tradeoff-widowx}
-to~\ref{fig:consistency} show every configuration. We read them through three questions, one for each part of the
+We read Tables~\ref{tab:simplerenv-results} and~\ref{tab:libero-results}
+and Figs.~\ref{fig:teaser} and~\ref{fig:tradeoff-widowx}
+to~\ref{fig:consistency} through three questions, one for each part of the
 control loop that a trick touches.
 \begin{list}{}{\setlength{\labelwidth}{2.9em}\setlength{\labelsep}{0.4em}%
   \setlength{\leftmargin}{3.3em}\setlength{\itemsep}{0pt}%
@@ -28,9 +27,8 @@ unit of speed cost?
 \item[\textbf{RQ-3:}] Does a trick that helps one policy help another?
 \end{list}
 
-\textbf{RQ-1.} Fig.~\ref{fig:teaser} shows every configuration on the
-six WidowX backbones, and no bar rises more than 10 points above the
-dotted line of the original, while the bars that fall 10 points or more
+\textbf{RQ-1.} In Fig.~\ref{fig:teaser} no bar rises more than 10 points
+above the dotted line of the original, while the bars that fall 10 points or more
 below it belong to action repeat, depth pruning and, on OpenVLA and
 UniVLA, foveation. Tables~\ref{tab:simplerenv-results}
 and~\ref{tab:libero-results} say the same for every environment, with
@@ -41,9 +39,9 @@ number that chance allows over this many comparisons, while most of the
 drops exceed 10 points. Over all 286 settings six gains pass against
 about seven expected by chance, and two of the four table gains sit on
 CogACT WidowX, the one pair whose every depth and fusion setting rises,
-which the seeds of Section~V should test. Two tricks never lower success significantly in
-their best cell on any of the seven backbones, guarded reuse and temporal
-fusion, and guarded reuse does so in none of its 66 settings, although
+which the seeds of Section~V should test. Guarded reuse and temporal
+fusion never lower success significantly in any best cell, and guarded
+reuse in none of its 66 settings, although
 eleven of its twelve OpenVLA LIBERO settings lose a few points and
 pooling those four suites would make the moderate setting a significant
 loss. The other
@@ -53,40 +51,37 @@ repeat and depth pruning on four each at their mildest setting.
 leave it intact on every backbone, and foveation, action repeat and depth
 pruning each cost success on about half of them.}
 
-\textbf{RQ-2.} Fig.~\ref{fig:tradeoff-widowx} places every setting by its
-speedup and its success change. The favorable corner, faster and no
-worse, is empty on SpatialVLA and UniVLA and holds at most four settings
-elsewhere, none more than a few points above the original except depth
-pruning on CogACT. Action repeat is the only trick
-far to the right, at 1.4 to 1.9 times the original's speed per step with two steps
-and up to 3.6 with four, and it is also the trick that falls furthest,
-with significant drops on 8 of 22 backbone and environment pairs at two
-steps and 20 at four (Fig.~\ref{fig:ablation-depth}). Depth pruning moves
-a little to the right and, on some backbones, far down. One removed
-layer is faster than the original beyond the latency floor on 14 of the
-22 pairs and costs success
-significantly on 8, and four layers are faster on 21 and cost success on
-14. Guarded reuse saves time only where its gates open, a tenth at most on
-OpenVLA LIBERO and about 5 percent or less elsewhere, and is the original policy
-where they stay shut. Foveation makes every backbone slower, by 3 to 17
-percent on six of them and by under 4 percent on UniVLA, whose blur is
-amortized over a chunk, and task-aware fusion adds 7 to 17 percent to
-every call on OpenVLA, MiniVLA and UniVLA, since the blur and the
-attention collection add time without removing any computation. \textbf{[A-2] Action repeat
+\textbf{RQ-2.} In Fig.~\ref{fig:tradeoff-widowx} the shaded corner,
+faster and no worse, is empty on SpatialVLA and UniVLA and holds at most
+four settings elsewhere, none more than a few points above the original
+except depth pruning on CogACT. Action repeat is the only trick far to
+the right, at 1.4 to 3.6 times the original's speed per step, and it is
+also the trick that falls furthest, with significant drops on 8 of 22
+backbone and environment pairs at two steps and 20 at four
+(Fig.~\ref{fig:ablation-depth}). Depth pruning moves a little to the
+right and, on some backbones, far down. One removed layer is faster than
+the original beyond the latency floor on 13 of the 22 pairs and costs
+success significantly on 8, and four layers are faster on 21 and cost
+success on 14. Guarded reuse saves time only where its gates open, a
+tenth at most on OpenVLA LIBERO and about 5 percent or less elsewhere.
+Foveation makes six backbones slower by 2 to 17 percent and moves UniVLA,
+whose blur is amortized over a chunk, by under 4 percent, and task-aware
+fusion adds 7 to 17 percent to every call on OpenVLA, MiniVLA and UniVLA.
+% 2026-09-15: depth1 speedup beyond the 1.6 percent floor of IV-A on 13 of 22 pairs (14 at the earlier 1.4 percent floor; CronusVLA Fractal at 1.5 percent moves out). Foveation per-step slowdown over all settings: 2.0 (OpenVLA Goal keep20) to 16.8 percent (CronusVLA WidowX keep50) on the six backbones other than UniVLA; UniVLA -0.7 to +3.2 percent, eight of ten settings within the floor.
+\textbf{[A-2] Action repeat
 is the fastest trick and the most harmful, depth pruning buys a small
 speedup on most backbones at a success cost that the backbone sets, and
 the tricks that touch what the policy sees buy no speed at all.}
 
-\textbf{RQ-3.} The sign of a trick changes with the backbone and the
-environment. In Fig.~\ref{fig:tradeoff-widowx} depth pruning sits above
+\textbf{RQ-3.} In Fig.~\ref{fig:tradeoff-widowx} depth pruning sits above
 the original on CogACT and far below it on MiniVLA and SpatialVLA, on the same
 tasks and episodes. Foveation at the same keep ratio raises UniVLA and
 lowers SmolVLA on the same LIBERO suite. Action repeat at two steps
 lowers success on all six WidowX backbones, significantly on four, and
 leaves the four Fractal
 backbones where they were (Fig.~\ref{fig:ablation-depth}).
-Fig.~\ref{fig:consistency} counts this over the 13 backbone and
-environment combinations. No setting is above the original on more than six,
+Over the 13 combinations of Fig.~\ref{fig:consistency} no setting is
+above the original on more than six,
 and the settings that most often leave it unchanged are the ones whose
 gates rarely fire. \textbf{[A-3] A trick does not transfer.
 Its sign is a joint property of the rule, the backbone and the
@@ -102,18 +97,17 @@ not an independent measure of efficiency.
 \textbf{What a repeated call saves.} Per-step latency under action repeat
 lands above the halving that the call count predicts, because the
 simulator step is paid on every environment step and only the model
-computation scales with the calls. The same accounting bounds guarded
-reuse at its reuse share, about a tenth of the call time at most, and
-fusion at zero.
+computation scales with the calls.
 
-\textbf{What the per-episode record adds.} Two settings can report the
-same success rate on different episodes. On UniVLA WidowX, motion-entropy
-and task-aware fusion both lose 11 of 200 episodes net, and only the first
-loss is significant, because the two settings flip different episodes.
-A setting can also report the original policy under its own name. The UniVLA
-guarded reuse table cells fired on at most five steps and match the original on every
-episode but one, and conservative-adaptive fusion reused no patch on
-most steps of SpatialVLA and UniVLA. We therefore report how often each gate
-fired and recommend the same for any gated trick. Two caveats remain.
-CronusVLA's cells carry the run-to-run floor of Section~IV-A, and its
-three fusion cells are one run whose settings were not recorded.
+\textbf{What the per-episode record adds.} On UniVLA WidowX,
+motion-entropy and task-aware fusion both lose 11 of 200 episodes net,
+and only the first loss is significant, because the two settings flip
+different episodes. A setting can report the original policy under its
+own name. The UniVLA guarded reuse table cells fired on at most five
+steps and match the original on every episode but one, and
+conservative-adaptive fusion reused no patch on most steps of SpatialVLA
+and UniVLA. We therefore report how often each gate fired and recommend
+the same for any gated trick. Cells on CogACT, CronusVLA, MiniVLA and
+OpenVLA WidowX carry the run-to-run noise of Section~IV-A, and
+CronusVLA's three fusion cells are one run whose settings were not
+recorded.

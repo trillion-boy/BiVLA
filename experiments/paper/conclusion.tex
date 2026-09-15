@@ -8,12 +8,12 @@
 \section{Conclusion, Limitation and Future Works}
 
 We ran six tricks, the original policy among them, on seven released VLA
-policies and three environments under one matched protocol, 14
-configurations per backbone and environment and 47,600 episodes in all, each
-paired with an episode of the original policy on the same initial state. Guarded reuse is
+policies and three environments under one matched protocol, 47,600
+episodes each paired with an episode of the original policy on the same
+initial state. Guarded reuse is
 the safe trick. It never lowers success significantly on any of the seven
 policies, but its gates rarely open, so it saves a tenth of the time at
-most, on OpenVLA, and about 5 percent or less elsewhere.
+most.
 Action repeat is the fast trick and the harmful one. It is the only trick
 that runs far faster than the original, and at some setting it lowers
 success on six of the seven policies. Depth pruning sits between them. One removed layer buys
@@ -23,19 +23,18 @@ fusion buy no speed, foveation lowers success on three policies, and
 fusion moves it only within what chance allows. No trick raises success,
 and the sign of
 a trick is a joint property of the rule, the policy and the environment,
-so a claim made on one combination does not transfer to another without
-a matched test on the target. What each trick treats as redundant is
+so no claim transfers between combinations without a matched test on
+the target. What each trick treats as redundant is
 redundant on some policies and needed on others.
 
 \textbf{Limitations and future work.} Each cell is one run, so the paired
-test speaks to the same initial states under two policies and not to other
-initial states, and CronusVLA does not reproduce its rollout under a fixed
-seed. LIBERO cells, with 100 episodes, have less power than SimplerEnv
+test speaks only to the tested initial states, and CogACT, CronusVLA, MiniVLA and OpenVLA do not
+reproduce their WidowX rollouts under a fixed seed. LIBERO cells, with 100 episodes, have less power than SimplerEnv
 cells, and guarded reuse ran fixed presets rather than thresholds tuned
 per policy. Latency is read only within one backbone, environment, software stack
 and GPU class, peak memory was not measured, and all runs are in
 simulation. Several seeds per cell, real-robot replication of the sign
 flips of Section~IV-B, and a measured integration of the fusion reuse mask
 with a token cache are the next steps, and the paired records and gate
-counts of every run allow a new trick to be tested against the same
+counts allow a new trick to be tested against the same
 episodes.

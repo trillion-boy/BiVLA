@@ -19,17 +19,15 @@
 \subsection{Setup and Protocol}
 
 \textbf{Backbones.} We evaluate seven released VLA policies without
-retraining. CogACT (7.6B, 32 Llama decoder layers), OpenVLA (7B, 32
-Llama-2 layers), SpatialVLA (4B, 26 Gemma2 layers), CronusVLA (0.5B, a
-12-layer DiT action decoder), UniVLA (8.5B, 32 Emu3 layers) and MiniVLA
-(1B, 24 Qwen2.5 layers) run on SimplerEnv, and OpenVLA, UniVLA and SmolVLA
-(0.45B, 32 SmolLM2 layers) run on LIBERO, each on the checkpoint released
-for that benchmark, named in the code release. Depth pruning acts on the
-decoder stack named for each. Every backbone emits one action per call
-except UniVLA, whose chunk covers five steps on WidowX and ten on LIBERO.
-CogACT, CronusVLA, MiniVLA and SpatialVLA run under transformers 4.47.0
-and SmolVLA on an isolated 4.51.3 stack, and OpenVLA requests SDPA on
-SimplerEnv but defaults to eager on LIBERO.
+retraining. CogACT (32 Llama decoder layers), OpenVLA (32 Llama-2
+layers), SpatialVLA (26 Gemma2 layers), CronusVLA (a 12-layer DiT action
+decoder), UniVLA (32 Emu3 layers) and MiniVLA (24 Qwen2.5 layers) run on
+SimplerEnv, and OpenVLA, UniVLA and SmolVLA (32 SmolLM2 layers) run on
+LIBERO, each on the checkpoint released for that benchmark. Depth pruning
+acts on the decoder stack named for each. Every backbone emits one action
+per call except UniVLA, whose chunk covers five steps on WidowX and ten on
+LIBERO. OpenVLA requests SDPA on SimplerEnv but defaults to eager on
+LIBERO.
 
 \textbf{Environments and episodes.} SimplerEnv WidowX has four tasks at 50
 episodes each, with a step cap of 60, or 120 for the eggplant task. Google
@@ -37,25 +35,26 @@ Robot, called Fractal below, has five tasks at 50 episodes each and a cap of
 80. LIBERO has four suites (Long, Goal, Object, Spatial) of ten tasks at 10
 episodes each and caps of 520, 300, 280 and 220. Every
 configuration of a backbone replays the same task instances and initial
-states, with the episode seed fixed as 42 plus the episode index, so each
-episode has a matched control under the original policy. A failed episode runs to its cap. The
-LIBERO checkpoints run in their training distribution and the WidowX and
-Fractal checkpoints under SimplerEnv's visual matching protocol, so success
-measures what a trick does to a trained policy on its target
-benchmark rather than how the policy generalizes.
+states, with the episode seed fixed as 42 plus the episode index. The
+LIBERO checkpoints run in their training distribution and the SimplerEnv
+checkpoints under its visual matching protocol, so success measures what
+a trick does to a trained policy and not how it generalizes.
 
 \textbf{Configurations.} Each backbone and environment pair runs 14
 configurations, the original policy and thirteen settings of the five
-other tricks, two or three per trick. Foveation keeps a
+other tricks. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area, action repeat holds each
 action for two or four steps, and depth pruning removes one, two or four
 layers chosen by Block Influence on calibration frames disjoint from the
 test episodes.
 % Matches the Method section wording (disjoint). Recorded calibration source (CronusVLA: seed 10000, same tasks) uses a seed distinct from the test seed 42+index, so its calibration episodes are disjoint from the test episodes.
-Guarded reuse runs the strict, moderate and aggressive presets and
-temporal fusion the motion-entropy, task-aware and conservative-adaptive
-settings of Section~III. In all, 22 backbone and environment pairs, 14
-configurations each, and 47,600 episodes.
+Guarded reuse runs the strict, moderate and aggressive presets of
+Section~III, and temporal fusion runs three settings, motion-entropy,
+task-aware, which adds the text-to-vision attention of the preceding call
+to the selector, and conservative-adaptive, which reuses fewer patches
+under a shorter keyframe interval. In all, 22 backbone and environment
+pairs and 47,600 episodes.
+% 2026-09-15: Section III-G no longer names the three fusion settings (that sentence is commented out in the mentor's draft), so the one-clause definitions live here until the mentor restores them.
 % 2026-09-13: OpenVLA Long conservative-adaptive arrived (45/100), so all 22 pairs have 14 configurations. The three reruns replaced runs at the same n, so no count changed.
 
 \textbf{Measures.} Success is the benchmark's own criterion. Latency is
@@ -65,43 +64,45 @@ or a chunk. We read latency only as the change from the original within one back
 environment, one software stack and one GPU class, and cells that break
 this rule report success alone.
 Every harness other than CronusVLA also records its per-call time, which
-Sections~IV-B and~IV-C use, and CronusVLA reports only the episode clock.
+Sections~IV-B and~IV-C use.
 Avg.\ Steps is the mean episode length. Tables~\ref{tab:simplerenv-results}
 and~\ref{tab:libero-results} show, for each trick, the setting with the
-highest success and, on a tie, the fewer average steps, with each row
-labeled by its trick, and the figures show every setting.
+highest success and, on a tie, the fewer average steps.
 
 \textbf{Pairing and significance.} Every cell compares the same episodes
-under the original policy and under the trick, and a change is called
-significant when an exact two-sided McNemar test on the episodes that
-flipped between failure and success gives $p < 0.05$. The test pools the
-tasks of a cell. The figures show point estimates, and this test decides
-significance. Each table cell is the best of two or three settings,
-so its p-value is post-selection and read as descriptive, and
-Section~IV-B reads gains over all 286 settings, where about 14
-chance passes are expected at this threshold, about seven per direction.
+under the original policy and under the trick, its tasks pooled, and a
+change is called significant when an exact two-sided McNemar test on the
+episodes that flipped between failure and success gives $p < 0.05$. The
+figures show point estimates. Each table cell is the best of two or three
+settings, so its p-value is post-selection and read as descriptive, and
+Section~IV-B reads gains over all 286 settings, where about seven chance
+gains are expected at this threshold.
 Sixteen of the 22 significant table drops pass a false discovery rate
-correction at 0.05 over the 110 table cells, and no gain does. CronusVLA
-does not reproduce its rollout under a fixed seed. Its strict reuse cell
-fired on 5 of 9,947 steps and still differs from the original on 14 of 200 WidowX
-episodes, which we take as its run-to-run floor, so its WidowX cells within
-that floor are read as no change, and no floor was measured on Fractal.
-The other six backbones reproduce the original outcome on all but about one
-episode in a hundred.
+correction at 0.05 over the 110 table cells, and no gain does.
+Run-to-run noise is read from the episodes on which no reuse gate fired,
+which run the original policy at every step. Their outcome matches the
+original on SpatialVLA, UniVLA, and OpenVLA on Fractal and LIBERO on all
+but at most one episode in a hundred, and differs on 2 to 17 percent of
+the episodes on CogACT and CronusVLA and on MiniVLA and OpenVLA on WidowX,
+so on those pairs a change of a few points is within noise and only the
+paired test is read.
+% 2026-09-15 (verified on the per-episode records): outcome differs from the original among zero-fire guarded-reuse episodes on CogACT Fractal 1.8%, CogACT WidowX 16.5%, CronusVLA Fractal 4.6%, CronusVLA WidowX 11.3%, MiniVLA 9.1%, OpenVLA WidowX 13.4%; OpenVLA Fractal 0, OpenVLA LIBERO 0, SpatialVLA 0 and 0.5%, UniVLA 0.2 to 0.3%. Steps of both-success zero-fire episodes are identical on 97 to 100% of episodes for the reproducing pairs and on 18 to 79% for the others. SmolVLA (reconstructed stack) 19.9%, stated in the Hardware paragraph. This replaces the earlier "all but about one episode in a hundred", which held only for UniVLA and SpatialVLA.
 
 \textbf{Hardware and implementation.} Runs were scheduled on a shared GPU
 cluster with VRAM class matched within a backbone, and the card is
 recorded where known, CronusVLA and UniVLA WidowX on an RTX 5090.
-SmolVLA's guarded reuse and temporal fusion ran under a reconstructed
-stack on other cards, so their latency is not read, and three runs, UniVLA
-WidowX task-aware and the CronusVLA WidowX moderate and aggressive presets,
-were repeated on an RTX PRO 6000 after failing on the RTX 5090. Three
-table cells whose gates never fired differ from their original row by 0.4 to
-1.4 percent in latency, which we take as the latency floor. CogACT exposes
-no text-to-vision attention at the point where fusion runs, so its
-task-aware setting equals motion-entropy. Collecting attention relevance
-for the task-aware setting forces an SDPA decoder into eager attention. On
-OpenVLA, whose LIBERO original row already runs eager, task-aware adds the
-same eight percent per call as on its SDPA rows, so that cost is the
-relevance collection, and on MiniVLA and UniVLA the two are not separated.
+Three runs, UniVLA WidowX task-aware and the CronusVLA WidowX moderate and
+aggressive presets, were repeated on an RTX PRO 6000 after failing there,
+and SmolVLA's guarded reuse and temporal fusion ran under a reconstructed
+stack on other cards, so none of these latencies is read, and the SmolVLA
+cells, whose outcome differs from the original on 10 to 30 percent of the
+episodes on which no gate fired, are read through the paired test alone. Ten
+cells whose gates never fired differ from their original row by up to 1.6
+percent in latency, which we take as the latency floor. CogACT exposes
+no text-to-vision attention where fusion runs, so its task-aware setting
+equals motion-entropy. Collecting attention relevance for the task-aware
+setting forces an SDPA decoder into eager attention, and only OpenVLA
+separates the two costs, since its LIBERO original row already runs eager
+and task-aware adds the same eight percent per call as on its SDPA rows.
+% 2026-09-15: the ten zero-fire cells are UniVLA Goal, Object and Spatial (all three presets) and UniVLA WidowX strict; latency deviations -1.57 to +1.41 percent. The earlier floor 0.4 to 1.4 used only the three table cells among them.
 

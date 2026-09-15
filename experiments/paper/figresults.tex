@@ -32,9 +32,7 @@
   \caption{Where each trick enters the control loop of a frozen VLA
   policy. Candidates (top) act on the model call, the visual tokens, and the
   decoder depth, each where a signal admits it. Controls (bottom) use no
-  signal, one blurring the input image and the other holding each action for
-  a fixed number of steps. The dots and the diamond mark the points of effect,
-  and the dashed path marks the skipped call.}
+  signal. The dots and the diamond mark the points of effect.}
   \label{fig:overview}
 \end{figure*}
 
@@ -45,8 +43,7 @@
   backbones, placed by its speedup per environment step and its success
   change from the original policy (the star). Panels read left to right
   and top to bottom as CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA
-  and UniVLA, colors identify tricks, and the legend names each setting.
-  The shaded corner is faster and no worse than the original. CronusVLA's
+  and UniVLA. The shaded corner is faster and no worse than the original. CronusVLA's
   moderate and aggressive reuse settings are omitted because their
   latency is not read (Section~IV-A).}
   \label{fig:tradeoff-widowx}
@@ -56,21 +53,19 @@
   \centering
   \includegraphics[width=\columnwidth]{figure/ablation_depth_repeat_col.pdf}
   \caption{Depth pruning (top) and action repeat (bottom) on every
-  backbone and environment, success change on the left and speedup on the
-  right, against the number of removed decoder layers or the number of
+  backbone and environment, success change and speedup against the number of removed decoder layers or the number of
   times each action is repeated. Speedup is the original's time per step
   divided by the trick's,
   and LIBERO suites are pooled per backbone, so 13 lines stand for the 22
-  pairs of the text.}
+  pairs.}
   \label{fig:ablation-depth}
 \end{figure}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\columnwidth]{figure/cross_setting_consistency_col.pdf}
-  \caption{For each setting, the number of the 13 backbone and environment
-  combinations of Fig.~\ref{fig:ablation-depth} whose success is lower,
-  unchanged or higher than the original policy, counting any nonzero
-  change.}
+  \caption{For each setting, how many of the 13 combinations of
+  Fig.~\ref{fig:ablation-depth} have lower, unchanged or higher success
+  than the original, counting any nonzero change.}
   \label{fig:consistency}
 \end{figure}
