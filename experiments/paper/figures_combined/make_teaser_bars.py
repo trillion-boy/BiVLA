@@ -99,14 +99,18 @@ def teaser(name, env='bridge', size=(3.5, 2.75), grid=(2, 3), legend='top'):
         rows = list(zip(*cols))  # ncols == 1: six rows of one; ncols == 2: three rows of two
         h_sw = sw / strip_h; g = gap / strip_h
         row_h = [max(lens[f] for f in row) / strip_h + h_sw + 2 * g for row in rows]
-        y = 1.0 - (1.0 - sum(row_h)) / 2
+        # The labels read upward, so the first entry of each column sits at the bottom and
+        # the list reads like a normal two-row legend once the page is turned (Junseo,
+        # 2026-09-15 evening): left strip Original, Foveation, Action repeat; right strip
+        # Depth pruning, Guarded reuse, Temporal fusion.
+        y = (1.0 - sum(row_h)) / 2                      # bottom of the centred block
         for row, rh in zip(rows, row_h):
             for c, f in enumerate(row):
                 xc = (c + 0.5) / ncols; hw = 0.35 / ncols
-                y_sw = y - rh + g                       # swatch at the bottom of the row
+                y_sw = y + g                            # swatch at the bottom of the row
                 lax.add_patch(Rectangle((xc - hw, y_sw), 2 * hw, h_sw, transform=lax.transAxes, color=common.COLORS[f], clip_on=False))
                 lax.text(xc, y_sw + h_sw + g, common.FAMILIES[f], rotation=90, fontsize=fs, ha='center', va='bottom', color='#202020')
-            y -= rh
+            y += rh
         lax.set_clip_on(False)
     else:
         fig.legend(handles=handles, loc='outside upper center', ncol=3, frameon=False, handlelength=1.1, handletextpad=.4, columnspacing=1.0, borderaxespad=.1)
