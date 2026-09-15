@@ -47,10 +47,16 @@ def tradeoff_col(name, env='bridge', size=(3.5, 3.5)):
         # latency is not read (Section IV-A); they are omitted here rather than plotted.
         if mm.startswith('cronusvla'):
             pts = [p for p in pts if ORDER[p[2]] not in ('guarded_reuse_moderate', 'guarded_reuse_aggressive')]
+        # UniVLA WidowX task-aware fusion was also rerun on another GPU (Section IV-A), so its
+        # latency is not read and the point is omitted.
+        if mm.startswith('univla'):
+            pts = [p for p in pts if ORDER[p[2]] != 'temporal_fusion_task_aware']
         xx = [p[0] for p in pts]; yy = [p[1] for p in pts]
         dx = max(.06, (max(xx) - min(xx)) * .15); dy = max(3, (max(yy) - min(yy)) * .12)
         ax.set_xlim(min(xx) - dx, max(xx) + dx); ax.set_ylim(min(yy) - dy, max(yy) + dy)
-        ax.fill_between([1, ax.get_xlim()[1]], 0, ax.get_ylim()[1], color='#EAF3ED', zorder=0)
+        # The shaded corner starts at the latency floor of Section IV-A (1.6 percent), so a
+        # point inside it is faster beyond run-to-run noise and no worse in success.
+        ax.fill_between([1.016, ax.get_xlim()[1]], 0, ax.get_ylim()[1], color='#EAF3ED', zorder=0)
         ax.axvline(1, color='#777777', ls=':', lw=.6, zorder=1); ax.axhline(0, color='#777777', ls=':', lw=.6, zorder=1)
         for x, y, i in pts:
             ax.scatter(x, y, s=42 if i == 0 else 14, marker=markers[i], color=common.COLORS[FAM[i]],
@@ -81,7 +87,12 @@ def ablation_col(name, families=(3, 2), size=(3.5, 3.9)):
         labs = (['0'] if family == 3 else ['1']) + [common.LABELS[i].split(': ')[-1] for i in inds]
         for j, mm in enumerate(common.models()):
             for ax, key in zip(axs[k], ['delta', 'speedup']):
-                ax.plot(range(len(cs)), [common.metric(mm, cc, key) for cc in cs],
+                vals = [common.metric(mm, cc, key) for cc in cs]
+                # SmolVLA depth pruning at two and four layers ran wholly or partly under a
+                # second software stack (Section IV-A), so its speedup there is not read.
+                if key == 'speedup' and family == 3 and mm.startswith('smolvla'):
+                    vals = [v if cc in ('original', 'depth_pruning1') else np.nan for v, cc in zip(vals, cs)]
+                ax.plot(range(len(cs)), vals,
                         marker=['o', 's', '^'][list(common.ENVS).index(common.env_name(mm))], color=palette(j),
                         label=f'{common.model_name(mm)} / {common.env_name(mm).replace("bridge", "WidowX").replace("fractal", "Fractal").replace("libero", "LIBERO")}')
                 ax.set_xticks(range(len(cs)), labs); ax.grid(alpha=.16, lw=.4); ax.tick_params(length=2, pad=1.5)

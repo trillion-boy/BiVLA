@@ -81,4 +81,28 @@ chk('UniVLA WidowX both fusion settings lose 11 net, only ME sig',all(sum(o[(e['
 uv=[(r['env'],sum(e['reuses'] for e in D[(('UniVLA',r['env']),r['configuration'])])) for r in tab if r['backbone']=='UniVLA' and r['family']=='Guarded reuse']; chk('UniVLA reuse cells fired at most five steps',max(v for _,v in uv)==5,uv)
 bad=sum(1 for (p,c),v in D.items() for e in v if not e['success'] and e['steps_executed']<((120 if 'eggplant' in e['task'] else 60) if p[1]=='WidowX' else {'Fractal':80,'LIBERO Long':520,'LIBERO Goal':300,'LIBERO Object':280,'LIBERO Spatial':220}[p[1]])); chk('every failed episode reached its cap',bad==0)
 chk('47,600 episodes, 308 runs',sum(len(v) for v in D.values())==47600 and len(D)==308)
+print('### 2026-09-15 evening additions (reviewer pass)')
+import math
+def p2(w,l):
+    n=w+l
+    if n==0: return 1.0
+    k=min(w,l); return min(1.0,2*sum(math.comb(n,i) for i in range(k+1))/2**n)
+def size(n): return sum(math.comb(n,i)/2**n for i in range(n+1) if p2(i,n-i)<0.05) if n else 0.0
+s286=sum(size(int(r['win'])+int(r['loss'])) for r in rows)
+chk('exact test admits about eight chance passes over 286 settings, about four per direction',7.5<=s286<=8.5,round(s286,2))
+chk('exact p recomputed from win and loss matches the CSV',all(abs(p2(int(r['win']),int(r['loss']))-float(r['p_mcnemar']))<0.002 for r in rows))
+chk('no table gain exceeds 10 points, a cell at or below -10 in every environment',max(float(r['delta_pts']) for r in tab)<10 and all(any(float(r['delta_pts'])<=-10 for r in tab if r['env']==e) for e in {r['env'] for r in tab}))
+allup={(r['backbone'],r['env']) for r in rows if r['family'] in ('Depth pruning','Temporal fusion')}
+allup={p for p in allup if all(float(r['delta_pts'])>0 for r in rows if (r['backbone'],r['env'])==p and r['family'] in ('Depth pruning','Temporal fusion'))}
+chk('every depth and fusion setting rises on exactly CogACT WidowX and OpenVLA Fractal',allup=={('CogACT','WidowX'),('OpenVLA','Fractal')})
+chk('three of the four table gains sit on those two pairs',sum((r['backbone'],r['env']) in allup for r in tab if sig(r) and float(r['delta_pts'])>0)==3)
+excl={('SmolVLA','LIBERO Long'),('SmolVLA','LIBERO Goal'),('SmolVLA','LIBERO Object')}
+chk('depth4 faster beyond the floor on 18 of the 19 pairs whose latency is read',sum(lat(p,'original')/lat(p,'depth_pruning4')>1.016 for p in pairs if p not in excl)==18 and len([p for p in pairs if p not in excl])==19)
+chk('SmolVLA is four of the significant drops at one and at four layers',all(sum(r['backbone']=='SmolVLA' for r in rows if r['configuration']==c and sig(r) and float(r['delta_pts'])<0)==4 for c in ['depth_pruning1','depth_pruning4']))
+recon=collections.Counter()
+for (p,c),eps in D.items():
+    if p[0]=='SmolVLA' and c.startswith('depth'): recon[(p[1],c)]=sum(1 for e in eps if e.get('implementation'))
+chk('SmolVLA reconstructed-stack depth episodes: depth2 Long and Goal, depth4 Long, Goal and Object, none at depth1 or Spatial',{k for k,v in recon.items() if v>0}=={('LIBERO Long','depth_pruning2'),('LIBERO Goal','depth_pruning2'),('LIBERO Long','depth_pruning4'),('LIBERO Goal','depth_pruning4'),('LIBERO Object','depth_pruning4')})
+fus=[r for r in rows if r['family']=='Temporal fusion' and sig(r) and float(r['delta_pts'])<0]
+chk('fusion drops significantly on two settings over all 66 (so [A-1] says table cell)',len(fus)==2)
 print('\nFAILS:',fails)

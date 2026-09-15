@@ -45,9 +45,11 @@ configurations, the original policy and thirteen settings of the five
 other tricks. Foveation keeps a
 central disc of 0.2 or 0.5 of the image area, action repeat holds each
 action for two or four steps, and depth pruning removes one, two or four
-layers chosen by Block Influence on calibration frames disjoint from the
-test episodes.
-% Matches the Method section wording (disjoint). Recorded calibration source (CronusVLA: seed 10000, same tasks) uses a seed distinct from the test seed 42+index, so its calibration episodes are disjoint from the test episodes.
+layers chosen by Block Influence, scored on a separate calibration pass
+for CronusVLA and, for the other backbones, once per run on the first
+test frame, whose step runs unpruned. SmolVLA's depth cells remove fixed
+late layers without calibration.
+% 2026-09-15 (verified in summary.json and adaptive_sparse_vla/depth_prune.py, inference_openvla_libero.py): CronusVLA depth_calibration seed 10000 on the same tasks; OpenVLA, SpatialVLA, UniVLA (and CogACT, MiniVLA) record an influence array with no seed, and the hooks ride on the first real predict call of the run, which runs unpruned, the ranking then fixed (non-ctrl mode does not reset per episode). SmolVLA: calibrated false, selected_layers [30], [28, 30], [24, 26, 28, 30] of 32.
 Guarded reuse runs the strict, moderate and aggressive presets of
 Section~III, and temporal fusion runs three settings, motion-entropy,
 task-aware, which adds the text-to-vision attention of the preceding call
@@ -75,8 +77,8 @@ change is called significant when an exact two-sided McNemar test on the
 episodes that flipped between failure and success gives $p < 0.05$. The
 figures show point estimates. Each table cell is the best of two or three
 settings, so its p-value is post-selection and read as descriptive, and
-Section~IV-B reads gains over all 286 settings, where about seven chance
-gains are expected at this threshold.
+Section~IV-B reads gains over all 286 settings, where the exact test admits about eight chance passes at the flip
+counts observed, about four per direction.
 Sixteen of the 22 significant table drops pass a false discovery rate
 correction at 0.05 over the 110 table cells, and no gain does.
 Run-to-run noise is read from the episodes on which no reuse gate fired,
@@ -89,16 +91,21 @@ paired test is read.
 % 2026-09-15 (verified on the per-episode records): outcome differs from the original among zero-fire guarded-reuse episodes on CogACT Fractal 1.8%, CogACT WidowX 16.5%, CronusVLA Fractal 4.6%, CronusVLA WidowX 11.3%, MiniVLA 9.1%, OpenVLA WidowX 13.4%; OpenVLA Fractal 0, OpenVLA LIBERO 0, SpatialVLA 0 and 0.5%, UniVLA 0.2 to 0.3%. Steps of both-success zero-fire episodes are identical on 97 to 100% of episodes for the reproducing pairs and on 18 to 79% for the others. SmolVLA (reconstructed stack) 19.9%, stated in the Hardware paragraph. This replaces the earlier "all but about one episode in a hundred", which held only for UniVLA and SpatialVLA.
 
 \textbf{Hardware and implementation.} Runs were scheduled on a shared GPU
-cluster with VRAM class matched within a backbone, and the card is
-recorded where known, CronusVLA and UniVLA WidowX on an RTX 5090.
-Three runs, UniVLA WidowX task-aware and the CronusVLA WidowX moderate and
-aggressive presets, were repeated on an RTX PRO 6000 after failing there,
-and SmolVLA's guarded reuse and temporal fusion ran under a reconstructed
-stack on other cards, so none of these latencies is read, and the SmolVLA
+cluster with VRAM class matched within a backbone except where noted,
+and the card is recorded where known, CronusVLA and UniVLA WidowX on an
+RTX 5090. Three runs, UniVLA WidowX task-aware and the CronusVLA WidowX
+moderate and aggressive presets, were repeated on an RTX PRO 6000 after
+failing there, and SmolVLA's guarded reuse and temporal fusion, and its
+depth pruning at two layers on Long and Goal and at four on Long, Goal
+and Object, ran wholly or partly under a reconstructed stack on cards of
+three VRAM classes, so none of these latencies is read, and these SmolVLA
 cells, whose outcome differs from the original on 10 to 30 percent of the
-episodes on which no gate fired, are read through the paired test alone. Ten
-cells whose gates never fired differ from their original row by up to 1.6
-percent in latency, which we take as the latency floor. CogACT exposes
+episodes on which no gate fired, are read through the paired test alone.
+Ten cells whose gates never fired, all on UniVLA, differ from their
+original row by up to 1.6 percent in latency, which we take as the
+latency floor.
+% 2026-09-15: per-episode implementation field 'smolvla-reconstructed-sdpa-v1' on depth_pruning2 Long (17 of 100) and Goal (26), depth_pruning4 Long (62), Goal (100), Object (100), on RTX 5090, RTX PRO 6000, A6000, L40S, 6000 Ada. Depth-1 and Spatial depth cells are all legacy.
+CogACT exposes
 no text-to-vision attention where fusion runs, so its task-aware setting
 equals motion-entropy. Collecting attention relevance for the task-aware
 setting forces an SDPA decoder into eager attention, and only OpenVLA
