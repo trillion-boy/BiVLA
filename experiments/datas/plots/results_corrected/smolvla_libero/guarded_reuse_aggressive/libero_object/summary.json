@@ -17,17 +17,18 @@
     "libero_object__task_9"
   ],
   "episodes": 100,
-  "successes": 91,
-  "success_rate": 0.91,
+  "expected_episodes": 100,
+  "successes": 90,
+  "success_rate": 0.9,
   "episode_errors": 0,
   "implementation_versions": [
     "smolvla-reconstructed-sdpa-v1"
   ],
-  "claim_scope": "Reconstructed continuation. Legacy and new implementation/hardware timings are not a matched comparison; no improvement claim.",
-  "average_steps": 162.41,
-  "average_policy_calls": 160.11,
-  "average_reuses": 2.3,
-  "average_episode_ms": 44104.515484554955,
+  "claim_scope": "Fresh rerun of reconstructed SmolVLA SDPA evaluator; no matched baseline or counterfactual action disagreement measured.",
+  "average_steps": 163.6,
+  "average_policy_calls": 161.27,
+  "average_reuses": 2.33,
+  "average_episode_ms": 44608.17014778834,
   "per_task": {
     "libero_object__task_0": {
       "episodes": 10,
@@ -59,7 +60,7 @@
     },
     "libero_object__task_7": {
       "episodes": 10,
-      "successes": 9
+      "successes": 8
     },
     "libero_object__task_8": {
       "episodes": 10,
@@ -69,5 +70,42 @@
       "episodes": 10,
       "successes": 10
     }
-  }
+  },
+  "success_percent": 90.0,
+  "success_rate_wilson_95_ci": [
+    0.8256326956323347,
+    0.9447714583868639
+  ],
+  "timing_ms": {
+    "query": {
+      "mean_ms": 262.84620370693244,
+      "median_ms": 262.613567057997,
+      "p95_ms": 266.7351364158094
+    },
+    "inference_cycle": {
+      "mean_ms": 272.6653128619908,
+      "median_ms": 276.1750714853406,
+      "p95_ms": 281.01145200198516
+    },
+    "policy_decision": {
+      "mean_ms": 260.0734466586734,
+      "median_ms": 263.5508415332879,
+      "p95_ms": 267.6849720068276
+    },
+    "environment_step": {
+      "mean_ms": 12.590312020799116,
+      "median_ms": 12.375729507766664,
+      "p95_ms": 15.34336115073529
+    }
+  },
+  "episode_timing_ms": {
+    "mean_ms": 44608.17014778834,
+    "median_ms": 40711.025424498075,
+    "p95_ms": 74771.7820866892
+  },
+  "total_policy_calls": 16127,
+  "total_reuses": 233,
+  "gpus": [
+    "NVIDIA GeForce RTX 5090"
+  ]
 }

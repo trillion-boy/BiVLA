@@ -43,14 +43,8 @@ def tradeoff_col(name, env='bridge', size=(3.5, 3.5)):
     for ax, mm in zip(axs.flat, ms):
         pts = [(common.metric(mm, c, 'speedup'), common.metric(mm, c, 'delta'), i) for i, c in enumerate(ORDER)]
         pts = [p for p in pts if np.isfinite(p[0] + p[1])]
-        # CronusVLA WidowX moderate and aggressive reuse were rerun on another GPU, so their
-        # latency is not read (Section IV-A); they are omitted here rather than plotted.
-        if mm.startswith('cronusvla'):
-            pts = [p for p in pts if ORDER[p[2]] not in ('guarded_reuse_moderate', 'guarded_reuse_aggressive')]
-        # UniVLA WidowX task-aware fusion was also rerun on another GPU (Section IV-A), so its
-        # latency is not read and the point is omitted.
-        if mm.startswith('univla'):
-            pts = [p for p in pts if ORDER[p[2]] != 'temporal_fusion_task_aware']
+        # 2026-09-16: CronusVLA WidowX moderate/aggressive reuse and UniVLA WidowX task-aware
+        # fusion were rerun on the RTX 5090 (new_reruns_widowx), so all 13 settings are plotted.
         xx = [p[0] for p in pts]; yy = [p[1] for p in pts]
         dx = max(.06, (max(xx) - min(xx)) * .15); dy = max(3, (max(yy) - min(yy)) * .12)
         ax.set_xlim(min(xx) - dx, max(xx) + dx); ax.set_ylim(min(yy) - dy, max(yy) + dy)

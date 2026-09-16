@@ -5,8 +5,8 @@
 %% by highest success then fewer average steps (the mentor's rule).
 %% Latency is avg_episode_time_s * 1000 / avg_steps (per environment step).
 %% Parameter counts as reported by the original works. SmolVLA guarded reuse
-%% and temporal fusion ran under a second implementation on other GPUs, so
-%% their latency is printed as "--". Needs booktabs, multirow, graphicx,
+%% and temporal fusion cells come from the 2026-09-16 RTX 5090 reruns
+%% (new_reruns_libero, reconstructed SDPA stack); latency printed as measured. Needs booktabs, multirow, graphicx,
 %% xcolor. Spans both columns.
 %% ---------------------------------------------------------------------------
 \begin{table*}[t]
@@ -57,12 +57,12 @@
 & Guarded reuse
 & 86.00 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 59.48 {\scriptsize\textcolor{green!50!black}{(-0.37)}} & 280.58 {\scriptsize\textcolor{red}{(+0.22)}}
 & 51.00 {\scriptsize\textcolor{red}{(-5.00)}} & 163.76 {\scriptsize\textcolor{green!50!black}{(-7.79)}} & 396.62 {\scriptsize\textcolor{green!50!black}{(-0.17)}}
-& 47.00 {\scriptsize\textcolor{green!50!black}{(+5.00)}} & -- & 419.34 {\scriptsize\textcolor{green!50!black}{(-9.01)}} \\
+& 42.00 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 268.93 {\scriptsize\textcolor{green!50!black}{(-20.55)}} & 426.73 {\scriptsize\textcolor{green!50!black}{(-1.62)}} \\
 
 & Temporal fusion
 & 87.00 {\scriptsize\textcolor{green!50!black}{(+1.00)}} & 64.88 {\scriptsize\textcolor{red}{(+5.03)}} & 281.91 {\scriptsize\textcolor{red}{(+1.55)}}
 & 49.00 {\scriptsize\textcolor{red}{(-7.00)}} & 172.91 {\scriptsize\textcolor{red}{(+1.35)}} & 410.34 {\scriptsize\textcolor{red}{(+13.55)}}
-& 44.00 {\scriptsize\textcolor{green!50!black}{(+2.00)}} & -- & 414.93 {\scriptsize\textcolor{green!50!black}{(-13.42)}} \\
+& 45.00 {\scriptsize\textcolor{green!50!black}{(+3.00)}} & 276.74 {\scriptsize\textcolor{green!50!black}{(-12.74)}} & 415.94 {\scriptsize\textcolor{green!50!black}{(-12.41)}} \\
 
 \cmidrule(lr){1-11}
 
@@ -93,12 +93,12 @@
 & Guarded reuse
 & 93.00 {\scriptsize\textcolor{green!50!black}{(+1.00)}} & 64.69 {\scriptsize\textcolor{green!50!black}{(-0.41)}} & 121.34 {\scriptsize\textcolor{green!50!black}{(-1.24)}}
 & 72.00 {\scriptsize\textcolor{red}{(-3.00)}} & 157.86 {\scriptsize\textcolor{green!50!black}{(-18.23)}} & 163.88 {\scriptsize\textcolor{red}{(+6.29)}}
-& 77.00 {\scriptsize\textcolor{red}{(-3.00)}} & -- & 151.78 {\scriptsize\textcolor{red}{(+4.12)}} \\
+& 79.00 {\scriptsize\textcolor{red}{(-1.00)}} & 270.43 {\scriptsize\textcolor{green!50!black}{(-25.25)}} & 148.58 {\scriptsize\textcolor{red}{(+0.92)}} \\
 
 & Temporal fusion
 & 95.00 {\scriptsize\textcolor{green!50!black}{(+3.00)}} & 64.96 {\scriptsize\textcolor{green!50!black}{(-0.14)}} & 122.07 {\scriptsize\textcolor{green!50!black}{(-0.51)}}
 & 77.00 {\scriptsize\textcolor{green!50!black}{(+2.00)}} & 176.23 {\scriptsize\textcolor{red}{(+0.14)}} & 158.66 {\scriptsize\textcolor{red}{(+1.07)}}
-& 77.00 {\scriptsize\textcolor{red}{(-3.00)}} & -- & 150.61 {\scriptsize\textcolor{red}{(+2.95)}} \\
+& 78.00 {\scriptsize\textcolor{red}{(-2.00)}} & 279.27 {\scriptsize\textcolor{green!50!black}{(-16.41)}} & 150.04 {\scriptsize\textcolor{red}{(+2.38)}} \\
 
 \cmidrule(lr){1-11}
 
@@ -129,12 +129,12 @@
 & Guarded reuse
 & 96.00 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 62.68 {\scriptsize\textcolor{red}{(+0.27)}} & 145.82 {\scriptsize\textcolor{green!50!black}{(+0.00)}}
 & 85.00 {\scriptsize\textcolor{red}{(-2.00)}} & 169.28 {\scriptsize\textcolor{green!50!black}{(-4.57)}} & 165.41 {\scriptsize\textcolor{green!50!black}{(-0.48)}}
-& 91.00 {\scriptsize\textcolor{red}{(-3.00)}} & -- & 162.41 {\scriptsize\textcolor{red}{(+0.16)}} \\
+& 90.00 {\scriptsize\textcolor{red}{(-4.00)}} & 272.67 {\scriptsize\textcolor{green!50!black}{(-18.18)}} & 163.60 {\scriptsize\textcolor{red}{(+1.35)}} \\
 
 & Temporal fusion
 & 98.00 {\scriptsize\textcolor{green!50!black}{(+2.00)}} & 61.38 {\scriptsize\textcolor{green!50!black}{(-1.03)}} & 142.56 {\scriptsize\textcolor{green!50!black}{(-3.26)}}
 & 86.00 {\scriptsize\textcolor{red}{(-1.00)}} & 185.64 {\scriptsize\textcolor{red}{(+11.79)}} & 165.91 {\scriptsize\textcolor{red}{(+0.02)}}
-& 90.00 {\scriptsize\textcolor{red}{(-4.00)}} & -- & 162.51 {\scriptsize\textcolor{red}{(+0.26)}} \\
+& 90.00 {\scriptsize\textcolor{red}{(-4.00)}} & 278.99 {\scriptsize\textcolor{green!50!black}{(-11.86)}} & 162.20 {\scriptsize\textcolor{green!50!black}{(-0.05)}} \\
 
 \cmidrule(lr){1-11}
 
@@ -165,12 +165,12 @@
 & Guarded reuse
 & 95.00 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 73.31 {\scriptsize\textcolor{red}{(+1.02)}} & 108.31 {\scriptsize\textcolor{green!50!black}{(+0.00)}}
 & 82.00 {\scriptsize\textcolor{green!50!black}{(+4.00)}} & 177.48 {\scriptsize\textcolor{green!50!black}{(-3.53)}} & 129.59 {\scriptsize\textcolor{green!50!black}{(-4.32)}}
-& 79.00 {\scriptsize\textcolor{green!50!black}{(+3.00)}} & -- & 129.20 {\scriptsize\textcolor{green!50!black}{(-3.72)}} \\
+& 78.00 {\scriptsize\textcolor{green!50!black}{(+2.00)}} & 282.15 {\scriptsize\textcolor{green!50!black}{(-10.13)}} & 130.84 {\scriptsize\textcolor{green!50!black}{(-2.08)}} \\
 
 & Temporal fusion
 & 95.00 {\scriptsize\textcolor{green!50!black}{(+0.00)}} & 72.20 {\scriptsize\textcolor{green!50!black}{(-0.09)}} & 108.31 {\scriptsize\textcolor{green!50!black}{(+0.00)}}
 & 85.00 {\scriptsize\textcolor{green!50!black}{(+7.00)}} & 180.80 {\scriptsize\textcolor{green!50!black}{(-0.22)}} & 125.72 {\scriptsize\textcolor{green!50!black}{(-8.19)}}
-& 82.00 {\scriptsize\textcolor{green!50!black}{(+6.00)}} & -- & 125.71 {\scriptsize\textcolor{green!50!black}{(-7.21)}} \\
+& 82.00 {\scriptsize\textcolor{green!50!black}{(+6.00)}} & 285.17 {\scriptsize\textcolor{green!50!black}{(-7.11)}} & 126.14 {\scriptsize\textcolor{green!50!black}{(-6.78)}} \\
 
 \bottomrule
 \end{tabular}

@@ -2,7 +2,7 @@
 
 Every trick setting is compared with the original policy on the same episodes (same task instances and seeds). `n` is the number of paired episodes, `fail->success` the episodes the trick turned from failure into success, `success->fail` the reverse, `delta` the change in success rate in points, and `p` the exact two-sided McNemar test on the flipped episodes. `table` marks the setting shown in Table I or II (highest success, then fewer average steps). Each table cell is the best of two or three settings, so its p-value is post-selection and should be read as descriptive. Over all 286 settings, about eight would pass p<0.05 by chance at the observed flip counts.
 
-SmolVLA guarded reuse and temporal fusion cells are being rerun on the RTX 5090 and will be updated.
+SmolVLA guarded reuse and temporal fusion, CronusVLA WidowX moderate and aggressive reuse, and UniVLA WidowX task-aware fusion are the 16 September 2026 reruns on the RTX 5090. The SmolVLA reruns use the reconstructed SDPA evaluator, whose per-call time is about 5 percent lower than the original SmolVLA run on the same card, so their latency change against the original row includes that implementation difference.
 
 ## CogACT / WidowX
 
@@ -33,9 +33,9 @@ SmolVLA guarded reuse and temporal fusion cells are being rerun on the RTX 5090 
 | Depth pruning, 1 layer | 200 | 13 | 10 | +1.5 | 0.678 |  |
 | Depth pruning, 2 layers | 200 | 17 | 13 | +2.0 | 0.585 | yes |
 | Depth pruning, 4 layers | 200 | 6 | 17 | -5.5 | 0.035 |  |
-| Guarded reuse, strict | 200 | 9 | 5 | +2.0 | 0.424 | yes |
-| Guarded reuse, moderate | 200 | 15 | 12 | +1.5 | 0.701 |  |
-| Guarded reuse, aggressive | 200 | 12 | 8 | +2.0 | 0.503 |  |
+| Guarded reuse, strict | 200 | 9 | 5 | +2.0 | 0.424 |  |
+| Guarded reuse, moderate | 200 | 10 | 9 | +0.5 | 1.000 |  |
+| Guarded reuse, aggressive | 200 | 11 | 6 | +2.5 | 0.332 | yes |
 | Temporal fusion, motion-entropy | 200 | 9 | 10 | -0.5 | 1.000 | yes |
 | Temporal fusion, task-aware | 200 | 9 | 10 | -0.5 | 1.000 |  |
 | Temporal fusion, conservative-adaptive | 200 | 9 | 10 | -0.5 | 1.000 |  |
@@ -109,7 +109,7 @@ SmolVLA guarded reuse and temporal fusion cells are being rerun on the RTX 5090 
 | Guarded reuse, moderate | 200 | 0 | 0 | +0.0 | 1.000 | yes |
 | Guarded reuse, aggressive | 200 | 0 | 2 | -1.0 | 0.500 |  |
 | Temporal fusion, motion-entropy | 200 | 6 | 17 | -5.5 | 0.035 |  |
-| Temporal fusion, task-aware | 200 | 10 | 21 | -5.5 | 0.071 |  |
+| Temporal fusion, task-aware | 200 | 9 | 17 | -4.0 | 0.169 |  |
 | Temporal fusion, conservative-adaptive | 200 | 0 | 0 | +0.0 | 1.000 | yes |
 
 ## CogACT / Fractal
@@ -214,11 +214,11 @@ SmolVLA guarded reuse and temporal fusion cells are being rerun on the RTX 5090 
 | Depth pruning, 2 layers | 100 | 1 | 40 | -39.0 | <0.001 |  |
 | Depth pruning, 4 layers | 100 | 0 | 42 | -42.0 | <0.001 |  |
 | Guarded reuse, strict | 100 | 13 | 15 | -2.0 | 0.851 |  |
-| Guarded reuse, moderate | 100 | 11 | 16 | -5.0 | 0.442 |  |
-| Guarded reuse, aggressive | 100 | 16 | 11 | +5.0 | 0.442 | yes |
-| Temporal fusion, motion-entropy | 100 | 13 | 11 | +2.0 | 0.839 |  |
-| Temporal fusion, task-aware | 100 | 13 | 14 | -1.0 | 1.000 |  |
-| Temporal fusion, conservative-adaptive | 100 | 14 | 12 | +2.0 | 0.845 | yes |
+| Guarded reuse, moderate | 100 | 13 | 15 | -2.0 | 0.851 |  |
+| Guarded reuse, aggressive | 100 | 13 | 13 | +0.0 | 1.000 | yes |
+| Temporal fusion, motion-entropy | 100 | 12 | 11 | +1.0 | 1.000 |  |
+| Temporal fusion, task-aware | 100 | 11 | 14 | -3.0 | 0.690 |  |
+| Temporal fusion, conservative-adaptive | 100 | 14 | 11 | +3.0 | 0.690 | yes |
 
 ## UniVLA / LIBERO Long
 
@@ -267,12 +267,12 @@ SmolVLA guarded reuse and temporal fusion cells are being rerun on the RTX 5090 
 | Depth pruning, 1 layer | 100 | 6 | 24 | -18.0 | 0.001 | yes |
 | Depth pruning, 2 layers | 100 | 5 | 32 | -27.0 | <0.001 |  |
 | Depth pruning, 4 layers | 100 | 2 | 54 | -52.0 | <0.001 |  |
-| Guarded reuse, strict | 100 | 12 | 16 | -4.0 | 0.572 |  |
-| Guarded reuse, moderate | 100 | 12 | 17 | -5.0 | 0.458 |  |
-| Guarded reuse, aggressive | 100 | 12 | 15 | -3.0 | 0.701 | yes |
-| Temporal fusion, motion-entropy | 100 | 12 | 15 | -3.0 | 0.701 | yes |
+| Guarded reuse, strict | 100 | 12 | 15 | -3.0 | 0.701 |  |
+| Guarded reuse, moderate | 100 | 11 | 15 | -4.0 | 0.557 |  |
+| Guarded reuse, aggressive | 100 | 12 | 13 | -1.0 | 1.000 | yes |
+| Temporal fusion, motion-entropy | 100 | 12 | 15 | -3.0 | 0.701 |  |
 | Temporal fusion, task-aware | 100 | 11 | 17 | -6.0 | 0.345 |  |
-| Temporal fusion, conservative-adaptive | 100 | 13 | 16 | -3.0 | 0.711 |  |
+| Temporal fusion, conservative-adaptive | 100 | 14 | 16 | -2.0 | 0.856 | yes |
 
 ## UniVLA / LIBERO Goal
 
@@ -321,12 +321,12 @@ SmolVLA guarded reuse and temporal fusion cells are being rerun on the RTX 5090 
 | Depth pruning, 1 layer | 100 | 4 | 25 | -21.0 | <0.001 | yes |
 | Depth pruning, 2 layers | 100 | 2 | 56 | -54.0 | <0.001 |  |
 | Depth pruning, 4 layers | 100 | 0 | 81 | -81.0 | <0.001 |  |
-| Guarded reuse, strict | 100 | 4 | 8 | -4.0 | 0.388 |  |
+| Guarded reuse, strict | 100 | 4 | 9 | -5.0 | 0.267 |  |
 | Guarded reuse, moderate | 100 | 4 | 9 | -5.0 | 0.267 |  |
-| Guarded reuse, aggressive | 100 | 5 | 8 | -3.0 | 0.581 | yes |
+| Guarded reuse, aggressive | 100 | 5 | 9 | -4.0 | 0.424 | yes |
 | Temporal fusion, motion-entropy | 100 | 5 | 9 | -4.0 | 0.424 |  |
 | Temporal fusion, task-aware | 100 | 5 | 9 | -4.0 | 0.424 | yes |
-| Temporal fusion, conservative-adaptive | 100 | 4 | 12 | -8.0 | 0.077 |  |
+| Temporal fusion, conservative-adaptive | 100 | 5 | 13 | -8.0 | 0.096 |  |
 
 ## UniVLA / LIBERO Object
 
@@ -375,12 +375,12 @@ SmolVLA guarded reuse and temporal fusion cells are being rerun on the RTX 5090 
 | Depth pruning, 1 layer | 100 | 12 | 26 | -14.0 | 0.034 | yes |
 | Depth pruning, 2 layers | 100 | 10 | 48 | -38.0 | <0.001 |  |
 | Depth pruning, 4 layers | 100 | 6 | 53 | -47.0 | <0.001 |  |
-| Guarded reuse, strict | 100 | 12 | 9 | +3.0 | 0.664 | yes |
-| Guarded reuse, moderate | 100 | 13 | 10 | +3.0 | 0.678 |  |
-| Guarded reuse, aggressive | 100 | 12 | 10 | +2.0 | 0.832 |  |
-| Temporal fusion, motion-entropy | 100 | 14 | 10 | +4.0 | 0.541 |  |
-| Temporal fusion, task-aware | 100 | 13 | 9 | +4.0 | 0.523 |  |
-| Temporal fusion, conservative-adaptive | 100 | 13 | 7 | +6.0 | 0.263 | yes |
+| Guarded reuse, strict | 100 | 12 | 10 | +2.0 | 0.832 | yes |
+| Guarded reuse, moderate | 100 | 13 | 11 | +2.0 | 0.839 |  |
+| Guarded reuse, aggressive | 100 | 13 | 13 | +0.0 | 1.000 |  |
+| Temporal fusion, motion-entropy | 100 | 12 | 7 | +5.0 | 0.359 |  |
+| Temporal fusion, task-aware | 100 | 14 | 8 | +6.0 | 0.286 | yes |
+| Temporal fusion, conservative-adaptive | 100 | 13 | 11 | +2.0 | 0.839 |  |
 
 ## UniVLA / LIBERO Spatial
 

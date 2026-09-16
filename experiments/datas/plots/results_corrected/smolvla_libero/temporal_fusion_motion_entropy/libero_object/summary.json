@@ -17,17 +17,18 @@
     "libero_object__task_9"
   ],
   "episodes": 100,
+  "expected_episodes": 100,
   "successes": 90,
   "success_rate": 0.9,
   "episode_errors": 0,
   "implementation_versions": [
     "smolvla-reconstructed-sdpa-v1"
   ],
-  "claim_scope": "Reconstructed continuation. Legacy and new implementation/hardware timings are not a matched comparison; no improvement claim.",
-  "average_steps": 163.32,
-  "average_policy_calls": 163.32,
+  "claim_scope": "Fresh rerun of reconstructed SmolVLA SDPA evaluator; no matched baseline or counterfactual action disagreement measured.",
+  "average_steps": 163.51,
+  "average_policy_calls": 163.51,
   "average_reuses": 0.0,
-  "average_episode_ms": 51258.99303625673,
+  "average_episode_ms": 44971.82919896294,
   "per_task": {
     "libero_object__task_0": {
       "episodes": 10,
@@ -69,5 +70,42 @@
       "episodes": 10,
       "successes": 10
     }
-  }
+  },
+  "success_percent": 90.0,
+  "success_rate_wilson_95_ci": [
+    0.8256326956323347,
+    0.9447714583868639
+  ],
+  "timing_ms": {
+    "query": {
+      "mean_ms": 261.6275412584523,
+      "median_ms": 261.36493287049234,
+      "p95_ms": 265.999629496946
+    },
+    "inference_cycle": {
+      "mean_ms": 275.03948944422285,
+      "median_ms": 274.68447806313634,
+      "p95_ms": 280.35185549379094
+    },
+    "policy_decision": {
+      "mean_ms": 262.4723828740638,
+      "median_ms": 262.2247050021542,
+      "p95_ms": 266.8411139966338
+    },
+    "environment_step": {
+      "mean_ms": 12.565796712097804,
+      "median_ms": 12.269163969904184,
+      "p95_ms": 15.161971561610699
+    }
+  },
+  "episode_timing_ms": {
+    "mean_ms": 44971.82919896294,
+    "median_ms": 39705.50743047352,
+    "p95_ms": 76897.16444416481
+  },
+  "total_policy_calls": 16351,
+  "total_reuses": 0,
+  "gpus": [
+    "NVIDIA GeForce RTX 5090"
+  ]
 }

@@ -17,17 +17,18 @@
     "libero_10__task_9"
   ],
   "episodes": 100,
-  "successes": 44,
-  "success_rate": 0.44,
+  "expected_episodes": 100,
+  "successes": 43,
+  "success_rate": 0.43,
   "episode_errors": 0,
   "implementation_versions": [
     "smolvla-reconstructed-sdpa-v1"
   ],
-  "claim_scope": "Reconstructed continuation. Legacy and new implementation/hardware timings are not a matched comparison; no improvement claim.",
-  "average_steps": 415.45,
-  "average_policy_calls": 415.45,
+  "claim_scope": "Fresh rerun of reconstructed SmolVLA SDPA evaluator; no matched baseline or counterfactual action disagreement measured.",
+  "average_steps": 418.42,
+  "average_policy_calls": 418.42,
   "average_reuses": 0.0,
-  "average_episode_ms": 115645.16962371659,
+  "average_episode_ms": 115468.92644030595,
   "per_task": {
     "libero_10__task_0": {
       "episodes": 10,
@@ -39,7 +40,7 @@
     },
     "libero_10__task_2": {
       "episodes": 10,
-      "successes": 4
+      "successes": 3
     },
     "libero_10__task_3": {
       "episodes": 10,
@@ -69,5 +70,42 @@
       "episodes": 10,
       "successes": 4
     }
-  }
+  },
+  "success_percent": 43.0,
+  "success_rate_wilson_95_ci": [
+    0.3373313900052838,
+    0.5278478830413564
+  ],
+  "timing_ms": {
+    "query": {
+      "mean_ms": 262.81700333857435,
+      "median_ms": 262.7661344522494,
+      "p95_ms": 266.70658485018066
+    },
+    "inference_cycle": {
+      "mean_ms": 275.9635915750222,
+      "median_ms": 275.64642787911,
+      "p95_ms": 281.03997193975374
+    },
+    "policy_decision": {
+      "mean_ms": 263.6497593148256,
+      "median_ms": 263.58958296623314,
+      "p95_ms": 267.53314925081213
+    },
+    "environment_step": {
+      "mean_ms": 12.312500364953317,
+      "median_ms": 12.136259509134106,
+      "p95_ms": 15.368646837305276
+    }
+  },
+  "episode_timing_ms": {
+    "mean_ms": 115468.92644030595,
+    "median_ms": 142630.91531346436,
+    "p95_ms": 145359.51015455648
+  },
+  "total_policy_calls": 41842,
+  "total_reuses": 0,
+  "gpus": [
+    "NVIDIA GeForce RTX 5090"
+  ]
 }

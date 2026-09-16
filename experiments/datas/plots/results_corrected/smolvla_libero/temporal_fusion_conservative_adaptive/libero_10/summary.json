@@ -17,17 +17,18 @@
     "libero_10__task_9"
   ],
   "episodes": 100,
-  "successes": 44,
-  "success_rate": 0.44,
+  "expected_episodes": 100,
+  "successes": 45,
+  "success_rate": 0.45,
   "episode_errors": 0,
   "implementation_versions": [
     "smolvla-reconstructed-sdpa-v1"
   ],
-  "claim_scope": "Reconstructed continuation. Legacy and new implementation/hardware timings are not a matched comparison; no improvement claim.",
-  "average_steps": 414.93,
-  "average_policy_calls": 414.93,
+  "claim_scope": "Fresh rerun of reconstructed SmolVLA SDPA evaluator; no matched baseline or counterfactual action disagreement measured.",
+  "average_steps": 415.94,
+  "average_policy_calls": 415.94,
   "average_reuses": 0.0,
-  "average_episode_ms": 113089.90458517954,
+  "average_episode_ms": 115108.60868736901,
   "per_task": {
     "libero_10__task_0": {
       "episodes": 10,
@@ -39,7 +40,7 @@
     },
     "libero_10__task_2": {
       "episodes": 10,
-      "successes": 3
+      "successes": 4
     },
     "libero_10__task_3": {
       "episodes": 10,
@@ -69,5 +70,42 @@
       "episodes": 10,
       "successes": 3
     }
-  }
+  },
+  "success_percent": 45.0,
+  "success_rate_wilson_95_ci": [
+    0.3561437510640346,
+    0.5475557296835656
+  ],
+  "timing_ms": {
+    "query": {
+      "mean_ms": 263.5583760699737,
+      "median_ms": 263.59356999455485,
+      "p95_ms": 267.58640704574645
+    },
+    "inference_cycle": {
+      "mean_ms": 276.7427221498578,
+      "median_ms": 276.47379310656106,
+      "p95_ms": 282.79681414715014
+    },
+    "policy_decision": {
+      "mean_ms": 264.38440036933366,
+      "median_ms": 264.41487549163867,
+      "p95_ms": 268.4026000184531
+    },
+    "environment_step": {
+      "mean_ms": 12.356966723234596,
+      "median_ms": 12.156709446571767,
+      "p95_ms": 15.47299279773142
+    }
+  },
+  "episode_timing_ms": {
+    "mean_ms": 115108.60868736901,
+    "median_ms": 141754.69052407425,
+    "p95_ms": 145563.14588835667
+  },
+  "total_policy_calls": 41594,
+  "total_reuses": 0,
+  "gpus": [
+    "NVIDIA GeForce RTX 5090"
+  ]
 }
