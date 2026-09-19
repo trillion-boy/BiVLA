@@ -40,19 +40,19 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   const s = S(15);
   caption(s, 'Bag of Tricks for Training-Free Vision-Language-Action Models  ·  anonymous submission', 0.5, 0.12, 7.8, { size: 10 });
   s.addText([{ text: 'Motivation', options: { bold: true } }, { text: '  Efficient VLA inference without retraining', options: { bold: false } }], { x: 0.5, y: 0.32, w: 9.0, h: 0.7, fontFace: HFONT, fontSize: 26, color: C.ink, margin: 0, isTextBox: true, valign: 'middle' });
-  s.addImage({ path: A('ov_loop.png'), x: 0.5, y: 1.02, w: 9.0, h: 1.3 });
-  caption(s, 'One control step of a frozen VLA policy: the vision encoder and the language backbone run at every step.', 0.5, 2.38, 9.0, { size: 11 });
+  s.addImage({ path: A('m_pipeline.png'), x: 0.5, y: 1.15, w: 9.0, h: 0.44 });
+  caption(s, 'The control loop of a frozen VLA policy (Fig. 2 of the paper). Coloured boxes are where the five tricks enter; the visual encoder and the action decoder run at every step.', 0.5, 1.7, 9.0, { size: 11, h: 0.4 });
   const red = 'C00000';
   s.addText([{ text: '[1] ', options: { bold: true, color: red } }, { text: 'VLA inference is slow. ', options: { bold: true, color: red } }, { text: 'Hundreds of milliseconds per step, which limits how often the policy can observe, decide, and correct.', options: { color: C.ink } }],
-    { x: 0.5, y: 2.78, w: 9.0, h: 0.5, fontFace: FONT, fontSize: 14, margin: 0, isTextBox: true, valign: 'middle' });
+    { x: 0.5, y: 2.45, w: 9.0, h: 0.5, fontFace: FONT, fontSize: 14, margin: 0, isTextBox: true, valign: 'middle' });
   s.addText([{ text: '[2] ', options: { bold: true, color: red } }, { text: 'Training-free tricks are reported one at a time. ', options: { bold: true, color: red } }, { text: 'Foveation, action repeat, depth pruning, guarded reuse, temporal fusion: each on one backbone, one benchmark, one implementation.', options: { color: C.ink } }],
-    { x: 0.5, y: 3.33, w: 9.0, h: 0.6, fontFace: FONT, fontSize: 14, margin: 0, isTextBox: true, valign: 'middle' });
+    { x: 0.5, y: 3.1, w: 9.0, h: 0.6, fontFace: FONT, fontSize: 14, margin: 0, isTextBox: true, valign: 'middle' });
   s.addShape('roundRect', { x: 0.5, y: 4.15, w: 9.0, h: 0.95, fill: { color: 'FFF0F7' }, line: { color: 'E0369A', width: 1.5 }, rectRadius: 0.1 });
   s.addText([{ text: 'Do the gains transfer across VLA models and environments, ', options: { color: C.ink } }, { text: 'or are they configuration-dependent?', options: { bold: true, color: 'E0369A' } }],
     { x: 0.7, y: 4.15, w: 8.6, h: 0.95, fontFace: FONT, fontSize: 16, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
   notes(s, N, 15,
     'Vision-language-action models are capable but slow. Every control step runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but each is reported on one model and one benchmark. Do the gains transfer?',
-    'Static. Optional: play a short original-policy rollout behind the loop diagram. The three coloured markers on the loop show where foveation (orange diamond), temporal fusion (green dot) and depth pruning (purple dot) enter; they are explained on the trick slides.');
+    'Static. Optional: play a short original-policy rollout behind the loop diagram. Pipeline row cropped from Fig. 2(a).');
 }
 
 // ═════════════════════════ 2. FOVEATION (11 s)
@@ -60,14 +60,12 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   const s = S(11);
   title(s, 'Trick 1  Visual foveation');
   axisTag(s, 'What to see', 'blue');
-  s.addImage({ path: A('ov_fov.png'), x: 0.5, y: 1.05, w: 4.3, h: 1.42 });
-  const fx = [0.5, 1.98, 3.46]; const fl = ['original', 'keep 20%', 'keep 50%']; const fi = ['frame_raw.png', 'frame_fov20.png', 'frame_fov50.png'];
-  fi.forEach((f, i) => { s.addImage({ path: A(f), x: fx[i], y: 2.7, w: 1.34, h: 0.95 }); caption(s, fl[i], fx[i], 3.68, 1.34, { align: 'center', size: 10.5 }); });
-  body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 4.05, 4.4, 1.2, { size: 11.5, gap: 3 });
+  s.addImage({ path: A('m_fov.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.7 });
+  body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 3.95, 4.4, 1.3, { size: 11.5, gap: 3 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs foveation', 'same episode, same initial state');
   caption(s, 'Rollout: original (left) and foveated observation (right), success or failure badge at the end.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 11, 'Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.',
-    'Left: Fig. 2 crop and example frames at keep 20% and 50%. Right: side-by-side rollout clip.');
+    'Left: Fig. 2(a) foveation panel. Right: side-by-side rollout clip.');
 }
 
 // ═════════════════════════ 3. ACTION REPEAT (11 s)
@@ -75,18 +73,12 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   const s = S(11);
   title(s, 'Trick 2  Action repeat');
   axisTag(s, 'When to act', 'warn');
-  s.addImage({ path: A('ov_repeat.png'), x: 0.5, y: 1.05, w: 4.3, h: 1.42 });
-  s.addText('Policy calls over 12 control steps', { x: 0.5, y: 2.65, w: 4.3, h: 0.3, fontFace: FONT, fontSize: 11.5, bold: true, color: C.ink, margin: 0, isTextBox: true });
-  s.addText('original', { x: 0.5, y: 3.0, w: 1.0, h: 0.24, fontFace: FONT, fontSize: 10.5, color: C.muted, margin: 0, isTextBox: true, valign: 'middle' });
-  timeline(s, Array(12).fill(1), 1.5, 3.0, C.ink);
-  s.addText('k = 4', { x: 0.5, y: 3.4, w: 1.0, h: 0.24, fontFace: FONT, fontSize: 10.5, color: C.muted, margin: 0, isTextBox: true, valign: 'middle' });
-  timeline(s, [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], 1.5, 3.4, C.orange);
-  caption(s, 'filled = policy call, hollow = previous action held', 1.5, 3.7, 3.5, { size: 10 });
-  body(s, ['Hold each predicted action for k = 2 or 4 steps, one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, 4.05, 4.4, 1.2, { size: 11.5, gap: 3 });
+  s.addImage({ path: A('m_repeat.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.93 });
+  body(s, ['Hold each predicted action for k = 2 or 4 steps, one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, 4.15, 4.4, 1.1, { size: 11.5, gap: 3 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs action repeat k = 4', 'same episode, same initial state');
   caption(s, 'Rollout: watch contact and placement, where a held action can miss a needed correction.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 11, 'Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.',
-    'Timeline of policy calls (optional animation). Right: side-by-side rollout clip.');
+    'Left: Fig. 2(a) action repeat panel. Right: side-by-side rollout clip.');
 }
 
 // ═════════════════════════ 4. DEPTH PRUNING (11 s)
@@ -94,12 +86,12 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   const s = S(11);
   title(s, 'Trick 3  Depth pruning');
   axisTag(s, 'How much to compute', 'teal');
-  s.addImage({ path: A('ov_prune.png'), x: 0.5, y: 1.05, w: 4.3, h: 1.77 });
-  body(s, ['Block Influence: how little a decoder block changes its hidden states on calibration data', 'Remove the 1, 2, or 4 lowest-influence blocks; none adjacent, first and last kept', 'Selected once, fixed before evaluation; reduces prefill and decoding compute'], 0.5, 3.05, 4.4, 2.1, { size: 11.5, gap: 4 });
+  s.addImage({ path: A('m_prune.png'), x: 0.5, y: 1.05, w: 2.75, h: 2.78 });
+  body(s, ['Block Influence: how little a decoder block changes its hidden states on calibration data', 'Remove the 1, 2, or 4 lowest-influence blocks; none adjacent, first and last kept', 'Selected once from calibration data, fixed before evaluation', 'Acts inside the action decoder, after the visual encoder'], 3.4, 1.1, 1.5, 3.9, { size: 10.5, gap: 5 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs depth pruning', 'same episode, same initial state');
   caption(s, 'Rollout: CogACT on WidowX, where pruning removes decoder layers without breaking the closed loop.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 11, 'Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them. The selection is fixed before evaluation.',
-    'Left: Fig. 2 crop. Right: side-by-side rollout clip.');
+    'Left: Fig. 2(a) panel. Right: side-by-side rollout clip.');
 }
 
 // ═════════════════════════ 5. GUARDED REUSE (11 s)
@@ -107,15 +99,12 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   const s = S(11);
   title(s, 'Trick 4  Guarded action reuse');
   axisTag(s, 'When to act', 'warn');
-  s.addImage({ path: A('ov_guarded.png'), x: 0.5, y: 1.05, w: 4.3, h: 1.77 });
-  s.addText('guarded', { x: 0.5, y: 3.05, w: 1.0, h: 0.24, fontFace: FONT, fontSize: 10.5, color: C.muted, margin: 0, isTextBox: true, valign: 'middle' });
-  timeline(s, [1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1], 1.5, 3.05, C.orange, true);
-  caption(s, 'hollow = call skipped, green = every gate passed', 1.5, 3.5, 3.5, { size: 10 });
-  body(s, ['Reuse the previous action only when all gates pass: small global and local image change, recent actions agree, translation not near zero, gripper unchanged, reuse count below a cap', 'Presets: strict, moderate, aggressive'], 0.5, 3.85, 4.4, 1.4, { size: 11.5, gap: 4 });
+  s.addImage({ path: A('m_guarded.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.77 });
+  body(s, ['Reuse the previous action only when all gates pass: small global and local image change, recent actions agree, translation not near zero, gripper unchanged, reuse count below a cap', 'Presets: strict, moderate, aggressive'], 0.5, 3.95, 4.4, 1.3, { size: 11, gap: 3 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs guarded reuse', 'same episode, same initial state');
   caption(s, 'Rollout: overlay the gate indicators and a "calls skipped" counter on the right pane.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 11, 'Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call.',
-    'Left: Fig. 2 crop and gated timeline. Right: side-by-side rollout clip with gate overlay.');
+    'Left: Fig. 2(a) guarded reuse panel. Right: side-by-side rollout clip with gate overlay.');
 }
 
 // ═════════════════════════ 6. TEMPORAL FUSION (12 s)
@@ -123,12 +112,14 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   const s = S(12);
   title(s, 'Trick 5  Temporal fusion');
   axisTag(s, 'How much to compute', 'teal');
-  s.addImage({ path: A('ov_fusion.png'), x: 0.5, y: 1.05, w: 4.3, h: 1.77 });
-  body(s, ['Reuse projected visual tokens of temporally stable patches from the previous call', 'Protect patches with motion, high entropy, high language attention, or interaction regions; recompute those', 'The same reuse mask is shared with the generation cache', 'Presets: motion-entropy, task-aware, conservative-adaptive'], 0.5, 3.05, 4.4, 2.1, { size: 11.5, gap: 3 });
+  s.addImage({ path: A('m_fusion.png'), x: 0.5, y: 1.05, w: 2.55, h: 2.09 });
+  body(s, ['Reuse projected visual tokens of temporally stable patches from the previous call', 'Protect patches with motion, high entropy, high language attention, or interaction regions; recompute those', 'The same reuse mask is shared with the generation cache', 'Presets: motion-entropy, task-aware, conservative-adaptive'], 3.2, 1.05, 1.7, 3.6, { size: 10.5, gap: 3 });
+  s.addImage({ path: A('m_cache.png'), x: 0.5, y: 3.3, w: 2.55, h: 1.55 });
+  caption(s, 'Top: fusion mask. Bottom: VLA-Cache criterion (stable, task-irrelevant patches reused).', 0.5, 4.9, 2.6, { size: 9.5, h: 0.4 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs temporal fusion', 'same episode, same initial state');
   caption(s, 'Rollout: optionally tint reused patches on the right pane to show what is carried over between frames.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 12, 'Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step.',
-    'Left: Fig. 2 crop. Right: side-by-side rollout clip.');
+    'Left: Fig. 2(a) panel. Right: side-by-side rollout clip.');
 }
 
 // ═════════════════════════ 7. PROTOCOL (12 s)
