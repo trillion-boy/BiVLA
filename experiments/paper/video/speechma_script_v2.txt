@@ -1,0 +1,43 @@
+SPEECHMA PASTE FILE. One block per slide, block number = slide number. Paste each block into https://speechma.com/english, keep the same English voice and default speed for every block, download the MP3, insert it on the matching slide.
+
+===== Slide 1 of 14: MOTIVATION (target 15 s) =====
+Vision-language-action models are capable but slow. Every control step runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but each is reported on one model and one benchmark. Do the gains transfer?
+
+===== Slide 2 of 14: FOVEATION (target 11 s) =====
+Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.
+
+===== Slide 3 of 14: ACTION REPEAT (target 11 s) =====
+Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.
+
+===== Slide 4 of 14: DEPTH PRUNING (target 11 s) =====
+Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them. The selection is fixed before evaluation.
+
+===== Slide 5 of 14: GUARDED REUSE (target 11 s) =====
+Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call.
+
+===== Slide 6 of 14: TEMPORAL FUSION (target 12 s) =====
+Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step.
+
+===== Slide 7 of 14: PROTOCOL (target 12 s) =====
+Seven backbones, official checkpoints, on WidowX, Fractal, and LIBERO. Thirteen trick settings per pair plus the original, 286 trick settings, each compared with the original on the same episodes.
+
+===== Slide 8 of 14: Q1 SUCCESS (target 12 s) =====
+First, success. Guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.
+
+===== Slide 9 of 14: QUALITATIVE (target 12 s) =====
+CogACT on WidowX. In these paired episodes the original fails and depth pruning succeeds. Overall success rises from 50.0 to 59.5, and latency drops slightly.
+
+===== Slide 10 of 14: SAME TRICK, DIFFERENT BACKBONE (target 10 s) =====
+Same trick, same benchmark, different backbone. On MiniVLA, depth pruning drops success by 17.5 points, on SpatialVLA by 6.5. Here the pruned policy fails.
+
+===== Slide 11 of 14: Q2 SPEED (target 13 s) =====
+Second, speed. Action repeat gives the largest speedup. SpatialVLA on WidowX drops from about 424 to 235 milliseconds per step. Depth pruning gives smaller decoder-level savings, and guarded reuse the safest trade-off.
+
+===== Slide 12 of 14: OPEN LOOP VS GATING (target 13 s) =====
+Action repeat runs open loop: on WidowX, CogACT loses 38 points and UniVLA 75. Guarded reuse skips calls only when the gates agree. On SmolVLA in LIBERO Long, success stays at 42.0 with lower latency.
+
+===== Slide 13 of 14: Q3 TRANSFER (target 12 s) =====
+Third, consistency. Across backbone and environment pairs the same trick improves one model, leaves another unchanged, and hurts a third. No trick is plug-and-play.
+
+===== Slide 14 of 14: TAKEAWAYS (target 12 s) =====
+Guarded reuse is most reliable. Action repeat is fastest but risky. Depth pruning is backbone-dependent. Evaluate every trick under the target backbone and environment before applying it. Thank you.
