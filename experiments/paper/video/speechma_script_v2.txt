@@ -1,7 +1,7 @@
 SPEECHMA PASTE FILE. One block per slide, block number = slide number. Paste each block into https://speechma.com/english, keep the same English voice and default speed for every block, download the MP3, insert it on the matching slide.
 
 ===== Slide 1 of 14: MOTIVATION (target 15 s) =====
-Vision-language-action models are capable but slow. Every control step runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but each is reported on one model and one benchmark. Do the gains transfer?
+Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?
 
 ===== Slide 2 of 14: FOVEATION (target 11 s) =====
 Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.
@@ -9,8 +9,8 @@ Trick one, visual foveation. The observation keeps a sharp central disc and blur
 ===== Slide 3 of 14: ACTION REPEAT (target 11 s) =====
 Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.
 
-===== Slide 4 of 14: DEPTH PRUNING (target 11 s) =====
-Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them. The selection is fixed before evaluation.
+===== Slide 4 of 14: DEPTH PRUNING (target 12 s) =====
+Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them, keeping the early and final blocks. The selection is fixed before evaluation.
 
 ===== Slide 5 of 14: GUARDED REUSE (target 11 s) =====
 Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call.

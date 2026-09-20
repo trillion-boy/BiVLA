@@ -41,17 +41,17 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   caption(s, 'Bag of Tricks for Training-Free Vision-Language-Action Models', 0.5, 0.12, 7.8, { size: 10 });
   s.addText([{ text: 'Motivation', options: { bold: true } }, { text: '  Efficient VLA inference without retraining', options: { bold: false } }], { x: 0.5, y: 0.32, w: 9.0, h: 0.7, fontFace: HFONT, fontSize: 26, color: C.ink, margin: 0, isTextBox: true, valign: 'middle' });
   s.addImage({ path: A('m_pipeline.png'), x: 0.5, y: 1.1, w: 9.0, h: 0.47 });
-  caption(s, 'The control loop of a frozen VLA policy (Fig. 2 of the paper). Coloured boxes are where the five tricks enter; the visual encoder and the action decoder run at every step.', 0.5, 1.7, 9.0, { size: 11, h: 0.4 });
+  caption(s, 'The control loop of a frozen VLA policy (Fig. 2 of the paper). Green, orange, purple, and blue boxes mark where the five tricks enter; Redundancy Control is action repeat.', 0.5, 1.7, 9.0, { size: 11, h: 0.4 });
   const red = 'C00000';
-  s.addText([{ text: '[1] ', options: { bold: true, color: red } }, { text: 'VLA inference is slow. ', options: { bold: true, color: red } }, { text: 'Hundreds of milliseconds per step, which limits how often the policy can observe, decide, and correct.', options: { color: C.ink } }],
+  s.addText([{ text: '[1] ', options: { bold: true, color: red } }, { text: 'VLA inference is slow. ', options: { bold: true, color: red } }, { text: 'Tens to hundreds of milliseconds per step (60 to 450 ms in our runs), which limits how often the policy can observe, decide, and correct.', options: { color: C.ink } }],
     { x: 0.5, y: 2.45, w: 9.0, h: 0.5, fontFace: FONT, fontSize: 14, margin: 0, isTextBox: true, valign: 'middle' });
-  s.addText([{ text: '[2] ', options: { bold: true, color: red } }, { text: 'Training-free tricks are reported one at a time. ', options: { bold: true, color: red } }, { text: 'Foveation, action repeat, depth pruning, guarded reuse, temporal fusion: each on one backbone, one benchmark, one implementation.', options: { color: C.ink } }],
+  s.addText([{ text: '[2] ', options: { bold: true, color: red } }, { text: 'Gains are reported in isolation. ', options: { bold: true, color: red } }, { text: 'Training-free tricks are typically evaluated for a specific trick, backbone, benchmark, and implementation, so transfer across models is unknown.', options: { color: C.ink } }],
     { x: 0.5, y: 3.1, w: 9.0, h: 0.6, fontFace: FONT, fontSize: 14, margin: 0, isTextBox: true, valign: 'middle' });
   s.addShape('roundRect', { x: 0.5, y: 4.15, w: 9.0, h: 0.95, fill: { color: 'FFF0F7' }, line: { color: 'E0369A', width: 1.5 }, rectRadius: 0.1 });
   s.addText([{ text: 'Do the gains transfer across VLA models and environments, ', options: { color: C.ink } }, { text: 'or are they configuration-dependent?', options: { bold: true, color: 'E0369A' } }],
     { x: 0.7, y: 4.15, w: 8.6, h: 0.95, fontFace: FONT, fontSize: 16, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
   notes(s, N, 15,
-    'Vision-language-action models are capable but slow. Every control step runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but each is reported on one model and one benchmark. Do the gains transfer?',
+    'Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?',
     'Static. Optional: play a short original-policy rollout behind the loop diagram. Pipeline row cropped from Fig. 2(a).');
 }
 
@@ -74,8 +74,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   title(s, 'Trick 2  Action repeat');
   axisTag(s, 'When to act', 'warn');
   s.addImage({ path: A('m_repeat.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.98 });
-  body(s, ['Hold each predicted action for k = 2 or 4 steps, one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, 4.15, 4.4, 1.1, { size: 11.5, gap: 3 });
-  clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs action repeat k = 4', 'same episode, same initial state');
+  body(s, ['Hold each predicted action for k = 2 or 4 steps, about one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, 4.15, 4.4, 1.1, { size: 11.5, gap: 3 });
+  clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs action repeat', 'same episode, same initial state');
   caption(s, 'Rollout: watch contact and placement, where a held action can miss a needed correction.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 11, 'Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.',
     'Left: Fig. 2(a) action repeat panel. Right: side-by-side rollout clip.');
@@ -83,14 +83,14 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
 
 // ═════════════════════════ 4. DEPTH PRUNING (11 s)
 {
-  const s = S(11);
+  const s = S(12);
   title(s, 'Trick 3  Depth pruning');
   axisTag(s, 'How much to compute', 'teal');
   s.addImage({ path: A('m_prune.png'), x: 0.5, y: 1.05, w: 2.75, h: 2.83 });
-  body(s, ['Score each decoder block by Block Influence', 'Remove the 1, 2, or 4 lowest; none adjacent, first and last kept', 'Fixed once from calibration data, not adapted at test time'], 3.4, 1.1, 1.5, 3.9, { size: 11, gap: 6 });
+  body(s, ['Score each decoder block by Block Influence', 'Remove 1, 2, or 4 low-influence blocks; none adjacent, early blocks and the final block kept', 'Fixed once from calibration data, not adapted at test time'], 3.4, 1.1, 1.5, 3.9, { size: 11, gap: 6 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs depth pruning', 'same episode, same initial state');
   caption(s, 'Rollout: CogACT on WidowX, where pruning removes decoder layers without breaking the closed loop.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
-  notes(s, N, 11, 'Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them. The selection is fixed before evaluation.',
+  notes(s, N, 12, 'Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them, keeping the early and final blocks. The selection is fixed before evaluation.',
     'Left: Fig. 2(a) panel. Right: side-by-side rollout clip.');
 }
 
@@ -113,7 +113,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   title(s, 'Trick 5  Temporal fusion');
   axisTag(s, 'How much to compute', 'teal');
   s.addImage({ path: A('m_fusion.png'), x: 0.5, y: 1.05, w: 2.55, h: 2.08 });
-  body(s, ['Reuse visual tokens of stable patches from the previous call', 'Recompute patches with motion, entropy, or language attention', 'Presets: motion-entropy, task-aware, conservative-adaptive'], 3.2, 1.05, 1.7, 3.6, { size: 11, gap: 6 });
+  body(s, ['Reuse visual tokens of stable patches from the previous call', 'Recompute patches with motion, local structure, language attention, or in the interaction region', 'Presets: motion-entropy, task-aware, conservative-adaptive'], 3.2, 1.05, 1.7, 3.6, { size: 11, gap: 6 });
   s.addImage({ path: A('m_cache.png'), x: 0.5, y: 3.25, w: 2.55, h: 1.56 });
   caption(s, 'Top: fusion mask. Bottom: VLA-Cache criterion.', 0.5, 4.9, 2.6, { size: 9.5, h: 0.3 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs temporal fusion', 'same episode, same initial state');
@@ -133,7 +133,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   bb.forEach((b, i) => rows.push([{ text: b, options: { fontSize: 12, color: C.ink, bold: true } }, ...env[i].map(v => ({ text: v ? '●' : '', options: { align: 'center', color: C.teal, fontSize: 13 } }))]));
   s.addTable(rows, { x: 0.5, y: 1.1, w: 5.0, colW: [2.0, 1.0, 1.0, 1.0], rowH: 0.36, fontFace: FONT, border: { type: 'solid', color: C.line, pt: 0.5 }, fill: { color: C.white }, valign: 'middle' });
   caption(s, 'SimplerEnv WidowX: 4 tasks × 50 episodes.  Google Robot/Fractal: 5 tasks × 50.  LIBERO: Long, Goal, Object, Spatial, each suite a separate pair (3 × 4 = 12), giving 22 pairs in total.', 0.5, 4.15, 5.0, { size: 10.5, h: 0.65 });
-  const facts = [['22', 'backbone × environment pairs'], ['13 + 1', 'trick settings + original, per pair'], ['286', 'trick settings, all paired with the original']];
+  const facts = [['22', 'backbone × environment pairs'], ['13 + 1', 'trick settings + original, per pair'], ['286', 'trick settings (13 × 22), all paired with the original']];
   facts.forEach(([v, l], i) => { stat(s, v, l, 5.7 + i * 1.3, 1.1, 1.25, { size: 30, lsize: 10.5 }); });
   body(s, ['Official checkpoints, no retraining', 'Same task instances and initial states as the original', 'Latency = wall-clock per environment step', 'Exact two-sided McNemar test on paired episodes', '4 × RTX 5090; tables report the best setting per trick'], 5.7, 2.9, 3.8, 2.2, { size: 12, gap: 4 });
   notes(s, N, 12, 'Seven backbones, official checkpoints, on WidowX, Fractal, and LIBERO. Thirteen trick settings per pair plus the original, 286 trick settings, each compared with the original on the same episodes.',
@@ -155,7 +155,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   caption(s, 'Backbone-dependent:', 4.9, 3.2, 4.6, { size: 11.5, color: C.ink });
   chip(s, 'Foveation, LIBERO Goal: UniVLA +7.0  vs  SmolVLA −13.0', 4.9, 3.5, 4.6, 'warn', 0.42, 11);
   chip(s, 'Action repeat: mainly a speed baseline', 4.9, 4.0, 4.6, 'neutral', 0.42, 11);
-  caption(s, 'Fig. 1: success per configuration, six WidowX backbones (14 bars each, darker to lighter within a trick). Dotted line = original policy. Deltas from Tables I and II, best setting per trick.', 4.9, 4.55, 4.6, { size: 9.5, h: 0.7 });
+  caption(s, 'Fig. 1: success per configuration, six WidowX backbones (14 bars each, darker to lighter within a trick). Dotted line = original policy, 0 = no successful episodes. Deltas from Tables I and II, best setting per trick.', 4.9, 4.55, 4.6, { size: 9.5, h: 0.7 });
   notes(s, N, 12, 'First, success. Guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.',
     'Fig. 1 with a native legend. Optionally enlarge one row of panels at a time.');
 }
@@ -195,10 +195,12 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
 {
   const s = S(13);
   title(s, 'Which tricks are actually faster?');
-  s.addImage({ path: A('fig4_tradeoff_row.png'), x: 0.9, y: 0.95, w: 8.2, h: 2.79 });
-  caption(s, 'Six WidowX backbones, left to right: CogACT, CronusVLA, MiniVLA, OpenVLA, SpatialVLA, UniVLA.  Star = original, shaded = faster and no worse, colour = trick, symbol = setting.', 0.5, 3.78, 9.0, { size: 10, h: 0.35 });
-  qTag(s, 'Q2  Speed', 0.5, 4.2);
-  s.addText('Action repeat gives the largest speedup, depth pruning gives decoder-level savings, guarded reuse gives the safest trade-off.', { x: 1.95, y: 4.15, w: 3.4, h: 1.05, fontFace: FONT, fontSize: 11.5, bold: true, color: C.ink, valign: 'middle', margin: 0, isTextBox: true });
+  s.addImage({ path: A('fig4_paper_nolegend.png'), x: 0.4, y: 0.95, w: 4.7, h: 3.85 });
+  legend(s, TRICK_COLORS.slice(0, 3), 0.5, 4.85, 1.55, 9.5);
+  legend(s, TRICK_COLORS.slice(3), 0.5, 5.1, 1.55, 9.5);
+  caption(s, 'Fig. 4, SimplerEnv WidowX. Star = original, shaded = faster and no worse. Colour = trick; circle, square, triangle = first, second, third setting of that trick.', 5.4, 0.95, 4.1, { size: 10, h: 0.7 });
+  qTag(s, 'Q2  Speed', 5.4, 1.75);
+  s.addText('Action repeat gives the largest speedup, depth pruning gives decoder-level savings, guarded reuse gives the safest trade-off.', { x: 5.4, y: 2.25, w: 4.1, h: 0.9, fontFace: FONT, fontSize: 12, bold: true, color: C.ink, valign: 'top', margin: 0, isTextBox: true });
   const rows = [
     [{ text: 'Latency, ms per step', options: { bold: true, color: C.white, fill: { color: C.dark } } }, { text: 'Original → trick', options: { bold: true, color: C.white, fill: { color: C.dark }, align: 'center' } }],
     ['Repeat · SpatialVLA WidowX', { text: '423.5 → 235.1', options: { align: 'center', bold: true, color: C.orange } }],
@@ -206,25 +208,25 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
     ['Pruning · OpenVLA WidowX', { text: '210.2 → 199.4', options: { align: 'center', bold: true, color: C.teal } }],
     ['Reuse · SmolVLA LIBERO Long', { text: '289.5 → 268.9', options: { align: 'center', bold: true, color: C.teal } }],
   ];
-  s.addTable(rows, { x: 5.5, y: 4.15, w: 4.0, colW: [2.5, 1.5], rowH: 0.24, fontFace: FONT, fontSize: 9.5, color: C.ink, border: { type: 'solid', color: C.line, pt: 0.5 }, valign: 'middle', margin: 0.03 });
+  s.addTable(rows, { x: 5.4, y: 3.35, w: 4.1, colW: [2.55, 1.55], rowH: 0.3, fontFace: FONT, fontSize: 10, color: C.ink, border: { type: 'solid', color: C.line, pt: 0.5 }, valign: 'middle', margin: 0.03 });
   notes(s, N, 13, 'Second, speed. Action repeat gives the largest speedup. SpatialVLA on WidowX drops from about 424 to 235 milliseconds per step. Depth pruning gives smaller decoder-level savings, and guarded reuse the safest trade-off.',
-    'Fig. 4. If the Speechma clip runs longer than 13 s, extend the slide rather than speeding the voice.');
+    'Paper Fig. 4 with a native colour legend. If the Speechma clip runs longer than 13 s, extend the slide rather than speeding the voice.');
 }
 
 // ═════════════════════════ 12. OPEN LOOP VS GATING (13 s)
 {
   const s = S(13);
-  title(s, 'Open loop has a cost, gating keeps it safe');
-  const labels = ['Original', 'Action repeat k = 4', 'Guarded reuse'];
+  title(s, 'Open loop has a cost, gating keeps it safer');
+  const labels = ['Original', 'Action repeat', 'Guarded reuse'];
   const subs = ['policy call every step', 'held actions, episode fails', 'calls skipped only when the gates pass'];
   labels.forEach((l, i) => { clipPlaceholder(s, 0.5 + i * 3.05, 1.05, 2.9, 2.15, 'CLIP: ' + l, subs[i]); caption(s, 'policy calls used: ___', 0.5 + i * 3.05, 3.25, 2.9, { size: 10, align: 'center' }); });
-  chip(s, 'Action repeat, WidowX: CogACT −38.0 · UniVLA −75.0', 0.5, 3.7, 4.4, 'neg', 0.5, 11);
+  chip(s, 'Action repeat (k = 2, best setting), WidowX: CogACT −38.0 · UniVLA −75.0', 0.5, 3.7, 4.4, 'neg', 0.5, 10.5);
   chip(s, 'Fractal (milder): CogACT −1.2 · SpatialVLA 0.0', 0.5, 4.3, 4.4, 'neutral', 0.5, 11);
   chip(s, 'Guarded reuse, SmolVLA LIBERO Long: 289.5 → 268.9 ms', 5.1, 3.7, 4.4, 'teal', 0.5, 11);
   chip(s, 'success unchanged at 42.0 %', 5.1, 4.3, 4.4, 'pos', 0.5, 11);
   caption(s, 'Same CogACT WidowX episode and initial state in all three panels. Deltas from Tables I and II, best setting per trick.', 0.5, 4.85, 9.0, { size: 10 });
   notes(s, N, 13, 'Action repeat runs open loop: on WidowX, CogACT loses 38 points and UniVLA 75. Guarded reuse skips calls only when the gates agree. On SmolVLA in LIBERO Long, success stays at 42.0 with lower latency.',
-    'Three-panel recording of one CogACT WidowX episode. Before rendering, fill the three "policy calls used" counters from that episode: original = number of steps, k = 4 = about steps / 4, guarded = steps minus skipped calls.');
+    'Three-panel recording of one CogACT WidowX episode; use k = 2 for the action-repeat panel so the clip matches the quoted deltas (k = 4 is worse, about -46 and -85 points, Fig. 5). Before rendering, fill the three "policy calls used" counters from that episode: original = number of steps, repeat = about steps / k, guarded = steps minus skipped calls, or delete the counter lines.');
 }
 
 // ═════════════════════════ 13. Q3 TRANSFER (12 s)
@@ -237,11 +239,11 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   s.addText('Effects are a joint property of the trick, the backbone, and the task distribution.', { x: 6.4, y: 1.55, w: 3.1, h: 0.55, fontFace: FONT, fontSize: 12, bold: true, color: C.ink, valign: 'middle', margin: 0, isTextBox: true });
   chip(s, 'Depth pruning, WidowX: CogACT +9.5 · MiniVLA −17.5', 6.4, 2.2, 3.1, 'warn', 0.55, 10.5);
   chip(s, 'Foveation, LIBERO Goal: UniVLA +7.0 · SmolVLA −13.0', 6.4, 2.85, 3.1, 'warn', 0.55, 10.5);
-  chip(s, 'Action repeat: harmful on WidowX, milder on Fractal for some backbones', 6.4, 3.5, 3.1, 'warn', 0.62, 10.5);
+  chip(s, 'Action repeat: often harmful on WidowX, milder on Fractal for some backbones', 6.4, 3.5, 3.1, 'warn', 0.62, 10.5);
   s.addShape('roundRect', { x: 0.5, y: 4.45, w: 9.0, h: 0.6, fill: { color: C.dark }, line: { color: C.dark, width: 0 }, rectRadius: 0.1 });
   s.addText('No trick is plug-and-play: each one needs matched evaluation under the target backbone and environment.', { x: 0.6, y: 4.45, w: 8.8, h: 0.6, fontFace: FONT, fontSize: 14, bold: true, color: C.darkText, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
   notes(s, N, 12, 'Third, consistency. Across backbone and environment pairs the same trick improves one model, leaves another unchanged, and hurts a third. No trick is plug-and-play.',
-    'Consistency chart (Project Page figure, counts from the per-setting records with LIBERO episodes pooled). Do not read the counts aloud.');
+    'Consistency chart (supplementary figure, counts from the per-setting records with LIBERO episodes pooled). Do not read the counts aloud.');
 }
 
 // ═════════════════════════ 14. TAKEAWAYS (12 s)
