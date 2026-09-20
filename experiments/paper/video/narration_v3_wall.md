@@ -23,23 +23,23 @@ Trick five, temporal fusion. Visual tokens of stable patches are reused from the
 ## Slide 7 (12 s, 29 words, 2.4 w/s)
 Seven backbones, official checkpoints, on WidowX, Fractal, and LIBERO. Thirteen trick settings per pair plus the original, 286 trick settings, each compared with the original on the same episodes.
 
-## Slide 8 (6 s, 26 words, 4.3 w/s)
-Carrot on the plate, CogACT on WidowX. All configurations start from the same state. 6 of 14 succeed. Watch which tricks lose the object during contact.
+## Slide 8 (6 s, 13 words, 2.2 w/s)
+Now every configuration on one episode. CogACT on WidowX, 6 of 14 succeed.
 
-## Slide 9 (8 s, 26 words, 3.2 w/s)
-Eggplant in the basket, CogACT on WidowX. All configurations start from the same state. 11 of 14 succeed. Watch which tricks lose the object during contact.
+## Slide 9 (8 s, 8 words, 1.0 w/s)
+Eggplant in the basket: 11 of 14 succeed.
 
-## Slide 10 (6 s, 26 words, 4.3 w/s)
-Spoon on the towel, CogACT on WidowX. All configurations start from the same state. 11 of 14 succeed. Watch which tricks lose the object during contact.
+## Slide 10 (6 s, 8 words, 1.3 w/s)
+Spoon on the towel: 11 of 14 succeed.
 
-## Slide 11 (8 s, 15 words, 1.9 w/s)
-Close the drawer, OpenVLA on Fractal. Same episode for every configuration. 9 of 12 succeed.
+## Slide 11 (8 s, 12 words, 1.5 w/s)
+OpenVLA on Fractal, same episode for every configuration. 9 of 12 succeed.
 
-## Slide 12 (8 s, 17 words, 2.1 w/s)
-Move the object near another, OpenVLA on Fractal. Same episode for every configuration. 9 of 12 succeed.
+## Slide 12 (8 s, 9 words, 1.1 w/s)
+Move the object near another: 9 of 12 succeed.
 
-## Slide 13 (8 s, 16 words, 2.0 w/s)
-Pick the coke can, OpenVLA on Fractal. Same episode for every configuration. 9 of 12 succeed.
+## Slide 13 (8 s, 8 words, 1.0 w/s)
+Pick the coke can: 9 of 12 succeed.
 
 ## Slide 14 (12 s, 27 words, 2.2 w/s)
 First, success. Guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.

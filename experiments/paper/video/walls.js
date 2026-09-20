@@ -47,9 +47,11 @@ function wall(pres, S, wallSpec, n) {
     s.addShape('rect', { x, y: y + lh, w: tw, h: th, fill: { type: 'none' }, line: { color: t.success ? '2E8B57' : 'B03A2E', width: 1.5 } });
   });
   const ok = tiles.filter(t => t.success).length;
-  notes(s, n, secs, isW
-    ? `${TASK[wallSpec.task]}, CogACT on WidowX. All configurations start from the same state. ${ok} of ${tiles.length} succeed. Watch which tricks lose the object during contact.`
-    : `${TASK[wallSpec.task]}, OpenVLA on Fractal. Same episode for every configuration. ${ok} of ${tiles.length} succeed.`,
+  const first = wallSpec === M.walls[0], firstF = wallSpec === M.walls[3];
+  notes(s, n, secs, first
+    ? `Now every configuration on one episode. CogACT on WidowX, ${ok} of ${tiles.length} succeed.`
+    : firstF ? `OpenVLA on Fractal, same episode for every configuration. ${ok} of ${tiles.length} succeed.`
+    : `${TASK[wallSpec.task]}: ${ok} of ${tiles.length} succeed.`,
     `Video wall, ${tiles.length} clips at ${wallSpec.speed}x, longest ${wallSpec.maxdur} s; the slide auto-advances after ${secs} s. Clips auto-play on slide entry.`);
   return secs;
 }
