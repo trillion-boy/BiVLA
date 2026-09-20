@@ -34,7 +34,7 @@ function wall(pres, S, wallSpec, n) {
   const isW = wallSpec.env === 'widowx';
   const bb = isW ? 'CogACT, WidowX' : 'OpenVLA, Fractal';
   title(s, `${bb}: ${TASK[wallSpec.task]}`, { size: 24 });
-  caption(s, `All ${wallSpec.tiles.length} configurations on the same episode (same initial state), ${wallSpec.speed}× speed. Green border = success, red = failure.`, 0.5, 0.95, 9.0, { size: 10.5, h: 0.28 });
+  caption(s, isW ? `All 14 configurations on the same episode (same initial state), ${wallSpec.speed}× speed. Green border = success, red = failure.` : `12 of the 14 configurations on the same episode (two temporal-fusion presets not rendered), ${wallSpec.speed}× speed. Green border = success, red = failure.`, 0.5, 0.95, 9.0, { size: 10.5, h: 0.28 });
   const tiles = ORDER.filter(c => wallSpec.tiles.some(t => t.cfg === c)).map(c => wallSpec.tiles.find(t => t.cfg === c));
   let cols, tw, th, x0, y0, gx, gy, lh;
   if (isW) { cols = 5; tw = 1.56; th = 1.17; gx = 0.3; gy = 0.04; lh = 0.2; x0 = 0.5; y0 = 1.3; }
@@ -50,7 +50,7 @@ function wall(pres, S, wallSpec, n) {
   const first = wallSpec === M.walls[0], firstF = wallSpec === M.walls[3];
   notes(s, n, secs, first
     ? `Now every configuration on one episode. CogACT on WidowX, ${ok} of ${tiles.length} succeed.`
-    : firstF ? `OpenVLA on Fractal, same episode for every configuration. ${ok} of ${tiles.length} succeed.`
+    : firstF ? `OpenVLA on Fractal, same episode for every configuration shown. ${ok} of ${tiles.length} succeed.`
     : `${TASK[wallSpec.task]}: ${ok} of ${tiles.length} succeed.`,
     `Video wall, ${tiles.length} clips at ${wallSpec.speed}x, longest ${wallSpec.maxdur} s; the slide auto-advances after ${secs} s. Clips auto-play on slide entry.`);
   return secs;

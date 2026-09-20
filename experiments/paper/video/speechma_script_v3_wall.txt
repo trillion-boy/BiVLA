@@ -4,7 +4,7 @@ SPEECHMA PASTE FILE (wall deck, 17 slides). Block number = slide number. Same En
 Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?
 
 ===== Slide 2 of 17 (target 11 s) =====
-Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.
+Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. The token count is unchanged, so this changes what the policy sees, not how much it computes.
 
 ===== Slide 3 of 17 (target 11 s) =====
 Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.
@@ -31,7 +31,7 @@ Stack cube: 11 of 14 succeed.
 Spoon on towel: 6 of 14 succeed.
 
 ===== Slide 11 of 17 (target 8 s) =====
-OpenVLA on Fractal, same episode for every configuration. 10 of 12 succeed.
+OpenVLA on Fractal, same episode for every configuration shown. 10 of 12 succeed.
 
 ===== Slide 12 of 17 (target 8 s) =====
 Pick coke can: 11 of 12 succeed.

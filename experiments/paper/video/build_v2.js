@@ -65,10 +65,10 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   title(s, 'Trick 1  Visual foveation');
   axisTag(s, 'What to see', 'blue');
   s.addImage({ path: A('m_fov.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.72 });
-  body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 3.95, 4.4, 1.3, { size: 11.5, gap: 3 });
+  body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged, no latency saving', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 3.95, 4.4, 1.3, { size: 11.5, gap: 3 });
   if (WALL) W.pair(s, 'fov'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs foveation', 'same episode, same initial state');
   caption(s, 'Rollout: original (left) and foveated observation (right), success or failure badge at the end.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
-  notes(s, N, 11, 'Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.',
+  notes(s, N, 11, 'Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. The token count is unchanged, so this changes what the policy sees, not how much it computes.',
     'Left: Fig. 2(a) foveation panel. Right: side-by-side rollout clip.');
 }
 

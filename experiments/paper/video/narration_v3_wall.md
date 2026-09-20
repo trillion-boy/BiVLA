@@ -5,8 +5,8 @@ Total planned: 175 s over 17 slides (limit 180 s).
 ## Slide 1 (13 s, 36 words, 2.8 w/s)
 Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?
 
-## Slide 2 (11 s, 27 words, 2.5 w/s)
-Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.
+## Slide 2 (11 s, 32 words, 2.9 w/s)
+Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. The token count is unchanged, so this changes what the policy sees, not how much it computes.
 
 ## Slide 3 (11 s, 29 words, 2.6 w/s)
 Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.
@@ -23,23 +23,23 @@ Trick five, temporal fusion. Visual tokens of stable patches are reused from the
 ## Slide 7 (12 s, 29 words, 2.4 w/s)
 Seven backbones, official checkpoints, on WidowX, Fractal, and LIBERO. Thirteen trick settings per pair plus the original, 286 trick settings, each compared with the original on the same episodes.
 
-## Slide 8 (6 s, 13 words, 2.2 w/s)
-Now every configuration on one episode. CogACT on WidowX, 6 of 14 succeed.
+## Slide 8 (8 s, 13 words, 1.6 w/s)
+Now every configuration on one episode. CogACT on WidowX, 12 of 14 succeed.
 
-## Slide 9 (8 s, 8 words, 1.0 w/s)
-Eggplant in the basket: 11 of 14 succeed.
+## Slide 9 (6 s, 6 words, 1.0 w/s)
+Stack cube: 11 of 14 succeed.
 
-## Slide 10 (6 s, 8 words, 1.3 w/s)
-Spoon on the towel: 11 of 14 succeed.
+## Slide 10 (6 s, 7 words, 1.2 w/s)
+Spoon on towel: 6 of 14 succeed.
 
-## Slide 11 (8 s, 12 words, 1.5 w/s)
-OpenVLA on Fractal, same episode for every configuration. 9 of 12 succeed.
+## Slide 11 (8 s, 13 words, 1.6 w/s)
+OpenVLA on Fractal, same episode for every configuration shown. 10 of 12 succeed.
 
-## Slide 12 (8 s, 9 words, 1.1 w/s)
-Move the object near another: 9 of 12 succeed.
+## Slide 12 (8 s, 7 words, 0.9 w/s)
+Pick coke can: 11 of 12 succeed.
 
-## Slide 13 (8 s, 8 words, 1.0 w/s)
-Pick the coke can: 9 of 12 succeed.
+## Slide 13 (8 s, 6 words, 0.8 w/s)
+Open drawer: 6 of 12 succeed.
 
 ## Slide 14 (12 s, 27 words, 2.2 w/s)
 First, success. Guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.
