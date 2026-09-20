@@ -1,0 +1,697 @@
+{
+ "walls": [
+  {
+   "env": "widowx",
+   "model": "cogact",
+   "task": "widowx_carrot_on_plate",
+   "k": 1,
+   "speed": 2.0,
+   "tiles": [
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat2/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_action_repeat2.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "action_repeat2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat4/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_action_repeat4.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "action_repeat4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning1/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_depth_pruning1.mp4",
+     "success": true,
+     "dur": 2.7,
+     "cfg": "depth_pruning1"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning2/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_depth_pruning2.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "depth_pruning2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning4/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_depth_pruning4.mp4",
+     "success": true,
+     "dur": 3.1,
+     "cfg": "depth_pruning4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/fixed_foveation_keep20/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_fixed_foveation_keep20.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "fixed_foveation_keep20"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/fixed_foveation_keep50/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_fixed_foveation_keep50.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "fixed_foveation_keep50"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_aggressive/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_guarded_reuse_aggressive.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "guarded_reuse_aggressive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_moderate/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_guarded_reuse_moderate.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "guarded_reuse_moderate"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_strict/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_guarded_reuse_strict.mp4",
+     "success": true,
+     "dur": 3.1,
+     "cfg": "guarded_reuse_strict"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_original.mp4",
+     "success": true,
+     "dur": 3.1,
+     "cfg": "original"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_conservative_adaptive/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_temporal_fusion_conservative_adaptive.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "temporal_fusion_conservative_adaptive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_motion_entropy/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_temporal_fusion_motion_entropy.mp4",
+     "success": true,
+     "dur": 3.1,
+     "cfg": "temporal_fusion_motion_entropy"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_task_aware/widowx_carrot_on_plate/rollout_1.mp4",
+     "out": "clips/widowx_widowx_carrot_on_plate_k1_temporal_fusion_task_aware.mp4",
+     "success": true,
+     "dur": 3.1,
+     "cfg": "temporal_fusion_task_aware"
+    }
+   ],
+   "maxdur": 6.0
+  },
+  {
+   "env": "widowx",
+   "model": "cogact",
+   "task": "widowx_put_eggplant_in_basket",
+   "k": 2,
+   "speed": 3.0,
+   "tiles": [
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat2/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_action_repeat2.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "action_repeat2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat4/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_action_repeat4.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "action_repeat4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning1/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_depth_pruning1.mp4",
+     "success": true,
+     "dur": 1.7,
+     "cfg": "depth_pruning1"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning2/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_depth_pruning2.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "depth_pruning2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning4/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_depth_pruning4.mp4",
+     "success": true,
+     "dur": 1.9,
+     "cfg": "depth_pruning4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/fixed_foveation_keep20/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_fixed_foveation_keep20.mp4",
+     "success": true,
+     "dur": 3.5,
+     "cfg": "fixed_foveation_keep20"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/fixed_foveation_keep50/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_fixed_foveation_keep50.mp4",
+     "success": true,
+     "dur": 2.1,
+     "cfg": "fixed_foveation_keep50"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_aggressive/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_guarded_reuse_aggressive.mp4",
+     "success": true,
+     "dur": 2.0,
+     "cfg": "guarded_reuse_aggressive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_moderate/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_guarded_reuse_moderate.mp4",
+     "success": true,
+     "dur": 2.0,
+     "cfg": "guarded_reuse_moderate"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_strict/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_guarded_reuse_strict.mp4",
+     "success": true,
+     "dur": 1.9,
+     "cfg": "guarded_reuse_strict"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_original.mp4",
+     "success": true,
+     "dur": 2.3,
+     "cfg": "original"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_conservative_adaptive/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_temporal_fusion_conservative_adaptive.mp4",
+     "success": true,
+     "dur": 2.2,
+     "cfg": "temporal_fusion_conservative_adaptive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_motion_entropy/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_temporal_fusion_motion_entropy.mp4",
+     "success": true,
+     "dur": 1.7,
+     "cfg": "temporal_fusion_motion_entropy"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_task_aware/widowx_put_eggplant_in_basket/rollout_2.mp4",
+     "out": "clips/widowx_widowx_put_eggplant_in_basket_k2_temporal_fusion_task_aware.mp4",
+     "success": true,
+     "dur": 1.7,
+     "cfg": "temporal_fusion_task_aware"
+    }
+   ],
+   "maxdur": 8.0
+  },
+  {
+   "env": "widowx",
+   "model": "cogact",
+   "task": "widowx_spoon_on_towel",
+   "k": 5,
+   "speed": 2.0,
+   "tiles": [
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat2/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_action_repeat2.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "action_repeat2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat4/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_action_repeat4.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "action_repeat4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning1/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_depth_pruning1.mp4",
+     "success": true,
+     "dur": 3.3,
+     "cfg": "depth_pruning1"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning2/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_depth_pruning2.mp4",
+     "success": false,
+     "dur": 6.0,
+     "cfg": "depth_pruning2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning4/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_depth_pruning4.mp4",
+     "success": true,
+     "dur": 3.3,
+     "cfg": "depth_pruning4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/fixed_foveation_keep20/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_fixed_foveation_keep20.mp4",
+     "success": true,
+     "dur": 3.1,
+     "cfg": "fixed_foveation_keep20"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/fixed_foveation_keep50/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_fixed_foveation_keep50.mp4",
+     "success": true,
+     "dur": 2.9,
+     "cfg": "fixed_foveation_keep50"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_aggressive/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_guarded_reuse_aggressive.mp4",
+     "success": true,
+     "dur": 3.2,
+     "cfg": "guarded_reuse_aggressive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_moderate/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_guarded_reuse_moderate.mp4",
+     "success": true,
+     "dur": 2.9,
+     "cfg": "guarded_reuse_moderate"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_strict/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_guarded_reuse_strict.mp4",
+     "success": true,
+     "dur": 2.9,
+     "cfg": "guarded_reuse_strict"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_original.mp4",
+     "success": true,
+     "dur": 2.9,
+     "cfg": "original"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_conservative_adaptive/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_temporal_fusion_conservative_adaptive.mp4",
+     "success": true,
+     "dur": 2.8,
+     "cfg": "temporal_fusion_conservative_adaptive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_motion_entropy/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_temporal_fusion_motion_entropy.mp4",
+     "success": true,
+     "dur": 2.7,
+     "cfg": "temporal_fusion_motion_entropy"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_task_aware/widowx_spoon_on_towel/rollout_5.mp4",
+     "out": "clips/widowx_widowx_spoon_on_towel_k5_temporal_fusion_task_aware.mp4",
+     "success": true,
+     "dur": 2.7,
+     "cfg": "temporal_fusion_task_aware"
+    }
+   ],
+   "maxdur": 6.0
+  },
+  {
+   "env": "fractal",
+   "model": "openvla",
+   "task": "google_robot_close_drawer",
+   "k": 1,
+   "speed": 2.0,
+   "tiles": [
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/action_repeat2/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_action_repeat2.mp4",
+     "success": true,
+     "dur": 6.7,
+     "cfg": "action_repeat2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/action_repeat4/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_action_repeat4.mp4",
+     "success": true,
+     "dur": 3.9,
+     "cfg": "action_repeat4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning1/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_depth_pruning1.mp4",
+     "success": true,
+     "dur": 4.3,
+     "cfg": "depth_pruning1"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning2/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_depth_pruning2.mp4",
+     "success": true,
+     "dur": 5.6,
+     "cfg": "depth_pruning2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning4/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_depth_pruning4.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "depth_pruning4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/fixed_foveation_keep20/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_fixed_foveation_keep20.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "fixed_foveation_keep20"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/fixed_foveation_keep50/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_fixed_foveation_keep50.mp4",
+     "success": true,
+     "dur": 4.2,
+     "cfg": "fixed_foveation_keep50"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_aggressive/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_guarded_reuse_aggressive.mp4",
+     "success": true,
+     "dur": 3.2,
+     "cfg": "guarded_reuse_aggressive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_moderate/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_guarded_reuse_moderate.mp4",
+     "success": true,
+     "dur": 3.2,
+     "cfg": "guarded_reuse_moderate"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_strict/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_guarded_reuse_strict.mp4",
+     "success": true,
+     "dur": 3.2,
+     "cfg": "guarded_reuse_strict"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/original/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_original.mp4",
+     "success": true,
+     "dur": 3.2,
+     "cfg": "original"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/temporal_fusion_motion_entropy/google_robot_close_drawer/rollout_1.mp4",
+     "out": "clips/fractal_google_robot_close_drawer_k1_temporal_fusion_motion_entropy.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "temporal_fusion_motion_entropy"
+    }
+   ],
+   "maxdur": 8.0
+  },
+  {
+   "env": "fractal",
+   "model": "openvla",
+   "task": "google_robot_move_near",
+   "k": 3,
+   "speed": 2.0,
+   "tiles": [
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/action_repeat2/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_action_repeat2.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "action_repeat2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/action_repeat4/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_action_repeat4.mp4",
+     "success": true,
+     "dur": 3.1,
+     "cfg": "action_repeat4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning1/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_depth_pruning1.mp4",
+     "success": true,
+     "dur": 1.9,
+     "cfg": "depth_pruning1"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning2/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_depth_pruning2.mp4",
+     "success": true,
+     "dur": 2.0,
+     "cfg": "depth_pruning2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning4/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_depth_pruning4.mp4",
+     "success": true,
+     "dur": 2.8,
+     "cfg": "depth_pruning4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/fixed_foveation_keep20/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_fixed_foveation_keep20.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "fixed_foveation_keep20"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/fixed_foveation_keep50/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_fixed_foveation_keep50.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "fixed_foveation_keep50"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_aggressive/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_guarded_reuse_aggressive.mp4",
+     "success": true,
+     "dur": 2.4,
+     "cfg": "guarded_reuse_aggressive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_moderate/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_guarded_reuse_moderate.mp4",
+     "success": true,
+     "dur": 2.4,
+     "cfg": "guarded_reuse_moderate"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_strict/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_guarded_reuse_strict.mp4",
+     "success": true,
+     "dur": 2.4,
+     "cfg": "guarded_reuse_strict"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/original/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_original.mp4",
+     "success": true,
+     "dur": 2.4,
+     "cfg": "original"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/temporal_fusion_motion_entropy/google_robot_move_near/rollout_3.mp4",
+     "out": "clips/fractal_google_robot_move_near_k3_temporal_fusion_motion_entropy.mp4",
+     "success": true,
+     "dur": 3.2,
+     "cfg": "temporal_fusion_motion_entropy"
+    }
+   ],
+   "maxdur": 8.0
+  },
+  {
+   "env": "fractal",
+   "model": "openvla",
+   "task": "google_robot_pick_coke_can",
+   "k": 5,
+   "speed": 2.0,
+   "tiles": [
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/action_repeat2/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_action_repeat2.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "action_repeat2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/action_repeat4/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_action_repeat4.mp4",
+     "success": true,
+     "dur": 5.7,
+     "cfg": "action_repeat4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning1/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_depth_pruning1.mp4",
+     "success": true,
+     "dur": 2.1,
+     "cfg": "depth_pruning1"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning2/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_depth_pruning2.mp4",
+     "success": true,
+     "dur": 2.0,
+     "cfg": "depth_pruning2"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/depth_pruning4/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_depth_pruning4.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "depth_pruning4"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/fixed_foveation_keep20/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_fixed_foveation_keep20.mp4",
+     "success": false,
+     "dur": 8.0,
+     "cfg": "fixed_foveation_keep20"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/fixed_foveation_keep50/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_fixed_foveation_keep50.mp4",
+     "success": true,
+     "dur": 2.1,
+     "cfg": "fixed_foveation_keep50"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_aggressive/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_guarded_reuse_aggressive.mp4",
+     "success": true,
+     "dur": 2.1,
+     "cfg": "guarded_reuse_aggressive"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_moderate/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_guarded_reuse_moderate.mp4",
+     "success": true,
+     "dur": 2.1,
+     "cfg": "guarded_reuse_moderate"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/guarded_reuse_strict/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_guarded_reuse_strict.mp4",
+     "success": true,
+     "dur": 2.1,
+     "cfg": "guarded_reuse_strict"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/original/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_original.mp4",
+     "success": true,
+     "dur": 2.1,
+     "cfg": "original"
+    },
+    {
+     "src": "/home/user/BiVLA/simulation_rollouts/fractal/openvla/temporal_fusion_motion_entropy/google_robot_pick_coke_can/rollout_5.mp4",
+     "out": "clips/fractal_google_robot_pick_coke_can_k5_temporal_fusion_motion_entropy.mp4",
+     "success": true,
+     "dur": 2.6,
+     "cfg": "temporal_fusion_motion_entropy"
+    }
+   ],
+   "maxdur": 8.0
+  }
+ ],
+ "pairs": {
+  "fov": {
+   "task": "widowx_carrot_on_plate",
+   "k": 3,
+   "cfg": "fixed_foveation_keep50",
+   "orig": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_3.mp4",
+    "out": "clips/pair_fov_orig.mp4",
+    "success": false,
+    "dur": 6.0
+   },
+   "trick": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/fixed_foveation_keep50/widowx_carrot_on_plate/rollout_3.mp4",
+    "out": "clips/pair_fov_trick.mp4",
+    "success": true,
+    "dur": 4.7
+   }
+  },
+  "repeat": {
+   "task": "widowx_spoon_on_towel",
+   "k": 5,
+   "cfg": "action_repeat2",
+   "orig": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_spoon_on_towel/rollout_5.mp4",
+    "out": "clips/pair_repeat_orig.mp4",
+    "success": true,
+    "dur": 2.9
+   },
+   "trick": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat2/widowx_spoon_on_towel/rollout_5.mp4",
+    "out": "clips/pair_repeat_trick.mp4",
+    "success": false,
+    "dur": 6.0
+   }
+  },
+  "prune": {
+   "task": "widowx_carrot_on_plate",
+   "k": 3,
+   "cfg": "depth_pruning1",
+   "orig": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_3.mp4",
+    "out": "clips/pair_prune_orig.mp4",
+    "success": false,
+    "dur": 6.0
+   },
+   "trick": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning1/widowx_carrot_on_plate/rollout_3.mp4",
+    "out": "clips/pair_prune_trick.mp4",
+    "success": true,
+    "dur": 2.5
+   }
+  },
+  "reuse": {
+   "task": "widowx_put_eggplant_in_basket",
+   "k": 2,
+   "cfg": "guarded_reuse_strict",
+   "orig": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_put_eggplant_in_basket/rollout_2.mp4",
+    "out": "clips/pair_reuse_orig.mp4",
+    "success": true,
+    "dur": 3.5
+   },
+   "trick": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_strict/widowx_put_eggplant_in_basket/rollout_2.mp4",
+    "out": "clips/pair_reuse_trick.mp4",
+    "success": true,
+    "dur": 2.8
+   }
+  },
+  "fusion": {
+   "task": "widowx_spoon_on_towel",
+   "k": 4,
+   "cfg": "temporal_fusion_task_aware",
+   "orig": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_spoon_on_towel/rollout_4.mp4",
+    "out": "clips/pair_fusion_orig.mp4",
+    "success": false,
+    "dur": 6.0
+   },
+   "trick": {
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_task_aware/widowx_spoon_on_towel/rollout_4.mp4",
+    "out": "clips/pair_fusion_trick.mp4",
+    "success": true,
+    "dur": 2.9
+   }
+  }
+ }
+}

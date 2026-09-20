@@ -8,8 +8,11 @@ pres.layout = 'LAYOUT_16x9'; // 10 x 5.625 in
 pres.title = 'Bag of Tricks for Training-Free VLA Models, accompanying video (v2)';
 
 const SUB = !!process.env.SUBS;
+const WALL = !!process.env.WALL;
+const W = WALL ? require('./walls') : null;
+const SECS = [];
 let N = 0;
-const S = (secs, dark = false) => { const s = pres.addSlide(); N += 1; base(s, dark); return s; };
+const S = (secs, dark = false) => { const s = pres.addSlide(); N += 1; base(s, dark); SECS.push(secs); return s; };
 const chip = (s, text, x, y, w, kind = 'neutral', h = 0.42, size = 13) => {
   const map = { pos: [C.greenSoft, C.green], neg: [C.redSoft, C.red], neutral: [C.card, C.ink], teal: [C.tealSoft, C.teal], warn: [C.orangeSoft, C.orange], blue: [C.blueSoft, C.blue], dark: [C.dark, C.darkText] };
   const [fill, col] = map[kind];
@@ -38,7 +41,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
 
 // ═════════════════════════ 1. MOTIVATION (15 s)
 {
-  const s = S(15);
+  const s = S(WALL ? 13 : 15);
   caption(s, 'Bag of Tricks for Training-Free Vision-Language-Action Models', 0.5, 0.12, 7.8, { size: 10 });
   s.addText([{ text: 'Motivation', options: { bold: true } }, { text: '  Efficient VLA inference without retraining', options: { bold: false } }], { x: 0.5, y: 0.32, w: 9.0, h: 0.7, fontFace: HFONT, fontSize: 26, color: C.ink, margin: 0, isTextBox: true, valign: 'middle' });
   s.addImage({ path: A('m_pipeline.png'), x: 0.5, y: 1.1, w: 9.0, h: 0.47 });
@@ -51,7 +54,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   s.addShape('roundRect', { x: 0.5, y: SUB ? 4.05 : 4.15, w: 9.0, h: SUB ? 0.9 : 0.95, fill: { color: 'FFF0F7' }, line: { color: 'E0369A', width: 1.5 }, rectRadius: 0.1 });
   s.addText([{ text: 'Do the gains transfer across VLA models and environments, ', options: { color: C.ink } }, { text: 'or are they configuration-dependent?', options: { bold: true, color: 'E0369A' } }],
     { x: 0.7, y: SUB ? 4.05 : 4.15, w: 8.6, h: SUB ? 0.9 : 0.95, fontFace: FONT, fontSize: 16, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
-  notes(s, N, 15,
+  notes(s, N, WALL ? 13 : 15,
     'Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?',
     'Static. Optional: play a short original-policy rollout behind the loop diagram. Pipeline row cropped from Fig. 2(a).');
 }
@@ -63,8 +66,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   axisTag(s, 'What to see', 'blue');
   s.addImage({ path: A('m_fov.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.72 });
   body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 3.95, 4.4, 1.3, { size: 11.5, gap: 3 });
-  clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs foveation', 'same episode, same initial state');
-  caption(s, 'Rollout: original (left) and foveated observation (right), success or failure badge at the end.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
+  if (WALL) W.pair(s, 'fov'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs foveation', 'same episode, same initial state');
+  caption(s, 'Rollout: original (left) and foveated observation (right), success or failure badge at the end.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 11, 'Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.',
     'Left: Fig. 2(a) foveation panel. Right: side-by-side rollout clip.');
 }
@@ -76,8 +79,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   axisTag(s, 'When to act', 'warn');
   s.addImage({ path: A('m_repeat.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.98 });
   body(s, ['Hold each predicted action for k = 2 or 4 steps, about one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, 4.15, 4.4, 1.1, { size: 11.5, gap: 3 });
-  clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs action repeat', 'same episode, same initial state');
-  caption(s, 'Rollout: watch contact and placement, where a held action can miss a needed correction.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
+  if (WALL) W.pair(s, 'repeat'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs action repeat', 'same episode, same initial state');
+  caption(s, 'Rollout: watch contact and placement, where a held action can miss a needed correction.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 11, 'Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.',
     'Left: Fig. 2(a) action repeat panel. Right: side-by-side rollout clip.');
 }
@@ -89,8 +92,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   axisTag(s, 'How much to compute', 'teal');
   s.addImage({ path: A('m_prune.png'), x: 0.5, y: 1.05, w: 2.75, h: 2.83 });
   body(s, ['Score each decoder block by Block Influence', 'Remove 1, 2, or 4 low-influence blocks; none adjacent, early blocks and the final block kept', 'Fixed once from calibration data, not adapted at test time'], 3.4, 1.1, 1.5, 3.9, { size: 11, gap: 6 });
-  clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs depth pruning', 'same episode, same initial state');
-  caption(s, 'Rollout: CogACT on WidowX, where pruning removes decoder layers without breaking the closed loop.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
+  if (WALL) W.pair(s, 'prune'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs depth pruning', 'same episode, same initial state');
+  caption(s, 'Rollout: CogACT on WidowX, where pruning removes decoder layers without breaking the closed loop.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 12, 'Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them, keeping the early and final blocks. The selection is fixed before evaluation.',
     'Left: Fig. 2(a) panel. Right: side-by-side rollout clip.');
 }
@@ -102,8 +105,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   axisTag(s, 'When to act', 'warn');
   s.addImage({ path: A('m_guarded.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.77 });
   body(s, ['Reuse the previous action only when all gates pass: small global and local image change, recent actions agree, translation not near zero, gripper unchanged, reuse count below a cap', 'Presets: strict, moderate, aggressive'], 0.5, 3.95, 4.4, 1.3, { size: 11, gap: 3 });
-  clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs guarded reuse', 'same episode, same initial state');
-  caption(s, 'Rollout: overlay the gate indicators and a "calls skipped" counter on the right pane.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
+  if (WALL) W.pair(s, 'reuse'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs guarded reuse', 'same episode, same initial state');
+  caption(s, 'Rollout: overlay the gate indicators and a "calls skipped" counter on the right pane.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 11, 'Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call.',
     'Left: Fig. 2(a) guarded reuse panel. Right: side-by-side rollout clip with gate overlay.');
 }
@@ -117,8 +120,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   body(s, ['Reuse visual tokens of stable patches from the previous call', 'Recompute patches with motion, local structure, language attention, or in the interaction region', 'Presets: motion-entropy, task-aware, conservative-adaptive'], 3.2, 1.05, 1.7, 3.6, { size: 11, gap: 6 });
   s.addImage({ path: A('m_cache.png'), x: 0.5, y: 3.22, w: SUB ? 2.35 : 2.55, h: SUB ? 1.44 : 1.56 });
   caption(s, 'Top: fusion mask. Bottom: VLA-Cache criterion.', 0.5, SUB ? 4.7 : 4.9, 2.8, { size: 9.5, h: 0.35 });
-  clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs temporal fusion', 'same episode, same initial state');
-  caption(s, 'Rollout: optionally tint reused patches on the right pane to show what is carried over between frames.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
+  if (WALL) W.pair(s, 'fusion'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs temporal fusion', 'same episode, same initial state');
+  caption(s, 'Rollout: optionally tint reused patches on the right pane to show what is carried over between frames.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 12, 'Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step.',
     'Left: Fig. 2(a) panel. Right: side-by-side rollout clip.');
 }
@@ -141,6 +144,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
     '286 = 13 trick settings × 22 pairs.');
 }
 
+if (WALL) { W.M.walls.forEach(w => W.wall(pres, S, w, N + 1)); }
+
 // ═════════════════════════ 8. Q1 SUCCESS (12 s)
 {
   const s = S(12);
@@ -161,7 +166,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
 }
 
 // ═════════════════════════ 9. QUALITATIVE (12 s)
-{
+if (!WALL) {
   const s = S(12);
   title(s, 'Depth pruning helps CogACT on WidowX');
   s.addImage({ path: A('fig3a_cogact.png'), x: 0.5, y: 1.0, w: 8.85, h: 2.95 });
@@ -174,7 +179,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
 }
 
 // ═════════════════════════ 10. SAME TRICK, DIFFERENT BACKBONE (10 s)
-{
+if (!WALL) {
   const s = S(10);
   title(s, 'Same trick, same benchmark, different backbone');
   clipPlaceholder(s, 0.5, 1.05, 2.9, 2.6, 'CLIP: MiniVLA original', 'succeeds (green border)');
@@ -213,7 +218,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
 }
 
 // ═════════════════════════ 12. OPEN LOOP VS GATING (13 s)
-{
+if (!WALL) {
   const s = S(13);
   title(s, 'Open loop has a cost, gating keeps it safer');
   const labels = ['Original', 'Action repeat', 'Guarded reuse'];
@@ -267,5 +272,6 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
     'Final slide. No names, logos, or URLs. Hold 2 s after the narration ends, then fade to black.');
 }
 
-const out = require('path').join(__dirname, SUB ? 'ICRA27_video_v2_subs.pptx' : 'ICRA27_video_v2.pptx');
+const out = require('path').join(__dirname, WALL ? (SUB ? 'ICRA27_video_v3_wall_subs.pptx' : 'ICRA27_video_v3_wall.pptx') : (SUB ? 'ICRA27_video_v2_subs.pptx' : 'ICRA27_video_v2.pptx'));
+require('fs').writeFileSync(out.replace('.pptx', '.secs.json'), JSON.stringify(SECS));
 pres.writeFile({ fileName: out }).then(() => console.log('wrote', out, 'slides', N));
