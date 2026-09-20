@@ -1,52 +1,52 @@
 SPEECHMA PASTE FILE (wall deck, 17 slides). Block number = slide number. Same English voice for every block.
 
 ===== Slide 1 of 17 (target 13 s) =====
-
+Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?
 
 ===== Slide 2 of 17 (target 11 s) =====
-
+Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. Token count and compute are unchanged. Only what the policy sees changes.
 
 ===== Slide 3 of 17 (target 11 s) =====
-
+Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.
 
 ===== Slide 4 of 17 (target 12 s) =====
-
+Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them, keeping the early and final blocks. The selection is fixed before evaluation.
 
 ===== Slide 5 of 17 (target 11 s) =====
-
+Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call.
 
 ===== Slide 6 of 17 (target 12 s) =====
-
+Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step.
 
 ===== Slide 7 of 17 (target 12 s) =====
-
+Seven backbones, official checkpoints, on WidowX, Fractal, and LIBERO. Thirteen trick settings per pair plus the original, 286 trick settings, each compared with the original on the same episodes.
 
 ===== Slide 8 of 17 (target 6 s) =====
-
+Carrot on the plate, CogACT on WidowX. All configurations start from the same state. 6 of 14 succeed. Watch which tricks lose the object during contact.
 
 ===== Slide 9 of 17 (target 8 s) =====
-
+Eggplant in the basket, CogACT on WidowX. All configurations start from the same state. 11 of 14 succeed. Watch which tricks lose the object during contact.
 
 ===== Slide 10 of 17 (target 6 s) =====
-
+Spoon on the towel, CogACT on WidowX. All configurations start from the same state. 11 of 14 succeed. Watch which tricks lose the object during contact.
 
 ===== Slide 11 of 17 (target 8 s) =====
-
+Close the drawer, OpenVLA on Fractal. Same episode for every configuration. 9 of 12 succeed.
 
 ===== Slide 12 of 17 (target 8 s) =====
-
+Move the object near another, OpenVLA on Fractal. Same episode for every configuration. 9 of 12 succeed.
 
 ===== Slide 13 of 17 (target 8 s) =====
-
+Pick the coke can, OpenVLA on Fractal. Same episode for every configuration. 9 of 12 succeed.
 
 ===== Slide 14 of 17 (target 12 s) =====
-
+First, success. Guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.
 
 ===== Slide 15 of 17 (target 13 s) =====
-
+Second, speed. Action repeat gives the largest speedup. SpatialVLA on WidowX drops from about 424 to 235 milliseconds per step. Depth pruning gives smaller decoder-level savings, and guarded reuse the safest trade-off.
 
 ===== Slide 16 of 17 (target 12 s) =====
-
+Third, consistency. Across backbone and environment pairs the same trick improves one model, leaves another unchanged, and hurts a third. No trick is plug-and-play.
 
 ===== Slide 17 of 17 (target 12 s) =====
-
+Guarded reuse is most reliable. Action repeat is fastest but risky. Depth pruning is backbone-dependent. Evaluate every trick under the target backbone and environment before applying it. Thank you.
