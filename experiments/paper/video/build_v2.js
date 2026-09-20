@@ -8,7 +8,7 @@ pres.layout = 'LAYOUT_16x9'; // 10 x 5.625 in
 pres.title = 'Bag of Tricks for Training-Free VLA Models, accompanying video (v2)';
 
 let N = 0;
-const S = (secs, dark = false) => { const s = pres.addSlide(); N += 1; base(s, dark); timeTag(s, N, secs, dark); return s; };
+const S = (secs, dark = false) => { const s = pres.addSlide(); N += 1; base(s, dark); return s; };
 const chip = (s, text, x, y, w, kind = 'neutral', h = 0.42, size = 13) => {
   const map = { pos: [C.greenSoft, C.green], neg: [C.redSoft, C.red], neutral: [C.card, C.ink], teal: [C.tealSoft, C.teal], warn: [C.orangeSoft, C.orange], blue: [C.blueSoft, C.blue], dark: [C.dark, C.darkText] };
   const [fill, col] = map[kind];
@@ -87,7 +87,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   title(s, 'Trick 3  Depth pruning');
   axisTag(s, 'How much to compute', 'teal');
   s.addImage({ path: A('m_prune.png'), x: 0.5, y: 1.05, w: 2.75, h: 2.83 });
-  body(s, ['Block Influence: how little a decoder block changes its hidden states on calibration data', 'Remove the 1, 2, or 4 lowest-influence blocks; none adjacent, first and last kept', 'Selected once from calibration data, fixed before evaluation', 'Acts inside the action decoder, after the visual encoder'], 3.4, 1.1, 1.5, 3.9, { size: 10.5, gap: 5 });
+  body(s, ['Score each decoder block by Block Influence', 'Remove the 1, 2, or 4 lowest; none adjacent, first and last kept', 'Fixed once from calibration data, not adapted at test time'], 3.4, 1.1, 1.5, 3.9, { size: 11, gap: 6 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs depth pruning', 'same episode, same initial state');
   caption(s, 'Rollout: CogACT on WidowX, where pruning removes decoder layers without breaking the closed loop.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 11, 'Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them. The selection is fixed before evaluation.',
@@ -113,9 +113,9 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   title(s, 'Trick 5  Temporal fusion');
   axisTag(s, 'How much to compute', 'teal');
   s.addImage({ path: A('m_fusion.png'), x: 0.5, y: 1.05, w: 2.55, h: 2.08 });
-  body(s, ['Reuse projected visual tokens of temporally stable patches from the previous call', 'Protect patches with motion, high entropy, high language attention, or interaction regions; recompute those', 'The same reuse mask is shared with the generation cache', 'Presets: motion-entropy, task-aware, conservative-adaptive'], 3.2, 1.05, 1.7, 3.6, { size: 10.5, gap: 3 });
+  body(s, ['Reuse visual tokens of stable patches from the previous call', 'Recompute patches with motion, entropy, or language attention', 'Presets: motion-entropy, task-aware, conservative-adaptive'], 3.2, 1.05, 1.7, 3.6, { size: 11, gap: 6 });
   s.addImage({ path: A('m_cache.png'), x: 0.5, y: 3.25, w: 2.55, h: 1.56 });
-  caption(s, 'Top: fusion mask. Bottom: VLA-Cache criterion (stable, task-irrelevant patches reused).', 0.5, 4.9, 2.6, { size: 9.5, h: 0.4 });
+  caption(s, 'Top: fusion mask. Bottom: VLA-Cache criterion.', 0.5, 4.9, 2.6, { size: 9.5, h: 0.3 });
   clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs temporal fusion', 'same episode, same initial state');
   caption(s, 'Rollout: optionally tint reused patches on the right pane to show what is carried over between frames.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 });
   notes(s, N, 12, 'Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step.',
