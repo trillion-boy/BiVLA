@@ -127,7 +127,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
 }
 
 // ═════════════════════════ 7. PROTOCOL (12 s)
-{
+if (!WALL) {
   const s = S(12);
   title(s, 'Results: matched evaluation protocol');
   const hdr = { bold: true, color: C.white, fill: { color: C.dark }, align: 'center', fontSize: 12 };
@@ -148,7 +148,7 @@ if (WALL) { W.M.walls.forEach(w => W.wall(pres, S, w, N + 1)); }
 
 // ═════════════════════════ 8. Q1 SUCCESS (12 s)
 {
-  const s = S(12);
+  const s = S(WALL ? 13 : 12);
   title(s, 'Which tricks preserve success?');
   s.addImage({ path: A('fig1_teaser_nolegend.png'), x: 0.5, y: 1.0, w: 4.0, h: SUB ? 3.6 : 3.97 });
   if (SUB) { legend(s, TRICK_COLORS.slice(0, 3), 0.5, 4.68, 1.4, 9); legend(s, TRICK_COLORS.slice(3), 0.5, 4.9, 1.4, 9); } else { legend(s, TRICK_COLORS.slice(0, 3), 0.5, 5.02, 1.4, 9.5); legend(s, TRICK_COLORS.slice(3), 0.5, 5.27, 1.4, 9.5); }
@@ -161,7 +161,7 @@ if (WALL) { W.M.walls.forEach(w => W.wall(pres, S, w, N + 1)); }
   chip(s, 'Foveation, LIBERO Goal: UniVLA +7.0  vs  SmolVLA −13.0', 4.9, 3.5, 4.6, 'warn', 0.42, 11);
   chip(s, 'Action repeat: mainly a speed baseline', 4.9, 4.0, 4.6, 'neutral', 0.42, 11);
   caption(s, 'Fig. 1: success per configuration, six WidowX backbones (14 bars each, darker to lighter within a trick). Dotted line = original policy, 0 = no successful episodes. Deltas from Tables I and II, best setting per trick.', 4.9, SUB ? 4.5 : 4.55, 4.6, { size: 9.5, h: SUB ? 0.55 : 0.7 });
-  notes(s, N, 12, 'First, success. Guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.',
+  notes(s, N, WALL ? 13 : 12, WALL ? 'Across seven backbones and three environments, guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.' : 'First, success. Guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.',
     'Fig. 1 with a native legend. Optionally enlarge one row of panels at a time.');
 }
 
@@ -234,7 +234,7 @@ if (!WALL) {
 }
 
 // ═════════════════════════ 13. Q3 TRANSFER (12 s)
-{
+if (!WALL) {
   const s = S(12);
   title(s, 'Does the effect transfer across models?');
   s.addImage({ path: A('consistency.png'), x: 0.5, y: 1.0, w: 5.6, h: 2.76 });
@@ -252,7 +252,7 @@ if (!WALL) {
 
 // ═════════════════════════ 14. TAKEAWAYS (12 s)
 {
-  const s = S(12);
+  const s = S(WALL ? 13 : 12);
   title(s, 'Takeaways');
   const v = [
     ['Guarded reuse', 'Most reliable. Preserves success, modest speedup when the gates open.', C.greenSoft, C.green],
@@ -268,7 +268,7 @@ if (!WALL) {
   });
   s.addShape('roundRect', { x: 0.5, y: 4.25, w: 9.0, h: 0.8, fill: { color: C.dark }, line: { color: C.dark, width: 0 }, rectRadius: 0.1 });
   s.addText('VLA efficiency is policy- and environment-dependent. Evaluate every trick under the target backbone and environment before applying it.', { x: 0.7, y: 4.25, w: 8.6, h: 0.8, fontFace: FONT, fontSize: 14, bold: true, color: C.darkText, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
-  notes(s, N, 12, 'Guarded reuse is most reliable. Action repeat is fastest but risky. Depth pruning is backbone-dependent. Evaluate every trick under the target backbone and environment before applying it. Thank you.',
+  notes(s, N, WALL ? 13 : 12, WALL ? 'The same trick helps one backbone, leaves another unchanged, and hurts a third. Guarded reuse is most reliable, action repeat fastest but risky, depth pruning backbone-dependent. Evaluate every trick under the target backbone and environment. Thank you.' : 'Guarded reuse is most reliable. Action repeat is fastest but risky. Depth pruning is backbone-dependent. Evaluate every trick under the target backbone and environment before applying it. Thank you.',
     'Final slide. No names, logos, or URLs. Hold 2 s after the narration ends, then fade to black.');
 }
 
