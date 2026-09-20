@@ -93,6 +93,10 @@ function clipPlaceholder(slide, x, y, w, h, label, sub) {
 function notes(slide, n, secs, narration, visual) {
   const words = narration.trim().split(/\s+/).length;
   slide.addNotes(`SLIDE ${n}  |  ${secs} s  |  ${words} words (${(words / secs).toFixed(1)} w/s)\n\nNARRATION:\n${narration}\n\nVISUAL / PRODUCTION NOTE:\n${visual}`);
+  if (process.env.SUBS) {
+    slide.addShape('rect', { x: 0, y: 5.13, w: 10, h: 0.495, fill: { color: C.dark }, line: { color: C.dark, width: 0 } });
+    slide.addText(narration, { x: 0.35, y: 5.13, w: 9.3, h: 0.495, fontFace: FONT, fontSize: 10.5, color: C.darkText, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
+  }
 }
 
 // Big stat callout: number on top, label under
