@@ -21,7 +21,9 @@ const colOf = cfg => COL[cfg.split('_')[0]] || C.ink;
 const TASK = {
   widowx_carrot_on_plate: 'Carrot on plate', widowx_put_eggplant_in_basket: 'Eggplant in basket', widowx_spoon_on_towel: 'Spoon on towel', widowx_stack_cube: 'Stack cube',
   google_robot_close_drawer: 'Close drawer', google_robot_move_near: 'Move near', google_robot_pick_coke_can: 'Pick coke can', google_robot_open_drawer: 'Open drawer',
+  libero_spatial__task_3: 'Bowl to plate', libero_object__task_9: 'Orange juice into basket', libero_goal__task_8: 'Bowl on plate', libero_10__task_1: 'Cream cheese and butter into basket',
 };
+const SUITE = { libero_spatial: 'LIBERO Spatial', libero_object: 'LIBERO Object', libero_goal: 'LIBERO Goal', libero_10: 'LIBERO Long' };
 
 function video(s, clip, x, y, w, h) {
   s.addMedia({ type: 'video', path: CL(clip.out), cover: b64(CL(clip.out.replace('.mp4', '.png'))), x, y, w, h });
@@ -29,15 +31,19 @@ function video(s, clip, x, y, w, h) {
 
 // One wall slide: every configuration of one backbone on one task, same episode, playing together.
 function wall(pres, S, wallSpec, n) {
-  const secs = Math.ceil(wallSpec.maxdur);
+  const secs = wallSpec.secs || Math.ceil(wallSpec.maxdur);
   const s = S(secs);
-  const isW = wallSpec.env === 'widowx';
-  const bb = isW ? 'CogACT, WidowX' : 'OpenVLA, Fractal';
-  title(s, `${bb}: ${TASK[wallSpec.task]}`, { size: 24 });
-  caption(s, isW ? `All 14 configurations on the same episode (same initial state), ${wallSpec.speed}× speed. Green border = success, red = failure.` : `12 of the 14 configurations on the same episode (two temporal-fusion presets not rendered), ${wallSpec.speed}× speed. Green border = success, red = failure.`, 0.5, 0.95, 9.0, { size: 10.5, h: 0.28 });
+  const isW = wallSpec.env === 'widowx', isL = wallSpec.env === 'libero';
+  const bb = isW ? 'CogACT, WidowX' : isL ? `UniVLA, ${SUITE[wallSpec.task.split('__')[0]]}` : 'OpenVLA, Fractal';
+  title(s, `${bb}: ${TASK[wallSpec.task]}`, { size: isL ? 22 : 24 });
+  const spd = `${wallSpec.speed}× speed`;
+  caption(s, isW ? `All 14 configurations on the same episode (same initial state), ${spd}. Green border = success, red = failure.`
+    : isL ? `All 14 configurations on the same episode, ${spd}, runs cut at the slide end. Green border = success, red = failure.`
+    : `12 of the 14 configurations on the same episode (two temporal-fusion presets not rendered), ${spd}. Green border = success, red = failure.`, 0.5, 0.95, 9.0, { size: 10.5, h: 0.28 });
   const tiles = ORDER.filter(c => wallSpec.tiles.some(t => t.cfg === c)).map(c => wallSpec.tiles.find(t => t.cfg === c));
   let cols, tw, th, x0, y0, gx, gy, lh;
   if (isW) { cols = 5; tw = 1.56; th = 1.17; gx = 0.3; gy = 0.04; lh = 0.2; x0 = 0.5; y0 = 1.3; }
+  else if (isL) { cols = 7; tw = 1.2; th = 1.415; gx = 0.1; gy = 0.1; lh = 0.2; x0 = 0.5; y0 = 1.45; }
   else { cols = 6; tw = 1.22; th = 1.57; gx = 0.336; gy = 0.1; lh = 0.2; x0 = 0.5; y0 = 1.35; }
   tiles.forEach((t, i) => {
     const r = Math.floor(i / cols), c = i % cols;
@@ -47,12 +53,15 @@ function wall(pres, S, wallSpec, n) {
     s.addShape('rect', { x, y: y + lh, w: tw, h: th, fill: { type: 'none' }, line: { color: t.success ? '2E8B57' : 'B03A2E', width: 1.5 } });
   });
   const ok = tiles.filter(t => t.success).length;
-  const first = wallSpec === M.walls[0], firstF = wallSpec === M.walls[3];
-  notes(s, n, secs, first
-    ? `Now every configuration on one episode. CogACT on WidowX, ${ok} of ${tiles.length} succeed.`
-    : firstF ? `OpenVLA on Fractal, same episode for every configuration shown. ${ok} of ${tiles.length} succeed.`
-    : `${TASK[wallSpec.task]}: ${ok} of ${tiles.length} succeed.`,
-    `Video wall, ${tiles.length} clips at ${wallSpec.speed}x, longest ${wallSpec.maxdur} s; the slide auto-advances after ${secs} s. Clips auto-play on slide entry.`);
+  const firstOfEnv = M.walls.find(w => w.env === wallSpec.env) === wallSpec, last = wallSpec === M.walls[M.walls.length - 1];
+  const name = isL ? SUITE[wallSpec.task.split('__')[0]].replace('LIBERO ', '') : TASK[wallSpec.task];
+  notes(s, n, secs, firstOfEnv
+    ? (isW ? `Now every configuration on one episode. CogACT on WidowX, ${ok} of ${tiles.length} succeed.`
+      : isL ? `UniVLA on LIBERO, four suites, same episode for every configuration. Spatial: ${ok} of ${tiles.length} succeed.`
+      : `OpenVLA on Fractal, same episode for every configuration shown. ${ok} of ${tiles.length} succeed.`)
+    : last ? `${name}: ${ok} of ${tiles.length} succeed. Only action repeat fails.`
+    : `${name}: ${ok} of ${tiles.length} succeed.`,
+    `Video wall, ${tiles.length} clips at ${wallSpec.speed}x${wallSpec.cut ? ', clips cut at the slide length' : `, longest ${wallSpec.maxdur} s`}; the slide auto-advances after ${secs} s. Clips auto-play on slide entry.`);
   return secs;
 }
 

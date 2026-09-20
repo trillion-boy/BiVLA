@@ -1,0 +1,271 @@
+--- slide 1
+Bag of Tricks for Training-Free Vision-Language-Action Models
+Motivation
+  Efficient VLA inference without retraining
+The control loop of a frozen VLA policy (Fig. 2 of the paper). Green, orange, purple, and blue boxes mark where the five tricks enter; Redundancy Control is action repeat.
+[1] 
+VLA inference is slow. 
+Tens to hundreds of milliseconds per step (60 to 450 ms in our runs), which limits how often the policy can observe, decide, and correct.
+[2] 
+Gains are reported in isolation. 
+Training-free tricks are typically evaluated for a specific trick, backbone, benchmark, and implementation, so transfer across models is unknown.
+Do the gains transfer across VLA models and environments, 
+or are they configuration-dependent?
+--- slide 2
+Trick 1  Visual foveation
+What to see
+Sharp central disc, progressively blurred periphery
+Keep ratio 20% or 50%; token count unchanged, no latency saving
+Tests whether high-frequency detail is needed only near the objects and the gripper
+Original
+Foveation 20%
+CogACT on WidowX, Spoon on towel, same episode, 2× speed. Green border = success, red = failure.
+--- slide 3
+Trick 2  Action repeat
+When to act
+Hold each predicted action for k = 2 or 4 steps, about one call per k steps
+Cuts policy calls by about k, but lengthens the open-loop interval
+Fixed reduction, no state check: a speed-oriented baseline
+Original
+Action repeat 2
+CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
+--- slide 4
+Trick 3  Depth pruning
+How much to compute
+Score each decoder block by Block Influence
+Remove 1, 2, or 4 low-influence blocks; none adjacent, early blocks and the final block kept
+Fixed once from calibration data, not adapted at test time
+Original
+Depth pruning 2
+CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
+--- slide 5
+Trick 4  Guarded action reuse
+When to act
+Reuse the previous action only when all gates pass: small global and local image change, recent actions agree, translation not near zero, gripper unchanged, reuse count below a cap
+Presets: strict, moderate, aggressive
+Original
+Reuse aggressive
+CogACT on WidowX, Stack cube, same episode, 2× speed. Green border = success, red = failure.
+--- slide 6
+Trick 5  Temporal fusion
+How much to compute
+Reuse visual tokens of stable patches from the previous call
+Recompute patches with motion, local structure, language attention, or in the interaction region
+Presets: motion-entropy, task-aware, conservative-adaptive
+Top: fusion mask. Bottom: VLA-Cache criterion.
+Original
+Fusion motion
+CogACT on WidowX, Spoon on towel, same episode, 2× speed. Green border = success, red = failure.
+--- slide 7
+CogACT, WidowX: Eggplant in basket
+All 14 configurations on the same episode (same initial state), 3× speed. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+Fusion task-aware
+Fusion conserv.
+--- slide 8
+CogACT, WidowX: Stack cube
+All 14 configurations on the same episode (same initial state), 2× speed. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+Fusion task-aware
+Fusion conserv.
+--- slide 9
+CogACT, WidowX: Spoon on towel
+All 14 configurations on the same episode (same initial state), 2× speed. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+Fusion task-aware
+Fusion conserv.
+--- slide 10
+OpenVLA, Fractal: Move near
+12 of the 14 configurations on the same episode (two temporal-fusion presets not rendered), 2× speed. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+--- slide 11
+OpenVLA, Fractal: Pick coke can
+12 of the 14 configurations on the same episode (two temporal-fusion presets not rendered), 2× speed. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+--- slide 12
+OpenVLA, Fractal: Open drawer
+12 of the 14 configurations on the same episode (two temporal-fusion presets not rendered), 2× speed. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+--- slide 13
+UniVLA, LIBERO Spatial: Bowl to plate
+All 14 configurations on the same episode, 3× speed, runs cut at the slide end. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+Fusion task-aware
+Fusion conserv.
+--- slide 14
+UniVLA, LIBERO Object: Orange juice into basket
+All 14 configurations on the same episode, 4× speed, runs cut at the slide end. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+Fusion task-aware
+Fusion conserv.
+--- slide 15
+UniVLA, LIBERO Goal: Bowl on plate
+All 14 configurations on the same episode, 3× speed, runs cut at the slide end. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+Fusion task-aware
+Fusion conserv.
+--- slide 16
+UniVLA, LIBERO Long: Cream cheese and butter into basket
+All 14 configurations on the same episode, 8× speed, runs cut at the slide end. Green border = success, red = failure.
+Original
+Foveation 20%
+Foveation 50%
+Action repeat 2
+Action repeat 4
+Depth pruning 1
+Depth pruning 2
+Depth pruning 4
+Reuse strict
+Reuse moderate
+Reuse aggressive
+Fusion motion
+Fusion task-aware
+Fusion conserv.
+--- slide 17
+Which tricks preserve success?
+Original
+Foveation
+Action repeat
+Depth pruning
+Guarded reuse
+Temporal fusion
+Q1  Success
+Guarded reuse and temporal fusion are the safest for preserving success.
+Selected backbones also gain:
+Foveation, WidowX: CogACT +2.5 · SpatialVLA +5.0 · CronusVLA +2.5
+Depth pruning, WidowX: CogACT +9.5
+Backbone-dependent:
+Foveation, LIBERO Goal: UniVLA +7.0  vs  SmolVLA −13.0
+Action repeat: mainly a speed baseline
+Fig. 1: success per configuration, six WidowX backbones (14 bars each, darker to lighter within a trick). Dotted line = original policy, 0 = no successful episodes. Deltas from Tables I and II, best setting per trick.
+--- slide 18
+Which tricks are actually faster?
+Original
+Foveation
+Action repeat
+Depth pruning
+Guarded reuse
+Temporal fusion
+Fig. 4, SimplerEnv WidowX. Star = original, shaded = faster and no worse. Colour = trick; circle, square, triangle = first, second, third setting of that trick.
+Q2  Speed
+Action repeat gives the largest speedup, depth pruning gives decoder-level savings, guarded reuse gives the safest trade-off.
+Latency, ms per step
+Original → trick
+Repeat · SpatialVLA WidowX
+423.5 → 235.1
+Repeat · OpenVLA LIBERO Long
+171.6 → 93.2
+Pruning · OpenVLA WidowX
+210.2 → 199.4
+Reuse · SmolVLA LIBERO Long
+289.5 → 268.9
+--- slide 19
+Takeaways
+Guarded reuse
+Most reliable. Preserves success, modest speedup when the gates open.
+Action repeat
+Largest speedup, but the risk of long open-loop execution.
+Depth pruning
+Decoder-level savings, benefit depends on the backbone.
+Foveation · Temporal fusion
+Test how much the visual representation can change while the policy stays stable.
+VLA efficiency is policy- and environment-dependent. Evaluate every trick under the target backbone and environment before applying it.
