@@ -58,7 +58,7 @@ available in time, keep the still frame from Fig. 3 in its place; the video stil
 ## Compress and check
 
 ```
-ffmpeg -i ICRA27_raw.mp4 -vf scale=1280:720 -c:v libx264 -preset slow -b:v 800k -maxrate 900k -bufsize 1800k -c:a aac -b:a 64k -movflags +faststart -map_metadata -1 ICRA27_<paperID>.mp4
+ffmpeg -i ICRA27_raw.mp4 -vf scale=1280:720 -r 30 -c:v libx264 -preset slow -b:v 720k -maxrate 800k -bufsize 1600k -c:a aac -b:a 64k -movflags +faststart -map_metadata -1 ICRA27_<paperID>.mp4
 ffprobe -v error -show_entries format=duration,size -of default=nw=1 ICRA27_<paperID>.mp4
 ```
 
@@ -118,16 +118,17 @@ slide are cut at the slide end (the badge is visible from the first frame). Sour
 
 ### Voice: 19 Speechma blocks
 
-`speechma_script_v3_wall.txt` holds one block per slide (longest 243 characters). Keep one
+`speechma_script_v3_wall.txt` holds one block per slide (longest 234 characters, far below Speechma's 2,000). Keep one
 English voice and the default speed. After downloading each MP3:
 
 1. Insert > Audio > Audio on My PC on that slide; Playback: Start Automatically, Hide During
    Show, Play Across Slides off.
 2. The slide's Advance After is already set (Transitions tab). If an MP3 is longer than the
    slide's target seconds, set that slide's Advance After to the MP3 length plus 0.3 s.
+   Every block is written at 2.6 words per second or slower, so a default-speed voice should fit.
 3. Add up the Advance After values over the 19 slides (Slide Sorter shows them under each
-   slide). The sum must stay at or below 179 s. If it goes over, regenerate the longest
-   blocks (slides 1, 2, 4, 19) at Speechma speed +10% rather than cutting content.
+   slide). The sum must stay at or below 179 s. If it goes over, regenerate the densest
+   blocks (slides 1, 4, 6, 19, then 3 and 5) at Speechma speed +10% rather than cutting content.
 
 ### Export, compress, check
 
@@ -135,14 +136,14 @@ File > Export > Create a Video > Full HD (1080p), "Use Recorded Timings and Narr
 save as `ICRA27_raw.mp4`. Then:
 
 ```
-ffmpeg -i ICRA27_raw.mp4 -vf scale=1280:720 -r 30 -c:v libx264 -preset slow -b:v 800k -maxrate 900k -bufsize 1800k -c:a aac -b:a 64k -movflags +faststart -map_metadata -1 ICRA27_<paperID>.mp4
+ffmpeg -i ICRA27_raw.mp4 -vf scale=1280:720 -r 30 -c:v libx264 -preset slow -b:v 720k -maxrate 800k -bufsize 1600k -c:a aac -b:a 64k -movflags +faststart -map_metadata -1 ICRA27_<paperID>.mp4
 ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate -show_entries format=duration,size -of default=nw=1 ICRA27_<paperID>.mp4
 ```
 
 | Rule | Target | Check |
 |---|---|---|
 | Length | at most 180 s | `duration` at or below 179 |
-| Size | at most 20 MB | `size` below 20000000 bytes (178 s at 800 kb/s is about 19 MB; use 750k if over) |
+| Size | at most 20 MB | `size` below 20000000 bytes (178 s at 720 + 64 kb/s is about 17.5 MB, a 12% margin; use 650k if over) |
 | Resolution and rate | 16:9, height at least 480, at least 20 fps | 1280x720, 30/1 |
 | Format | mp4 | H.264 video, AAC audio |
 | Anonymity | no names, affiliations, logos, URLs | `qa_deck.py` scans the slide text; watch the exported file once end to end |

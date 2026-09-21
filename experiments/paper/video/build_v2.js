@@ -5,7 +5,7 @@ const { A, C, FONT, HFONT, base, title, timeTag, caption, body, card, badge, cli
 
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_16x9'; // 10 x 5.625 in
-pres.title = 'Bag of Tricks for Training-Free VLA Models, accompanying video (v2)';
+pres.title = process.env.WALL ? 'Bag of Tricks for Training-Free VLA Models, accompanying video (v3 wall)' : 'Bag of Tricks for Training-Free VLA Models, accompanying video (v2)';
 
 const SUB = !!process.env.SUBS;
 const WALL = !!process.env.WALL;
@@ -55,7 +55,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   s.addText([{ text: 'Do the gains transfer across VLA models and environments, ', options: { color: C.ink } }, { text: 'or are they configuration-dependent?', options: { bold: true, color: 'E0369A' } }],
     { x: 0.7, y: SUB ? 4.05 : 4.15, w: 8.6, h: SUB ? 0.9 : 0.95, fontFace: FONT, fontSize: 16, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
   notes(s, N, WALL ? 13 : 15,
-    'Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?',
+    'Vision-language-action models are capable but slow. Every call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are reported for one backbone and benchmark. Do they transfer?',
     'Static. Optional: play a short original-policy rollout behind the loop diagram. Pipeline row cropped from Fig. 2(a).');
 }
 
@@ -68,7 +68,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged, no latency saving', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 3.95, 4.4, SUB ? 1.15 : 1.3, { size: 11.5, gap: 3 });
   if (WALL) W.pair(s, 'fov'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs foveation', 'same episode, same initial state');
   caption(s, 'Rollout: original (left) and foveated observation (right), success or failure badge at the end.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
-  notes(s, N, 11, 'Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. The token count is unchanged, so this changes what the policy sees, not how much it computes.',
+  notes(s, N, 11, 'Trick one, visual foveation. It keeps a sharp central disc and blurs the periphery. Token count is unchanged, so it changes what the policy sees, not its cost.',
     'Left: Fig. 2(a) foveation panel. Right: side-by-side rollout clip.');
 }
 
@@ -81,7 +81,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   body(s, ['Hold each predicted action for k = 2 or 4 steps, about one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, SUB ? 3.85 : 4.15, 4.4, SUB ? 1.2 : 1.1, { size: 11.5, gap: 3 });
   if (WALL) W.pair(s, 'repeat'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs action repeat', 'same episode, same initial state');
   caption(s, 'Rollout: watch contact and placement, where a held action can miss a needed correction.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
-  notes(s, N, 11, 'Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.',
+  notes(s, N, 11, 'Trick two, action repeat. Each action is held for two or four steps, so the policy is called less often. No state check, a pure speed baseline.',
     'Left: Fig. 2(a) action repeat panel. Right: side-by-side rollout clip.');
 }
 
@@ -94,7 +94,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   body(s, ['Score each decoder block by Block Influence', 'Remove 1, 2, or 4 low-influence blocks; none adjacent, early blocks and the final block kept', 'Fixed once from calibration data, not adapted at test time'], 3.4, 1.1, 1.5, 3.9, { size: 11, gap: 6 });
   if (WALL) W.pair(s, 'prune'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs depth pruning', 'same episode, same initial state');
   caption(s, 'Rollout: CogACT on WidowX, where pruning removes decoder layers without breaking the closed loop.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
-  notes(s, N, 12, 'Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them, keeping the early and final blocks. The selection is fixed before evaluation.',
+  notes(s, N, 12, 'Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four, keeping the early and final blocks. The selection is fixed before evaluation.',
     'Left: Fig. 2(a) panel. Right: side-by-side rollout clip.');
 }
 
@@ -268,7 +268,7 @@ if (!WALL) {
   });
   s.addShape('roundRect', { x: 0.5, y: 4.25, w: 9.0, h: 0.8, fill: { color: C.dark }, line: { color: C.dark, width: 0 }, rectRadius: 0.1 });
   s.addText('VLA efficiency is policy- and environment-dependent. Evaluate every trick under the target backbone and environment before applying it.', { x: 0.7, y: 4.25, w: 8.6, h: 0.8, fontFace: FONT, fontSize: 14, bold: true, color: C.darkText, align: 'center', valign: 'middle', margin: 0, isTextBox: true });
-  notes(s, N, WALL ? 13 : 12, WALL ? 'The same trick helps one backbone, leaves another unchanged, and hurts a third. Guarded reuse is most reliable, action repeat fastest but risky, depth pruning backbone-dependent. Evaluate every trick under the target backbone and environment. Thank you.' : 'Guarded reuse is most reliable. Action repeat is fastest but risky. Depth pruning is backbone-dependent. Evaluate every trick under the target backbone and environment before applying it. Thank you.',
+  notes(s, N, WALL ? 13 : 12, WALL ? 'The same trick helps one backbone and hurts another. Guarded reuse is most reliable, action repeat fastest but risky, depth pruning backbone-dependent. Evaluate every trick under the target backbone and environment. Thank you.' : 'Guarded reuse is most reliable. Action repeat is fastest but risky. Depth pruning is backbone-dependent. Evaluate every trick under the target backbone and environment before applying it. Thank you.',
     'Final slide. No names, logos, or URLs. Hold 2 s after the narration ends, then fade to black.');
 }
 

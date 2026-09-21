@@ -21,7 +21,7 @@ const colOf = cfg => COL[cfg.split('_')[0]] || C.ink;
 const TASK = {
   widowx_carrot_on_plate: 'Carrot on plate', widowx_put_eggplant_in_basket: 'Eggplant in basket', widowx_spoon_on_towel: 'Spoon on towel', widowx_stack_cube: 'Stack cube',
   google_robot_close_drawer: 'Close drawer', google_robot_move_near: 'Move near', google_robot_pick_coke_can: 'Pick coke can', google_robot_open_drawer: 'Open drawer',
-  libero_spatial__task_3: 'Bowl to plate', libero_object__task_9: 'Orange juice into basket', libero_goal__task_8: 'Bowl on plate', libero_10__task_1: 'Cream cheese and butter into basket',
+  libero_spatial__task_3: 'Bowl on cookie box to plate', libero_object__task_9: 'Orange juice into basket', libero_goal__task_8: 'Bowl on plate', libero_10__task_1: 'Cream cheese and butter into basket',
 };
 const SUITE = { libero_spatial: 'LIBERO Spatial', libero_object: 'LIBERO Object', libero_goal: 'LIBERO Goal', libero_10: 'LIBERO Long' };
 

@@ -2,10 +2,10 @@
 
 | # | s | words | w/s | narration |
 |---|---|---|---|---|
-| 1 | 13 | 36 | 2.8 | Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer? |
-| 2 | 11 | 32 | 2.9 | Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. The token count is unchanged, so this changes what the policy sees, not how much it computes. |
-| 3 | 11 | 29 | 2.6 | Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline. |
-| 4 | 12 | 32 | 2.7 | Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them, keeping the early and final blocks. The selection is fixed before evaluation. |
+| 1 | 13 | 33 | 2.5 | Vision-language-action models are capable but slow. Every call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are reported for one backbone and benchmark. Do they transfer? |
+| 2 | 11 | 28 | 2.5 | Trick one, visual foveation. It keeps a sharp central disc and blurs the periphery. Token count is unchanged, so it changes what the policy sees, not its cost. |
+| 3 | 11 | 27 | 2.5 | Trick two, action repeat. Each action is held for two or four steps, so the policy is called less often. No state check, a pure speed baseline. |
+| 4 | 12 | 30 | 2.5 | Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four, keeping the early and final blocks. The selection is fixed before evaluation. |
 | 5 | 11 | 28 | 2.5 | Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call. |
 | 6 | 12 | 31 | 2.6 | Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step. |
 | 7 | 8 | 13 | 1.6 | Now every configuration on one episode. CogACT on WidowX, 12 of 14 succeed. |
@@ -20,4 +20,4 @@
 | 16 | 7 | 9 | 1.3 | Long: 12 of 14 succeed. Only action repeat fails. |
 | 17 | 13 | 31 | 2.4 | Across seven backbones and three environments, guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline. |
 | 18 | 13 | 32 | 2.5 | Second, speed. Action repeat gives the largest speedup. SpatialVLA on WidowX drops from about 424 to 235 milliseconds per step. Depth pruning gives smaller decoder-level savings, and guarded reuse the safest trade-off. |
-| 19 | 13 | 37 | 2.8 | The same trick helps one backbone, leaves another unchanged, and hurts a third. Guarded reuse is most reliable, action repeat fastest but risky, depth pruning backbone-dependent. Evaluate every trick under the target backbone and environment. Thank you. |
+| 19 | 13 | 33 | 2.5 | The same trick helps one backbone and hurts another. Guarded reuse is most reliable, action repeat fastest but risky, depth pruning backbone-dependent. Evaluate every trick under the target backbone and environment. Thank you. |

@@ -5,7 +5,7 @@ The control loop of a frozen VLA policy (Fig. 2 of the paper). Green, orange, pu
 [1]  VLA inference is slow.  Tens to hundreds of milliseconds per step (60 to 450 ms in our runs), which limits how often the policy can observe, decide, and correct.
 [2]  Gains are reported in isolation.  Training-free tricks are typically evaluated for a specific trick, backbone, benchmark, and implementation, so transfer across models is unknown.
 Do the gains transfer across VLA models and environments,  or are they configuration-dependent?
-Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?
+Vision-language-action models are capable but slow. Every call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are reported for one backbone and benchmark. Do they transfer?
 --- slide 2
 Trick 1  Visual foveation
 What to see
@@ -13,7 +13,7 @@ Sharp central disc, progressively blurred periphery Keep ratio 20% or 50%; token
 Original
 Foveation 20%
 CogACT on WidowX, Spoon on towel, same episode, 2× speed. Green border = success, red = failure.
-Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. The token count is unchanged, so this changes what the policy sees, not how much it computes.
+Trick one, visual foveation. It keeps a sharp central disc and blurs the periphery. Token count is unchanged, so it changes what the policy sees, not its cost.
 --- slide 3
 Trick 2  Action repeat
 When to act
@@ -21,7 +21,7 @@ Hold each predicted action for k = 2 or 4 steps, about one call per k steps Cuts
 Original
 Action repeat 2
 CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
-Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.
+Trick two, action repeat. Each action is held for two or four steps, so the policy is called less often. No state check, a pure speed baseline.
 --- slide 4
 Trick 3  Depth pruning
 How much to compute
@@ -29,7 +29,7 @@ Score each decoder block by Block Influence Remove 1, 2, or 4 low-influence bloc
 Original
 Depth pruning 2
 CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
-Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four of them, keeping the early and final blocks. The selection is fixed before evaluation.
+Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four, keeping the early and final blocks. The selection is fixed before evaluation.
 --- slide 5
 Trick 4  Guarded action reuse
 When to act
@@ -156,7 +156,7 @@ Fusion task-aware
 Fusion conserv.
 Open drawer: the original fails, 8 of 14 configurations succeed.
 --- slide 13
-UniVLA, LIBERO Spatial: Bowl to plate
+UniVLA, LIBERO Spatial: Bowl on cookie box to plate
 All 14 configurations on the same episode, 3× speed, runs cut at the slide end. Green border = success, red = failure.
 Original
 Foveation 20%
@@ -268,4 +268,4 @@ Decoder-level savings, benefit depends on the backbone.
 Foveation · Temporal fusion
 Test how much the visual representation can change while the policy stays stable.
 VLA efficiency is policy- and environment-dependent. Evaluate every trick under the target backbone and environment before applying it.
-The same trick helps one backbone, leaves another unchanged, and hurts a third. Guarded reuse is most reliable, action repeat fastest but risky, depth pruning backbone-dependent. Evaluate every trick under the target backbone and environment. Thank you.
+The same trick helps one backbone and hurts another. Guarded reuse is most reliable, action repeat fastest but risky, depth pruning backbone-dependent. Evaluate every trick under the target backbone and environment. Thank you.
