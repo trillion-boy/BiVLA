@@ -78,3 +78,23 @@ before uploading on PaperPlaza (deadline 22 September 2026, 23:59 PST).
   SmolVLA LIBERO Long 289.5 → 268.9 with success 42.0 unchanged (guarded reuse).
 - Scale: 7 backbones, 3 environments, 22 pairs, 13 trick settings + original per pair,
   286 trick settings.
+
+## v3 wall deck (`ICRA27_video_v3_wall.pptx`, 19 slides, 178 s)
+
+Built with `WALL=1 node build_v2.js`, then `python3 autoplay.py` (unique shape ids, auto-play,
+auto-advance). Slides 1 to 6 as in v2 with paired clips on the trick slides, then ten video
+walls, then Fig. 1, Fig. 4, and the takeaways. Each wall shows every configuration on one
+episode with the same initial state; the success flag on each tile is read from the
+SUCCESS/FAILURE badge of the rollout video and checked against `results_corrected`.
+
+| Slides | Wall | Episode | Speed | s |
+|---|---|---|---|---|
+| 7 to 9 | CogACT, WidowX (14 tiles): eggplant, stack cube, spoon on towel | rollout 3, 5, 4 | 3×, 2×, 2× | 8, 6, 6 |
+| 10 to 12 | OpenVLA, Fractal (12 tiles, two fusion presets not rendered yet): move near, pick coke can, open drawer | rollout 4, 4, 5 | 2× | 8, 8, 8 |
+| 13 to 16 | UniVLA, LIBERO (14 tiles): Spatial task 3, Object task 9, Goal task 8, Long task 1 | rollout 1, 1, 2, 2 | 3×, 4×, 3×, 8× | 6, 6, 6, 7 |
+
+LIBERO episodes were chosen so that the tile pattern matches Table II (every configuration
+succeeds except action repeat) and the successful runs are short; runs longer than the slide
+are cut (the badge is visible from the first frame). Sources: `simulation_rollouts/`,
+index in `rollout_index.json` and `rollout_index_libero.json`, clip list in
+`clips/manifest.json`, selection in `select_clips.py` and `select_libero.py`.
