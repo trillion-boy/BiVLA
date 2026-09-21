@@ -1,4 +1,4 @@
-SPEECHMA PASTE FILE (wall deck, 19 slides). Block number = slide number. Same English voice for every block.
+SPEECHMA PASTE FILE (wall deck, 19 slides, 178 s). Block number = slide number. Same English voice for every block.
 
 ===== Slide 1 of 19 (target 13 s) =====
 Vision-language-action models are capable but slow. Every policy call runs a vision encoder and a language backbone. Training-free tricks promise cheaper inference, but gains are typically reported for one backbone and one benchmark. Do they transfer?
@@ -25,16 +25,16 @@ Now every configuration on one episode. CogACT on WidowX, 12 of 14 succeed.
 Stack cube: 11 of 14 succeed.
 
 ===== Slide 9 of 19 (target 6 s) =====
-Spoon on towel: 6 of 14 succeed.
+Spoon on towel: the original fails, 6 of 14 configurations succeed.
 
 ===== Slide 10 of 19 (target 8 s) =====
-OpenVLA on Fractal, same episode for every configuration shown. 10 of 12 succeed.
+OpenVLA on Fractal, same episode for every configuration. Move near: 12 of 14 succeed, only foveation fails.
 
 ===== Slide 11 of 19 (target 8 s) =====
-Pick coke can: 11 of 12 succeed.
+Pick coke can: 13 of 14 succeed.
 
 ===== Slide 12 of 19 (target 8 s) =====
-Open drawer: 6 of 12 succeed.
+Open drawer: the original fails, 8 of 14 configurations succeed.
 
 ===== Slide 13 of 19 (target 6 s) =====
 UniVLA on LIBERO, four suites, same episode for every configuration. Spatial: 12 of 14 succeed.

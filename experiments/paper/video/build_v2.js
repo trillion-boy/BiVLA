@@ -34,7 +34,7 @@ const legend = (s, entries, x, y, colW, size = 10) => {
   entries.forEach(([lab, col], i) => {
     const xx = x + i * colW;
     s.addShape('rect', { x: xx, y: y + 0.05, w: 0.16, h: 0.16, fill: { color: col }, line: { color: col, width: 0 } });
-    s.addText(lab, { x: xx + 0.22, y, w: colW - 0.25, h: 0.26, fontFace: FONT, fontSize: size, color: C.ink, margin: 0, isTextBox: true, valign: 'middle' });
+    s.addText(lab, { x: xx + 0.22, y, w: colW - 0.25, h: 0.22, fontFace: FONT, fontSize: size, color: C.ink, margin: 0, isTextBox: true, valign: 'middle' });
   });
 };
 const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action repeat', 'D55E00'], ['Depth pruning', '009E73'], ['Guarded reuse', 'CC79A7'], ['Temporal fusion', '8C650F']];
@@ -65,7 +65,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   title(s, 'Trick 1  Visual foveation');
   axisTag(s, 'What to see', 'blue');
   s.addImage({ path: A('m_fov.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.72 });
-  body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged, no latency saving', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 3.95, 4.4, 1.3, { size: 11.5, gap: 3 });
+  body(s, ['Sharp central disc, progressively blurred periphery', 'Keep ratio 20% or 50%; token count unchanged, no latency saving', 'Tests whether high-frequency detail is needed only near the objects and the gripper'], 0.5, 3.95, 4.4, SUB ? 1.15 : 1.3, { size: 11.5, gap: 3 });
   if (WALL) W.pair(s, 'fov'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs foveation', 'same episode, same initial state');
   caption(s, 'Rollout: original (left) and foveated observation (right), success or failure badge at the end.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 11, 'Trick one, visual foveation. The observation keeps a sharp central disc and blurs the periphery. The token count is unchanged, so this changes what the policy sees, not how much it computes.',
@@ -77,8 +77,8 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   const s = S(11);
   title(s, 'Trick 2  Action repeat');
   axisTag(s, 'When to act', 'warn');
-  s.addImage({ path: A('m_repeat.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.98 });
-  body(s, ['Hold each predicted action for k = 2 or 4 steps, about one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, 4.15, 4.4, 1.1, { size: 11.5, gap: 3 });
+  s.addImage({ path: A('m_repeat.png'), x: 0.5, y: 1.05, w: SUB ? 3.9 : 4.3, h: SUB ? 2.7 : 2.98 });
+  body(s, ['Hold each predicted action for k = 2 or 4 steps, about one call per k steps', 'Cuts policy calls by about k, but lengthens the open-loop interval', 'Fixed reduction, no state check: a speed-oriented baseline'], 0.5, SUB ? 3.85 : 4.15, 4.4, SUB ? 1.2 : 1.1, { size: 11.5, gap: 3 });
   if (WALL) W.pair(s, 'repeat'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs action repeat', 'same episode, same initial state');
   caption(s, 'Rollout: watch contact and placement, where a held action can miss a needed correction.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 11, 'Trick two, action repeat. Each predicted action is held for two or four control steps, so the policy is called less often. No state check, a pure speed baseline.',
@@ -104,7 +104,7 @@ const TRICK_COLORS = [['Original', '222222'], ['Foveation', '0072B2'], ['Action 
   title(s, 'Trick 4  Guarded action reuse');
   axisTag(s, 'When to act', 'warn');
   s.addImage({ path: A('m_guarded.png'), x: 0.5, y: 1.05, w: 4.3, h: 2.77 });
-  body(s, ['Reuse the previous action only when all gates pass: small global and local image change, recent actions agree, translation not near zero, gripper unchanged, reuse count below a cap', 'Presets: strict, moderate, aggressive'], 0.5, 3.95, 4.4, 1.3, { size: 11, gap: 3 });
+  body(s, ['Reuse the previous action only when all gates pass: small global and local image change, recent actions agree, translation not near zero, gripper unchanged, reuse count below a cap', 'Presets: strict, moderate, aggressive'], 0.5, 3.95, 4.4, SUB ? 1.15 : 1.3, { size: 11, gap: 3 });
   if (WALL) W.pair(s, 'reuse'); else { clipPlaceholder(s, 5.2, 1.05, 4.3, 3.05, 'CLIP: original vs guarded reuse', 'same episode, same initial state');
   caption(s, 'Rollout: overlay the gate indicators and a "calls skipped" counter on the right pane.', 5.2, 4.2, 4.3, { size: 10.5, h: 0.5 }); }
   notes(s, N, 11, 'Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call.',
@@ -151,7 +151,7 @@ if (WALL) { W.M.walls.forEach(w => W.wall(pres, S, w, N + 1)); }
   const s = S(WALL ? 13 : 12);
   title(s, 'Which tricks preserve success?');
   s.addImage({ path: A('fig1_teaser_nolegend.png'), x: 0.5, y: 1.0, w: 4.0, h: SUB ? 3.6 : 3.97 });
-  if (SUB) { legend(s, TRICK_COLORS.slice(0, 3), 0.5, 4.68, 1.4, 9); legend(s, TRICK_COLORS.slice(3), 0.5, 4.9, 1.4, 9); } else { legend(s, TRICK_COLORS.slice(0, 3), 0.5, 5.02, 1.4, 9.5); legend(s, TRICK_COLORS.slice(3), 0.5, 5.27, 1.4, 9.5); }
+  if (SUB) { legend(s, TRICK_COLORS.slice(0, 3), 0.5, 4.62, 1.4, 9); legend(s, TRICK_COLORS.slice(3), 0.5, 4.84, 1.4, 9); } else { legend(s, TRICK_COLORS.slice(0, 3), 0.5, 5.02, 1.4, 9.5); legend(s, TRICK_COLORS.slice(3), 0.5, 5.27, 1.4, 9.5); }
   qTag(s, 'Q1  Success', 4.9, 1.1);
   s.addText('Guarded reuse and temporal fusion are the safest for preserving success.', { x: 6.35, y: 1.0, w: 3.15, h: 0.65, fontFace: FONT, fontSize: 13.5, bold: true, color: C.ink, valign: 'middle', margin: 0, isTextBox: true });
   caption(s, 'Selected backbones also gain:', 4.9, 1.85, 4.6, { size: 11.5, color: C.ink });

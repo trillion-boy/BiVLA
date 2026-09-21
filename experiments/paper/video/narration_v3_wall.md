@@ -10,10 +10,10 @@
 | 6 | 12 | 31 | 2.6 | Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step. |
 | 7 | 8 | 13 | 1.6 | Now every configuration on one episode. CogACT on WidowX, 12 of 14 succeed. |
 | 8 | 6 | 6 | 1.0 | Stack cube: 11 of 14 succeed. |
-| 9 | 6 | 7 | 1.2 | Spoon on towel: 6 of 14 succeed. |
-| 10 | 8 | 13 | 1.6 | OpenVLA on Fractal, same episode for every configuration shown. 10 of 12 succeed. |
-| 11 | 8 | 7 | 0.9 | Pick coke can: 11 of 12 succeed. |
-| 12 | 8 | 6 | 0.8 | Open drawer: 6 of 12 succeed. |
+| 9 | 6 | 11 | 1.8 | Spoon on towel: the original fails, 6 of 14 configurations succeed. |
+| 10 | 8 | 17 | 2.1 | OpenVLA on Fractal, same episode for every configuration. Move near: 12 of 14 succeed, only foveation fails. |
+| 11 | 8 | 7 | 0.9 | Pick coke can: 13 of 14 succeed. |
+| 12 | 8 | 10 | 1.2 | Open drawer: the original fails, 8 of 14 configurations succeed. |
 | 13 | 6 | 15 | 2.5 | UniVLA on LIBERO, four suites, same episode for every configuration. Spatial: 12 of 14 succeed. |
 | 14 | 6 | 5 | 0.8 | Object: 12 of 14 succeed. |
 | 15 | 6 | 5 | 0.8 | Goal: 12 of 14 succeed. |

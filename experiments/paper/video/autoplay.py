@@ -56,7 +56,8 @@ def process(src, dst, advance=None):
         anchor = '<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>'
         extra = ''
         if advance and idx - 1 < len(advance) and advance[idx - 1]:
-            extra += f'<p:transition spd="fast" advTm="{int(advance[idx - 1] * 1000)}"><p:fade/></p:transition>'
+            # plain cut: a transition effect would add its own duration on top of advTm in the exported video
+            extra += f'<p:transition advTm="{int(advance[idx - 1] * 1000)}"/>'
         if media:
             extra += timing_xml(media); n_media += len(media)
         assert anchor in x, fn

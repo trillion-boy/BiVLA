@@ -79,22 +79,71 @@ before uploading on PaperPlaza (deadline 22 September 2026, 23:59 PST).
 - Scale: 7 backbones, 3 environments, 22 pairs, 13 trick settings + original per pair,
   286 trick settings.
 
-## v3 wall deck (`ICRA27_video_v3_wall.pptx`, 19 slides, 178 s)
+## v3 wall deck (final candidate): `ICRA27_video_v3_wall_subs.pptx`, 19 slides, 178 s
 
-Built with `WALL=1 node build_v2.js`, then `python3 autoplay.py` (unique shape ids, auto-play,
-auto-advance). Slides 1 to 6 as in v2 with paired clips on the trick slides, then ten video
-walls, then Fig. 1, Fig. 4, and the takeaways. Each wall shows every configuration on one
-episode with the same initial state; the success flag on each tile is read from the
-SUCCESS/FAILURE badge of the rollout video and checked against `results_corrected`.
+Two builds of the same deck. `ICRA27_video_v3_wall_subs.pptx` has the narration as a subtitle
+band at the bottom of every slide (the mentor's choice when it fits, and it does: every element
+ends above the band). `ICRA27_video_v3_wall.pptx` is the same deck without the band. Both are
+post-processed by `autoplay.py`: unique shape ids, every clip starts automatically when its
+slide appears, and every slide advances by itself after its target seconds with a plain cut
+(no transition effect, so the exported video length equals the sum of the slide times).
 
-| Slides | Wall | Episode | Speed | s |
-|---|---|---|---|---|
-| 7 to 9 | CogACT, WidowX (14 tiles): eggplant, stack cube, spoon on towel | rollout 3, 5, 4 | 3×, 2×, 2× | 8, 6, 6 |
-| 10 to 12 | OpenVLA, Fractal (12 tiles, two fusion presets not rendered yet): move near, pick coke can, open drawer | rollout 4, 4, 5 | 2× | 8, 8, 8 |
-| 13 to 16 | UniVLA, LIBERO (14 tiles): Spatial task 3, Object task 9, Goal task 8, Long task 1 | rollout 1, 1, 2, 2 | 3×, 4×, 3×, 8× | 6, 6, 6, 7 |
+Build: `WALL=1 SUBS=1 node build_v2.js` (or without `SUBS=1`), then
+`python3 autoplay.py in.pptx out.pptx "$(cat ICRA27_video_v3_wall_subs.secs.json)"`,
+then `python3 qa_deck.py out.pptx deck_render --subs` (renders, bounds and overlap check,
+identifying-string scan, narration files).
 
-LIBERO episodes were chosen so that the tile pattern matches Table II (every configuration
-succeeds except action repeat) and the successful runs are short; runs longer than the slide
-are cut (the badge is visible from the first frame). Sources: `simulation_rollouts/`,
-index in `rollout_index.json` and `rollout_index_libero.json`, clip list in
-`clips/manifest.json`, selection in `select_clips.py` and `select_libero.py`.
+| Slides | Content | s |
+|---|---|---|
+| 1 | Motivation (Fig. 2 pipeline row) | 13 |
+| 2 to 6 | One slide per trick, method panel from Fig. 2 plus a paired CogACT WidowX clip (original vs the Table I setting) | 11, 11, 12, 11, 12 |
+| 7 to 9 | CogACT, WidowX walls, 14 tiles: eggplant in basket (rollout 3, 3×), stack cube (rollout 5, 2×), spoon on towel (rollout 4, 2×) | 8, 6, 6 |
+| 10 to 12 | OpenVLA, Fractal walls, 14 tiles: move near (rollout 4), pick coke can (rollout 4), open drawer (rollout 5), all 2× | 8, 8, 8 |
+| 13 to 16 | UniVLA, LIBERO walls, 14 tiles: Spatial task 3 (rollout 1, 3×), Object task 9 (rollout 1, 4×), Goal task 8 (rollout 2, 3×), Long task 1 (rollout 2, 8×) | 6, 6, 6, 7 |
+| 17 | Q1 success, Fig. 1 | 13 |
+| 18 | Q2 speed, Fig. 4 and latency table | 13 |
+| 19 | Takeaways | 13 |
+
+Each wall shows every configuration on one episode with the same initial state (rollout_k is
+episode_index k-1 in `results_corrected`). Episodes were chosen by agreement with the paper's
+per-setting deltas: WidowX and Fractal against Table I (OpenVLA on Fractal: foveation fails,
+the other tricks match or beat the original), LIBERO against Table II (only action repeat
+fails). The success flag of every tile is read from the SUCCESS/FAILURE badge of the rollout
+video and compared with `episodes.jsonl` in `deck_render/clip_manifest.txt`: 147 of 150 agree;
+the 3 that differ are WidowX CogACT tiles (that set of videos is a re-run of the original
+experiment; the mentor decided to show the videos as they are). LIBERO runs longer than the
+slide are cut at the slide end (the badge is visible from the first frame). Sources:
+`simulation_rollouts/`, indexes `rollout_index.json` and `rollout_index_libero.json`, clip list
+`clips/manifest.json`, selection `select_clips.py` and `select_libero.py`.
+
+### Voice: 19 Speechma blocks
+
+`speechma_script_v3_wall.txt` holds one block per slide (longest 243 characters). Keep one
+English voice and the default speed. After downloading each MP3:
+
+1. Insert > Audio > Audio on My PC on that slide; Playback: Start Automatically, Hide During
+   Show, Play Across Slides off.
+2. The slide's Advance After is already set (Transitions tab). If an MP3 is longer than the
+   slide's target seconds, set that slide's Advance After to the MP3 length plus 0.3 s.
+3. Add up the Advance After values over the 19 slides (Slide Sorter shows them under each
+   slide). The sum must stay at or below 179 s. If it goes over, regenerate the longest
+   blocks (slides 1, 2, 4, 19) at Speechma speed +10% rather than cutting content.
+
+### Export, compress, check
+
+File > Export > Create a Video > Full HD (1080p), "Use Recorded Timings and Narrations",
+save as `ICRA27_raw.mp4`. Then:
+
+```
+ffmpeg -i ICRA27_raw.mp4 -vf scale=1280:720 -r 30 -c:v libx264 -preset slow -b:v 800k -maxrate 900k -bufsize 1800k -c:a aac -b:a 64k -movflags +faststart -map_metadata -1 ICRA27_<paperID>.mp4
+ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate -show_entries format=duration,size -of default=nw=1 ICRA27_<paperID>.mp4
+```
+
+| Rule | Target | Check |
+|---|---|---|
+| Length | at most 180 s | `duration` at or below 179 |
+| Size | at most 20 MB | `size` below 20000000 bytes (178 s at 800 kb/s is about 19 MB; use 750k if over) |
+| Resolution and rate | 16:9, height at least 480, at least 20 fps | 1280x720, 30/1 |
+| Format | mp4 | H.264 video, AAC audio |
+| Anonymity | no names, affiliations, logos, URLs | `qa_deck.py` scans the slide text; watch the exported file once end to end |
+| Upload | PaperPlaza, second window, by 22 Sept 2026 23:59 Pacific | 23 Sept 15:59 KST at the latest, upload on the 22nd |

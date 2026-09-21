@@ -37,14 +37,17 @@ function wall(pres, S, wallSpec, n) {
   const bb = isW ? 'CogACT, WidowX' : isL ? `UniVLA, ${SUITE[wallSpec.task.split('__')[0]]}` : 'OpenVLA, Fractal';
   title(s, `${bb}: ${TASK[wallSpec.task]}`, { size: isL ? 22 : 24 });
   const spd = `${wallSpec.speed}× speed`;
-  caption(s, isW ? `All 14 configurations on the same episode (same initial state), ${spd}. Green border = success, red = failure.`
-    : isL ? `All 14 configurations on the same episode, ${spd}, runs cut at the slide end. Green border = success, red = failure.`
-    : `12 of the 14 configurations on the same episode (two temporal-fusion presets not rendered), ${spd}. Green border = success, red = failure.`, 0.5, 0.95, 9.0, { size: 10.5, h: 0.28 });
+  caption(s, isL ? `All 14 configurations on the same episode, ${spd}, runs cut at the slide end. Green border = success, red = failure.`
+    : `All 14 configurations on the same episode (same initial state), ${spd}. Green border = success, red = failure.`, 0.5, 0.95, 9.0, { size: 10.5, h: 0.28 });
   const tiles = ORDER.filter(c => wallSpec.tiles.some(t => t.cfg === c)).map(c => wallSpec.tiles.find(t => t.cfg === c));
+  if (tiles.length !== 14) throw new Error(`wall ${wallSpec.env} ${wallSpec.task} has ${tiles.length} tiles`);
+  const SUB = !!process.env.SUBS; // subtitle band occupies y >= 5.13, so every wall must end above 5.05
   let cols, tw, th, x0, y0, gx, gy, lh;
-  if (isW) { cols = 5; tw = 1.56; th = 1.17; gx = 0.3; gy = 0.04; lh = 0.2; x0 = 0.5; y0 = 1.3; }
+  if (isW) { cols = 5; lh = 0.2; gy = 0.04; x0 = 0.5; y0 = 1.3; th = SUB ? 1.01 : 1.17; tw = +(th * 4 / 3).toFixed(3); gx = +((9.0 - cols * tw) / (cols - 1)).toFixed(3); }
   else if (isL) { cols = 7; tw = 1.2; th = 1.415; gx = 0.1; gy = 0.1; lh = 0.2; x0 = 0.5; y0 = 1.45; }
-  else { cols = 6; tw = 1.22; th = 1.57; gx = 0.336; gy = 0.1; lh = 0.2; x0 = 0.5; y0 = 1.35; }
+  else { cols = 7; tw = 1.2; th = 1.543; gx = 0.1; gy = 0.1; lh = 0.2; x0 = 0.5; y0 = 1.35; }
+  const rows = Math.ceil(tiles.length / cols), yEnd = y0 + rows * (lh + th + gy) - gy;
+  if (yEnd > (SUB ? 5.05 : 5.5)) throw new Error(`wall ${wallSpec.task} ends at ${yEnd.toFixed(2)} in`);
   tiles.forEach((t, i) => {
     const r = Math.floor(i / cols), c = i % cols;
     const x = x0 + c * (tw + gx), y = y0 + r * (th + lh + gy);
@@ -55,12 +58,17 @@ function wall(pres, S, wallSpec, n) {
   const ok = tiles.filter(t => t.success).length;
   const firstOfEnv = M.walls.find(w => w.env === wallSpec.env) === wallSpec, last = wallSpec === M.walls[M.walls.length - 1];
   const name = isL ? SUITE[wallSpec.task.split('__')[0]].replace('LIBERO ', '') : TASK[wallSpec.task];
+  const origOk = tiles.find(t => t.cfg === 'original').success;
+  const failed = tiles.filter(t => !t.success).map(t => t.cfg.split('_')[0]);
+  const onlyFov = failed.length > 0 && failed.every(f => f === 'fixed');
+  const count = `${ok} of ${tiles.length} succeed`;
   notes(s, n, secs, firstOfEnv
-    ? (isW ? `Now every configuration on one episode. CogACT on WidowX, ${ok} of ${tiles.length} succeed.`
-      : isL ? `UniVLA on LIBERO, four suites, same episode for every configuration. Spatial: ${ok} of ${tiles.length} succeed.`
-      : `OpenVLA on Fractal, same episode for every configuration shown. ${ok} of ${tiles.length} succeed.`)
-    : last ? `${name}: ${ok} of ${tiles.length} succeed. Only action repeat fails.`
-    : `${name}: ${ok} of ${tiles.length} succeed.`,
+    ? (isW ? `Now every configuration on one episode. CogACT on WidowX, ${count}.`
+      : isL ? `UniVLA on LIBERO, four suites, same episode for every configuration. Spatial: ${count}.`
+      : `OpenVLA on Fractal, same episode for every configuration. Move near: ${count}${onlyFov ? ', only foveation fails' : ''}.`)
+    : last ? `${name}: ${count}. Only action repeat fails.`
+    : !origOk ? `${name}: the original fails, ${ok} of ${tiles.length} configurations succeed.`
+    : `${name}: ${count}.`,
     `Video wall, ${tiles.length} clips at ${wallSpec.speed}x${wallSpec.cut ? ', clips cut at the slide length' : `, longest ${wallSpec.maxdur} s`}; the slide auto-advances after ${secs} s. Clips auto-play on slide entry.`);
   return secs;
 }
