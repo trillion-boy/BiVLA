@@ -1185,41 +1185,41 @@
    }
   },
   "prune": {
-   "task": "widowx_stack_cube",
+   "task": "widowx_carrot_on_plate",
    "k": 3,
-   "cfg": "depth_pruning1",
+   "cfg": "depth_pruning2",
    "orig": {
-    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_stack_cube/rollout_3.mp4",
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_3.mp4",
     "out": "clips/pair_prune_orig.mp4",
     "success": false,
     "dur": 6.0,
     "cfg": "original"
    },
    "trick": {
-    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning1/widowx_stack_cube/rollout_3.mp4",
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning2/widowx_carrot_on_plate/rollout_3.mp4",
     "out": "clips/pair_prune_trick.mp4",
     "success": true,
-    "dur": 5.7,
-    "cfg": "depth_pruning1"
+    "dur": 2.3,
+    "cfg": "depth_pruning2"
    }
   },
   "reuse": {
-   "task": "widowx_put_eggplant_in_basket",
-   "k": 1,
-   "cfg": "guarded_reuse_aggressive",
+   "task": "widowx_carrot_on_plate",
+   "k": 3,
+   "cfg": "guarded_reuse_moderate",
    "orig": {
-    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_put_eggplant_in_basket/rollout_1.mp4",
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_3.mp4",
     "out": "clips/pair_reuse_orig.mp4",
     "success": false,
-    "dur": 12.0,
+    "dur": 6.0,
     "cfg": "original"
    },
    "trick": {
-    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_aggressive/widowx_put_eggplant_in_basket/rollout_1.mp4",
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_moderate/widowx_carrot_on_plate/rollout_3.mp4",
     "out": "clips/pair_reuse_trick.mp4",
     "success": true,
-    "dur": 3.0,
-    "cfg": "guarded_reuse_aggressive"
+    "dur": 2.5,
+    "cfg": "guarded_reuse_moderate"
    }
   },
   "fusion": {
