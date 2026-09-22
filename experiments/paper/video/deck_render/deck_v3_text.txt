@@ -27,8 +27,8 @@ Trick 3  Depth pruning
 How much to compute
 Score each decoder block by Block Influence Remove 1, 2, or 4 low-influence blocks; none adjacent, early blocks and the final block kept Fixed once from calibration data, not adapted at test time
 Original
-Depth pruning 2
-CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
+Depth pruning 1
+CogACT on WidowX, Stack cube, same episode, 2× speed. Green border = success, red = failure.
 Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four, keeping the early and final blocks. The selection is fixed before evaluation.
 --- slide 5
 Trick 4  Guarded action reuse

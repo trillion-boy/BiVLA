@@ -156,13 +156,13 @@ PAIR fov task=widowx_put_eggplant_in_basket episode=rollout_5 cfg=fixed_foveatio
 PAIR repeat task=widowx_carrot_on_plate episode=rollout_3 cfg=action_repeat4
    original                                 video=False record=False  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_3.mp4
    trick                                    video=True  record=False  MISMATCH  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/action_repeat4/widowx_carrot_on_plate/rollout_3.mp4
-PAIR prune task=widowx_carrot_on_plate episode=rollout_3 cfg=depth_pruning2
-   original                                 video=False record=False  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_3.mp4
-   trick                                    video=True  record=True   src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning2/widowx_carrot_on_plate/rollout_3.mp4
+PAIR prune task=widowx_stack_cube episode=rollout_3 cfg=depth_pruning1
+   original                                 video=False record=False  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_stack_cube/rollout_3.mp4
+   trick                                    video=True  record=False  MISMATCH  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning1/widowx_stack_cube/rollout_3.mp4
 PAIR reuse task=widowx_put_eggplant_in_basket episode=rollout_1 cfg=guarded_reuse_aggressive
    original                                 video=False record=False  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_put_eggplant_in_basket/rollout_1.mp4
    trick                                    video=True  record=False  MISMATCH  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/guarded_reuse_aggressive/widowx_put_eggplant_in_basket/rollout_1.mp4
 PAIR fusion task=widowx_spoon_on_towel episode=rollout_4 cfg=temporal_fusion_motion_entropy
    original                                 video=False record=False  src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_spoon_on_towel/rollout_4.mp4
    trick                                    video=True  record=True   src=/home/user/BiVLA/simulation_rollouts/widowx/cogact/temporal_fusion_motion_entropy/widowx_spoon_on_towel/rollout_4.mp4
-TOTAL tiles 150, video/record mismatches 5
+TOTAL tiles 150, video/record mismatches 6

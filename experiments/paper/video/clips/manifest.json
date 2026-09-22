@@ -1185,22 +1185,22 @@
    }
   },
   "prune": {
-   "task": "widowx_carrot_on_plate",
+   "task": "widowx_stack_cube",
    "k": 3,
-   "cfg": "depth_pruning2",
+   "cfg": "depth_pruning1",
    "orig": {
-    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_carrot_on_plate/rollout_3.mp4",
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/original/widowx_stack_cube/rollout_3.mp4",
     "out": "clips/pair_prune_orig.mp4",
     "success": false,
     "dur": 6.0,
     "cfg": "original"
    },
    "trick": {
-    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning2/widowx_carrot_on_plate/rollout_3.mp4",
+    "src": "/home/user/BiVLA/simulation_rollouts/widowx/cogact/depth_pruning1/widowx_stack_cube/rollout_3.mp4",
     "out": "clips/pair_prune_trick.mp4",
     "success": true,
-    "dur": 2.3,
-    "cfg": "depth_pruning2"
+    "dur": 5.7,
+    "cfg": "depth_pruning1"
    }
   },
   "reuse": {

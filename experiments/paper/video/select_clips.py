@@ -8,7 +8,7 @@ WALLS=[('widowx','cogact','widowx_put_eggplant_in_basket',3,3.0),('widowx','coga
 # Pairs on the trick slides (mentor's request): the original fails and the trick succeeds, chosen from the last frames
 # (object clearly placed) and, where possible, the Table I setting. task, rollout k, trick config, slide seconds
 PAIRS={'fov':('widowx_put_eggplant_in_basket',5,'fixed_foveation_keep20',11),'repeat':('widowx_carrot_on_plate',3,'action_repeat4',11),
-       'prune':('widowx_carrot_on_plate',3,'depth_pruning2',12),'reuse':('widowx_put_eggplant_in_basket',1,'guarded_reuse_aggressive',11),
+       'prune':('widowx_stack_cube',3,'depth_pruning1',12),'reuse':('widowx_put_eggplant_in_basket',1,'guarded_reuse_aggressive',11),
        'fusion':('widowx_spoon_on_towel',4,'temporal_fusion_motion_entropy',12)}
 def enc(env,model,cfg,task,k,speed,out,cap=None):
     src=f'{SRC}/{env}/{model}/{cfg}/{task}/rollout_{k}.mp4'; scale='480:360' if env=='widowx' else '224:288'
