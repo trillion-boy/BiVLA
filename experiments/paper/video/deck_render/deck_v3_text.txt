@@ -12,14 +12,14 @@ What to see
 Sharp central disc, progressively blurred periphery Keep ratio 20% or 50%; token count unchanged, no latency saving Tests whether high-frequency detail is needed only near the objects and the gripper
 Original
 Foveation 20%
-CogACT on WidowX, Spoon on towel, same episode, 2× speed. Green border = success, red = failure.
+CogACT on WidowX, Eggplant in basket, same episode, 2× speed. Green border = success, red = failure.
 Trick one, visual foveation. It keeps a sharp central disc and blurs the periphery. Token count is unchanged, so it changes what the policy sees, not its cost.
 --- slide 3
 Trick 2  Action repeat
 When to act
 Hold each predicted action for k = 2 or 4 steps, about one call per k steps Cuts policy calls by about k, but lengthens the open-loop interval Fixed reduction, no state check: a speed-oriented baseline
 Original
-Action repeat 2
+Action repeat 4
 CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
 Trick two, action repeat. Each action is held for two or four steps, so the policy is called less often. No state check, a pure speed baseline.
 --- slide 4
@@ -36,7 +36,7 @@ When to act
 Reuse the previous action only when all gates pass: small global and local image change, recent actions agree, translation not near zero, gripper unchanged, reuse count below a cap Presets: strict, moderate, aggressive
 Original
 Reuse aggressive
-CogACT on WidowX, Stack cube, same episode, 2× speed. Green border = success, red = failure.
+CogACT on WidowX, Eggplant in basket, same episode, 2× speed. Green border = success, red = failure.
 Trick four, guarded reuse. The previous action is reused only while every gate passes: image change, action agreement, translation, and gripper. Any failed gate restores a full call.
 --- slide 6
 Trick 5  Temporal fusion

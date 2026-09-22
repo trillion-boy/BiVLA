@@ -96,7 +96,7 @@ identifying-string scan, narration files).
 | Slides | Content | s |
 |---|---|---|
 | 1 | Motivation (Fig. 2 pipeline row) | 13 |
-| 2 to 6 | One slide per trick, method panel from Fig. 2 plus a paired CogACT WidowX clip (original vs the Table I setting) | 11, 11, 12, 11, 12 |
+| 2 to 6 | One slide per trick, method panel from Fig. 2 plus a paired CogACT WidowX clip where the original fails and the trick succeeds (foveation 20%, action repeat 4, depth pruning 2, reuse aggressive, fusion motion-entropy) | 11, 11, 12, 11, 12 |
 | 7 to 9 | CogACT, WidowX walls, 14 tiles: eggplant in basket (rollout 3, 3×), stack cube (rollout 5, 2×), spoon on towel (rollout 4, 2×) | 8, 6, 6 |
 | 10 to 12 | OpenVLA, Fractal walls, 14 tiles: move near (rollout 4), pick coke can (rollout 4), open drawer (rollout 5), all 2× | 8, 8, 8 |
 | 13 to 16 | UniVLA, LIBERO walls, 14 tiles: Spatial task 3 (rollout 1, 3×), Object task 9 (rollout 1, 4×), Goal task 8 (rollout 2, 3×), Long task 1 (rollout 2, 8×) | 6, 6, 6, 7 |
@@ -109,9 +109,10 @@ episode_index k-1 in `results_corrected`). Episodes were chosen by agreement wit
 per-setting deltas: WidowX and Fractal against Table I (OpenVLA on Fractal: foveation fails,
 the other tricks match or beat the original), LIBERO against Table II (only action repeat
 fails). The success flag of every tile is read from the SUCCESS/FAILURE badge of the rollout
-video and compared with `episodes.jsonl` in `deck_render/clip_manifest.txt`: 147 of 150 agree;
-the 3 that differ are WidowX CogACT tiles (that set of videos is a re-run of the original
-experiment; the mentor decided to show the videos as they are). LIBERO runs longer than the
+video and compared with `episodes.jsonl` in `deck_render/clip_manifest.txt`: 145 of 150 agree;
+the 5 that differ are WidowX CogACT clips (that set of videos is a re-run of the original
+experiment; the mentor decided to show the videos as they are, so every border, count and
+narration follows the video badge). LIBERO runs longer than the
 slide are cut at the slide end (the badge is visible from the first frame). Sources:
 `simulation_rollouts/`, indexes `rollout_index.json` and `rollout_index_libero.json`, clip list
 `clips/manifest.json`, selection `select_clips.py` and `select_libero.py`.
