@@ -154,16 +154,15 @@ ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_r
 
 `ICRA27_video_final.mp4` was rendered from the deck with `prep_audio.py` (Speechma MP3s from
 `videos/`: leading and trailing silence trimmed, pauses shortened to 0.35 s, loudness normalised to
--16 LUFS; slides 5, 13, 18 with slightly shorter pauses, slide 18 at 1.05x tempo) and
+-16 LUFS; slides 5, 7, 10, 13, 18 with 0.25 to 0.30 s pauses and slides 7, 10, 13, 18 at 1.05x tempo) and
 `render_video.py` (slide PNG at 1280x720 + the clips overlaid at their slide positions from
 `final_layout.json` + narration, one segment per slide, concatenated, H.264 crf 21 capped at
-800 kb/s, AAC 64 kb/s mono). Slide times in `final_secs.json`: slide 12 shortened to 7 s, slides
-13 and 18 lengthened to 7 s and 14 s so their narration fits; total 179 s. The two pptx files
+800 kb/s, AAC 64 kb/s mono). Slide times in `final_secs.json`: [13, 11, 11, 12, 11, 12, 9, 6, 6, 9, 7, 6, 8, 6, 5, 7, 13, 14, 13], total 179 s (walls 7, 10, 13 lengthened for the re-recorded per-episode narration, walls 11, 12, 15 shortened; every clip is cut at its slide end at the latest). The two pptx files
 carry the same auto-advance times.
 
 | Rule | Result |
 |---|---|
 | Length at most 180 s | 179.03 s |
-| Size at most 20 MB | 7.7 MB |
+| Size at most 20 MB | 7.8 MB |
 | mp4, 16:9, height at least 480, at least 20 fps | H.264 1280x720, 30 fps, AAC audio |
 | Anonymity | slide text scanned, no metadata (map_metadata -1) |

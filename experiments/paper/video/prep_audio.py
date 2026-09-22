@@ -5,7 +5,7 @@ ff = imageio_ffmpeg.get_ffmpeg_exe()
 src, secs = sys.argv[1], json.load(open(sys.argv[2])); pause = float(sys.argv[3]) if len(sys.argv) > 3 else 0.35
 os.makedirs('audio', exist_ok=True)
 # per-slide overrides: (kept pause, tempo)
-OVERRIDE = {5: (0.25, 1.0), 13: (0.30, 1.03), 18: (0.30, 1.05)}
+OVERRIDE = {5: (0.25, 1.0), 7: (0.30, 1.05), 10: (0.30, 1.05), 13: (0.30, 1.05), 18: (0.30, 1.05)}
 def dur(f):
     pr = subprocess.run([ff, '-i', f], capture_output=True, text=True).stderr
     m = re.search(r'Duration: (\d+):(\d+):([\d.]+)', pr); return int(m.group(2)) * 60 + float(m.group(3))
