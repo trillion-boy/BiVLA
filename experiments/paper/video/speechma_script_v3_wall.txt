@@ -19,34 +19,34 @@ Trick four, guarded reuse. The previous action is reused only while every gate p
 Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step.
 
 ===== Slide 7 of 19 (target 8 s) =====
-Now every configuration on one episode. CogACT on WidowX, 12 of 14 succeed.
+Now every configuration on one episode. CogACT on WidowX, eggplant: 12 of 14 configurations succeed, the two action repeat runs fail.
 
 ===== Slide 8 of 19 (target 6 s) =====
-Stack cube: 11 of 14 succeed.
+Stack cube, one episode: 11 of 14 configurations succeed.
 
 ===== Slide 9 of 19 (target 6 s) =====
-Spoon on towel: the original fails, 6 of 14 configurations succeed.
+Spoon on towel, one episode: the original fails, 6 of 14 configurations succeed.
 
 ===== Slide 10 of 19 (target 8 s) =====
-OpenVLA on Fractal, same episode for every configuration. Move near: 12 of 14 succeed, only foveation fails.
+OpenVLA on Fractal, again one episode per slide. Move near: 12 of 14 configurations succeed, the two foveation runs fail.
 
 ===== Slide 11 of 19 (target 8 s) =====
-Pick coke can: 13 of 14 succeed.
+Pick coke can, one episode: 13 of 14 configurations succeed.
 
 ===== Slide 12 of 19 (target 8 s) =====
-Open drawer: the original fails, 8 of 14 configurations succeed.
+Open drawer, one episode: the original fails, 8 of 14 configurations succeed.
 
 ===== Slide 13 of 19 (target 6 s) =====
-UniVLA on LIBERO, four suites, same episode for every configuration. Spatial: 12 of 14 succeed.
+UniVLA on LIBERO, one episode per suite. Spatial: 12 of 14 configurations succeed, the two action repeat runs fail.
 
 ===== Slide 14 of 19 (target 6 s) =====
-Object: 12 of 14 succeed.
+Object, one episode: 12 of 14 configurations succeed.
 
 ===== Slide 15 of 19 (target 6 s) =====
-Goal: 12 of 14 succeed.
+Goal, one episode: 12 of 14 configurations succeed.
 
 ===== Slide 16 of 19 (target 7 s) =====
-Long: 12 of 14 succeed. Only action repeat fails.
+Long, one episode: 12 of 14 configurations succeed, the two action repeat runs fail.
 
 ===== Slide 17 of 19 (target 13 s) =====
 Across seven backbones and three environments, guarded reuse and temporal fusion are the safest for preserving success. Foveation and depth pruning help selected backbones. Action repeat is mainly a speed baseline.
