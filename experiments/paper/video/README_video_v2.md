@@ -109,8 +109,8 @@ episode_index k-1 in `results_corrected`). Episodes were chosen by agreement wit
 per-setting deltas: WidowX and Fractal against Table I (OpenVLA on Fractal: foveation fails,
 the other tricks match or beat the original), LIBERO against Table II (only action repeat
 fails). The success flag of every tile is read from the SUCCESS/FAILURE badge of the rollout
-video and compared with `episodes.jsonl` in `deck_render/clip_manifest.txt`: 145 of 150 agree;
-the 5 that differ are WidowX CogACT clips (that set of videos is a re-run of the original
+video and compared with `episodes.jsonl` in `deck_render/clip_manifest.txt`: 144 of 150 agree;
+the 6 that differ are WidowX CogACT clips (that set of videos is a re-run of the original
 experiment; the mentor decided to show the videos as they are, so every border, count and
 narration follows the video badge). LIBERO runs longer than the
 slide are cut at the slide end (the badge is visible from the first frame). Sources:
