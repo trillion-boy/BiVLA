@@ -20,15 +20,15 @@ When to act
 Hold each predicted action for k = 2 or 4 steps, about one call per k steps Cuts policy calls by about k, but lengthens the open-loop interval Fixed reduction, no state check: a speed-oriented baseline
 Original
 Action repeat 4
-CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
+OpenVLA on Fractal, Pick coke can, same episode, 1.5× speed. Green border = success, red = failure.
 Trick two, action repeat. Each action is held for two or four steps, so the policy is called less often. No state check, a pure speed baseline.
 --- slide 4
 Trick 3  Depth pruning
 How much to compute
 Score each decoder block by Block Influence Remove 1, 2, or 4 low-influence blocks; none adjacent, early blocks and the final block kept Fixed once from calibration data, not adapted at test time
 Original
-Depth pruning 2
-CogACT on WidowX, Carrot on plate, same episode, 2× speed. Green border = success, red = failure.
+Depth pruning 1
+CogACT on WidowX, Stack cube, same episode, 2× speed. Green border = success, red = failure.
 Trick three, depth pruning. Decoder blocks that barely change their hidden states are removed, one, two, or four, keeping the early and final blocks. The selection is fixed before evaluation.
 --- slide 5
 Trick 4  Guarded action reuse
@@ -44,8 +44,8 @@ How much to compute
 Reuse visual tokens of stable patches from the previous call Recompute patches with motion, local structure, language attention, or in the interaction region Presets: motion-entropy, task-aware, conservative-adaptive
 Top: fusion mask. Bottom: VLA-Cache criterion.
 Original
-Fusion motion
-CogACT on WidowX, Spoon on towel, same episode, 2× speed. Green border = success, red = failure.
+Fusion task-aware
+OpenVLA on Fractal, Close drawer, same episode, 1.5× speed. Green border = success, red = failure.
 Trick five, temporal fusion. Visual tokens of stable patches are reused from the previous call, while patches with motion, entropy, or language attention are recomputed. The policy still runs every step.
 --- slide 7
 CogACT, WidowX: Eggplant in basket

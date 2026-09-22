@@ -96,7 +96,7 @@ identifying-string scan, narration files).
 | Slides | Content | s |
 |---|---|---|
 | 1 | Motivation (Fig. 2 pipeline row) | 13 |
-| 2 to 6 | One slide per trick, method panel from Fig. 2 plus a paired CogACT WidowX clip where the original fails and the trick succeeds (foveation 20%, action repeat 4, depth pruning 2, reuse moderate, fusion motion-entropy) | 11, 11, 12, 11, 12 |
+| 2 to 6 | One slide per trick, method panel from Fig. 2 plus a paired clip where the original fails and the trick succeeds, one task per slide: foveation 20% (CogACT WidowX eggplant, rollout 5), action repeat 4 (OpenVLA Fractal pick coke can, rollout 1), depth pruning 1 (CogACT WidowX stack cube, rollout 3), reuse moderate (CogACT WidowX carrot on plate, rollout 3), task-aware fusion (OpenVLA Fractal close drawer, rollout 2) | 11, 11, 12, 11, 12 |
 | 7 to 9 | CogACT, WidowX walls, 14 tiles: eggplant in basket (rollout 3, 3×), stack cube (rollout 5, 2×), spoon on towel (rollout 4, 2×) | 8, 6, 6 |
 | 10 to 12 | OpenVLA, Fractal walls, 14 tiles: move near (rollout 4), pick coke can (rollout 4), open drawer (rollout 5), all 2× | 8, 8, 8 |
 | 13 to 16 | UniVLA, LIBERO walls, 14 tiles: Spatial task 3 (rollout 1, 3×), Object task 9 (rollout 1, 4×), Goal task 8 (rollout 2, 3×), Long task 1 (rollout 2, 8×) | 6, 6, 6, 7 |

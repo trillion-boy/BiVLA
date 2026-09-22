@@ -5,11 +5,14 @@ rows=json.load(open('rollout_index.json')); idx={(r['env'],r['task'],r['k'],r['c
 # Walls: chosen by agreement with Table I signs (see selection log): one episode per task, three tasks per environment
 WALLS=[('widowx','cogact','widowx_put_eggplant_in_basket',3,3.0),('widowx','cogact','widowx_stack_cube',5,2.0),('widowx','cogact','widowx_spoon_on_towel',4,2.0),
        ('fractal','openvla','google_robot_move_near',4,2.0),('fractal','openvla','google_robot_pick_coke_can',4,2.0),('fractal','openvla','google_robot_open_drawer',5,2.0)]
-# Pairs on the trick slides (mentor's request): the original fails and the trick succeeds, chosen from the last frames
-# (object clearly placed) and, where possible, the Table I setting. task, rollout k, trick config, slide seconds
-PAIRS={'fov':('widowx_put_eggplant_in_basket',5,'fixed_foveation_keep20',11),'repeat':('widowx_carrot_on_plate',3,'action_repeat4',11),
-       'prune':('widowx_carrot_on_plate',3,'depth_pruning2',12),'reuse':('widowx_carrot_on_plate',3,'guarded_reuse_moderate',11),
-       'fusion':('widowx_spoon_on_towel',4,'temporal_fusion_motion_entropy',12)}
+# Pairs on the trick slides (mentor's request): the original fails and the trick succeeds; one distinct task per slide,
+# chosen from the frames (object clearly placed). env, task, rollout k, trick config, slide seconds, playback speed
+PAIRS={'fov':('widowx','widowx_put_eggplant_in_basket',5,'fixed_foveation_keep20',11,2.0),
+       'repeat':('fractal','google_robot_pick_coke_can',1,'action_repeat4',11,1.5),
+       'prune':('widowx','widowx_stack_cube',3,'depth_pruning1',12,2.0),
+       'reuse':('widowx','widowx_carrot_on_plate',3,'guarded_reuse_moderate',11,2.0),
+       'fusion':('fractal','google_robot_close_drawer',2,'temporal_fusion_task_aware',12,1.5)}
+MODEL={'widowx':'cogact','fractal':'openvla'}
 def enc(env,model,cfg,task,k,speed,out,cap=None):
     src=f'{SRC}/{env}/{model}/{cfg}/{task}/rollout_{k}.mp4'; scale='480:360' if env=='widowx' else '224:288'
     d=idx[(env,task,k,cfg)]; cap=str(cap or math.ceil(d['dur']/speed))  # never longer than the whole seconds the slide is held (frame rounding gave 8.1 s clips on an 8 s slide)
@@ -22,9 +25,9 @@ for env,model,task,k,speed in WALLS:
     tiles=[enc(env,model,cfg,task,k,speed,f'clips/{env}_{task}_k{k}_{cfg}.mp4') for cfg in sorted(os.listdir(f'{SRC}/{env}/{model}'))]
     manifest['walls'].append(dict(env=env,model=model,task=task,k=k,speed=speed,tiles=tiles,maxdur=max(t['dur'] for t in tiles)))
     print('wall',env,task,k,''.join('S' if t['success'] else '.' for t in tiles),'max',max(t['dur'] for t in tiles))
-for key,(task,k,cfg,secs) in PAIRS.items():
-    a=enc('widowx','cogact','original',task,k,2.0,f'clips/pair_{key}_orig.mp4',cap=secs); b=enc('widowx','cogact',cfg,task,k,2.0,f'clips/pair_{key}_trick.mp4',cap=secs)
+for key,(env,task,k,cfg,secs,speed) in PAIRS.items():
+    a=enc(env,MODEL[env],'original',task,k,speed,f'clips/pair_{key}_orig.mp4',cap=secs); b=enc(env,MODEL[env],cfg,task,k,speed,f'clips/pair_{key}_trick.mp4',cap=secs)
     assert (not a['success']) and b['success'], (key,a['success'],b['success'])
-    manifest['pairs'][key]=dict(task=task,k=k,cfg=cfg,orig=a,trick=b); print('pair',key,cfg,task,k,'orig',a['success'],'trick',b['success'])
+    manifest['pairs'][key]=dict(env=env,model=MODEL[env],task=task,k=k,cfg=cfg,speed=speed,orig=a,trick=b); print('pair',key,env,cfg,task,k,'orig',a['success'],'trick',b['success'])
 json.dump(manifest,open('clips/manifest.json','w'),indent=1)
 print('MB',round(sum(os.path.getsize(f) for f in glob.glob('clips/*.mp4'))/1e6,1))

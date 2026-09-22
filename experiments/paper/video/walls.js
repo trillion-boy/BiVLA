@@ -76,13 +76,16 @@ function wall(pres, S, wallSpec, n) {
 // Paired clip (original vs trick) for a trick slide, in the 4.3 x 3.05 in area at x=5.2, y=1.05
 function pair(s, key) {
   const p = M.pairs[key];
-  const w = 2.08, h = 1.56, y = 1.12;
-  [[p.orig, 'Original', 5.2], [p.trick, LABEL[p.cfg], 5.2 + w + 0.14]].forEach(([clip, lab, x]) => {
+  const portrait = p.env === 'fractal';            // Fractal clips are 224 x 288, WidowX 640 x 480
+  const h = portrait ? 1.9 : 1.56, w = portrait ? +(h * 224 / 288).toFixed(2) : 2.08, y = 1.12, gap = 0.14;
+  const x0 = 5.2 + (4.3 - (2 * w + gap)) / 2;      // centred in the 4.3 in column
+  [[p.orig, 'Original', x0], [p.trick, LABEL[p.cfg], x0 + w + gap]].forEach(([clip, lab, x]) => {
     s.addText(lab, { x, y: y - 0.22, w, h: 0.2, fontFace: FONT, fontSize: 9.5, bold: true, color: C.ink, margin: 0, isTextBox: true, valign: 'bottom' });
     video(s, clip, x, y, w, h);
     s.addShape('rect', { x, y, w, h, fill: { type: 'none' }, line: { color: clip.success ? '2E8B57' : 'B03A2E', width: 1.5 } });
   });
-  caption(s, `CogACT on WidowX, ${TASK[p.task]}, same episode, 2× speed. Green border = success, red = failure.`, 5.2, y + h + 0.08, 4.3, { size: 10, h: 0.45 });
+  const bb = p.env === 'widowx' ? 'CogACT on WidowX' : 'OpenVLA on Fractal';
+  caption(s, `${bb}, ${TASK[p.task]}, same episode, ${p.speed}× speed. Green border = success, red = failure.`, 5.2, y + h + 0.08, 4.3, { size: 10, h: 0.45 });
 }
 
 module.exports = { wall, pair, M };
