@@ -56,19 +56,23 @@ function wall(pres, S, wallSpec, n) {
     s.addShape('rect', { x, y: y + lh, w: tw, h: th, fill: { type: 'none' }, line: { color: t.success ? '2E8B57' : 'B03A2E', width: 1.5 } });
   });
   const ok = tiles.filter(t => t.success).length;
-  const firstOfEnv = M.walls.find(w => w.env === wallSpec.env) === wallSpec, last = wallSpec === M.walls[M.walls.length - 1];
+  const firstOfEnv = M.walls.find(w => w.env === wallSpec.env) === wallSpec;
   const name = isL ? SUITE[wallSpec.task.split('__')[0]].replace('LIBERO ', '') : TASK[wallSpec.task];
   const origOk = tiles.find(t => t.cfg === 'original').success;
-  const failed = tiles.filter(t => !t.success).map(t => t.cfg.split('_')[0]);
-  const onlyFov = failed.length > 0 && failed.every(f => f === 'fixed');
-  const count = `${ok} of ${tiles.length} succeed`;
-  notes(s, n, secs, firstOfEnv
-    ? (isW ? `Now every configuration on one episode. CogACT on WidowX, ${count}.`
-      : isL ? `UniVLA on LIBERO, four suites, same episode for every configuration. Spatial: ${count}.`
-      : `OpenVLA on Fractal, same episode for every configuration. Move near: ${count}${onlyFov ? ', only foveation fails' : ''}.`)
-    : last ? `${name}: ${count}. Only action repeat fails.`
-    : !origOk ? `${name}: the original fails, ${ok} of ${tiles.length} configurations succeed.`
-    : `${name}: ${count}.`,
+  const fails = tiles.filter(t => !t.success).map(t => t.cfg);
+  const fam = { fixed: 'foveation', action: 'action repeat', depth: 'depth pruning', guarded: 'guarded reuse', temporal: 'temporal fusion' };
+  const oneFamily = fails.length === 2 && fails.every(c => c.split('_')[0] === fails[0].split('_')[0]) ? fam[fails[0].split('_')[0]] : null;
+  // Every sentence says "one episode" and "configurations": the counts are outcomes on this episode, not success rates.
+  const count = `${ok} of 14 configurations succeed`;
+  const lastWall = wallSpec === M.walls[M.walls.length - 1];
+  const tail = oneFamily && (firstOfEnv || lastWall) ? `, the two ${oneFamily} runs fail` : '';
+  const narr = firstOfEnv
+    ? (isW ? `Now every configuration on one episode. CogACT on WidowX, eggplant: ${count}${tail}.`
+      : isL ? `UniVLA on LIBERO, one episode per suite. Spatial: ${count}${tail}.`
+      : `OpenVLA on Fractal, again one episode per slide. Move near: ${count}${tail}.`)
+    : !origOk ? `${name}, one episode: the original fails, ${count}.`
+    : `${name}, one episode: ${count}${tail}.`;
+  notes(s, n, secs, narr,
     `Video wall, ${tiles.length} clips at ${wallSpec.speed}x${wallSpec.cut ? ', clips cut at the slide length' : `, longest ${wallSpec.maxdur} s`}; the slide auto-advances after ${secs} s. Clips auto-play on slide entry.`);
   return secs;
 }
