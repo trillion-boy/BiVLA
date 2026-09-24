@@ -1,0 +1,1 @@
+All plots are drawn from the same records as the tables. Success change is in percentage points against the original on the same episodes; speedup is the original's time per step divided by the trick's. The trade-off plots use the layout of the paper's Fig. 4 for the seven backbone and environment pairs that Fig. 4 does not show.

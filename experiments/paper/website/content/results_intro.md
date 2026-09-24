@@ -1,0 +1,1 @@
+The paper's Tables I and II show one setting per trick and its Figs. 1, 4 and 5 show WidowX in full but Fractal and LIBERO only pooled. This section gives every setting with its paired p-value (2.1), the split by task (2.2), the figures for the environments the paper could not show (2.3), the statistics behind the reading of the p-values (2.4) and qualitative rollouts (2.5).

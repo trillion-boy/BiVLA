@@ -1,0 +1,1 @@
+The paper pools the tasks of each environment. The tables below split every configuration by task (50 episodes per task on SimplerEnv, 10 per task on LIBERO), with the change against the original in parentheses. Expand a pair to see its tasks.
