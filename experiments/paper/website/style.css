@@ -28,7 +28,8 @@ li { margin-bottom: 0.3em; }
 strong { color: var(--ink); }
 h2 { font-size: 1.45rem; color: var(--ink); margin: 56px 0 18px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-weight: 700; }
 h3 { font-size: 1.15rem; color: var(--ink); margin: 36px 0 10px; font-weight: 650; }
-h4 { font-size: 1rem; margin: 22px 0 6px; color: var(--accent); font-weight: 650; }
+h4 { font-size: 0.95rem; margin: 18px 0 4px; color: var(--ink); font-weight: 650; }
+details > h4 { margin: 14px 14px 4px; }
 section > p:first-of-type, h2 + p { }
 .note, figcaption { color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
 .todo { color: var(--red); font-style: italic; }
@@ -56,7 +57,8 @@ td.na { color: var(--muted); text-align: center; }
 .tablewrap { overflow-x: auto; max-width: 100%; }
 table.full thead th { position: sticky; top: 0; z-index: 1; }
 table.full th[colspan] { border-left: 1px solid var(--line-strong); }
-table.full td:nth-child(3n+2) { border-left: 1px solid var(--line-strong); }
+table.full td:nth-child(2n) { border-left: 1px solid var(--line-strong); }
+table.full { width: 100%; }
 .md table { width: 100%; }
 .md td, .md th { text-align: left; white-space: normal; }
 .md th:first-child, .md td:first-child { white-space: nowrap; }
@@ -65,7 +67,7 @@ table.full td:nth-child(3n+2) { border-left: 1px solid var(--line-strong); }
 details { margin: 10px 0; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
 details > summary { cursor: pointer; font-weight: 600; padding: 10px 14px; list-style: none; color: var(--ink); display: flex; align-items: center; gap: 10px; }
 details > summary::-webkit-details-marker { display: none; }
-details > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); transition: transform 0.15s; flex: none; }
+details > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); flex: none; }
 details[open] > summary::before { transform: rotate(45deg); }
 details[open] > summary { border-bottom: 1px solid var(--line); }
 details > *:not(summary) { margin-left: 14px; margin-right: 14px; }
@@ -102,5 +104,8 @@ footer { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 14px;
   h2 { font-size: 1.25rem; margin-top: 40px; }
   .walls, .figrow { grid-template-columns: 1fr; }
   details > *:not(summary) { margin-left: 10px; margin-right: 10px; }
+  .md th:first-child, .md td:first-child { white-space: normal; }
+  table { font-size: 0.78rem; }
+  th, td { padding: 4px 6px; }
 }
 figcaption em { font-style: normal; }

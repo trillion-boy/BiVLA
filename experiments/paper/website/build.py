@@ -39,30 +39,36 @@ def cls_delta(delta, p):
     return ''
 
 def full_table(rows):
-    """One table per environment: rows = configurations, columns = backbones; each cell success (delta, p) / latency / steps."""
+    """One block per environment; backbones split into tables of at most three so nothing scrolls on desktop."""
+    import math
     out = []
     envs = [e for e in ENV_ORDER if any(r['env'] == e for r in rows)]
+    BB = ['CogACT', 'CronusVLA', 'MiniVLA', 'OpenVLA', 'SpatialVLA', 'UniVLA', 'SmolVLA']
     for env in envs:
         R = [r for r in rows if r['env'] == env]
-        backbones = sorted(set(r['backbone'] for r in R), key=lambda b: (['CogACT', 'CronusVLA', 'MiniVLA', 'OpenVLA', 'SpatialVLA', 'UniVLA', 'SmolVLA'].index(b) if b in ['CogACT', 'CronusVLA', 'MiniVLA', 'OpenVLA', 'SpatialVLA', 'UniVLA', 'SmolVLA'] else 99))
+        backbones = sorted(set(r['backbone'] for r in R), key=lambda b: BB.index(b) if b in BB else 99)
+        k = math.ceil(len(backbones) / math.ceil(len(backbones) / 3))
+        chunks = [backbones[i:i + k] for i in range(0, len(backbones), k)]
         out.append(f'<details{" open" if env == "WidowX" else ""}><summary>{html.escape(env)}: {len(backbones)} backbones, 14 configurations</summary>')
-        out.append('<div class="tablewrap"><table class="full"><thead><tr><th>Configuration</th>' + ''.join(f'<th colspan="3">{b}</th>' for b in backbones) + '</tr>')
-        out.append('<tr><th></th>' + ''.join('<th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Avg. steps</th>' for b in backbones) + '</tr></thead><tbody>')
-        for cfg in CFG_ORDER:
-            cells = []
-            for b in backbones:
-                r = next((x for x in R if x['backbone'] == b and x['configuration'] == cfg), None)
-                if r is None: cells.append('<td colspan="3" class="na">n/a</td>'); continue
-                if cfg == 'original':
-                    cells.append(f'<td class="orig">{num(r["success_pct"])}</td><td>{num(r["latency_ms_per_step"])}</td><td>{num(r["avg_steps"])}</td>')
-                else:
-                    c = cls_delta(r.get('delta_success_vs_original'), r.get('p_mcnemar'))
-                    star = '*' if r.get('in_table') in ('1', 'True', 'true') else ''
-                    pv = r.get('p_mcnemar'); pv = ('&lt;0.001' if float(pv) < 0.001 else f'{float(pv):.3f}') if pv not in ('', None) else ''
-                    cells.append(f'<td class="{c}">{num(r["success_pct"])}{star}<span class="d">({signed(r.get("delta_success_vs_original"))}, p {pv})</span></td>'
-                                 f'<td>{num(r["latency_ms_per_step"])}</td><td>{num(r["avg_steps"])}</td>')
-            out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
-        out.append('</tbody></table></div></details>')
+        for bbs in chunks:
+            out.append('<div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th>' + ''.join(f'<th colspan="2">{b}</th>' for b in bbs) + '</tr>')
+            out.append('<tr>' + ''.join('<th class="sub">Success %</th><th class="sub">ms / step</th>' for b in bbs) + '</tr></thead><tbody>')
+            for cfg in CFG_ORDER:
+                cells = []
+                for b in bbs:
+                    r = next((x for x in R if x['backbone'] == b and x['configuration'] == cfg), None)
+                    if r is None: cells.append('<td colspan="2" class="na">n/a</td>'); continue
+                    if cfg == 'original':
+                        cells.append(f'<td class="orig">{num(r["success_pct"])}</td><td>{num(r["latency_ms_per_step"])}</td>')
+                    else:
+                        c = cls_delta(r.get('delta_success_vs_original'), r.get('p_mcnemar'))
+                        star = '*' if r.get('in_table') in ('1', 'True', 'true') else ''
+                        pv = r.get('p_mcnemar'); pv = ('&lt;0.001' if float(pv) < 0.001 else f'{float(pv):.3f}') if pv not in ('', None) else ''
+                        cells.append(f'<td class="{c}">{num(r["success_pct"])}{star}<span class="d">({signed(r.get("delta_success_vs_original"))}, p {pv})</span></td>'
+                                     f'<td>{num(r["latency_ms_per_step"])}</td>')
+                out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
+            out.append('</tbody></table></div>')
+        out.append('</details>')
     return '\n'.join(out)
 
 TASK_LABEL = {'widowx_carrot_on_plate': 'Carrot on plate', 'widowx_put_eggplant_in_basket': 'Eggplant in basket', 'widowx_spoon_on_towel': 'Spoon on towel', 'widowx_stack_cube': 'Stack cube',
@@ -78,21 +84,25 @@ def per_task_tables(rows):
         k = (r['backbone'], r['env'])
         if k not in pairs: pairs.append(k)
     pairs.sort(key=lambda k: (ENV_ORDER.index(k[1]) if k[1] in ENV_ORDER else 99, k[0]))
-    for b, env in pairs:
-        R = [r for r in rows if r['backbone'] == b and r['env'] == env]
-        tasks = []
-        for r in R:
-            if r['task'] not in tasks: tasks.append(r['task'])
-        out.append(f'<details><summary>{b} on {env}: success per task ({len(tasks)} tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th>' + ''.join(f'<th>{html.escape(task_label(t))}</th>' for t in tasks) + '</tr></thead><tbody>')
-        for cfg in CFG_ORDER:
-            cells = []
-            for t in tasks:
-                r = next((x for x in R if x['configuration'] == cfg and x['task'] == t), None)
-                if r is None: cells.append('<td class="na"></td>'); continue
-                d = r.get('delta_vs_original', '')
-                cells.append(f'<td>{num(r["success_pct"])}' + (f'<span class="d">({signed(d)})</span>' if cfg != 'original' and d != '' else '') + '</td>')
-            if any('<td>' in c for c in cells): out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
-        out.append('</tbody></table></div></details>')
+    for env in [e for e in ENV_ORDER if any(p[1] == e for p in pairs)]:
+        bbs = [b for b, e in pairs if e == env]
+        out.append(f'<details><summary>{html.escape(env)}: {len(bbs)} backbones</summary>')
+        for b in bbs:
+            R = [r for r in rows if r['backbone'] == b and r['env'] == env]
+            tasks = []
+            for r in R:
+                if r['task'] not in tasks: tasks.append(r['task'])
+            out.append(f'<h4>{b} on {env}</h4><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th>' + ''.join(f'<th>{html.escape(task_label(t))}</th>' for t in tasks) + '</tr></thead><tbody>')
+            for cfg in CFG_ORDER:
+                cells = []
+                for t in tasks:
+                    r = next((x for x in R if x['configuration'] == cfg and x['task'] == t), None)
+                    if r is None: cells.append('<td class="na"></td>'); continue
+                    d = r.get('delta_vs_original', '')
+                    cells.append(f'<td>{num(r["success_pct"])}' + (f'<span class="d">({signed(d)})</span>' if cfg != 'original' and d != '' else '') + '</td>')
+                if any('<td>' in c for c in cells): out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
+            out.append('</tbody></table></div>')
+        out.append('</details>')
     return '\n'.join(out)
 
 def read_csv(name):
@@ -121,13 +131,8 @@ def fig(key, cls=''):
         head = head.split(':')[0]
         rest = (cap[len(head) + 1:].lstrip(': .') if cap.startswith(head) else cap)
         cap = f'<strong>{html.escape(head)}.</strong> ' + (rest[:1].upper() + rest[1:] if rest else '')
-    alt = html.escape(f['alt'] if not f.get('grid') else f['caption'].split(':')[0].rstrip('.'))
+    alt = html.escape(re.split(r'(?<=[a-z0-9)])\. ', f['caption'])[0])
     return f'<figure class="{cls}"><img src="{asset(f["src"], f["file"])}" alt="{alt}"><figcaption>{cap}</figcaption></figure>'
-def tradeoff_block():
-    keys = [k for k in figs if figs[k].get('grid')]
-    return (f'<details><summary>Trade-off plots for the {len(keys)} backbone and environment pairs that Fig. 4 does not show</summary>'
-            + ''.join(fig(k, 'tradeoff') for k in keys) + '</details>')
-
 page = f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bag of Tricks for Training-Free VLA Models: project page</title>
@@ -157,6 +162,7 @@ page = f'''<!DOCTYPE html>
 {md('results_intro.md')}
 <h3 id="full">2.1 Every setting, every backbone and environment</h3>
 {md('full_table_note.md')}
+<p class="note">Machine-readable: <a href="{asset(os.path.join(HERE, 'data', 'full_settings.csv'), 'full_settings.csv')}">full_settings.csv</a> (every setting) and <a href="{asset(os.path.join(HERE, 'data', 'per_task.csv'), 'per_task.csv')}">per_task.csv</a> (every setting and task).</p>
 {full_table(full)}
 <h3 id="pertask">2.2 Per-task success</h3>
 {md('per_task_note.md')}

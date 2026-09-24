@@ -58,8 +58,8 @@ A gated trick can only change a result where it fires, so the fire counts are pa
 | OpenVLA LIBERO (four suites) | 2.0 to 4.8 / 3.5 to 5.6 / 9.0 to 11.2 | 0.33 to 0.34 / 0.33 to 0.34 / 0.85 to 0.93 | 124 to 128 / 61 to 77 / 64 |
 | SpatialVLA WidowX | 0.02 / 0.07 / 0.4 | 0.34 / 0.34 / 0.98 | 57 to 108 / 26 to 54 / 0 |
 | SpatialVLA Fractal | 0.5 / 0.8 / 2.4 | 0.34 / 0.34 / 0.99 | 69 to 118 / 19 to 48 / 0 |
-| CronusVLA WidowX | 0.05 / 0.3 / 1.4 | one run for all three settings, 106 fused patches per call | |
-| CronusVLA Fractal | 0.7 / 1.7 / 4.2 | one run for all three settings, 112 fused patches per call | |
+| CronusVLA WidowX | 0.05 / 0.3 / 1.4 | three settings identical, 106 fused patches per call | not recorded |
+| CronusVLA Fractal | 0.7 / 1.7 / 4.2 | three settings identical, 112 fused patches per call | not recorded |
 | UniVLA WidowX | 0.0 / 0.02 / 0.03 | 0.37 / not recorded / 1.00 | 314 to 443 / not recorded / 0 |
 | UniVLA LIBERO (four suites) | 0.0 to 0.06 in every cell | 0.35 to 0.37 / 0.35 to 0.36 / 1.00 | 300 to 312 / 141 to 168 / 0 |
 | MiniVLA WidowX | 3.1 / 4.2 / 4.0 | 0.34 / 0.34 / 0.90 | 107 / 68 / 64 |
@@ -69,7 +69,7 @@ The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggr
 
 ### 1.3 Harness, checkpoints, software and hardware
 
-**Episodes and seeds.** WidowX: 4 tasks x 50 episodes, step cap 60 (120 for eggplant in basket). Fractal: 5 tasks x 50 episodes, cap 80. LIBERO Long, Goal, Object, Spatial: 10 tasks x 10 episodes, caps 520, 300, 280, 220. Every configuration replays the same task instances with seed 42 plus the episode index. All 21,568 failed episodes end exactly at the cap, so average steps follows success.
+**Episodes and seeds.** Step caps: 60 on WidowX (120 for eggplant in basket), 80 on Fractal, 520 / 300 / 280 / 220 on LIBERO Long / Goal / Object / Spatial. Every configuration replays the same task instances with seed 42 plus the episode index. All 21,568 failed episodes end exactly at the cap, so average steps follows success.
 
 | Backbone | Checkpoint | Decoder pruned | Actions per call | Attention and versions |
 |---|---|---|---|---|
