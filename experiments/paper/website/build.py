@@ -43,7 +43,7 @@ def full_table(rows):
     for env in envs:
         R = [r for r in rows if r['env'] == env]
         backbones = sorted(set(r['backbone'] for r in R), key=lambda b: (['CogACT', 'CronusVLA', 'MiniVLA', 'OpenVLA', 'SpatialVLA', 'UniVLA', 'SmolVLA'].index(b) if b in ['CogACT', 'CronusVLA', 'MiniVLA', 'OpenVLA', 'SpatialVLA', 'UniVLA', 'SmolVLA'] else 99))
-        out.append(f'<h4 id="full-{env.lower().replace(" ", "-")}">{html.escape(env)}</h4>')
+        out.append(f'<details{" open" if env == "WidowX" else ""}><summary>{html.escape(env)}: {len(backbones)} backbones, 14 configurations</summary>')
         out.append('<div class="tablewrap"><table class="full"><thead><tr><th>Configuration</th>' + ''.join(f'<th colspan="3">{b}</th>' for b in backbones) + '</tr>')
         out.append('<tr><th></th>' + ''.join('<th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Avg. steps</th>' for b in backbones) + '</tr></thead><tbody>')
         for cfg in CFG_ORDER:
@@ -60,7 +60,7 @@ def full_table(rows):
                     cells.append(f'<td class="{c}">{num(r["success_pct"])}{star}<span class="d">({signed(r.get("delta_success_vs_original"))}, p {pv})</span></td>'
                                  f'<td>{num(r["latency_ms_per_step"])}</td><td>{num(r["avg_steps"])}</td>')
             out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
-        out.append('</tbody></table></div>')
+        out.append('</tbody></table></div></details>')
     return '\n'.join(out)
 
 def per_task_tables(rows):
@@ -102,7 +102,7 @@ figs = json.load(open(os.path.join(HERE, 'figures.json'))) if os.path.exists(os.
 def fig(key):
     f = figs.get(key)
     if not f: return f'<p class="todo">[figure {key} missing]</p>'
-    return f'<figure><img src="{asset(f["src"], f["file"])}" alt="{html.escape(f["alt"])}"><figcaption>{f["caption"]}</figcaption></figure>'
+    return f'<figure class="{"grid" if f.get("grid") else ""}"><img src="{asset(f["src"], f["file"])}" alt="{html.escape(f["alt"])}"><figcaption>{f["caption"]}</figcaption></figure>'
 
 page = f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -118,10 +118,10 @@ page = f'''<!DOCTYPE html>
 
 <section id="video"><h2>Videos</h2>
 <video class="main" src="{asset(os.path.join(HERE, 'media', 'accompanying_video.mp4'), 'accompanying_video.mp4')}" controls preload="metadata"></video>
-<p class="note">The 3-minute video submitted with the paper: motivation, every configuration of one backbone on one episode for ten episodes, and the results.</p>
-<details><summary>Extended video (4.5 minutes) with one slide per trick</summary>
+<p class="note">The 3-minute video submitted with the paper.</p>
+<details><summary>Extended video with one slide per trick</summary>
 <video class="main" src="{asset(os.path.join(HERE, 'media', 'extended_video.mp4'), 'extended_video.mp4')}" controls preload="metadata"></video>
-<p class="note">Same content plus a slide per trick with a paired rollout in which the original policy fails and the trick succeeds. Rollout badges follow the rendered videos.</p>
+<p class="note">Same content plus one slide per trick with a paired rollout in which the original policy fails and the trick succeeds.</p>
 </details>
 </section>
 
@@ -137,9 +137,9 @@ page = f'''<!DOCTYPE html>
 <h3 id="pertask">2.2 Per-task success</h3>
 {md('per_task_note.md')}
 {per_task_tables(pt)}
-<h3 id="figures">2.3 Additional figures</h3>
+<h3 id="figures">2.3 Figures for the environments the paper does not plot</h3>
 {md('figures_intro.md')}
-{''.join(fig(k) for k in figs)}
+{''.join(fig(k) for k in figs if not figs[k].get('grid'))}<div class="figgrid">{''.join(fig(k) for k in figs if figs[k].get('grid'))}</div>
 <h3 id="stats">2.4 Statistics and reproducibility checks</h3>
 {md('stats.md')}
 <h3 id="walls">2.5 Qualitative rollouts: every configuration on one episode</h3>

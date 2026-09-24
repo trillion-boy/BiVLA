@@ -9,43 +9,50 @@
   "src": "./figs/tradeoff_cogact_fractal.png",
   "file": "tradeoff_cogact_fractal.png",
   "alt": "CogACT on Fractal: success change against time-per-step speedup for every setting (not shown in the paper, whose Fig",
-  "caption": "CogACT on Fractal: success change against time-per-step speedup for every setting (not shown in the paper, whose Fig. 4 covers WidowX only). Shaded corner = faster and no worse."
+  "caption": "CogACT on Fractal: success change against time-per-step speedup for every setting, in the layout of the paper's Fig. 4 (which covers WidowX only). Shaded corner = faster and no worse.",
+  "grid": true
  },
  "tradeoff_cronusvla_fractal": {
   "src": "./figs/tradeoff_cronusvla_fractal.png",
   "file": "tradeoff_cronusvla_fractal.png",
   "alt": "CronusVLA on Fractal",
-  "caption": "CronusVLA on Fractal."
+  "caption": "CronusVLA on Fractal.",
+  "grid": true
  },
  "tradeoff_openvla_fractal": {
   "src": "./figs/tradeoff_openvla_fractal.png",
   "file": "tradeoff_openvla_fractal.png",
   "alt": "OpenVLA on Fractal",
-  "caption": "OpenVLA on Fractal."
+  "caption": "OpenVLA on Fractal.",
+  "grid": true
  },
  "tradeoff_spatialvla_fractal": {
   "src": "./figs/tradeoff_spatialvla_fractal.png",
   "file": "tradeoff_spatialvla_fractal.png",
   "alt": "SpatialVLA on Fractal",
-  "caption": "SpatialVLA on Fractal."
+  "caption": "SpatialVLA on Fractal.",
+  "grid": true
  },
  "tradeoff_openvla_libero": {
   "src": "./figs/tradeoff_openvla_libero.png",
   "file": "tradeoff_openvla_libero.png",
   "alt": "OpenVLA on LIBERO, the four suites pooled",
-  "caption": "OpenVLA on LIBERO, the four suites pooled."
+  "caption": "OpenVLA on LIBERO, the four suites pooled.",
+  "grid": true
  },
  "tradeoff_univla_libero": {
   "src": "./figs/tradeoff_univla_libero.png",
   "file": "tradeoff_univla_libero.png",
   "alt": "UniVLA on LIBERO, the four suites pooled",
-  "caption": "UniVLA on LIBERO, the four suites pooled."
+  "caption": "UniVLA on LIBERO, the four suites pooled.",
+  "grid": true
  },
  "tradeoff_smolvla_libero": {
   "src": "./figs/tradeoff_smolvla_libero.png",
   "file": "tradeoff_smolvla_libero.png",
   "alt": "SmolVLA on LIBERO, the four suites pooled",
-  "caption": "SmolVLA on LIBERO, the four suites pooled. The depth-pruning speedups at two and four layers come from runs under the re-implemented evaluator (Section 1.6) and are not comparable with the original row."
+  "caption": "SmolVLA on LIBERO, the four suites pooled. The depth-pruning speedups at two and four layers come from runs under the re-implemented evaluator (Section 1.3) and are not comparable with the original row.",
+  "grid": true
  },
  "success_change_fractal": {
   "src": "./figs/success_change_fractal.png",
@@ -58,41 +65,5 @@
   "file": "success_change_libero.png",
   "alt": "Success change from the original for all 13 settings on LIBERO (four suites pooled), one panel per backbone",
   "caption": "Success change from the original for all 13 settings on LIBERO (four suites pooled), one panel per backbone."
- },
- "ablation_foveation": {
-  "src": "./figs/ablation_foveation.png",
-  "file": "ablation_foveation.png",
-  "alt": "Foveation across its two keep ratios, success change (left) and time-per-step speedup (right), one line per backbone and environment (companion to Fig",
-  "caption": "Foveation across its two keep ratios, success change (left) and time-per-step speedup (right), one line per backbone and environment (companion to Fig. 5, which shows depth pruning and action repeat)."
- },
- "ablation_guarded_reuse": {
-  "src": "./figs/ablation_guarded_reuse.png",
-  "file": "ablation_guarded_reuse.png",
-  "alt": "Guarded reuse across its three presets",
-  "caption": "Guarded reuse across its three presets."
- },
- "ablation_temporal_fusion": {
-  "src": "./figs/ablation_temporal_fusion.png",
-  "file": "ablation_temporal_fusion.png",
-  "alt": "Temporal fusion across its three presets",
-  "caption": "Temporal fusion across its three presets."
- },
- "libero_suites_openvla": {
-  "src": "./figs/libero_suites_openvla.png",
-  "file": "libero_suites_openvla.png",
-  "alt": "OpenVLA on the four LIBERO suites, success per configuration (Table II in graphical form)",
-  "caption": "OpenVLA on the four LIBERO suites, success per configuration (Table II in graphical form)."
- },
- "libero_suites_univla": {
-  "src": "./figs/libero_suites_univla.png",
-  "file": "libero_suites_univla.png",
-  "alt": "UniVLA on the four LIBERO suites",
-  "caption": "UniVLA on the four LIBERO suites."
- },
- "libero_suites_smolvla": {
-  "src": "./figs/libero_suites_smolvla.png",
-  "file": "libero_suites_smolvla.png",
-  "alt": "SmolVLA on the four LIBERO suites",
-  "caption": "SmolVLA on the four LIBERO suites."
  }
 }

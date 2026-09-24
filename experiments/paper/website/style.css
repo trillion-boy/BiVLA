@@ -44,3 +44,6 @@ video.main { width: 100%; max-width: 960px; display: block; background: #000; }
 summary { margin: 4px 0; }
 footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px; color: var(--muted); font-size: 0.85rem; }
 @media (max-width: 600px) { h1 { font-size: 1.3rem; } html { font-size: 15px; } .walls { grid-template-columns: 1fr; } }
+.figgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 14px; }
+.figgrid figure { margin: 0; }
+@media (max-width: 600px) { .figgrid { grid-template-columns: 1fr; } }
