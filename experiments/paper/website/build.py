@@ -107,7 +107,10 @@ _used = set(re.findall(r'figs/([A-Za-z0-9_.-]+\.(?:png|jpg|svg))', ''.join(open(
 for _f in sorted(_used): shutil.copyfile(os.path.join(HERE, 'figs', _f), os.path.join(SITE, 'figs', _f))
 full = read_csv('full_settings.csv'); pt = read_csv('per_task.csv')
 walls = json.load(open(os.path.join(HERE, 'walls.json'))) if os.path.exists(os.path.join(HERE, 'walls.json')) else []
-wall_html = ''.join(f'<figure class="wall"><video src="{asset(w["src"], w["file"])}" controls muted loop playsinline preload="metadata" poster="{asset(w["poster"], w["file"].replace(".mp4", ".jpg"))}"></video><figcaption>{html.escape(w["caption"])}</figcaption></figure>' for w in walls)
+def wall_fig(w): return f'<figure class="wall"><video src="{asset(w["src"], w["file"])}" controls muted loop playsinline preload="metadata" poster="{asset(w["poster"], w["file"].replace(".mp4", ".jpg"))}"></video><figcaption>{html.escape(w["caption"])}</figcaption></figure>'
+WALL_FIRST = ['wall_widowx_eggplant.mp4', 'wall_fractal_move_near.mp4', 'wall_libero_goal.mp4', 'wall_libero_long.mp4']
+_first = [w for f in WALL_FIRST for w in walls if w['file'] == f]; _rest = [w for w in walls if w not in _first]
+wall_html = '<div class="walls">' + ''.join(wall_fig(w) for w in _first) + '</div>' + (f'<details><summary>{len(_rest)} more episodes</summary><div class="walls inner">' + ''.join(wall_fig(w) for w in _rest) + '</div></details>' if _rest else '')
 figs = json.load(open(os.path.join(HERE, 'figures.json'))) if os.path.exists(os.path.join(HERE, 'figures.json')) else {}
 def fig(key, cls=''):
     f = figs.get(key)
@@ -158,15 +161,14 @@ page = f'''<!DOCTYPE html>
 <h3 id="pertask">2.2 Per-task success</h3>
 {md('per_task_note.md')}
 {per_task_tables(pt)}
-<h3 id="figures">2.3 Figures for the environments the paper does not plot</h3>
+<h3 id="figures">2.3 Figures for Fractal and LIBERO</h3>
 {md('figures_intro.md')}
 {''.join(fig(k) for k in figs if not figs[k].get('grid'))}
-{tradeoff_block()}
 <h3 id="stats">2.4 Statistics and reproducibility checks</h3>
 {md('stats.md')}
 <h3 id="walls">2.5 Qualitative rollouts: every configuration on one episode</h3>
 {md('walls_intro.md')}
-<div class="walls">{wall_html}</div>
+{wall_html}
 </section>
 
 <section id="discussion"><h2>3. Additional discussions</h2>

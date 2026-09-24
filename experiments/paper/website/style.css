@@ -88,6 +88,7 @@ img { max-width: 100%; height: auto; }
 
 /* rollout walls */
 .walls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; margin-top: 8px; }
+.walls.inner { margin: 12px 0 14px; }
 .walls figure { margin: 0; }
 .walls video { width: 100%; display: block; background: #000; border-radius: var(--radius); }
 .walls figcaption { margin-top: 6px; }
@@ -102,3 +103,4 @@ footer { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 14px;
   .walls, .figrow { grid-template-columns: 1fr; }
   details > *:not(summary) { margin-left: 10px; margin-right: 10px; }
 }
+figcaption em { font-style: normal; }
