@@ -9,7 +9,7 @@ Section III of the paper defines the five tricks and Section IV-A the protocol. 
 
 **Action repeat.** The policy is called once and each returned action is executed k times; the next call sees the latest observation. UniVLA emits a chunk of 5 actions on WidowX and 10 on LIBERO, so its open-loop horizon at k = 2 is 10 and 20 steps and at k = 4 is 20 and 40 steps (recorded steps per call: 9.9 / 19.9 on WidowX, 19.8 / 38.8 on LIBERO). All other backbones execute one action per call.
 
-**Depth pruning.** Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; all 138 recorded selections satisfy these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed:
+**Depth pruning.** Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; all 138 Block Influence selections satisfy these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed:
 
 | Backbone and environment | Layers | 1 layer | 2 layers | 4 layers |
 |---|---|---|---|---|
@@ -32,7 +32,7 @@ Section III of the paper defines the five tricks and Section IV-A the protocol. 
 
 SmolVLA's layers are fixed late indices without a Block Influence measurement.
 
-**Guarded reuse** (Eq. 5). The previous action is repeated for one step only when every gate passes; otherwise the policy is queried in full. The three presets, identical on every backbone:
+**Guarded reuse** (Eq. 5). The previous action is repeated instead of a policy call only when every gate passes (at most one consecutive reuse, two for the aggressive preset); otherwise the policy is queried in full. The three presets, identical on every backbone:
 
 | Gate | Statistic | Strict | Moderate | Aggressive |
 |---|---|---|---|---|
@@ -60,12 +60,12 @@ A gated trick can only change a result where it fires, so the fire counts are pa
 | SpatialVLA Fractal | 0.5 / 0.8 / 2.4 | 0.34 / 0.34 / 0.99 | 69 to 118 / 19 to 48 / 0 |
 | CronusVLA WidowX | 0.05 / 0.3 / 1.4 | one run for all three settings, 106 fused patches per call | |
 | CronusVLA Fractal | 0.7 / 1.7 / 4.2 | one run for all three settings, 112 fused patches per call | |
-| UniVLA WidowX | 0.0 / 0.02 / 0.03 | 0.37 / not recorded / 1.00 | 314 to 442 / not recorded / 0 |
+| UniVLA WidowX | 0.0 / 0.02 / 0.03 | 0.37 / not recorded / 1.00 | 314 to 443 / not recorded / 0 |
 | UniVLA LIBERO (four suites) | 0.0 to 0.06 in every cell | 0.35 to 0.37 / 0.35 to 0.36 / 1.00 | 300 to 312 / 141 to 168 / 0 |
 | MiniVLA WidowX | 3.1 / 4.2 / 4.0 | 0.34 / 0.34 / 0.90 | 107 / 68 / 64 |
 | SmolVLA LIBERO (four suites) | 0.02 to 0.13 / 0.2 to 0.5 / 1.4 to 2.6 | not recorded | 19 to 23 / 3.5 to 5 / 16 |
 
-The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Object, Spatial and WidowX strict no gate ever fired, so those runs equal the original. Conservative-adaptive fusion reused no patch on SpatialVLA and UniVLA, so those cells are the original policy under the fusion name. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting is its motion-entropy run. CronusVLA's three fusion settings are one run.
+The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Goal, Object and Spatial (all presets) and WidowX strict no gate ever fired; the Object, Spatial and WidowX strict runs are identical to the original, and Goal differs on one to three episodes. Conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA, with 98.5 to 100 percent of calls keyframes, so those cells are close to the original policy under the fusion name. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting reproduces its motion-entropy run (identical outcomes, separate timing). CronusVLA's three fusion settings have identical outcomes and fused-patch counts, with no fusion parameters recorded.
 
 ### 1.3 Harness, checkpoints, software and hardware
 
