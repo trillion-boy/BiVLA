@@ -9,7 +9,7 @@ Section III of the paper defines the five tricks and Section IV-A the protocol. 
 
 **Action repeat.** The policy is called once and each returned action is executed k times; the next call sees the latest observation. UniVLA emits a chunk of 5 actions on WidowX and 10 on LIBERO, so its open-loop horizon at k = 2 is 10 and 20 steps and at k = 4 is 20 and 40 steps (recorded steps per call: 9.9 / 19.9 on WidowX, 19.8 / 38.8 on LIBERO). All other backbones execute one action per call.
 
-**Depth pruning.** Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; all 138 Block Influence selections satisfy these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed:
+**Depth pruning.** Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; every recorded Block Influence selection (54 pair-and-budget cells) satisfies these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed:
 
 | Backbone and environment | Layers | 1 layer | 2 layers | 4 layers |
 |---|---|---|---|---|
@@ -32,7 +32,7 @@ Section III of the paper defines the five tricks and Section IV-A the protocol. 
 
 SmolVLA's layers are fixed late indices without a Block Influence measurement.
 
-**Guarded reuse** (Eq. 5). The previous action is repeated instead of a policy call only when every gate passes (at most one consecutive reuse, two for the aggressive preset); otherwise the policy is queried in full. The three presets, identical on every backbone:
+**Guarded reuse** (Eq. 5). The previous action is repeated instead of a policy call only when every gate passes; otherwise the policy is queried in full. The three presets, identical on every backbone:
 
 | Gate | Statistic | Strict | Moderate | Aggressive |
 |---|---|---|---|---|
@@ -41,13 +41,13 @@ SmolVLA's layers are fixed late indices without a Block Influence measurement.
 | Action agreement | cosine similarity of the two most recent inferred 6-D pose actions, at least | 0.995 | 0.99 | 0.98 |
 | Translation floor | translation norm of the candidate action, at least | 0.01 | 0.01 | 0.01 |
 | Gripper | commanded gripper state unchanged | yes | yes | yes |
-| Reuse cap | consecutive reuses, fewer than | 1 | 1 | 2 |
+| Reuse cap | maximum consecutive reuses | 1 | 1 | 2 |
 
-**Temporal fusion** (Eq. 8). Patches with motion above 0.01, the 15 percent highest-entropy patches, the 20 percent highest text-to-vision-attention patches (task-aware only) and their 1-patch neighbourhood are recomputed; the rest is reused from the previous call up to a cap. Motion-entropy and task-aware: cap 0.5, a full keyframe every 3rd call. Conservative-adaptive: cap 0.25, a keyframe every 2nd call and a forced keyframe when frame motion exceeds 0.03. Fusion acts on the projected visual tokens before the language decoder (CogACT, SpatialVLA, OpenVLA, MiniVLA) or on the discrete VQ codes (UniVLA) and does not change the number of policy calls. Collecting attention for the task-aware setting forces an SDPA decoder into eager attention.
+**Temporal fusion** (Eq. 8). Patches with motion above 0.01, the 15 percent highest-entropy patches, the 20 percent highest text-to-vision-attention patches (task-aware only) and their 1-patch neighbourhood are recomputed; the rest is reused from the previous call up to a cap. Motion-entropy and task-aware: cap 0.5, a full keyframe every 3rd call. Conservative-adaptive: cap 0.25, a keyframe every 2nd call and a forced keyframe when frame motion exceeds 0.03. Fusion acts on the projected visual tokens before the language decoder (CogACT, SpatialVLA, OpenVLA, MiniVLA) or on the discrete VQ codes (UniVLA; the representation is not recorded for CronusVLA and SmolVLA) and does not change the number of policy calls. Collecting attention for the task-aware setting forces an SDPA decoder into eager attention.
 
 ### 1.2 How often the gated tricks acted
 
-A gated trick can only change a result where it fires, so the fire counts are part of the result.
+A gated trick can only change a result where it fires, so the fire counts are part of the result. Reused steps: share of environment steps on which the previous action was reused instead of a policy call. Keyframe share: share of policy calls that recomputed every visual token. Median reused tokens: median per call of the visual tokens taken from the previous call.
 
 | Backbone and environment | Reused steps, strict / moderate / aggressive (%) | Keyframe share, motion-entropy / task-aware / conservative | Median reused tokens |
 |---|---|---|---|
@@ -65,7 +65,7 @@ A gated trick can only change a result where it fires, so the fire counts are pa
 | MiniVLA WidowX | 3.1 / 4.2 / 4.0 | 0.34 / 0.34 / 0.90 | 107 / 68 / 64 |
 | SmolVLA LIBERO (four suites) | 0.02 to 0.13 / 0.2 to 0.5 / 1.4 to 2.6 | not recorded | 19 to 23 / 3.5 to 5 / 16 |
 
-The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Goal, Object and Spatial (all presets) and WidowX strict no gate ever fired; the Object, Spatial and WidowX strict runs are identical to the original, and Goal differs on one to three episodes. Conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA, with 98.5 to 100 percent of calls keyframes, so those cells are close to the original policy under the fusion name. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting reproduces its motion-entropy run (identical outcomes, separate timing). CronusVLA's three fusion settings have identical outcomes and fused-patch counts, with no fusion parameters recorded.
+The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Goal, Object and Spatial (all presets) and WidowX strict no gate ever fired; the Object, Spatial and WidowX strict runs are identical to the original, and Goal differs on one episode in two of its three presets. Conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA, with 98.5 to 100 percent of calls keyframes, so those cells are close to the original policy under the fusion name; SmolVLA's task-aware setting reused a median of 3.5 to 5 tokens per call. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting reproduces its motion-entropy run (identical outcomes, separate timing). CronusVLA's three fusion settings have identical outcomes and fused-patch counts, with no fusion parameters recorded.
 
 ### 1.3 Harness, checkpoints, software and hardware
 
@@ -81,8 +81,8 @@ The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggr
 | MiniVLA | minivla-vq-bridge-prismatic (prism-qwen25-extra-dinosiglip-224px, 0.5B); 224 px, no centre crop | 24 Qwen2.5 layers | 1 | SDPA, transformers 4.47.0 |
 | SmolVLA | LIBERO fine-tuned SmolVLA on SmolVLM2-500M-Instruct | 32 SmolLM2 layers (fixed indices) | 1 | explicit PyTorch SDPA; lerobot 0.4.4, transformers 4.51.3 |
 
-**GPU cards.** The runs were scheduled on a shared GPU cluster. Every run file that records its card lists an RTX 5090, except that in the SmolVLA depth-pruning cells at two layers on Long and Goal and at four layers on Long, Goal and Object, 86 of the 500 episodes list an RTX PRO 6000, RTX 6000 Ada, L40S or RTX A6000. Latency is compared only within one backbone and environment.
+**GPU cards.** The runs were scheduled on a shared GPU cluster. Every run file that records its card lists an RTX 5090, except that in the SmolVLA depth-pruning cells at two layers on Long and Goal and at four layers on Long, Goal and Object, 86 of the 500 episodes list an RTX PRO 6000, RTX 6000 Ada, L40S or RTX A6000. Latency is compared only within one backbone, environment, software stack and GPU class.
 
 **Two implementations of SmolVLA.** SmolVLA's guarded reuse, temporal fusion and the depth cells named above were completed with a re-implemented evaluator that is 2 to 7 percent faster per call than the original implementation even where a trick does nothing. Their latency mixes that difference with the trick and is read through the paired success test alone.
 
-**Latency.** Wall-clock per environment step: mean episode time divided by mean episode length. The clock runs from reset to termination or cap and includes simulator stepping and rendering, the policy calls, the foveation blur, the reuse gate and the fusion selector; it excludes model loading and environment construction.
+**Latency.** Wall-clock per environment step: mean episode time divided by mean episode length. The clock runs from reset to termination or cap and includes simulator stepping and rendering, the policy calls, the foveation blur, the reuse gate and the fusion selector; it excludes model loading and environment construction. The values here are recomputed from the per-episode records and can differ from Tables I and II of the paper by up to 0.1 ms.

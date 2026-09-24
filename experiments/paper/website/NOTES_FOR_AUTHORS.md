@@ -2,6 +2,7 @@
 
 ## What is here
 
+- Upload only the contents of `site/` (or unzip `project_page.zip`). Nothing else in this folder (this file, `content/`, `data/`, `website_data/`) may go into the anonymised repository.
 - `site/` is the complete static page: `index.html`, `assets/` (two videos, ten wall clips with posters), `figs/` (figures). No scripts, no external requests, no fonts loaded from the network. Copy the **contents of `site/`** to the root of the anonymised repository behind `https://anonymous.4open.science/w/icra-bot/` so that `index.html` sits at the root; the `/w/` link then renders it. Total size about 23 MB (videos 15 MB, wall clips 8.6 MB, figures 3.9 MB; only the figures the page uses are copied).
 - `build.py`, `style.css`, `content/*.md`, `data/*.csv`, `figures.json`, `walls.json`, `figs/`, `media/` are the sources. `python3 build.py` regenerates `site/index.html` (needs the `markdown` package).
 - `data/full_settings.csv` (308 rows) and `data/per_task.csv` (2,296 rows) are the machine-readable tables behind Sections 2.1 and 2.2. They carry no paths or names and could be published as well; the raw `summary.json` / `episodes.jsonl` files must **not** be published as they are, because their `arguments`, `checkpoint_manifest`, `output_dir`, `slurm_job_id` and `qos` fields contain user names and cluster identifiers.
@@ -17,7 +18,10 @@ The final paper promises on the project page "checkpoints, GPU cards, software v
 5. **Run-to-run noise** on the four WidowX pairs (9 to 17 percent of zero-fire episodes end differently) and the **Benjamini-Hochberg** result (16 of 22 drops pass, no gain passes). Both are the paper draft's analyses, recomputed; the final paper reads the p-values as descriptive and does not print these numbers.
 6. **Depth-pruning calibration frame**: for six backbones it is the first observation of the evaluation run, not a disjoint calibration set (CronusVLA has a separate pass with seed 10000).
 7. **Foveation**: the paper says tau reaches one at the image boundary; the code reaches one at the farthest corner. The page states the code behaviour. Whether the LIBERO wrist view was foveated is not recorded; the page says so.
-8. **Software versions**: transformers 4.47.0 for CogACT, CronusVLA, MiniVLA and SpatialVLA (from the attention-backend note); SmolVLA transformers 4.51.3 and lerobot 0.4.4; OpenVLA and UniVLA versions and the torch version are not in the records. If the authors know them, add them to the table in Section 1.6.
+8. **Latency rounding**: the page recomputes ms/step from the per-episode records (pooled episode time / pooled steps); Tables I and II of the paper differ by up to 0.1 ms in some cells (e.g. CogACT WidowX original 141.5 on the page, 141.41 in Table I). The page says so in Section 1.3.
+9. **LIBERO task names** in Section 2.2 are the standard LIBERO instructions in benchmark order (task 0 to 9); four of them were checked against the rollout videos. Confirm the harness used the benchmark order.
+10. **Whether the LIBERO wrist view was foveated** is not recorded and the page does not say; add a sentence if you know.
+11. **Software versions**: transformers 4.47.0 for CogACT, CronusVLA, MiniVLA and SpatialVLA (from the attention-backend note); SmolVLA transformers 4.51.3 and lerobot 0.4.4; OpenVLA and UniVLA versions and the torch version are not in the records. If the authors know them, add them to the table in Section 1.6.
 
 ## Things that were deliberately left out
 

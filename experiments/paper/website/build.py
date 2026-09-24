@@ -1,7 +1,9 @@
 """Build the anonymous project page: static index.html from Markdown sections, CSV tables, figures and clips.
 Usage: python3 build.py  (reads content/*.md, data/*.csv; writes site/index.html and copies site/assets)."""
 import os, re, csv, shutil, html, json, markdown
-HERE = os.path.dirname(os.path.abspath(__file__)); SITE = os.path.join(HERE, 'site'); os.makedirs(os.path.join(SITE, 'assets'), exist_ok=True)
+HERE = os.path.dirname(os.path.abspath(__file__)); SITE = os.path.join(HERE, 'site')
+if os.path.isdir(os.path.join(SITE, 'assets')): shutil.rmtree(os.path.join(SITE, 'assets'))
+os.makedirs(os.path.join(SITE, 'assets'))
 MD = markdown.Markdown(extensions=['tables', 'attr_list', 'toc', 'sane_lists', 'md_in_html'])
 def md(path):
     p = os.path.join(HERE, 'content', path)
@@ -73,6 +75,17 @@ def full_table(rows):
 
 TASK_LABEL = {'widowx_carrot_on_plate': 'Carrot on plate', 'widowx_put_eggplant_in_basket': 'Eggplant in basket', 'widowx_spoon_on_towel': 'Spoon on towel', 'widowx_stack_cube': 'Stack cube',
               'google_robot_close_drawer': 'Close drawer', 'google_robot_move_near': 'Move near', 'google_robot_open_drawer': 'Open drawer', 'google_robot_pick_coke_can': 'Pick coke can', 'google_robot_place_apple_in_closed_top_drawer': 'Apple into closed drawer'}
+LIBERO_TASKS = {
+ 'libero_spatial': ['pick up the black bowl between the plate and the ramekin and place it on the plate', 'pick up the black bowl next to the ramekin and place it on the plate', 'pick up the black bowl from table center and place it on the plate', 'pick up the black bowl on the cookie box and place it on the plate', 'pick up the black bowl in the top drawer of the wooden cabinet and place it on the plate', 'pick up the black bowl on the ramekin and place it on the plate', 'pick up the black bowl next to the cookie box and place it on the plate', 'pick up the black bowl on the stove and place it on the plate', 'pick up the black bowl next to the plate and place it on the plate', 'pick up the black bowl on the wooden cabinet and place it on the plate'],
+ 'libero_object': ['pick up the alphabet soup and place it in the basket', 'pick up the cream cheese and place it in the basket', 'pick up the salad dressing and place it in the basket', 'pick up the bbq sauce and place it in the basket', 'pick up the ketchup and place it in the basket', 'pick up the tomato sauce and place it in the basket', 'pick up the butter and place it in the basket', 'pick up the milk and place it in the basket', 'pick up the chocolate pudding and place it in the basket', 'pick up the orange juice and place it in the basket'],
+ 'libero_goal': ['open the middle drawer of the cabinet', 'put the bowl on the stove', 'put the wine bottle on top of the cabinet', 'open the top drawer and put the bowl inside', 'put the bowl on top of the cabinet', 'push the plate to the front of the stove', 'put the cream cheese in the bowl', 'turn on the stove', 'put the bowl on the plate', 'put the wine bottle on the rack'],
+ 'libero_10': ['put both the alphabet soup and the tomato sauce in the basket', 'put both the cream cheese box and the butter in the basket', 'turn on the stove and put the moka pot on it', 'put the black bowl in the bottom drawer of the cabinet and close it', 'put the white mug on the left plate and put the yellow and white mug on the right plate', 'pick up the book and place it in the back compartment of the caddy', 'put the white mug on the plate and put the chocolate pudding to the right of the plate', 'put both the alphabet soup and the cream cheese box in the basket', 'put both moka pots on the stove', 'put the yellow and white mug in the microwave and close it']}
+def task_title(t):
+    m = re.match(r'(libero_(?:10|goal|object|spatial))__task_(\d+)$', t)
+    return LIBERO_TASKS[m.group(1)][int(m.group(2))] if m else ''
+def libero_legend(tasks):
+    items = [(task_label(t), task_title(t)) for t in tasks if task_title(t)]
+    return '<p class="note legend">' + ' · '.join(f'<b>{a}</b> {html.escape(b)}' for a, b in items) + '</p>' if items else ''
 def task_label(t):
     if t in TASK_LABEL: return TASK_LABEL[t]
     m = re.match(r'libero_(?:10|goal|object|spatial)__task_(\d+)$', t)
@@ -92,7 +105,7 @@ def per_task_tables(rows):
             tasks = []
             for r in R:
                 if r['task'] not in tasks: tasks.append(r['task'])
-            out.append(f'<h4>{b} on {env}</h4><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th>' + ''.join(f'<th>{html.escape(task_label(t))}</th>' for t in tasks) + '</tr></thead><tbody>')
+            out.append(f'<h4>{b} on {env}</h4><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th>' + ''.join(f'<th title="{html.escape(task_title(t))}">{html.escape(task_label(t))}</th>' for t in tasks) + '</tr></thead><tbody>')
             for cfg in CFG_ORDER:
                 cells = []
                 for t in tasks:
@@ -101,7 +114,7 @@ def per_task_tables(rows):
                     d = r.get('delta_vs_original', '')
                     cells.append(f'<td>{num(r["success_pct"])}' + (f'<span class="d">({signed(d)})</span>' if cfg != 'original' and d != '' else '') + '</td>')
                 if any('<td>' in c for c in cells): out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
-            out.append('</tbody></table></div>')
+            out.append('</tbody></table></div>' + libero_legend(tasks))
         out.append('</details>')
     return '\n'.join(out)
 
@@ -150,7 +163,7 @@ page = f'''<!DOCTYPE html>
 <p class="note">The 3-minute video submitted with the paper.</p>
 <details><summary>Extended video with one slide per trick</summary>
 <video class="main" src="{asset(os.path.join(HERE, 'media', 'extended_video.mp4'), 'extended_video.mp4')}" controls preload="metadata"></video>
-<p class="note">Same content plus one slide per trick with a paired rollout in which the original policy fails and the trick succeeds.</p>
+<p class="note">Same content plus one slide per trick with a paired rollout chosen to show the mechanism of the trick; the tables carry the evidence.</p>
 </details>
 </section>
 

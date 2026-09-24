@@ -1,1 +1,1 @@
-Every configuration split by task (50 episodes per task on SimplerEnv, 10 on LIBERO), with the change against the original in parentheses. Expand a pair to see its tasks.
+Every configuration split by task (50 episodes per task on SimplerEnv, 10 on LIBERO), with the change against the original in parentheses. Expand an environment to see its tasks. On Fractal, place apple in closed top drawer is 0 of 50 for every configuration of every backbone, so every Fractal success value carries 50 guaranteed failures.
