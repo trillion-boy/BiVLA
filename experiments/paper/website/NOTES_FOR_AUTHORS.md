@@ -2,7 +2,7 @@
 
 ## What is here
 
-- `site/` is the complete static page: `index.html`, `assets/` (two videos, ten wall clips with posters), `figs/` (figures). No scripts, no external requests, no fonts loaded from the network. Copy the **contents of `site/`** to the root of the anonymised repository behind `https://anonymous.4open.science/w/icra-bot/` so that `index.html` sits at the root; the `/w/` link then renders it. Total size about 28 MB (videos 15 MB, wall clips 8.6 MB, figures 5.7 MB).
+- `site/` is the complete static page: `index.html`, `assets/` (two videos, ten wall clips with posters), `figs/` (figures). No scripts, no external requests, no fonts loaded from the network. Copy the **contents of `site/`** to the root of the anonymised repository behind `https://anonymous.4open.science/w/icra-bot/` so that `index.html` sits at the root; the `/w/` link then renders it. Total size about 23 MB (videos 15 MB, wall clips 8.6 MB, figures 3.9 MB; only the figures the page uses are copied).
 - `build.py`, `style.css`, `content/*.md`, `data/*.csv`, `figures.json`, `walls.json`, `figs/`, `media/` are the sources. `python3 build.py` regenerates `site/index.html` (needs the `markdown` package).
 - `data/full_settings.csv` (308 rows) and `data/per_task.csv` (2,296 rows) are the machine-readable tables behind Sections 2.1 and 2.2. They carry no paths or names and could be published as well; the raw `summary.json` / `episodes.jsonl` files must **not** be published as they are, because their `arguments`, `checkpoint_manifest`, `output_dir`, `slurm_job_id` and `qos` fields contain user names and cluster identifiers.
 

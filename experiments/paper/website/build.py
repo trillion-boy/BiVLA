@@ -7,7 +7,9 @@ def md(path):
     p = os.path.join(HERE, 'content', path)
     if not os.path.exists(p): print('missing', p); return f'<p class="todo">[{path} not written yet]</p>'
     MD.reset(); h = MD.convert(open(p, encoding='utf8').read())
-    return h.replace('<table>', '<div class="tablewrap md"><table>').replace('</table>', '</table></div>')
+    h = h.replace('<table>', '<div class="tablewrap md"><table>').replace('</table>', '</table></div>')
+    h = re.sub(r'<p>(<img [^>]*>)</p>\s*<p><em>(.*?)</em></p>', r'<figure class="md">\1<figcaption>\2</figcaption></figure>', h, flags=re.S)
+    return h
 def asset(src, name=None):
     name = name or os.path.basename(src); dst = os.path.join(SITE, 'assets', name)
     if os.path.exists(src): shutil.copyfile(src, dst)
@@ -63,6 +65,12 @@ def full_table(rows):
         out.append('</tbody></table></div></details>')
     return '\n'.join(out)
 
+TASK_LABEL = {'widowx_carrot_on_plate': 'Carrot on plate', 'widowx_put_eggplant_in_basket': 'Eggplant in basket', 'widowx_spoon_on_towel': 'Spoon on towel', 'widowx_stack_cube': 'Stack cube',
+              'google_robot_close_drawer': 'Close drawer', 'google_robot_move_near': 'Move near', 'google_robot_open_drawer': 'Open drawer', 'google_robot_pick_coke_can': 'Pick coke can', 'google_robot_place_apple_in_closed_top_drawer': 'Apple into closed drawer'}
+def task_label(t):
+    if t in TASK_LABEL: return TASK_LABEL[t]
+    m = re.match(r'libero_(?:10|goal|object|spatial)__task_(\d+)$', t)
+    return f'Task {m.group(1)}' if m else t
 def per_task_tables(rows):
     out = []
     pairs = []
@@ -75,7 +83,7 @@ def per_task_tables(rows):
         tasks = []
         for r in R:
             if r['task'] not in tasks: tasks.append(r['task'])
-        out.append(f'<details><summary>{b} on {env}: success per task ({len(tasks)} tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th>' + ''.join(f'<th>{html.escape(t)}</th>' for t in tasks) + '</tr></thead><tbody>')
+        out.append(f'<details><summary>{b} on {env}: success per task ({len(tasks)} tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th>' + ''.join(f'<th>{html.escape(task_label(t))}</th>' for t in tasks) + '</tr></thead><tbody>')
         for cfg in CFG_ORDER:
             cells = []
             for t in tasks:
@@ -94,15 +102,28 @@ def read_csv(name):
 
 CSS = open(os.path.join(HERE, 'style.css'), encoding='utf8').read()
 if os.path.isdir(os.path.join(SITE, 'figs')): shutil.rmtree(os.path.join(SITE, 'figs'))
-shutil.copytree(os.path.join(HERE, 'figs'), os.path.join(SITE, 'figs'))
+os.makedirs(os.path.join(SITE, 'figs'))
+_used = set(re.findall(r'figs/([A-Za-z0-9_.-]+\.(?:png|jpg|svg))', ''.join(open(os.path.join(HERE, 'content', f), encoding='utf8').read() for f in os.listdir(os.path.join(HERE, 'content')))))
+for _f in sorted(_used): shutil.copyfile(os.path.join(HERE, 'figs', _f), os.path.join(SITE, 'figs', _f))
 full = read_csv('full_settings.csv'); pt = read_csv('per_task.csv')
 walls = json.load(open(os.path.join(HERE, 'walls.json'))) if os.path.exists(os.path.join(HERE, 'walls.json')) else []
 wall_html = ''.join(f'<figure class="wall"><video src="{asset(w["src"], w["file"])}" controls muted loop playsinline preload="metadata" poster="{asset(w["poster"], w["file"].replace(".mp4", ".jpg"))}"></video><figcaption>{html.escape(w["caption"])}</figcaption></figure>' for w in walls)
 figs = json.load(open(os.path.join(HERE, 'figures.json'))) if os.path.exists(os.path.join(HERE, 'figures.json')) else {}
-def fig(key):
+def fig(key, cls=''):
     f = figs.get(key)
     if not f: return f'<p class="todo">[figure {key} missing]</p>'
-    return f'<figure class="{"grid" if f.get("grid") else ""}"><img src="{asset(f["src"], f["file"])}" alt="{html.escape(f["alt"])}"><figcaption>{f["caption"]}</figcaption></figure>'
+    cap = f['caption']
+    if f.get('grid'):
+        head, _, rest = cap.partition('. ') if '. ' in cap else (cap.rstrip('.'), '', '')
+        head = head.split(':')[0]
+        rest = (cap[len(head) + 1:].lstrip(': .') if cap.startswith(head) else cap)
+        cap = f'<strong>{html.escape(head)}.</strong> ' + (rest[:1].upper() + rest[1:] if rest else '')
+    alt = html.escape(f['alt'] if not f.get('grid') else f['caption'].split(':')[0].rstrip('.'))
+    return f'<figure class="{cls}"><img src="{asset(f["src"], f["file"])}" alt="{alt}"><figcaption>{cap}</figcaption></figure>'
+def tradeoff_block():
+    keys = [k for k in figs if figs[k].get('grid')]
+    return (f'<details><summary>Trade-off plots for the {len(keys)} backbone and environment pairs that Fig. 4 does not show</summary>'
+            + ''.join(fig(k, 'tradeoff') for k in keys) + '</details>')
 
 page = f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -111,13 +132,13 @@ page = f'''<!DOCTYPE html>
 <body><main>
 <header>
 <p class="kicker">Anonymous project page for an ICRA 2027 submission</p>
-<h1>Bag of Tricks for Training-Free Vision-Language-Action Models:<br>What to See, When to Act, and How Much to Compute?</h1>
+<h1>Bag of Tricks for Training-Free Vision-Language-Action Models<span class="sub">What to See, When to Act, and How Much to Compute?</span></h1>
 {md('intro.md')}
-<nav><a href="#video">Video</a> · <a href="#impl">Additional implementation details</a> · <a href="#results">Additional results</a> · <a href="#discussion">Additional discussions</a></nav>
+<nav><a href="#video">Videos</a><a href="#impl">1. Implementation details</a><a href="#results">2. Results</a><a href="#discussion">3. Discussions</a></nav>
 </header>
 
 <section id="video"><h2>Videos</h2>
-<video class="main" src="{asset(os.path.join(HERE, 'media', 'accompanying_video.mp4'), 'accompanying_video.mp4')}" controls preload="metadata"></video>
+<div class="videobox"><video class="main" src="{asset(os.path.join(HERE, 'media', 'accompanying_video.mp4'), 'accompanying_video.mp4')}" controls preload="metadata"></video></div>
 <p class="note">The 3-minute video submitted with the paper.</p>
 <details><summary>Extended video with one slide per trick</summary>
 <video class="main" src="{asset(os.path.join(HERE, 'media', 'extended_video.mp4'), 'extended_video.mp4')}" controls preload="metadata"></video>
@@ -139,7 +160,8 @@ page = f'''<!DOCTYPE html>
 {per_task_tables(pt)}
 <h3 id="figures">2.3 Figures for the environments the paper does not plot</h3>
 {md('figures_intro.md')}
-{''.join(fig(k) for k in figs if not figs[k].get('grid'))}<div class="figgrid">{''.join(fig(k) for k in figs if figs[k].get('grid'))}</div>
+{''.join(fig(k) for k in figs if not figs[k].get('grid'))}
+{tradeoff_block()}
 <h3 id="stats">2.4 Statistics and reproducibility checks</h3>
 {md('stats.md')}
 <h3 id="walls">2.5 Qualitative rollouts: every configuration on one episode</h3>

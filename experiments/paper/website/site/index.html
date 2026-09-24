@@ -1,67 +1,122 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bag of Tricks for Training-Free VLA Models: project page</title>
-<style>:root { --ink: #1f2933; --muted: #5f6b7a; --line: #d9dee3; --card: #f5f7f9; --teal: #1b7f79; --green: #2e8b57; --greenbg: #e4f3ea; --red: #b03a2e; --redbg: #f8e3e0; --blue: #2f6db5; }
+<style>:root {
+  --ink: #1c2430; --text: #2b3440; --muted: #6b7684; --line: #e3e7ec; --line-strong: #c9d0d8;
+  --card: #f6f8fa; --accent: #1f5f8b; --accent-soft: #e8f1f8;
+  --green: #1e7a4a; --greenbg: #e6f4ec; --red: #b0362b; --redbg: #f9e6e3;
+  --w: 960px; --radius: 8px;
+}
 * { box-sizing: border-box; }
-html { font-size: 16px; }
-body { margin: 0; color: var(--ink); background: #fff; font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; line-height: 1.5; }
-main { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; }
-header { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 28px; }
-.kicker { color: var(--muted); font-size: 0.9rem; margin: 0 0 6px; text-transform: uppercase; letter-spacing: 0.04em; }
-h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 14px; }
-h2 { font-size: 1.4rem; margin: 40px 0 12px; padding-top: 12px; border-top: 2px solid var(--ink); }
-h3 { font-size: 1.15rem; margin: 28px 0 8px; }
-h4 { font-size: 1rem; margin: 20px 0 6px; color: var(--teal); }
-nav { margin-top: 10px; font-size: 0.95rem; }
-nav a, a { color: var(--blue); text-decoration: none; }
+html { font-size: 17px; -webkit-text-size-adjust: 100%; }
+body { margin: 0; color: var(--text); background: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; }
+main { max-width: var(--w); margin: 0 auto; padding: 40px 20px 64px; }
+
+/* header */
+header { text-align: center; padding: 8px 0 28px; margin-bottom: 8px; }
+.kicker { color: var(--muted); font-size: 0.8rem; margin: 0 0 14px; text-transform: uppercase; letter-spacing: 0.12em; }
+h1 { font-size: 1.75rem; line-height: 1.3; margin: 0 auto 22px; color: var(--ink); max-width: 900px; font-weight: 700; }
+h1 .sub { display: block; font-size: 1.25rem; font-weight: 500; color: var(--muted); margin-top: 6px; }
+header p { text-align: left; }
+nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 22px 0 0; }
+nav a { display: inline-block; padding: 7px 16px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--accent); font-size: 0.9rem; font-weight: 500; background: #fff; }
+nav a:hover { background: var(--accent-soft); text-decoration: none; }
+
+/* text */
+a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
-p, li { max-width: 78ch; }
-.note, figcaption { color: var(--muted); font-size: 0.9rem; }
+p { margin: 0 0 1em; }
+ul, ol { padding-left: 1.4em; margin: 0 0 1em; }
+li { margin-bottom: 0.3em; }
+strong { color: var(--ink); }
+h2 { font-size: 1.45rem; color: var(--ink); margin: 56px 0 18px; padding-bottom: 8px; border-bottom: 2px solid var(--ink); font-weight: 700; }
+h3 { font-size: 1.15rem; color: var(--ink); margin: 36px 0 10px; font-weight: 650; }
+h4 { font-size: 1rem; margin: 22px 0 6px; color: var(--accent); font-weight: 650; }
+section > p:first-of-type, h2 + p { }
+.note, figcaption { color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
 .todo { color: var(--red); font-style: italic; }
-code { background: var(--card); padding: 1px 4px; border-radius: 3px; font-size: 0.92em; }
-pre { background: var(--card); padding: 10px 12px; overflow-x: auto; font-size: 0.85rem; }
-table { border-collapse: collapse; font-size: 0.86rem; margin: 8px 0 16px; }
-th, td { border: 1px solid var(--line); padding: 4px 7px; text-align: right; vertical-align: top; white-space: nowrap; }
-th { background: var(--card); font-weight: 600; text-align: center; }
-th.sub { font-weight: 500; color: var(--muted); font-size: 0.8rem; }
+code { background: var(--card); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+pre { background: var(--card); padding: 12px 14px; overflow-x: auto; font-size: 0.85rem; border-radius: var(--radius); }
+
+/* videos */
+.videobox { background: #000; border-radius: var(--radius); overflow: hidden; margin: 0 0 10px; }
+video.main { width: 100%; display: block; background: #000; aspect-ratio: 16 / 9; }
+#video .note { text-align: center; margin-bottom: 18px; }
+
+/* tables */
+table { border-collapse: collapse; font-size: 0.84rem; margin: 6px 0 14px; line-height: 1.35; }
+th, td { border-bottom: 1px solid var(--line); padding: 5px 9px; text-align: right; vertical-align: top; white-space: nowrap; }
+th { background: var(--card); font-weight: 600; text-align: center; color: var(--ink); border-bottom: 1px solid var(--line-strong); }
+th.sub { font-weight: 500; color: var(--muted); font-size: 0.76rem; }
 td:first-child, th:first-child { text-align: left; }
-td.cfg { white-space: nowrap; }
+tbody tr:nth-child(even) td { background: #fafbfc; }
+td.cfg { white-space: nowrap; color: var(--ink); }
 td.orig { font-weight: 600; }
-td.gain { background: var(--greenbg); color: var(--green); font-weight: 600; }
-td.loss { background: var(--redbg); color: var(--red); font-weight: 600; }
+td.gain { background: var(--greenbg) !important; color: var(--green); font-weight: 600; }
+td.loss { background: var(--redbg) !important; color: var(--red); font-weight: 600; }
 td.na { color: var(--muted); text-align: center; }
-.d { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 400; }
+.d { display: block; font-size: 0.72rem; color: var(--muted); font-weight: 400; }
 .tablewrap { overflow-x: auto; max-width: 100%; }
-table.full thead th { position: sticky; top: 0; }
-details { margin: 8px 0; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; background: #fff; }
-summary { cursor: pointer; font-weight: 600; }
-figure { margin: 18px 0; }
-figure img { border: 1px solid var(--line); }
-img { max-width: 100%; height: auto; }
-video.main { width: 100%; max-width: 960px; display: block; background: #000; }
-.walls { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 16px; }
-.walls video { width: 100%; display: block; background: #000; border: 1px solid var(--line); }
-.walls figure { margin: 0; }
+table.full thead th { position: sticky; top: 0; z-index: 1; }
+table.full th[colspan] { border-left: 1px solid var(--line-strong); }
+table.full td:nth-child(3n+2) { border-left: 1px solid var(--line-strong); }
+.md table { width: 100%; }
 .md td, .md th { text-align: left; white-space: normal; }
 .md th:first-child, .md td:first-child { white-space: nowrap; }
-summary { margin: 4px 0; }
-footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px; color: var(--muted); font-size: 0.85rem; }
-@media (max-width: 600px) { h1 { font-size: 1.3rem; } html { font-size: 15px; } .walls { grid-template-columns: 1fr; } }
-.figgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 14px; }
-.figgrid figure { margin: 0; }
-@media (max-width: 600px) { .figgrid { grid-template-columns: 1fr; } }
+
+/* collapsible blocks */
+details { margin: 10px 0; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+details > summary { cursor: pointer; font-weight: 600; padding: 10px 14px; list-style: none; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); transition: transform 0.15s; flex: none; }
+details[open] > summary::before { transform: rotate(45deg); }
+details[open] > summary { border-bottom: 1px solid var(--line); }
+details > *:not(summary) { margin-left: 14px; margin-right: 14px; }
+details > .tablewrap { margin: 8px 14px 6px; }
+details > video.main { margin: 0; border-radius: 0 0 var(--radius) var(--radius); }
+details > .note { padding: 8px 14px 4px; margin: 0; }
+
+/* figures */
+figure { margin: 22px 0; }
+figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+figcaption { margin-top: 8px; }
+figure.md { margin: 14px 0 22px; }
+figure.tradeoff { margin: 0; padding: 14px 14px 18px; border-bottom: 1px solid var(--line); }
+figure.tradeoff:last-child { border-bottom: 0; }
+figure.tradeoff figcaption { margin-top: 10px; }
+figure.tradeoff figcaption strong { color: var(--ink); }
+.figrow { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.figrow figure { margin: 22px 0 0; }
+img { max-width: 100%; height: auto; }
+
+/* rollout walls */
+.walls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 24px; margin-top: 8px; }
+.walls figure { margin: 0; }
+.walls video { width: 100%; display: block; background: #000; border-radius: var(--radius); }
+.walls figcaption { margin-top: 6px; }
+
+footer { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: 0.82rem; text-align: center; }
+
+@media (max-width: 720px) {
+  html { font-size: 16px; }
+  main { padding: 24px 16px 48px; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.25rem; margin-top: 40px; }
+  .walls, .figrow { grid-template-columns: 1fr; }
+  details > *:not(summary) { margin-left: 10px; margin-right: 10px; }
+}
 </style></head>
 <body><main>
 <header>
 <p class="kicker">Anonymous project page for an ICRA 2027 submission</p>
-<h1>Bag of Tricks for Training-Free Vision-Language-Action Models:<br>What to See, When to Act, and How Much to Compute?</h1>
+<h1>Bag of Tricks for Training-Free Vision-Language-Action Models<span class="sub">What to See, When to Act, and How Much to Compute?</span></h1>
 <p>This page holds the material that did not fit in the paper: implementation details of the five tricks and the evaluation harness, the results for every setting rather than only the best setting per trick, per-task breakdowns, the statistics behind the paired tests, qualitative rollouts, and discussion points. Everything is computed from the same per-episode records as the paper.</p>
 <p><strong>Summary of the paper.</strong> Vision-language-action (VLA) policies are strong but slow, and training-free efficiency methods are usually evaluated on one backbone and one benchmark. We evaluate five representative tricks, which act on what the policy sees (visual foveation), when it is called (action repeat, guarded action reuse) and how much it computes per call (depth pruning, temporal feature fusion), under one matched protocol on seven released VLA backbones and three simulated environments (SimplerEnv WidowX, SimplerEnv Google Robot "Fractal", LIBERO). Every configuration replays the same task instances and initial states as the unmodified policy, so each trick is compared with the original on paired episodes: 22 backbone and environment pairs, 14 configurations each, 47,600 episodes. The trade-offs differ widely across backbones, tasks and settings.</p>
-<nav><a href="#video">Video</a> · <a href="#impl">Additional implementation details</a> · <a href="#results">Additional results</a> · <a href="#discussion">Additional discussions</a></nav>
+<nav><a href="#video">Videos</a><a href="#impl">1. Implementation details</a><a href="#results">2. Results</a><a href="#discussion">3. Discussions</a></nav>
 </header>
 
 <section id="video"><h2>Videos</h2>
-<video class="main" src="assets/accompanying_video.mp4" controls preload="metadata"></video>
+<div class="videobox"><video class="main" src="assets/accompanying_video.mp4" controls preload="metadata"></video></div>
 <p class="note">The 3-minute video submitted with the paper.</p>
 <details><summary>Extended video with one slide per trick</summary>
 <video class="main" src="assets/extended_video.mp4" controls preload="metadata"></video>
@@ -537,7 +592,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 </tbody></table></div></details>
 <h3 id="pertask">2.2 Per-task success</h3>
 <p>Every configuration split by task (50 episodes per task on SimplerEnv, 10 on LIBERO), with the change against the original in parentheses. Expand a pair to see its tasks.</p>
-<details><summary>CogACT on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>widowx_carrot_on_plate</th><th>widowx_put_eggplant_in_basket</th><th>widowx_spoon_on_towel</th><th>widowx_stack_cube</th></tr></thead><tbody>
+<details><summary>CogACT on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Carrot on plate</th><th>Eggplant in basket</th><th>Spoon on towel</th><th>Stack cube</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>38.0</td><td>68.0</td><td>62.0</td><td>32.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>42.0<span class="d">(+4.0)</span></td><td>88.0<span class="d">(+20.0)</span></td><td>50.0<span class="d">(-12.0)</span></td><td>30.0<span class="d">(-2.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>42.0<span class="d">(+4.0)</span></td><td>76.0<span class="d">(+8.0)</span></td><td>64.0<span class="d">(+2.0)</span></td><td>28.0<span class="d">(-4.0)</span></td></tr>
@@ -553,7 +608,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>46.0<span class="d">(+8.0)</span></td><td>82.0<span class="d">(+14.0)</span></td><td>72.0<span class="d">(+10.0)</span></td><td>32.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>36.0<span class="d">(-2.0)</span></td><td>76.0<span class="d">(+8.0)</span></td><td>68.0<span class="d">(+6.0)</span></td><td>28.0<span class="d">(-4.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>CronusVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>widowx_carrot_on_plate</th><th>widowx_put_eggplant_in_basket</th><th>widowx_spoon_on_towel</th><th>widowx_stack_cube</th></tr></thead><tbody>
+<details><summary>CronusVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Carrot on plate</th><th>Eggplant in basket</th><th>Spoon on towel</th><th>Stack cube</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>16.0</td><td>96.0</td><td>24.0</td><td>0.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>10.0<span class="d">(-6.0)</span></td><td>100.0<span class="d">(+4.0)</span></td><td>36.0<span class="d">(+12.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>8.0<span class="d">(-8.0)</span></td><td>98.0<span class="d">(+2.0)</span></td><td>30.0<span class="d">(+6.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
@@ -569,7 +624,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>10.0<span class="d">(-6.0)</span></td><td>96.0<span class="d">(0.0)</span></td><td>28.0<span class="d">(+4.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>10.0<span class="d">(-6.0)</span></td><td>96.0<span class="d">(0.0)</span></td><td>28.0<span class="d">(+4.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>MiniVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>widowx_carrot_on_plate</th><th>widowx_put_eggplant_in_basket</th><th>widowx_spoon_on_towel</th><th>widowx_stack_cube</th></tr></thead><tbody>
+<details><summary>MiniVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Carrot on plate</th><th>Eggplant in basket</th><th>Spoon on towel</th><th>Stack cube</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>4.0</td><td>18.0</td><td>50.0</td><td>72.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>12.0<span class="d">(+8.0)</span></td><td>26.0<span class="d">(+8.0)</span></td><td>44.0<span class="d">(-6.0)</span></td><td>30.0<span class="d">(-42.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>14.0<span class="d">(+10.0)</span></td><td>22.0<span class="d">(+4.0)</span></td><td>52.0<span class="d">(+2.0)</span></td><td>52.0<span class="d">(-20.0)</span></td></tr>
@@ -585,7 +640,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>8.0<span class="d">(+4.0)</span></td><td>16.0<span class="d">(-2.0)</span></td><td>48.0<span class="d">(-2.0)</span></td><td>70.0<span class="d">(-2.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>4.0<span class="d">(0.0)</span></td><td>18.0<span class="d">(0.0)</span></td><td>54.0<span class="d">(+4.0)</span></td><td>78.0<span class="d">(+6.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>OpenVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>widowx_carrot_on_plate</th><th>widowx_put_eggplant_in_basket</th><th>widowx_spoon_on_towel</th><th>widowx_stack_cube</th></tr></thead><tbody>
+<details><summary>OpenVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Carrot on plate</th><th>Eggplant in basket</th><th>Spoon on towel</th><th>Stack cube</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>32.0</td><td>74.0</td><td>38.0</td><td>30.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>24.0<span class="d">(-8.0)</span></td><td>16.0<span class="d">(-58.0)</span></td><td>38.0<span class="d">(0.0)</span></td><td>12.0<span class="d">(-18.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>34.0<span class="d">(+2.0)</span></td><td>24.0<span class="d">(-50.0)</span></td><td>48.0<span class="d">(+10.0)</span></td><td>14.0<span class="d">(-16.0)</span></td></tr>
@@ -601,7 +656,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>46.0<span class="d">(+14.0)</span></td><td>74.0<span class="d">(0.0)</span></td><td>52.0<span class="d">(+14.0)</span></td><td>30.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>28.0<span class="d">(-4.0)</span></td><td>82.0<span class="d">(+8.0)</span></td><td>52.0<span class="d">(+14.0)</span></td><td>30.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>SpatialVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>widowx_carrot_on_plate</th><th>widowx_put_eggplant_in_basket</th><th>widowx_spoon_on_towel</th><th>widowx_stack_cube</th></tr></thead><tbody>
+<details><summary>SpatialVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Carrot on plate</th><th>Eggplant in basket</th><th>Spoon on towel</th><th>Stack cube</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>26.0</td><td>100.0</td><td>22.0</td><td>32.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>34.0<span class="d">(+8.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>24.0<span class="d">(+2.0)</span></td><td>42.0<span class="d">(+10.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>28.0<span class="d">(+2.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(-2.0)</span></td><td>30.0<span class="d">(-2.0)</span></td></tr>
@@ -617,7 +672,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>22.0<span class="d">(-4.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(-2.0)</span></td><td>34.0<span class="d">(+2.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>26.0<span class="d">(0.0)</span></td><td>98.0<span class="d">(-2.0)</span></td><td>24.0<span class="d">(+2.0)</span></td><td>32.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>UniVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>widowx_carrot_on_plate</th><th>widowx_put_eggplant_in_basket</th><th>widowx_spoon_on_towel</th><th>widowx_stack_cube</th></tr></thead><tbody>
+<details><summary>UniVLA on WidowX: success per task (4 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Carrot on plate</th><th>Eggplant in basket</th><th>Spoon on towel</th><th>Stack cube</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>84.0</td><td>98.0</td><td>88.0</td><td>80.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>68.0<span class="d">(-16.0)</span></td><td>96.0<span class="d">(-2.0)</span></td><td>80.0<span class="d">(-8.0)</span></td><td>72.0<span class="d">(-8.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>62.0<span class="d">(-22.0)</span></td><td>96.0<span class="d">(-2.0)</span></td><td>80.0<span class="d">(-8.0)</span></td><td>54.0<span class="d">(-26.0)</span></td></tr>
@@ -633,7 +688,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>72.0<span class="d">(-12.0)</span></td><td>100.0<span class="d">(+2.0)</span></td><td>88.0<span class="d">(0.0)</span></td><td>74.0<span class="d">(-6.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>84.0<span class="d">(0.0)</span></td><td>98.0<span class="d">(0.0)</span></td><td>88.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>CogACT on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>google_robot_close_drawer</th><th>google_robot_move_near</th><th>google_robot_open_drawer</th><th>google_robot_pick_coke_can</th><th>google_robot_place_apple_in_closed_top_drawer</th></tr></thead><tbody>
+<details><summary>CogACT on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Close drawer</th><th>Move near</th><th>Open drawer</th><th>Pick coke can</th><th>Apple into closed drawer</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>62.0</td><td>94.0</td><td>80.0</td><td>98.0</td><td>0.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>58.0<span class="d">(-4.0)</span></td><td>94.0<span class="d">(0.0)</span></td><td>72.0<span class="d">(-8.0)</span></td><td>100.0<span class="d">(+2.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>68.0<span class="d">(+6.0)</span></td><td>92.0<span class="d">(-2.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>96.0<span class="d">(-2.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
@@ -649,7 +704,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>62.0<span class="d">(0.0)</span></td><td>92.0<span class="d">(-2.0)</span></td><td>74.0<span class="d">(-6.0)</span></td><td>96.0<span class="d">(-2.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>62.0<span class="d">(0.0)</span></td><td>94.0<span class="d">(0.0)</span></td><td>74.0<span class="d">(-6.0)</span></td><td>98.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>CronusVLA on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>google_robot_close_drawer</th><th>google_robot_move_near</th><th>google_robot_open_drawer</th><th>google_robot_pick_coke_can</th><th>google_robot_place_apple_in_closed_top_drawer</th></tr></thead><tbody>
+<details><summary>CronusVLA on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Close drawer</th><th>Move near</th><th>Open drawer</th><th>Pick coke can</th><th>Apple into closed drawer</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>38.0</td><td>100.0</td><td>40.0</td><td>100.0</td><td>0.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>50.0<span class="d">(+12.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>22.0<span class="d">(-18.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>56.0<span class="d">(+18.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>28.0<span class="d">(-12.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
@@ -665,7 +720,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>50.0<span class="d">(+12.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>36.0<span class="d">(-4.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>50.0<span class="d">(+12.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>36.0<span class="d">(-4.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>OpenVLA on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>google_robot_close_drawer</th><th>google_robot_move_near</th><th>google_robot_open_drawer</th><th>google_robot_pick_coke_can</th><th>google_robot_place_apple_in_closed_top_drawer</th></tr></thead><tbody>
+<details><summary>OpenVLA on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Close drawer</th><th>Move near</th><th>Open drawer</th><th>Pick coke can</th><th>Apple into closed drawer</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>40.0</td><td>62.0</td><td>18.0</td><td>58.0</td><td>0.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>30.0<span class="d">(-10.0)</span></td><td>6.0<span class="d">(-56.0)</span></td><td>0.0<span class="d">(-18.0)</span></td><td>2.0<span class="d">(-56.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>34.0<span class="d">(-6.0)</span></td><td>32.0<span class="d">(-30.0)</span></td><td>10.0<span class="d">(-8.0)</span></td><td>46.0<span class="d">(-12.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
@@ -681,7 +736,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>50.0<span class="d">(+10.0)</span></td><td>64.0<span class="d">(+2.0)</span></td><td>34.0<span class="d">(+16.0)</span></td><td>64.0<span class="d">(+6.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>40.0<span class="d">(0.0)</span></td><td>62.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(+2.0)</span></td><td>62.0<span class="d">(+4.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>SpatialVLA on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>google_robot_close_drawer</th><th>google_robot_move_near</th><th>google_robot_open_drawer</th><th>google_robot_pick_coke_can</th><th>google_robot_place_apple_in_closed_top_drawer</th></tr></thead><tbody>
+<details><summary>SpatialVLA on Fractal: success per task (5 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Close drawer</th><th>Move near</th><th>Open drawer</th><th>Pick coke can</th><th>Apple into closed drawer</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>62.0</td><td>92.0</td><td>56.0</td><td>86.0</td><td>0.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>74.0<span class="d">(+12.0)</span></td><td>76.0<span class="d">(-16.0)</span></td><td>38.0<span class="d">(-18.0)</span></td><td>88.0<span class="d">(+2.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>78.0<span class="d">(+16.0)</span></td><td>90.0<span class="d">(-2.0)</span></td><td>36.0<span class="d">(-20.0)</span></td><td>82.0<span class="d">(-4.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
@@ -697,7 +752,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>62.0<span class="d">(0.0)</span></td><td>96.0<span class="d">(+4.0)</span></td><td>52.0<span class="d">(-4.0)</span></td><td>90.0<span class="d">(+4.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>62.0<span class="d">(0.0)</span></td><td>92.0<span class="d">(0.0)</span></td><td>56.0<span class="d">(0.0)</span></td><td>86.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>OpenVLA on LIBERO Spatial: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_spatial__task_0</th><th>libero_spatial__task_1</th><th>libero_spatial__task_2</th><th>libero_spatial__task_3</th><th>libero_spatial__task_4</th><th>libero_spatial__task_5</th><th>libero_spatial__task_6</th><th>libero_spatial__task_7</th><th>libero_spatial__task_8</th><th>libero_spatial__task_9</th></tr></thead><tbody>
+<details><summary>OpenVLA on LIBERO Spatial: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>80.0</td><td>70.0</td><td>80.0</td><td>80.0</td><td>80.0</td><td>90.0</td><td>90.0</td><td>80.0</td><td>60.0</td><td>70.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>70.0<span class="d">(-10.0)</span></td><td>40.0<span class="d">(-30.0)</span></td><td>60.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>40.0<span class="d">(-40.0)</span></td><td>40.0<span class="d">(-50.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(+10.0)</span></td><td>0.0<span class="d">(-70.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>100.0<span class="d">(+20.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(+20.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>50.0<span class="d">(-10.0)</span></td><td>60.0<span class="d">(-10.0)</span></td></tr>
@@ -713,7 +768,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>90.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>40.0<span class="d">(-50.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(+10.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>90.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>60.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>50.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>SmolVLA on LIBERO Spatial: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_spatial__task_0</th><th>libero_spatial__task_1</th><th>libero_spatial__task_2</th><th>libero_spatial__task_3</th><th>libero_spatial__task_4</th><th>libero_spatial__task_5</th><th>libero_spatial__task_6</th><th>libero_spatial__task_7</th><th>libero_spatial__task_8</th><th>libero_spatial__task_9</th></tr></thead><tbody>
+<details><summary>SmolVLA on LIBERO Spatial: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>70.0</td><td>100.0</td><td>80.0</td><td>70.0</td><td>90.0</td><td>80.0</td><td>70.0</td><td>60.0</td><td>90.0</td><td>50.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>80.0<span class="d">(+10.0)</span></td><td>70.0<span class="d">(-30.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(+20.0)</span></td><td>30.0<span class="d">(-60.0)</span></td><td>60.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(+20.0)</span></td><td>10.0<span class="d">(-50.0)</span></td><td>60.0<span class="d">(-30.0)</span></td><td>60.0<span class="d">(+10.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>70.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(-20.0)</span></td><td>60.0<span class="d">(+10.0)</span></td></tr>
@@ -729,7 +784,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>80.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(+20.0)</span></td><td>90.0<span class="d">(+30.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(+10.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>90.0<span class="d">(+20.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(-20.0)</span></td><td>100.0<span class="d">(+20.0)</span></td><td>90.0<span class="d">(+20.0)</span></td><td>90.0<span class="d">(+30.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>40.0<span class="d">(-10.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>UniVLA on LIBERO Spatial: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_spatial__task_0</th><th>libero_spatial__task_1</th><th>libero_spatial__task_2</th><th>libero_spatial__task_3</th><th>libero_spatial__task_4</th><th>libero_spatial__task_5</th><th>libero_spatial__task_6</th><th>libero_spatial__task_7</th><th>libero_spatial__task_8</th><th>libero_spatial__task_9</th></tr></thead><tbody>
+<details><summary>UniVLA on LIBERO Spatial: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>90.0</td><td>100.0</td><td>100.0</td><td>90.0</td><td>100.0</td><td>90.0</td><td>100.0</td><td>100.0</td><td>90.0</td><td>90.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>70.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-10.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td></tr>
@@ -745,7 +800,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>80.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>OpenVLA on LIBERO Object: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_object__task_0</th><th>libero_object__task_1</th><th>libero_object__task_2</th><th>libero_object__task_3</th><th>libero_object__task_4</th><th>libero_object__task_5</th><th>libero_object__task_6</th><th>libero_object__task_7</th><th>libero_object__task_8</th><th>libero_object__task_9</th></tr></thead><tbody>
+<details><summary>OpenVLA on LIBERO Object: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>60.0</td><td>100.0</td><td>90.0</td><td>60.0</td><td>100.0</td><td>80.0</td><td>100.0</td><td>90.0</td><td>100.0</td><td>90.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>70.0<span class="d">(+10.0)</span></td><td>20.0<span class="d">(-80.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(-40.0)</span></td><td>90.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>80.0<span class="d">(+20.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(0.0)</span></td></tr>
@@ -761,7 +816,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>80.0<span class="d">(+20.0)</span></td><td>70.0<span class="d">(-30.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>40.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>SmolVLA on LIBERO Object: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_object__task_0</th><th>libero_object__task_1</th><th>libero_object__task_2</th><th>libero_object__task_3</th><th>libero_object__task_4</th><th>libero_object__task_5</th><th>libero_object__task_6</th><th>libero_object__task_7</th><th>libero_object__task_8</th><th>libero_object__task_9</th></tr></thead><tbody>
+<details><summary>SmolVLA on LIBERO Object: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>90.0</td><td>90.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>80.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>80.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>20.0<span class="d">(-70.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>60.0<span class="d">(-40.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(+10.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>40.0<span class="d">(-50.0)</span></td><td>70.0<span class="d">(-20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(+10.0)</span></td></tr>
@@ -777,7 +832,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>80.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+20.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>70.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>60.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(+10.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>UniVLA on LIBERO Object: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_object__task_0</th><th>libero_object__task_1</th><th>libero_object__task_2</th><th>libero_object__task_3</th><th>libero_object__task_4</th><th>libero_object__task_5</th><th>libero_object__task_6</th><th>libero_object__task_7</th><th>libero_object__task_8</th><th>libero_object__task_9</th></tr></thead><tbody>
+<details><summary>UniVLA on LIBERO Object: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>100.0</td><td>100.0</td><td>100.0</td><td>90.0</td><td>90.0</td><td>100.0</td><td>80.0</td><td>100.0</td><td>100.0</td><td>100.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td></tr>
@@ -793,7 +848,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>OpenVLA on LIBERO Goal: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_goal__task_0</th><th>libero_goal__task_1</th><th>libero_goal__task_2</th><th>libero_goal__task_3</th><th>libero_goal__task_4</th><th>libero_goal__task_5</th><th>libero_goal__task_6</th><th>libero_goal__task_7</th><th>libero_goal__task_8</th><th>libero_goal__task_9</th></tr></thead><tbody>
+<details><summary>OpenVLA on LIBERO Goal: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>50.0</td><td>100.0</td><td>80.0</td><td>60.0</td><td>80.0</td><td>50.0</td><td>70.0</td><td>100.0</td><td>100.0</td><td>60.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>60.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>10.0<span class="d">(-50.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>60.0<span class="d">(+10.0)</span></td><td>60.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(-30.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>40.0<span class="d">(-20.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>70.0<span class="d">(+20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>40.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(+30.0)</span></td><td>70.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>50.0<span class="d">(-10.0)</span></td></tr>
@@ -809,7 +864,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>90.0<span class="d">(+40.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>30.0<span class="d">(-20.0)</span></td><td>70.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>40.0<span class="d">(-20.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>60.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>70.0<span class="d">(+20.0)</span></td><td>70.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>50.0<span class="d">(-10.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>SmolVLA on LIBERO Goal: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_goal__task_0</th><th>libero_goal__task_1</th><th>libero_goal__task_2</th><th>libero_goal__task_3</th><th>libero_goal__task_4</th><th>libero_goal__task_5</th><th>libero_goal__task_6</th><th>libero_goal__task_7</th><th>libero_goal__task_8</th><th>libero_goal__task_9</th></tr></thead><tbody>
+<details><summary>SmolVLA on LIBERO Goal: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>70.0</td><td>100.0</td><td>70.0</td><td>50.0</td><td>80.0</td><td>100.0</td><td>50.0</td><td>100.0</td><td>100.0</td><td>80.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>40.0<span class="d">(-30.0)</span></td><td>70.0<span class="d">(-30.0)</span></td><td>100.0<span class="d">(+30.0)</span></td><td>10.0<span class="d">(-40.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>40.0<span class="d">(-60.0)</span></td><td>30.0<span class="d">(-20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>20.0<span class="d">(-60.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>40.0<span class="d">(-30.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>10.0<span class="d">(-40.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>40.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>50.0<span class="d">(-30.0)</span></td></tr>
@@ -825,7 +880,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>80.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>40.0<span class="d">(-10.0)</span></td><td>60.0<span class="d">(-20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>50.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>60.0<span class="d">(-20.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>80.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(+10.0)</span></td><td>50.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>60.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>60.0<span class="d">(-20.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>UniVLA on LIBERO Goal: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_goal__task_0</th><th>libero_goal__task_1</th><th>libero_goal__task_2</th><th>libero_goal__task_3</th><th>libero_goal__task_4</th><th>libero_goal__task_5</th><th>libero_goal__task_6</th><th>libero_goal__task_7</th><th>libero_goal__task_8</th><th>libero_goal__task_9</th></tr></thead><tbody>
+<details><summary>UniVLA on LIBERO Goal: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>70.0</td><td>100.0</td><td>100.0</td><td>90.0</td><td>100.0</td><td>80.0</td><td>100.0</td><td>100.0</td><td>100.0</td><td>80.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>70.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(-20.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>100.0<span class="d">(+30.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(+10.0)</span></td></tr>
@@ -841,7 +896,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>100.0<span class="d">(+30.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(+10.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>70.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>OpenVLA on LIBERO Long: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_10__task_0</th><th>libero_10__task_1</th><th>libero_10__task_2</th><th>libero_10__task_3</th><th>libero_10__task_4</th><th>libero_10__task_5</th><th>libero_10__task_6</th><th>libero_10__task_7</th><th>libero_10__task_8</th><th>libero_10__task_9</th></tr></thead><tbody>
+<details><summary>OpenVLA on LIBERO Long: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>70.0</td><td>80.0</td><td>60.0</td><td>20.0</td><td>40.0</td><td>90.0</td><td>70.0</td><td>50.0</td><td>30.0</td><td>50.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>40.0<span class="d">(-30.0)</span></td><td>30.0<span class="d">(-50.0)</span></td><td>30.0<span class="d">(-30.0)</span></td><td>20.0<span class="d">(0.0)</span></td><td>30.0<span class="d">(-10.0)</span></td><td>70.0<span class="d">(-20.0)</span></td><td>30.0<span class="d">(-40.0)</span></td><td>30.0<span class="d">(-20.0)</span></td><td>10.0<span class="d">(-20.0)</span></td><td>10.0<span class="d">(-40.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>30.0<span class="d">(-40.0)</span></td><td>60.0<span class="d">(-20.0)</span></td><td>70.0<span class="d">(+10.0)</span></td><td>40.0<span class="d">(+20.0)</span></td><td>20.0<span class="d">(-20.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>40.0<span class="d">(-30.0)</span></td><td>40.0<span class="d">(-10.0)</span></td><td>10.0<span class="d">(-20.0)</span></td><td>30.0<span class="d">(-20.0)</span></td></tr>
@@ -857,7 +912,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>40.0<span class="d">(-30.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>30.0<span class="d">(+10.0)</span></td><td>40.0<span class="d">(0.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>50.0<span class="d">(-20.0)</span></td><td>30.0<span class="d">(-20.0)</span></td><td>20.0<span class="d">(-10.0)</span></td><td>50.0<span class="d">(0.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>50.0<span class="d">(-20.0)</span></td><td>70.0<span class="d">(-10.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(-20.0)</span></td><td>90.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(-10.0)</span></td><td>30.0<span class="d">(-20.0)</span></td><td>0.0<span class="d">(-30.0)</span></td><td>50.0<span class="d">(0.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>SmolVLA on LIBERO Long: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_10__task_0</th><th>libero_10__task_1</th><th>libero_10__task_2</th><th>libero_10__task_3</th><th>libero_10__task_4</th><th>libero_10__task_5</th><th>libero_10__task_6</th><th>libero_10__task_7</th><th>libero_10__task_8</th><th>libero_10__task_9</th></tr></thead><tbody>
+<details><summary>SmolVLA on LIBERO Long: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>0.0</td><td>60.0</td><td>60.0</td><td>90.0</td><td>0.0</td><td>50.0</td><td>60.0</td><td>20.0</td><td>20.0</td><td>60.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>0.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(-40.0)</span></td><td>0.0<span class="d">(-60.0)</span></td><td>60.0<span class="d">(-30.0)</span></td><td>0.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(-30.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(-20.0)</span></td><td>0.0<span class="d">(-20.0)</span></td><td>30.0<span class="d">(-30.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>10.0<span class="d">(+10.0)</span></td><td>20.0<span class="d">(-40.0)</span></td><td>0.0<span class="d">(-60.0)</span></td><td>60.0<span class="d">(-30.0)</span></td><td>0.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(-30.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>0.0<span class="d">(-20.0)</span></td><td>10.0<span class="d">(-10.0)</span></td><td>30.0<span class="d">(-30.0)</span></td></tr>
@@ -873,7 +928,7 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 <tr><td class="cfg">Temporal fusion, task-aware</td><td>10.0<span class="d">(+10.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>30.0<span class="d">(-30.0)</span></td><td>60.0<span class="d">(-30.0)</span></td><td>0.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(+30.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>30.0<span class="d">(+10.0)</span></td><td>30.0<span class="d">(+10.0)</span></td><td>30.0<span class="d">(-30.0)</span></td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td>20.0<span class="d">(+20.0)</span></td><td>80.0<span class="d">(+20.0)</span></td><td>40.0<span class="d">(-20.0)</span></td><td>80.0<span class="d">(-10.0)</span></td><td>0.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(+30.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(0.0)</span></td><td>40.0<span class="d">(+20.0)</span></td><td>30.0<span class="d">(-30.0)</span></td></tr>
 </tbody></table></div></details>
-<details><summary>UniVLA on LIBERO Long: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>libero_10__task_0</th><th>libero_10__task_1</th><th>libero_10__task_2</th><th>libero_10__task_3</th><th>libero_10__task_4</th><th>libero_10__task_5</th><th>libero_10__task_6</th><th>libero_10__task_7</th><th>libero_10__task_8</th><th>libero_10__task_9</th></tr></thead><tbody>
+<details><summary>UniVLA on LIBERO Long: success per task (10 tasks)</summary><div class="tablewrap"><table class="pt"><thead><tr><th>Configuration</th><th>Task 0</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>Task 4</th><th>Task 5</th><th>Task 6</th><th>Task 7</th><th>Task 8</th><th>Task 9</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td>100.0</td><td>90.0</td><td>100.0</td><td>100.0</td><td>90.0</td><td>90.0</td><td>80.0</td><td>80.0</td><td>60.0</td><td>70.0</td></tr>
 <tr><td class="cfg">Foveation, keep 20%</td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(-20.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>20.0<span class="d">(-40.0)</span></td><td>100.0<span class="d">(+30.0)</span></td></tr>
 <tr><td class="cfg">Foveation, keep 50%</td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>90.0<span class="d">(-10.0)</span></td><td>100.0<span class="d">(0.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(+10.0)</span></td><td>100.0<span class="d">(+20.0)</span></td><td>80.0<span class="d">(0.0)</span></td><td>60.0<span class="d">(0.0)</span></td><td>80.0<span class="d">(+10.0)</span></td></tr>
@@ -891,7 +946,8 @@ footer { margin-top: 48px; border-top: 1px solid var(--line); padding-top: 12px;
 </tbody></table></div></details>
 <h3 id="figures">2.3 Figures for the environments the paper does not plot</h3>
 <p>All plots are drawn from the same records as the tables. Success change is in percentage points against the original on the same episodes; speedup is the original's time per step divided by the trick's. The trade-off plots use the layout of the paper's Fig. 4 for the seven backbone and environment pairs that Fig. 4 does not show.</p>
-<figure class=""><img src="assets/consistency.png" alt="Cross-setting consistency"><figcaption>Cross-setting consistency. For each of the 13 settings, how many of the 13 backbone and environment combinations (LIBERO pooled per backbone) had lower, unchanged, or higher success than the original. Point estimates, no significance threshold. This chart was removed from the paper for space.</figcaption></figure><figure class=""><img src="assets/success_change_fractal.png" alt="Success change from the original for all 13 settings on Fractal, one panel per backbone (the Fractal counterpart of Fig"><figcaption>Success change from the original for all 13 settings on Fractal, one panel per backbone (the Fractal counterpart of Fig. 1).</figcaption></figure><figure class=""><img src="assets/success_change_libero.png" alt="Success change from the original for all 13 settings on LIBERO (four suites pooled), one panel per backbone"><figcaption>Success change from the original for all 13 settings on LIBERO (four suites pooled), one panel per backbone.</figcaption></figure><div class="figgrid"><figure class="grid"><img src="assets/tradeoff_cogact_fractal.png" alt="CogACT on Fractal: success change against time-per-step speedup for every setting (not shown in the paper, whose Fig"><figcaption>CogACT on Fractal: success change against time-per-step speedup for every setting, in the layout of the paper's Fig. 4 (which covers WidowX only). Shaded corner = faster and no worse.</figcaption></figure><figure class="grid"><img src="assets/tradeoff_cronusvla_fractal.png" alt="CronusVLA on Fractal"><figcaption>CronusVLA on Fractal.</figcaption></figure><figure class="grid"><img src="assets/tradeoff_openvla_fractal.png" alt="OpenVLA on Fractal"><figcaption>OpenVLA on Fractal.</figcaption></figure><figure class="grid"><img src="assets/tradeoff_spatialvla_fractal.png" alt="SpatialVLA on Fractal"><figcaption>SpatialVLA on Fractal.</figcaption></figure><figure class="grid"><img src="assets/tradeoff_openvla_libero.png" alt="OpenVLA on LIBERO, the four suites pooled"><figcaption>OpenVLA on LIBERO, the four suites pooled.</figcaption></figure><figure class="grid"><img src="assets/tradeoff_univla_libero.png" alt="UniVLA on LIBERO, the four suites pooled"><figcaption>UniVLA on LIBERO, the four suites pooled.</figcaption></figure><figure class="grid"><img src="assets/tradeoff_smolvla_libero.png" alt="SmolVLA on LIBERO, the four suites pooled"><figcaption>SmolVLA on LIBERO, the four suites pooled. The depth-pruning speedups at two and four layers come from runs under the re-implemented evaluator (Section 1.3) and are not comparable with the original row.</figcaption></figure></div>
+<figure class=""><img src="assets/consistency.png" alt="Cross-setting consistency"><figcaption>Cross-setting consistency. For each of the 13 settings, how many of the 13 backbone and environment combinations (LIBERO pooled per backbone) had lower, unchanged, or higher success than the original. Point estimates, no significance threshold. This chart was removed from the paper for space.</figcaption></figure><figure class=""><img src="assets/success_change_fractal.png" alt="Success change from the original for all 13 settings on Fractal, one panel per backbone (the Fractal counterpart of Fig"><figcaption>Success change from the original for all 13 settings on Fractal, one panel per backbone (the Fractal counterpart of Fig. 1).</figcaption></figure><figure class=""><img src="assets/success_change_libero.png" alt="Success change from the original for all 13 settings on LIBERO (four suites pooled), one panel per backbone"><figcaption>Success change from the original for all 13 settings on LIBERO (four suites pooled), one panel per backbone.</figcaption></figure>
+<details><summary>Trade-off plots for the 7 backbone and environment pairs that Fig. 4 does not show</summary><figure class="tradeoff"><img src="assets/tradeoff_cogact_fractal.png" alt="CogACT on Fractal"><figcaption><strong>CogACT on Fractal.</strong> Success change against time-per-step speedup for every setting, in the layout of the paper's Fig. 4 (which covers WidowX only). Shaded corner = faster and no worse.</figcaption></figure><figure class="tradeoff"><img src="assets/tradeoff_cronusvla_fractal.png" alt="CronusVLA on Fractal"><figcaption><strong>CronusVLA on Fractal.</strong> </figcaption></figure><figure class="tradeoff"><img src="assets/tradeoff_openvla_fractal.png" alt="OpenVLA on Fractal"><figcaption><strong>OpenVLA on Fractal.</strong> </figcaption></figure><figure class="tradeoff"><img src="assets/tradeoff_spatialvla_fractal.png" alt="SpatialVLA on Fractal"><figcaption><strong>SpatialVLA on Fractal.</strong> </figcaption></figure><figure class="tradeoff"><img src="assets/tradeoff_openvla_libero.png" alt="OpenVLA on LIBERO, the four suites pooled"><figcaption><strong>OpenVLA on LIBERO, the four suites pooled.</strong> </figcaption></figure><figure class="tradeoff"><img src="assets/tradeoff_univla_libero.png" alt="UniVLA on LIBERO, the four suites pooled"><figcaption><strong>UniVLA on LIBERO, the four suites pooled.</strong> </figcaption></figure><figure class="tradeoff"><img src="assets/tradeoff_smolvla_libero.png" alt="SmolVLA on LIBERO, the four suites pooled. The depth-pruning speedups at two and four layers come from runs under the re-implemented evaluator (Section 1.3) and are not comparable with the original row"><figcaption><strong>SmolVLA on LIBERO, the four suites pooled.</strong> The depth-pruning speedups at two and four layers come from runs under the re-implemented evaluator (Section 1.3) and are not comparable with the original row.</figcaption></figure></details>
 <h3 id="stats">2.4 Statistics and reproducibility checks</h3>
 <p><strong>Per-cell p-values.</strong> Every setting's exact two-sided McNemar p-value is in the tables of 2.1. Over the 110 table cells (the best setting per trick), 22 lower success at p &lt; 0.05 and 4 raise it: CogACT WidowX depth pruning 2 layers (+9.5, p = 0.009), OpenVLA Fractal task-aware fusion (+6.8, p = 0.012), CogACT WidowX motion-entropy fusion (+8.0, p = 0.020) and UniVLA LIBERO Goal foveation 50% (+7.0, p = 0.039). Over all 286 settings, 77 lower success and 6 raise it at p &lt; 0.05.</p>
 <p><strong>Multiplicity.</strong> Each table cell is the best of two or three settings, so the paper reads its p-values as descriptive. A Benjamini-Hochberg correction at q = 0.05 over the 110 cells keeps 16 of the 22 drops (cut-off p = 0.0061) and none of the 4 gains. The sum of the exact test sizes at the observed flip counts gives 3.1 chance passes over the 110 cells and 8.0 over the 286 settings (4.0 per direction), so the 6 gains over all settings are about what chance produces. Guarded reuse changes success significantly in none of its 66 settings.</p>
