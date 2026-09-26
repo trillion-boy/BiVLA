@@ -51,7 +51,8 @@ def full_table(rows):
         backbones = sorted(set(r['backbone'] for r in R), key=lambda b: BB.index(b) if b in BB else 99)
         k = math.ceil(len(backbones) / math.ceil(len(backbones) / 3))
         chunks = [backbones[i:i + k] for i in range(0, len(backbones), k)]
-        out.append(f'<details{" open" if env == "WidowX" else ""}><summary>{html.escape(env)}: {len(backbones)} backbones, 14 configurations</summary>')
+        ptab = 'Table I' if env in ('WidowX', 'Fractal') else 'Table II'
+        out.append(f'<details{" open" if env == "WidowX" else ""}><summary>{html.escape(env)}: {len(backbones)} backbones, 14 configurations <span class="tag">paper {ptab}</span></summary>')
         for bbs in chunks:
             out.append('<div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th>' + ''.join(f'<th colspan="2">{b}</th>' for b in bbs) + '</tr>')
             out.append('<tr>' + ''.join('<th class="sub">Success %</th><th class="sub">ms / step</th>' for b in bbs) + '</tr></thead><tbody>')
@@ -70,6 +71,7 @@ def full_table(rows):
                                      f'<td>{num(r["latency_ms_per_step"])}</td>')
                 out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
             out.append('</tbody></table></div>')
+        out.append(f'<p class="note legend">* the one setting per trick whose value is printed in {ptab} of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>')
         out.append('</details>')
     return '\n'.join(out)
 

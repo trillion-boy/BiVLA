@@ -98,6 +98,7 @@ img { max-width: 100%; height: auto; }
 .walls video { width: 100%; display: block; background: #000; border-radius: var(--radius); }
 .walls figcaption { margin-top: 6px; }
 
+.tag { margin-left: auto; font-size: 0.75rem; font-weight: 500; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; }
 .legend { font-size: 0.8rem; margin: 2px 0 14px; }
 footer { margin-top: 64px; border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: 0.82rem; text-align: center; }
 
@@ -479,9 +480,9 @@ figcaption em { font-style: normal; }
 <section id="results"><h2>2. Additional results</h2>
 <p>Tables I and II of the paper show one setting per trick, and Figs. 1, 4 and 5 show WidowX in full but Fractal and LIBERO only pooled. Here every setting is listed with its paired p-value (2.1), split by task (2.2) and plotted for the other environments (2.3), with the statistics behind the p-values (2.4) and qualitative rollouts (2.5).</p>
 <h3 id="full">2.1 Every setting, every backbone and environment</h3>
-<p>All 13 settings and the original for every backbone and environment. <strong>Success %</strong> with, in parentheses, the change against the original on the same episodes and the exact two-sided McNemar p-value; green = significant gain, red = significant loss (p &lt; 0.05); a star marks the setting shown in the paper's table. <strong>ms / step</strong> is wall-clock per environment step, comparable only within one backbone and environment. Average steps (which follows success, since failed episodes run to the cap) is in the CSV below.</p>
+<p>All 13 settings and the original for every backbone and environment. <strong>Success %</strong> with, in parentheses, the change against the original on the same episodes and the exact two-sided McNemar p-value; green = significant gain, red = significant loss (p &lt; 0.05). The paper's Tables I and II print one setting per trick; that setting is marked with * here, and each block below names the paper table it expands. <strong>ms / step</strong> is wall-clock per environment step, comparable only within one backbone and environment. Average steps (which follows success, since failed episodes run to the cap) is in the CSV below.</p>
 <p class="note">Machine-readable: <a href="assets/full_settings.csv">full_settings.csv</a> (every setting) and <a href="assets/per_task.csv">per_task.csv</a> (every setting and task).</p>
-<details open><summary>WidowX: 6 backbones, 14 configurations</summary>
+<details open><summary>WidowX: 6 backbones, 14 configurations <span class="tag">paper Table I</span></summary>
 <div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th><th colspan="2">CogACT</th><th colspan="2">CronusVLA</th><th colspan="2">MiniVLA</th></tr>
 <tr><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td class="orig">50.0</td><td>141.5</td><td class="orig">34.0</td><td>125.8</td><td class="orig">36.0</td><td>149.5</td></tr>
@@ -516,8 +517,9 @@ figcaption em { font-style: normal; }
 <tr><td class="cfg">Temporal fusion, task-aware</td><td class="">50.5*<span class="d">(+7.0, p 0.114)</span></td><td>222.3</td><td class="">44.0<span class="d">(-1.0, p 0.815)</span></td><td>426.8</td><td class="">83.5<span class="d">(-4.0, p 0.169)</span></td><td>221.7</td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td class="">48.0<span class="d">(+4.5, p 0.122)</span></td><td>208.2</td><td class="">45.0<span class="d">(0.0, p 1.000)</span></td><td>426.3</td><td class="">87.5*<span class="d">(0.0, p 1.000)</span></td><td>191.6</td></tr>
 </tbody></table></div>
+<p class="note legend">* the one setting per trick whose value is printed in Table I of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>
 </details>
-<details><summary>Fractal: 4 backbones, 14 configurations</summary>
+<details><summary>Fractal: 4 backbones, 14 configurations <span class="tag">paper Table I</span></summary>
 <div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th><th colspan="2">CogACT</th><th colspan="2">CronusVLA</th></tr>
 <tr><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td class="orig">66.8</td><td>169.0</td><td class="orig">55.6</td><td>155.1</td></tr>
@@ -552,8 +554,9 @@ figcaption em { font-style: normal; }
 <tr><td class="cfg">Temporal fusion, task-aware</td><td class="gain">42.4*<span class="d">(+6.8, p 0.012)</span></td><td>254.0</td><td class="">60.0*<span class="d">(+0.8, p 0.832)</span></td><td>453.4</td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td class="">36.8<span class="d">(+1.2, p 0.549)</span></td><td>240.3</td><td class="">59.2<span class="d">(0.0, p 1.000)</span></td><td>452.5</td></tr>
 </tbody></table></div>
+<p class="note legend">* the one setting per trick whose value is printed in Table I of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>
 </details>
-<details><summary>LIBERO Spatial: 3 backbones, 14 configurations</summary>
+<details><summary>LIBERO Spatial: 3 backbones, 14 configurations <span class="tag">paper Table II</span></summary>
 <div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th><th colspan="2">OpenVLA</th><th colspan="2">UniVLA</th><th colspan="2">SmolVLA</th></tr>
 <tr><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td class="orig">78.0</td><td>181.0</td><td class="orig">95.0</td><td>72.2</td><td class="orig">76.0</td><td>292.3</td></tr>
@@ -571,8 +574,9 @@ figcaption em { font-style: normal; }
 <tr><td class="cfg">Temporal fusion, task-aware</td><td class="">77.0<span class="d">(-1.0, p 1.000)</span></td><td>193.3</td><td class="">92.0<span class="d">(-3.0, p 0.375)</span></td><td>80.9</td><td class="">82.0*<span class="d">(+6.0, p 0.286)</span></td><td>285.2</td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td class="">79.0<span class="d">(+1.0, p 1.000)</span></td><td>181.2</td><td class="">95.0*<span class="d">(0.0, p 1.000)</span></td><td>72.2</td><td class="">78.0<span class="d">(+2.0, p 0.839)</span></td><td>284.9</td></tr>
 </tbody></table></div>
+<p class="note legend">* the one setting per trick whose value is printed in Table II of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>
 </details>
-<details><summary>LIBERO Object: 3 backbones, 14 configurations</summary>
+<details><summary>LIBERO Object: 3 backbones, 14 configurations <span class="tag">paper Table II</span></summary>
 <div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th><th colspan="2">OpenVLA</th><th colspan="2">UniVLA</th><th colspan="2">SmolVLA</th></tr>
 <tr><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td class="orig">87.0</td><td>173.8</td><td class="orig">96.0</td><td>62.4</td><td class="orig">94.0</td><td>290.8</td></tr>
@@ -590,8 +594,9 @@ figcaption em { font-style: normal; }
 <tr><td class="cfg">Temporal fusion, task-aware</td><td class="">86.0*<span class="d">(-1.0, p 1.000)</span></td><td>185.6</td><td class="">97.0<span class="d">(+1.0, p 1.000)</span></td><td>67.6</td><td class="">90.0*<span class="d">(-4.0, p 0.424)</span></td><td>279.0</td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td class="">82.0<span class="d">(-5.0, p 0.180)</span></td><td>174.3</td><td class="">96.0<span class="d">(0.0, p 1.000)</span></td><td>61.4</td><td class="">86.0<span class="d">(-8.0, p 0.096)</span></td><td>276.1</td></tr>
 </tbody></table></div>
+<p class="note legend">* the one setting per trick whose value is printed in Table II of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>
 </details>
-<details><summary>LIBERO Goal: 3 backbones, 14 configurations</summary>
+<details><summary>LIBERO Goal: 3 backbones, 14 configurations <span class="tag">paper Table II</span></summary>
 <div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th><th colspan="2">OpenVLA</th><th colspan="2">UniVLA</th><th colspan="2">SmolVLA</th></tr>
 <tr><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td class="orig">75.0</td><td>176.1</td><td class="orig">92.0</td><td>65.1</td><td class="orig">80.0</td><td>295.7</td></tr>
@@ -609,8 +614,9 @@ figcaption em { font-style: normal; }
 <tr><td class="cfg">Temporal fusion, task-aware</td><td class="">73.0<span class="d">(-2.0, p 0.832)</span></td><td>188.3</td><td class="">93.0<span class="d">(+1.0, p 1.000)</span></td><td>71.9</td><td class="">74.0<span class="d">(-6.0, p 0.345)</span></td><td>280.4</td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td class="">77.0*<span class="d">(+2.0, p 0.727)</span></td><td>176.2</td><td class="">92.0<span class="d">(0.0, p 1.000)</span></td><td>64.4</td><td class="">78.0*<span class="d">(-2.0, p 0.856)</span></td><td>279.3</td></tr>
 </tbody></table></div>
+<p class="note legend">* the one setting per trick whose value is printed in Table II of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>
 </details>
-<details><summary>LIBERO Long: 3 backbones, 14 configurations</summary>
+<details><summary>LIBERO Long: 3 backbones, 14 configurations <span class="tag">paper Table II</span></summary>
 <div class="tablewrap"><table class="full"><thead><tr><th rowspan="2">Configuration</th><th colspan="2">OpenVLA</th><th colspan="2">UniVLA</th><th colspan="2">SmolVLA</th></tr>
 <tr><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th><th class="sub">Success %</th><th class="sub">ms / step</th></tr></thead><tbody>
 <tr><td class="cfg">Original</td><td class="orig">56.0</td><td>171.6</td><td class="orig">86.0</td><td>59.9</td><td class="orig">42.0</td><td>289.5</td></tr>
@@ -628,6 +634,7 @@ figcaption em { font-style: normal; }
 <tr><td class="cfg">Temporal fusion, task-aware</td><td class="">48.0<span class="d">(-8.0, p 0.185)</span></td><td>185.7</td><td class="">87.0*<span class="d">(+1.0, p 1.000)</span></td><td>64.9</td><td class="">39.0<span class="d">(-3.0, p 0.690)</span></td><td>275.9</td></tr>
 <tr><td class="cfg">Temporal fusion, conservative-adaptive</td><td class="loss">45.0<span class="d">(-11.0, p 0.007)</span></td><td>176.2</td><td class="">86.0<span class="d">(0.0, p 1.000)</span></td><td>58.5</td><td class="">45.0*<span class="d">(+3.0, p 0.690)</span></td><td>276.7</td></tr>
 </tbody></table></div>
+<p class="note legend">* the one setting per trick whose value is printed in Table II of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>
 </details>
 <h3 id="pertask">2.2 Per-task success</h3>
 <p>Every configuration split by task (50 episodes per task on SimplerEnv, 10 on LIBERO), with the change against the original in parentheses. Expand an environment to see its tasks. On Fractal, place apple in closed top drawer is 0 of 50 for every configuration of every backbone, so every Fractal success value carries 50 guaranteed failures.</p>
