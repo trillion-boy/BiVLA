@@ -134,11 +134,11 @@ figcaption em { font-style: normal; }
 <section id="impl"><h2>1. Additional implementation details</h2>
 <p>Section III of the paper defines the five tricks and Section IV-A the protocol. This section adds the exact settings and what every run recorded.</p>
 <h3 id="11-trick-settings">1.1 Trick settings</h3>
-<p><strong>Foveation</strong> (Eq. 2). Keep ratio 0.2 or 0.5 of the image area, fovea at the image centre, sharp-disc radius r = sqrt(keep ratio x H x W / pi) (about 140 px on a 640 x 480 frame at keep 0.2). Outside the disc the pixel blends the input with two Gaussian blurs (sigma 3 and 9 px) along a ramp that rises from 0 at the disc edge to 1 at the farthest image corner. The image size and the visual-token count are unchanged; the blur is a CPU cost on every frame.</p>
+<p><strong>Foveation</strong> (Eq. 2). Keep ratio ρ = 0.2 or 0.5 of the image area, fovea at the image centre, sharp-disc radius <i>r</i> = √(ρ · <i>H</i> · <i>W</i> / π) (about 140 px on a 640 × 480 frame at ρ = 0.2). Outside the disc the pixel blends the input with two Gaussian blurs (σ = 3 and 9 px) along a ramp that rises from 0 at the disc edge to 1 at the farthest image corner. The image size and the visual-token count are unchanged; the blur is a CPU cost on every frame.</p>
 <p><img alt="Foveation examples" src="figs/foveation_examples.png" />
 <em>Top: raw WidowX observations. Bottom: the same frames at keep ratio 0.2.</em></p>
 <p><strong>Action repeat.</strong> The policy is called once and each returned action is executed k times; the next call sees the latest observation. UniVLA emits a chunk of 5 actions on WidowX and 10 on LIBERO, so its open-loop horizon at k = 2 is 10 and 20 steps and at k = 4 is 20 and 40 steps (recorded steps per call: 9.9 / 19.9 on WidowX, 19.8 / 38.8 on LIBERO). All other backbones execute one action per call.</p>
-<p><strong>Depth pruning.</strong> Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; every recorded Block Influence selection (54 pair-and-budget cells) satisfies these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed:</p>
+<p><strong>Depth pruning.</strong> Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; every recorded Block Influence selection (54 pair-and-budget cells) satisfies these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed in each run:</p>
 <div class="tablewrap md"><table>
 <thead>
 <tr>
@@ -264,7 +264,6 @@ figcaption em { font-style: normal; }
 </tr>
 </tbody>
 </table></div>
-<p>SmolVLA's layers are fixed late indices without a Block Influence measurement.</p>
 <p><strong>Guarded reuse</strong> (Eq. 5). The previous action is repeated instead of a policy call only when every gate passes; otherwise the policy is queried in full. The three presets, identical on every backbone:</p>
 <div class="tablewrap md"><table>
 <thead>
@@ -414,7 +413,7 @@ figcaption em { font-style: normal; }
 </tr>
 </tbody>
 </table></div>
-<p>The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Goal, Object and Spatial (all presets) and WidowX strict no gate ever fired; the Object, Spatial and WidowX strict runs are identical to the original, and Goal differs on one episode in two of its three presets. Conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA, with 98.5 to 100 percent of calls keyframes, so those cells are close to the original policy under the fusion name; SmolVLA's task-aware setting reused a median of 3.5 to 5 tokens per call. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting reproduces its motion-entropy run (identical outcomes, separate timing). CronusVLA's three fusion settings have identical outcomes and fused-patch counts, with no fusion parameters recorded.</p>
+<p>The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Goal, Object and Spatial (all presets) and WidowX strict no gate ever fired; the Object, Spatial and WidowX strict runs are identical to the original, and Goal differs on one episode in two of its three presets. Conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA, with 98.5 to 100 percent of calls keyframes, so those cells behave as the original policy; SmolVLA's task-aware setting reused a median of 3.5 to 5 tokens per call. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting reproduces its motion-entropy run (identical outcomes, separate timing). CronusVLA's three fusion settings have identical outcomes and fused-patch counts, with no fusion parameters recorded.</p>
 <h3 id="13-harness-checkpoints-software-and-hardware">1.3 Harness, checkpoints, software and hardware</h3>
 <p><strong>Episodes and seeds.</strong> Step caps: 60 on WidowX (120 for eggplant in basket), 80 on Fractal, 520 / 300 / 280 / 220 on LIBERO Long / Goal / Object / Spatial. Every configuration replays the same task instances with seed 42 plus the episode index. All 21,568 failed episodes end exactly at the cap, so average steps follows success.</p>
 <div class="tablewrap md"><table>
@@ -424,7 +423,6 @@ figcaption em { font-style: normal; }
 <th>Checkpoint</th>
 <th>Decoder pruned</th>
 <th>Actions per call</th>
-<th>Attention and versions</th>
 </tr>
 </thead>
 <tbody>
@@ -433,52 +431,46 @@ figcaption em { font-style: normal; }
 <td>CogACT-Base (Llama-2-7B base); DDIM 10 steps, cfg 1.5</td>
 <td>32 Llama layers</td>
 <td>1</td>
-<td>SDPA, transformers 4.47.0</td>
 </tr>
 <tr>
 <td>OpenVLA</td>
 <td>openvla-7b (SimplerEnv); openvla-7b-finetuned-libero-spatial / -object / -goal / -10 (one per suite); 224 px, no centre crop</td>
 <td>32 Llama-2 layers</td>
 <td>1</td>
-<td>SDPA on SimplerEnv, eager on LIBERO</td>
 </tr>
 <tr>
 <td>SpatialVLA</td>
 <td>spatialvla-4b-224-sft-bridge and -sft-fractal (PaliGemma2-3B); native chunk 4 with action ensembling, queried every step</td>
 <td>26 Gemma2 layers</td>
 <td>1</td>
-<td>eager (Gemma2 soft-capping), transformers 4.47.0</td>
 </tr>
 <tr>
 <td>CronusVLA</td>
 <td>released checkpoint (training step 42,500)</td>
 <td>12-layer DiT action decoder</td>
 <td>1</td>
-<td>SDPA, transformers 4.47.0</td>
 </tr>
 <tr>
 <td>UniVLA</td>
 <td>UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K (WidowX), UNIVLA_LIBERO_VIDEO_BS192_8K (LIBERO), Emu3 vision tokenizer</td>
 <td>32 Emu3 layers</td>
 <td>chunk of 5 (WidowX) or 10 (LIBERO)</td>
-<td>SDPA</td>
 </tr>
 <tr>
 <td>MiniVLA</td>
-<td>minivla-vq-bridge-prismatic (prism-qwen25-extra-dinosiglip-224px, 0.5B); 224 px, no centre crop</td>
+<td>minivla-vq-bridge-prismatic (prism-qwen25-extra-dinosiglip-224px); 224 px, no centre crop</td>
 <td>24 Qwen2.5 layers</td>
 <td>1</td>
-<td>SDPA, transformers 4.47.0</td>
 </tr>
 <tr>
 <td>SmolVLA</td>
 <td>LIBERO fine-tuned SmolVLA on SmolVLM2-500M-Instruct</td>
-<td>32 SmolLM2 layers (fixed indices)</td>
+<td>32 SmolLM2 layers</td>
 <td>1</td>
-<td>explicit PyTorch SDPA; lerobot 0.4.4, transformers 4.51.3</td>
 </tr>
 </tbody>
 </table></div>
+<p><strong>Software.</strong> CogACT, CronusVLA, MiniVLA and SpatialVLA run under transformers 4.47.0; SmolVLA under lerobot 0.4.4 with transformers 4.51.3. Decoders run SDPA attention, except SpatialVLA (eager, Gemma2 soft-capping) and OpenVLA on LIBERO (eager); the task-aware fusion setting forces eager attention wherever it collects relevance.</p>
 <p><strong>GPU cards.</strong> The runs were scheduled on a shared GPU cluster. Every run file that records its card lists an RTX 5090, except that in the SmolVLA depth-pruning cells at two layers on Long and Goal and at four layers on Long, Goal and Object, 86 of the 500 episodes list an RTX PRO 6000, RTX 6000 Ada, L40S or RTX A6000. Latency is compared only within one backbone, environment, software stack and GPU class.</p>
 <p><strong>Two implementations of SmolVLA.</strong> SmolVLA's guarded reuse, temporal fusion and the depth cells named above were completed with a re-implemented evaluator that is 2 to 7 percent faster per call than the original implementation even where a trick does nothing. Their latency mixes that difference with the trick and is read through the paired success test alone.</p>
 <p><strong>Latency.</strong> Wall-clock per environment step: mean episode time divided by mean episode length. The clock runs from reset to termination or cap and includes simulator stepping and rendering, the policy calls, the foveation blur, the reuse gate and the fusion selector; it excludes model loading and environment construction. The values here are recomputed from the per-episode records and can differ from Tables I and II of the paper by up to 0.1 ms.</p>
@@ -1008,8 +1000,8 @@ figcaption em { font-style: normal; }
 <figure class=""><img src="assets/consistency.png" alt="Cross-setting consistency"><figcaption>Cross-setting consistency. For each of the 13 settings, how many of the 13 backbone and environment combinations (LIBERO pooled per backbone) had lower, unchanged, or higher success than the original. Point estimates, no significance threshold; the unchanged bin is mostly cells whose gate never fired. This chart is not in the paper.</figcaption></figure><figure class=""><img src="assets/success_change_fractal.png" alt="Success change from the original for all 13 settings on Fractal, one panel per backbone (the Fractal counterpart of Fig"><figcaption>Success change from the original for all 13 settings on Fractal, one panel per backbone (the Fractal counterpart of Fig. 1). Bars to the left mean lower success than the original on the same episodes.</figcaption></figure><figure class=""><img src="assets/success_change_libero.png" alt="Success change from the original for all 13 settings on LIBERO, the four suites pooled, one panel per backbone."><figcaption>Success change from the original for all 13 settings on LIBERO, the four suites pooled, one panel per backbone.</figcaption></figure>
 <h3 id="stats">2.4 Statistics and reproducibility checks</h3>
 <p><strong>Per-cell p-values.</strong> Every setting's exact two-sided McNemar p-value is in the tables of 2.1. Over the 110 table cells (the best setting per trick), 22 lower success at p &lt; 0.05 and 4 raise it: CogACT WidowX depth pruning 2 layers (+9.5, p = 0.009), OpenVLA Fractal task-aware fusion (+6.8, p = 0.012), CogACT WidowX motion-entropy fusion (+8.0, p = 0.020) and UniVLA LIBERO Goal foveation 50% (+7.0, p = 0.039). Over all 286 settings, 77 lower success and 6 raise it.</p>
-<p><strong>Multiplicity.</strong> Each table cell is the best of two or three settings, so the paper reads its p-values as descriptive. A Benjamini-Hochberg correction at q = 0.05 over the 110 cells keeps 16 of the 22 drops and none of the 4 gains. Summing each cell's exact false-positive probability at its observed number of discordant episodes gives 3.1 chance passes over the 110 cells and 8.0 over the 286 settings, so the 6 gains over all settings are about what chance produces. Three of the four table gains sit on CogACT WidowX and OpenVLA Fractal, the two pairs on which every depth and fusion setting is positive. Guarded reuse changes success significantly in none of its 66 settings.</p>
-<p><strong>Run-to-run noise.</strong> On a guarded-reuse episode where the gate never fired, the original policy was called at every step, so the outcome should match the original run of the same seed. It does on SpatialVLA, UniVLA, OpenVLA Fractal and OpenVLA LIBERO (0.0 to 0.7 percent of such episodes differ) but not on the four other WidowX pairs: 16.5 percent of zero-fire episodes end differently for CogACT, 13.4 for OpenVLA, 9.3 for CronusVLA and 9.1 for MiniVLA (1.8 and 4.6 percent for CogACT and CronusVLA on Fractal; 20.3 percent for the SmolVLA reuse cells). This is drift between separate runs on a shared cluster rather than per-call randomness: CogACT's motion-entropy and task-aware fusion runs on WidowX, executed separately through the same code path, agree on all 200 episodes. On those pairs a cell can therefore move by a few points with no trick applied, which is the scale of the small Table I gains there (CogACT foveation +2.5 at p = 0.60, CronusVLA depth pruning +2.0 at p = 0.59, MiniVLA guarded reuse +2.5 at p = 0.33). The strict-reuse cell of CogACT WidowX, with the gate open on 0.3 percent of steps, is in effect a null run and moves +1.5 (p = 0.68). Only the paired test is read.</p>
+<p><strong>Multiplicity.</strong> Each table cell is the best of two or three settings, so the p-values are read as descriptive. A Benjamini-Hochberg correction at q = 0.05 over the 110 cells keeps 16 of the 22 drops and none of the 4 gains, and the expected number of chance passes is 3.1 over the 110 cells and 8.0 over the 286 settings, so the 6 gains over all settings are at chance level. Guarded reuse changes success significantly in none of its 66 settings.</p>
+<p><strong>Run-to-run agreement.</strong> On a guarded-reuse episode where the gate never fired, the original policy ran at every step, so the outcome should match the original run. It does on SpatialVLA, UniVLA, OpenVLA Fractal and OpenVLA LIBERO (0.0 to 0.7 percent of such episodes differ) and less closely on the four other WidowX pairs (CogACT 16.5, OpenVLA 13.4, CronusVLA 9.3, MiniVLA 9.1 percent; CogACT and CronusVLA on Fractal 1.8 and 4.6; the SmolVLA reuse cells 20.3). This is drift between separate runs rather than per-call randomness: CogACT's two fusion runs on WidowX, executed separately through the same code path, agree on all 200 episodes. On those pairs a change of a few points is within run-to-run drift (CogACT strict reuse, gate open on 0.3 percent of steps: +1.5, p = 0.68), which is why only the paired test is read.</p>
 <h3 id="walls">2.5 Qualitative rollouts: every configuration on one episode</h3>
 <p>Each clip shows all 14 configurations of one backbone on one episode with the same initial state; the border and badge mark the outcome of that run. The WidowX clips are a re-run of the CogACT experiment, and three of its 42 tiles end differently from the recorded run used in the tables.</p>
 <div class="walls"><figure class="wall"><video src="assets/wall_widowx_eggplant.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_widowx_eggplant.jpg"></video><figcaption>CogACT on WidowX, put eggplant in basket, rollout 3, 3x speed.</figcaption></figure><figure class="wall"><video src="assets/wall_fractal_move_near.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_fractal_move_near.jpg"></video><figcaption>OpenVLA on Fractal, move near, rollout 4, 2x speed.</figcaption></figure><figure class="wall"><video src="assets/wall_libero_goal.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_libero_goal.jpg"></video><figcaption>UniVLA on LIBERO Goal, task 8, rollout 2, 3x speed, runs cut at the clip end.</figcaption></figure><figure class="wall"><video src="assets/wall_libero_long.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_libero_long.jpg"></video><figcaption>UniVLA on LIBERO Long, task 1, rollout 2, 8x speed, runs cut at the clip end.</figcaption></figure></div><details><summary>6 more episodes</summary><div class="walls inner"><figure class="wall"><video src="assets/wall_widowx_stack_cube.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_widowx_stack_cube.jpg"></video><figcaption>CogACT on WidowX, stack cube, rollout 5, 2x speed.</figcaption></figure><figure class="wall"><video src="assets/wall_widowx_spoon.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_widowx_spoon.jpg"></video><figcaption>CogACT on WidowX, spoon on towel, rollout 4, 2x speed.</figcaption></figure><figure class="wall"><video src="assets/wall_fractal_pick_coke_can.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_fractal_pick_coke_can.jpg"></video><figcaption>OpenVLA on Fractal, pick coke can, rollout 4, 2x speed.</figcaption></figure><figure class="wall"><video src="assets/wall_fractal_open_drawer.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_fractal_open_drawer.jpg"></video><figcaption>OpenVLA on Fractal, open drawer, rollout 5, 2x speed.</figcaption></figure><figure class="wall"><video src="assets/wall_libero_spatial.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_libero_spatial.jpg"></video><figcaption>UniVLA on LIBERO Spatial, task 3, rollout 1, 3x speed, runs cut at the clip end.</figcaption></figure><figure class="wall"><video src="assets/wall_libero_object.mp4" controls muted loop playsinline preload="metadata" poster="assets/wall_libero_object.jpg"></video><figcaption>UniVLA on LIBERO Object, task 9, rollout 1, 4x speed, runs cut at the clip end.</figcaption></figure></div></details>
@@ -1017,22 +1009,13 @@ figcaption em { font-style: normal; }
 
 <section id="discussion"><h2>3. Additional discussions</h2>
 <p>These points extend Sections IV-B, IV-C and V of the paper.</p>
-<p><strong>Depth pruning flips sign with the layer that Block Influence picks.</strong> Within one backbone, OpenVLA on LIBERO loses 16 points on the one suite whose calibration frame picked index 8 (Spatial) and 2 to 3 points on the suites that picked 17 or 23. Across backbones the picked index is confounded with the architecture: index 17 or 23 of 32 on CogACT and OpenVLA, where success held or rose, against 13 of 24 on MiniVLA and 8 of 26 on SpatialVLA, where it fell (MiniVLA -17.5, -36.0, -36.0 at one, two and four layers; SpatialVLA WidowX -6.5, -17.0, -31.0). The removed indices should be reported next to the budget.</p>
-<p><strong>Action repeat on a chunking policy is a different operation.</strong> UniVLA's chunk makes k = 2 a horizon of 10 or 20 steps (Section 1.1), which is why it collapses (-75.0 on WidowX, -58.0 to -75.0 on the LIBERO suites) while the single-action backbones lose 4 to 38 points on WidowX and change by -1.2 to +4.4 on Fractal at k = 2. The saving itself is predictable: the per-step time ratio is 1 - s + s / k, where s is the model's share of a step in the original run, and this matches the observed ratio within 0.021 on the 20 pairs that record per-call time.</p>
-<p><strong>Guarded reuse is safe mostly because its gates rarely open.</strong> On most pairs the gate opens on well under 5 percent of steps and on ten UniVLA cells on none (Section 1.2). Where it opens often, on OpenVLA LIBERO, the aggressive preset saves 8 to 10 percent of the time and costs 1 to 6 points that the paired test does not separate from zero. An unchanged guarded-reuse cell should be read as "did not act" before "acted safely", and any gated trick should be reported with its fire count. The presets were the same on every backbone; thresholds tuned per policy were not tried.</p>
-<p><strong>The pooled numbers hide a per-task split.</strong> Most significant drops are carried by one or two tasks (Section 2.2): OpenVLA WidowX foveation 50% (-13.5) is eggplant in basket falling from 37 to 12 of 50 and stack cube from 15 to 7 while carrot and spoon hold or rise; OpenVLA Fractal foveation 20% (-28.0) collapses move near (31 to 3), pick coke can (29 to 1) and open drawer (9 to 0) while close drawer holds (20 to 15); MiniVLA depth pruning 1 layer (-17.5) is stack cube falling from 36 to 8; SpatialVLA WidowX depth pruning 4 layers (-31.0) is eggplant falling from 50 to 8 with carrot unchanged.</p>
-<p><strong>Foveation costs time instead of saving it.</strong> The per-call latency of every foveated run is within a few percent of the original, while the per-step latency rises by 2 to 17 percent on six backbones (CronusVLA +15 to +17, CogACT +12 to +15, MiniVLA +5 to +7, SpatialVLA +5 to +6, SmolVLA +3 to +7, OpenVLA +2 to +4). The difference is the blur on the CPU for every frame; UniVLA pays under 4 percent because it blurs one frame per chunk. More blur is not uniformly worse: keep 20% ties or beats keep 50% on four of the six WidowX backbones, while keep 50% is at least as good on 15 of the 16 Fractal and LIBERO pairs.</p>
-<p><strong>Task-aware fusion buys its attention signal with 7 to 17 percent more time per call.</strong> OpenVLA pays +7.1 to +9.0 percent per call on its six pairs, MiniVLA +12.9, UniVLA LIBERO +12.0 to +16.6, while the other two fusion settings stay within -1.5 to +3.0 percent on every pair with a comparable software stack. On MiniVLA and UniVLA the cost includes the switch to eager attention; on OpenVLA LIBERO the original already runs eager and pays the same 7 to 9 percent, so there the cost is the collection itself.</p>
+<p><strong>Depth pruning flips sign with the layer that Block Influence picks.</strong> Within OpenVLA on LIBERO, the suite whose calibration frame picked index 8 (Spatial) loses 16 points and the suites that picked 17 or 23 lose 2 to 3. Across backbones the picked index and the architecture move together: 17 or 23 of 32 on CogACT and OpenVLA, where success held or rose, against 13 of 24 on MiniVLA and 8 of 26 on SpatialVLA, where it fell (MiniVLA -17.5, -36.0, -36.0 at one, two and four layers; SpatialVLA WidowX -6.5, -17.0, -31.0). The removed indices belong next to the budget.</p>
+<p><strong>Action repeat on a chunking policy is a different operation.</strong> UniVLA's chunk makes k = 2 a horizon of 10 or 20 steps (Section 1.1), which is why it collapses (-75.0 on WidowX, -58.0 to -75.0 on the LIBERO suites) while the single-action backbones lose 4 to 38 points on WidowX and change by -1.2 to +4.4 on Fractal. The saving is predictable from the original run alone: the per-step time ratio is 1 - s + s / k, with s the model's share of a step, and it matches the observed ratio within 0.021 on the 20 pairs that record per-call time.</p>
+<p><strong>Guarded reuse is conservative by design.</strong> Its gates open on well under 5 percent of steps on most pairs and never on ten UniVLA cells (Section 1.2), so the closed loop stays close to the original and success holds, which is the safest trade-off in Tables I and II. Where the gates open more often, the OpenVLA LIBERO aggressive preset saves 8 to 10 percent of the time for 1 to 6 points that the paired test does not separate from zero. The saving scales with the fire rate, so a gated trick should be reported with its fire count; thresholds tuned per policy were not tried.</p>
+<p><strong>The pooled numbers hide a per-task split.</strong> Most significant drops are carried by one or two tasks (Section 2.2): OpenVLA WidowX foveation 50% (-13.5) is eggplant in basket falling from 37 to 12 of 50 and stack cube from 15 to 7 while carrot and spoon hold or rise, and OpenVLA Fractal foveation 20% (-28.0) collapses move near, pick coke can and open drawer while close drawer holds (20 to 15). A pooled cell should be read together with its task split.</p>
+<p><strong>Foveation costs time instead of saving it.</strong> Per-call latency is unchanged, but per-step latency rises by 2 to 17 percent on six backbones because the blur runs on the CPU for every frame; UniVLA pays under 4 percent because it blurs one frame per chunk. More blur is not uniformly worse: keep 20% ties or beats keep 50% on four of the six WidowX backbones, while keep 50% is at least as good on 15 of the 16 Fractal and LIBERO pairs.</p>
+<p><strong>Task-aware fusion buys its attention signal with 7 to 17 percent more time per call.</strong> OpenVLA pays +7.1 to +9.0 percent per call, MiniVLA +12.9 and UniVLA LIBERO +12.0 to +16.6, while the other two fusion settings stay within -1.5 to +3.0 percent. On MiniVLA and UniVLA part of the cost is the switch to eager attention; on OpenVLA LIBERO the original already runs eager and pays the same, so there the cost is the collection itself.</p>
 <p><strong>Before applying any of these tricks to a new backbone.</strong> Run the original policy on the exact seeds first. Report the engagement counter of every gated or masked trick. Print the chunk length and the open-loop horizon next to any action-repeat or reuse setting. Measure per-step wall-clock and per-call time separately. Record the removed layer indices with the budget, and hold the software stack and GPU class fixed within a comparison.</p>
-<h3 id="limitations-and-implementation-caveats">Limitations and implementation caveats</h3>
-<ul>
-<li>Each cell is one run, so the paired test speaks only to the tested initial states; LIBERO cells have 100 episodes against 200 or 250 on SimplerEnv.</li>
-<li>CogACT, CronusVLA, MiniVLA and OpenVLA do not reproduce their WidowX rollouts under a fixed seed (Section 2.4).</li>
-<li>Guarded reuse ran fixed presets and its gates rarely opened. CogACT tested two fusion settings, not three; CronusVLA's three fusion settings have identical outcomes and no recorded parameters; conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA (Section 1.2).</li>
-<li>SmolVLA's depth-pruning layers are fixed indices, and its guarded reuse, temporal fusion and part of its depth cells ran under a re-implemented evaluator, so their latency is not comparable with the original row (Section 1.3).</li>
-<li>Depth-pruning calibration for five backbones (CogACT, MiniVLA, OpenVLA, SpatialVLA, UniVLA) used the first observation of the evaluation run rather than a disjoint calibration set.</li>
-<li>Latency is read only within one backbone, environment and software stack; peak memory was not measured; all runs are in simulation. Fusion is not credited with any acceleration, since the shared reuse mask with the generation cache (Section III-G) was not measured.</li>
-</ul>
 </section>
 
 <footer><p>Static page, no scripts, no tracking. All numbers come from the per-episode records of the submission.</p></footer>

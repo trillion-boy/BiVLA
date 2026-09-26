@@ -2,14 +2,14 @@ Section III of the paper defines the five tricks and Section IV-A the protocol. 
 
 ### 1.1 Trick settings
 
-**Foveation** (Eq. 2). Keep ratio 0.2 or 0.5 of the image area, fovea at the image centre, sharp-disc radius r = sqrt(keep ratio x H x W / pi) (about 140 px on a 640 x 480 frame at keep 0.2). Outside the disc the pixel blends the input with two Gaussian blurs (sigma 3 and 9 px) along a ramp that rises from 0 at the disc edge to 1 at the farthest image corner. The image size and the visual-token count are unchanged; the blur is a CPU cost on every frame.
+**Foveation** (Eq. 2). Keep ratio ρ = 0.2 or 0.5 of the image area, fovea at the image centre, sharp-disc radius <i>r</i> = √(ρ · <i>H</i> · <i>W</i> / π) (about 140 px on a 640 × 480 frame at ρ = 0.2). Outside the disc the pixel blends the input with two Gaussian blurs (σ = 3 and 9 px) along a ramp that rises from 0 at the disc edge to 1 at the farthest image corner. The image size and the visual-token count are unchanged; the blur is a CPU cost on every frame.
 
 ![Foveation examples](figs/foveation_examples.png)
 *Top: raw WidowX observations. Bottom: the same frames at keep ratio 0.2.*
 
 **Action repeat.** The policy is called once and each returned action is executed k times; the next call sees the latest observation. UniVLA emits a chunk of 5 actions on WidowX and 10 on LIBERO, so its open-loop horizon at k = 2 is 10 and 20 steps and at k = 4 is 20 and 40 steps (recorded steps per call: 9.9 / 19.9 on WidowX, 19.8 / 38.8 on LIBERO). All other backbones execute one action per call.
 
-**Depth pruning.** Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; every recorded Block Influence selection (54 pair-and-budget cells) satisfies these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed:
+**Depth pruning.** Block Influence (Eq. 4) is measured with a forward hook on every decoder layer during the prefill of the first policy call of the run; that call runs unpruned and the ranking is then frozen for the run (one run per LIBERO suite). CronusVLA runs a separate calibration pass (seed 10000) on its 12-layer DiT action decoder. Layers in the first quarter of the stack and the final layer are never removed and no two removed layers are adjacent; every recorded Block Influence selection (54 pair-and-budget cells) satisfies these rules. A removed block becomes a pass-through, so its attention and MLP run on no token. The layers removed in each run:
 
 | Backbone and environment | Layers | 1 layer | 2 layers | 4 layers |
 |---|---|---|---|---|
@@ -30,7 +30,6 @@ Section III of the paper defines the five tricks and Section IV-A the protocol. 
 | MiniVLA WidowX | 24 | 13 | 11, 13 | 7, 9, 11, 13 |
 | SmolVLA LIBERO (all suites) | 32 | 30 | 28, 30 | 24, 26, 28, 30 |
 
-SmolVLA's layers are fixed late indices without a Block Influence measurement.
 
 **Guarded reuse** (Eq. 5). The previous action is repeated instead of a policy call only when every gate passes; otherwise the policy is queried in full. The three presets, identical on every backbone:
 
@@ -65,21 +64,23 @@ A gated trick can only change a result where it fires, so the fire counts are pa
 | MiniVLA WidowX | 3.1 / 4.2 / 4.0 | 0.34 / 0.34 / 0.90 | 107 / 68 / 64 |
 | SmolVLA LIBERO (four suites) | 0.02 to 0.13 / 0.2 to 0.5 / 1.4 to 2.6 | not recorded | 19 to 23 / 3.5 to 5 / 16 |
 
-The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Goal, Object and Spatial (all presets) and WidowX strict no gate ever fired; the Object, Spatial and WidowX strict runs are identical to the original, and Goal differs on one episode in two of its three presets. Conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA, with 98.5 to 100 percent of calls keyframes, so those cells are close to the original policy under the fusion name; SmolVLA's task-aware setting reused a median of 3.5 to 5 tokens per call. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting reproduces its motion-entropy run (identical outcomes, separate timing). CronusVLA's three fusion settings have identical outcomes and fused-patch counts, with no fusion parameters recorded.
+The reuse gates open on at most about a tenth of the steps (OpenVLA LIBERO, aggressive) and on under 1 percent on CogACT Fractal, SpatialVLA WidowX and every UniVLA cell; on UniVLA Goal, Object and Spatial (all presets) and WidowX strict no gate ever fired; the Object, Spatial and WidowX strict runs are identical to the original, and Goal differs on one episode in two of its three presets. Conservative-adaptive fusion reused a median of zero patches on SpatialVLA and UniVLA, with 98.5 to 100 percent of calls keyframes, so those cells behave as the original policy; SmolVLA's task-aware setting reused a median of 3.5 to 5 tokens per call. CogACT exposes no text-to-vision attention where fusion runs, so its task-aware setting reproduces its motion-entropy run (identical outcomes, separate timing). CronusVLA's three fusion settings have identical outcomes and fused-patch counts, with no fusion parameters recorded.
 
 ### 1.3 Harness, checkpoints, software and hardware
 
 **Episodes and seeds.** Step caps: 60 on WidowX (120 for eggplant in basket), 80 on Fractal, 520 / 300 / 280 / 220 on LIBERO Long / Goal / Object / Spatial. Every configuration replays the same task instances with seed 42 plus the episode index. All 21,568 failed episodes end exactly at the cap, so average steps follows success.
 
-| Backbone | Checkpoint | Decoder pruned | Actions per call | Attention and versions |
-|---|---|---|---|---|
-| CogACT | CogACT-Base (Llama-2-7B base); DDIM 10 steps, cfg 1.5 | 32 Llama layers | 1 | SDPA, transformers 4.47.0 |
-| OpenVLA | openvla-7b (SimplerEnv); openvla-7b-finetuned-libero-spatial / -object / -goal / -10 (one per suite); 224 px, no centre crop | 32 Llama-2 layers | 1 | SDPA on SimplerEnv, eager on LIBERO |
-| SpatialVLA | spatialvla-4b-224-sft-bridge and -sft-fractal (PaliGemma2-3B); native chunk 4 with action ensembling, queried every step | 26 Gemma2 layers | 1 | eager (Gemma2 soft-capping), transformers 4.47.0 |
-| CronusVLA | released checkpoint (training step 42,500) | 12-layer DiT action decoder | 1 | SDPA, transformers 4.47.0 |
-| UniVLA | UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K (WidowX), UNIVLA_LIBERO_VIDEO_BS192_8K (LIBERO), Emu3 vision tokenizer | 32 Emu3 layers | chunk of 5 (WidowX) or 10 (LIBERO) | SDPA |
-| MiniVLA | minivla-vq-bridge-prismatic (prism-qwen25-extra-dinosiglip-224px, 0.5B); 224 px, no centre crop | 24 Qwen2.5 layers | 1 | SDPA, transformers 4.47.0 |
-| SmolVLA | LIBERO fine-tuned SmolVLA on SmolVLM2-500M-Instruct | 32 SmolLM2 layers (fixed indices) | 1 | explicit PyTorch SDPA; lerobot 0.4.4, transformers 4.51.3 |
+| Backbone | Checkpoint | Decoder pruned | Actions per call |
+|---|---|---|---|
+| CogACT | CogACT-Base (Llama-2-7B base); DDIM 10 steps, cfg 1.5 | 32 Llama layers | 1 |
+| OpenVLA | openvla-7b (SimplerEnv); openvla-7b-finetuned-libero-spatial / -object / -goal / -10 (one per suite); 224 px, no centre crop | 32 Llama-2 layers | 1 |
+| SpatialVLA | spatialvla-4b-224-sft-bridge and -sft-fractal (PaliGemma2-3B); native chunk 4 with action ensembling, queried every step | 26 Gemma2 layers | 1 |
+| CronusVLA | released checkpoint (training step 42,500) | 12-layer DiT action decoder | 1 |
+| UniVLA | UNIVLA_SIMPLER_BRIDGE_VIDEO_BS128_20K (WidowX), UNIVLA_LIBERO_VIDEO_BS192_8K (LIBERO), Emu3 vision tokenizer | 32 Emu3 layers | chunk of 5 (WidowX) or 10 (LIBERO) |
+| MiniVLA | minivla-vq-bridge-prismatic (prism-qwen25-extra-dinosiglip-224px); 224 px, no centre crop | 24 Qwen2.5 layers | 1 |
+| SmolVLA | LIBERO fine-tuned SmolVLA on SmolVLM2-500M-Instruct | 32 SmolLM2 layers | 1 |
+
+**Software.** CogACT, CronusVLA, MiniVLA and SpatialVLA run under transformers 4.47.0; SmolVLA under lerobot 0.4.4 with transformers 4.51.3. Decoders run SDPA attention, except SpatialVLA (eager, Gemma2 soft-capping) and OpenVLA on LIBERO (eager); the task-aware fusion setting forces eager attention wherever it collects relevance.
 
 **GPU cards.** The runs were scheduled on a shared GPU cluster. Every run file that records its card lists an RTX 5090, except that in the SmolVLA depth-pruning cells at two layers on Long and Goal and at four layers on Long, Goal and Object, 86 of the 500 episodes list an RTX PRO 6000, RTX 6000 Ada, L40S or RTX A6000. Latency is compared only within one backbone, environment, software stack and GPU class.
 
