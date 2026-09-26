@@ -13,6 +13,7 @@ def md(path):
     h = re.sub(r'<p>(<img [^>]*>)</p>\s*<p><em>(.*?)</em></p>', r'<figure class="md">\1<figcaption>\2</figcaption></figure>', h, flags=re.S)
     return h
 def asset(src, name=None):
+    if not os.path.isabs(src): src = os.path.join(HERE, src)
     name = name or os.path.basename(src); dst = os.path.join(SITE, 'assets', name)
     if os.path.exists(src): shutil.copyfile(src, dst)
     else: print('missing asset', src)
