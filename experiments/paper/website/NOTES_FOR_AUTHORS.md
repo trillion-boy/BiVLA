@@ -24,14 +24,3 @@ The final paper says the project page carries "checkpoints, GPU cards, software 
 11. **Latency rounding** (Section 1.3): the page recomputes ms/step as pooled episode time over pooled steps; Tables I and II differ by up to 0.1 ms in some cells (CogACT WidowX original 141.5 on the page, 141.41 in Table I). The page says so.
 12. **LIBERO task names** (Section 2.2) are the standard LIBERO instructions in benchmark order (task 0 to 9); four were checked against the rollout videos. Confirm the harness used the benchmark order.
 13. **Fractal apple task** (Section 2.2): place apple in closed top drawer is 0 of 50 for every configuration of every backbone; the page says so.
-
-## Things that were deliberately left out
-
-- Absolute paths, user names, cluster job ids and internal note file names.
-- Everything from the earlier three-backbone study, because its numbers do not match the final paper.
-- Any claim that fusion accelerates anything (no cache-level reuse was measured).
-- A separate Limitations list (removed at the first author's request; the caveats above remain where they arise in Sections 1.2, 1.3 and 2.4).
-
-## Video badge caveat
-
-Five of the 150 rollout clips used in the videos (three wall tiles and two paired clips, all CogACT WidowX) carry a SUCCESS/FAILURE badge that differs from the episode record, because the WidowX rollout videos are a re-run. The page says under the walls that three of the 42 WidowX tiles end differently from the recorded run.
