@@ -114,7 +114,7 @@ def per_task_tables(rows):
                 for t in tasks:
                     r = next((x for x in R if x['configuration'] == cfg and x['task'] == t), None)
                     if r is None: cells.append('<td class="na"></td>'); continue
-                    d = r.get('delta_vs_original', '')
+                    d = r.get('delta_vs_original') or r.get('delta_success_pct', '')
                     cells.append(f'<td>{num(r["success_pct"])}' + (f'<span class="d">({signed(d)})</span>' if cfg != 'original' and d != '' else '') + '</td>')
                 if any('<td>' in c for c in cells): out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
             out.append('</tbody></table></div>' + libero_legend(tasks))
