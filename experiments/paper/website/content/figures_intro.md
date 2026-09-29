@@ -1,1 +1,1 @@
-Drawn from the same records as the tables. Success change is in percentage points against the original on the same episodes. The first chart is not in the paper; the other two are the Fractal and LIBERO counterparts of the paper's Fig. 1.
+These charts use the same per-episode records as the tables. Success change is shown in percentage points relative to the original on the same episodes. Select an environment and backbone to inspect each setting; hover or focus a bar for the exact value and, on Fractal, the paired test result.

@@ -19,7 +19,7 @@ Then open `site/index.html` in a browser. Upload the contents of `site/` (index.
 | 2.1 note above the full tables | `content/full_table_note.md` |
 | 2.1 tables themselves | generated from `data/full_settings.csv` |
 | 2.2 note and tables | `content/per_task_note.md`, `data/per_task.csv`; LIBERO task names are in `build.py` (`LIBERO_TASKS`) |
-| 2.3 intro and figure captions | `content/figures_intro.md`, `figures.json` (captions, alt text) |
+| 2.3 intro | `content/figures_intro.md`; the interactive charts are `chart.js` (drawn from the inline copy of `data/full_settings.csv` that `build.py` embeds) and their captions and static fallbacks are in the 2.3 block of `build.py` |
 | 2.4 statistics | `content/stats.md` |
 | 2.5 rollout clips and captions | `walls.json`; the clips are in `walls/` |
 | 3. Additional discussions | `content/discussion.md` |
@@ -34,7 +34,7 @@ The Markdown is plain: `**bold**`, pipe tables, one blank line between paragraph
 
 ## Figures and videos
 
-`figs/` holds the four figures used (consistency, success change Fractal and LIBERO with backbone titles, foveation examples). `media/` holds the two page videos (3-minute and extended). `walls/` holds the ten rollout-wall clips and their poster frames.
+`figs/` holds the static fallback figures (consistency, success change Fractal) and the foveation examples. `media/` holds the extended video shown under the title (the 3-minute video is kept there too but not shown). `walls/` holds the ten rollout-wall clips and their poster frames.
 
 ## Notes
 

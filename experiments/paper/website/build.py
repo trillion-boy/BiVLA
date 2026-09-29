@@ -72,7 +72,7 @@ def full_table(rows):
                                      f'<td>{num(r["latency_ms_per_step"])}</td>')
                 out.append(f'<tr><td class="cfg">{CFG_LABEL[cfg]}</td>{"".join(cells)}</tr>')
             out.append('</tbody></table></div>')
-        out.append(f'<p class="note legend">* the one setting per trick whose value is printed in {ptab} of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step comparable only within one backbone.</p>')
+        out.append(f'<p class="note legend">* marks the setting whose value is printed in {ptab} of the paper. Green = significant gain, red = significant loss (exact McNemar, p &lt; 0.05). ms / step is comparable only within one backbone.</p>')
         out.append('</details>')
     return '\n'.join(out)
 
@@ -137,37 +137,23 @@ def wall_fig(w): return f'<figure class="wall"><video src="{asset(w["src"], w["f
 WALL_FIRST = ['wall_widowx_eggplant.mp4', 'wall_fractal_move_near.mp4', 'wall_libero_goal.mp4', 'wall_libero_long.mp4']
 _first = [w for f in WALL_FIRST for w in walls if w['file'] == f]; _rest = [w for w in walls if w not in _first]
 wall_html = '<div class="walls">' + ''.join(wall_fig(w) for w in _first) + '</div>' + (f'<details><summary>{len(_rest)} more episodes</summary><div class="walls inner">' + ''.join(wall_fig(w) for w in _rest) + '</div></details>' if _rest else '')
-figs = json.load(open(os.path.join(HERE, 'figures.json'))) if os.path.exists(os.path.join(HERE, 'figures.json')) else {}
-def fig(key, cls=''):
-    f = figs.get(key)
-    if not f: return f'<p class="todo">[figure {key} missing]</p>'
-    cap = f['caption']
-    if f.get('grid'):
-        head, _, rest = cap.partition('. ') if '. ' in cap else (cap.rstrip('.'), '', '')
-        head = head.split(':')[0]
-        rest = (cap[len(head) + 1:].lstrip(': .') if cap.startswith(head) else cap)
-        cap = f'<strong>{html.escape(head)}.</strong> ' + (rest[:1].upper() + rest[1:] if rest else '')
-    alt = html.escape(re.split(r'(?<=[a-z0-9)])\. ', f['caption'])[0])
-    return f'<figure class="{cls}"><img src="{asset(f["src"], f["file"])}" alt="{alt}"><figcaption>{cap}</figcaption></figure>'
+def chart_data():
+    keep = ['backbone', 'env', 'configuration', 'episodes', 'successes', 'success_pct', 'delta_success_vs_original', 'p_mcnemar']
+    return json.dumps([{k: r.get(k, '') for k in keep} for r in full], separators=(',', ':'))
+
 page = f'''<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bag of Tricks for Training-Free VLA Models: project page</title>
 <style>{CSS}</style></head>
 <body><main>
 <header>
-<p class="kicker">Anonymous project page for an ICRA 2027 submission</p>
 <h1>Bag of Tricks for Training-Free Vision-Language-Action Models<span class="sub">What to See, When to Act, and How Much to Compute?</span></h1>
 {md('intro.md')}
-<nav><a href="#video">Videos</a><a href="#impl">1. Implementation details</a><a href="#results">2. Results</a><a href="#discussion">3. Discussions</a></nav>
+<nav><a href="#impl">1. Implementation details</a><a href="#results">2. Results</a><a href="#discussion">3. Discussions</a></nav>
 </header>
 
-<section id="video"><h2>Videos</h2>
-<div class="videobox"><video class="main" src="{asset(os.path.join(HERE, 'media', 'accompanying_video.mp4'), 'accompanying_video.mp4')}" controls preload="metadata"></video></div>
-<p class="note">The 3-minute video submitted with the paper.</p>
-<details><summary>Extended video with one slide per trick</summary>
-<video class="main" src="{asset(os.path.join(HERE, 'media', 'extended_video.mp4'), 'extended_video.mp4')}" controls preload="metadata"></video>
-<p class="note">Same content plus one slide per trick with a paired rollout chosen to show the mechanism of the trick; the tables carry the evidence.</p>
-</details>
+<section id="video">
+<div class="videobox"><video class="main" src="{asset(os.path.join(HERE, 'media', 'extended_video.mp4'), 'extended_video.mp4')}" controls preload="metadata"></video></div>
 </section>
 
 <section id="impl"><h2>1. Additional implementation details</h2>
@@ -185,7 +171,23 @@ page = f'''<!DOCTYPE html>
 {per_task_tables(pt)}
 <h3 id="figures">2.3 Figures for Fractal and LIBERO</h3>
 {md('figures_intro.md')}
-{''.join(fig(k) for k in figs if not figs[k].get('grid'))}
+<figure>
+  <div id="consistency-chart" class="chart-shell" hidden><svg role="img" aria-label="Counts of backbone and environment pairs with lower, unchanged, or higher success for each setting"></svg></div>
+  <img class="chart-fallback" src="{asset(os.path.join(HERE, 'figs', 'consistency.png'), 'consistency.png')}" alt="For each setting, counts across 13 backbone and environment pairs with lower, unchanged, or higher success than the original.">
+  <figcaption>Cross-setting consistency. Each bar counts the 13 backbone and environment pairs (LIBERO suites pooled within each backbone). Counts are point estimates; no significance threshold is applied. Unchanged outcomes include settings where a reuse gate did not fire.</figcaption>
+</figure>
+<figure>
+  <div class="chart-controls">
+    <label for="chart-environment">Environment<select id="chart-environment"><option value="Fractal">Fractal</option><option value="LIBERO">LIBERO (four suites pooled)</option></select></label>
+    <label for="chart-backbone">Backbone<select id="chart-backbone"></select></label>
+  </div>
+  <p id="chart-status" class="chart-status" aria-live="polite"></p>
+  <div id="change-chart" class="chart-shell" hidden><svg role="img" aria-label="Success change from original for each configuration"></svg></div>
+  <img class="chart-fallback" src="{asset(os.path.join(HERE, 'figs', 'success_change_fractal.png'), 'success_change_fractal.png')}" alt="Success change from original for all settings on Fractal, grouped by backbone.">
+  <figcaption>Success change from the original for each setting. LIBERO values pool all four suites for the selected backbone. Bars to the left indicate lower success than the original.</figcaption>
+</figure>
+<script id="chart-data" type="application/json">{chart_data()}</script>
+<script>{open(os.path.join(HERE, 'chart.js'), encoding='utf8').read()}</script>
 <h3 id="stats">2.4 Statistics and reproducibility checks</h3>
 {md('stats.md')}
 <h3 id="walls">2.5 Qualitative rollouts: every configuration on one episode</h3>
@@ -197,7 +199,6 @@ page = f'''<!DOCTYPE html>
 {md('discussion.md')}
 </section>
 
-<footer><p>Static page, no scripts, no tracking. All numbers come from the per-episode records of the submission.</p></footer>
 </main></body></html>'''
 open(os.path.join(SITE, 'index.html'), 'w', encoding='utf8').write(page)
-print('wrote', os.path.join(SITE, 'index.html'), len(page), 'bytes; full rows', len(full), 'per-task rows', len(pt), 'walls', len(walls), 'figures', len(figs))
+print('wrote', os.path.join(SITE, 'index.html'), len(page), 'bytes; full rows', len(full), 'per-task rows', len(pt), 'walls', len(walls))
